@@ -12,7 +12,7 @@ class GreetingActivity : AppCompatActivity() {
         val message = intent.getStringExtra(EXTRA_MESSAGE)
 
         val textView = findViewById<TextView>(R.id.GreetingMessage).apply {
-            text = "Hello " + message
+            text = "Bonjour " + message
 
         }
     }
