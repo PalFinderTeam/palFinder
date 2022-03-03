@@ -23,7 +23,7 @@ class GreetingActivityTest {
             }
         val scenario = ActivityScenario.launch<GreetingActivity>(intent)
         try{
-            onView(withId(R.id.GreetingMessage)).check(matches(withText("Hello " + message)))
+            onView(withId(R.id.GreetingMessage)).check(matches(withText("Bonjour " + message)))
         }finally{
             scenario.close()
         }
