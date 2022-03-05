@@ -9,4 +9,18 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_meetup_creation">meetup_creation</string>
+
+
+
+    <!-- Strings used for meetup creation -->
+    <string name="meetup_creation_meetup_name">Event Name</string>
+    <string name="meetup_creation_meetup_description">Event Description</string>
+    <string name="meetup_creation_meetup_icon">Icon</string>
+    <string name="meetup_creation_meetup_start_date">Start Date</string>
+    <string name="meetup_creation_meetup_duration">Duration</string>
+    <string name="meetup_creation_meetup_location">Location</string>
+    <string name="meetup_creation_meetup_has_participant_limit">Has Participant Limit?</string>
+    <string name="meetup_creation_meetup_participant_limit">Participant Limit</string>
+    <string name="meetup_creation_meetup_tags">Tags</string>
 </resources>

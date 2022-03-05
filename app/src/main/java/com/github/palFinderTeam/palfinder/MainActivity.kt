@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 
 const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
 
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     fun sendMessage(view: View?) {
         val editText = findViewById<EditText>(R.id.mainName)
         val message = editText.text.toString()
-        val intent = Intent(this, GreetingActivity::class.java).apply {
+        val intent = Intent(this, MeetUpCreation::class.java).apply {
             putExtra(EXTRA_MESSAGE, message)
         }
         startActivity(intent)
