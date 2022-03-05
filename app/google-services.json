@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "341371843047",
+    "project_id": "palfinder-sdp",
+    "storage_bucket": "palfinder-sdp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:341371843047:android:de3082beb634d2b2d68d42",
+        "android_client_info": {
+          "package_name": "com.github.palFinderTeam.palfinder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "341371843047-6i3a92lfmcb6555vsj9sb02tnhmkh4c8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqvI5RdJvJPvyHrFsAqLRYDp6r4v2VP6Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "341371843047-6i3a92lfmcb6555vsj9sb02tnhmkh4c8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
