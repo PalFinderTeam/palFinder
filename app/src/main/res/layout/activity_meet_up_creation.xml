@@ -8,7 +8,7 @@
 
     <ScrollView
         android:layout_width="409dp"
-        android:layout_height="729dp"
+        android:layout_height="600dp"
         android:scrollIndicators="right"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -76,6 +76,25 @@
                 android:background="?android:attr/listDivider" />
 
             <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/meetup_creation_meetup_start_date" />
+
+            <TextView
+                android:id="@+id/StartTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onTimeSelectButton"
+                android:text="Button" />
+
+            <TextView
                 android:id="@+id/textView5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -88,17 +107,6 @@
                 android:layout_height="wrap_content"
                 android:max="10"
                 android:progress="3" />
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/meetup_creation_meetup_start_date" />
-
-            <CalendarView
-                android:id="@+id/calendarView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
             <View
                 android:id="@+id/divider3"

@@ -1,4 +1,4 @@
-package com.github.palFinderTeam.palfinder.meetups
+package com.github.palFinderTeam.palfinder.utils
 
 import kotlin.math.*
 

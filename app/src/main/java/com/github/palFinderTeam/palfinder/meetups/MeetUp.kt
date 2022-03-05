@@ -1,7 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.media.Image
-import java.time.LocalDateTime
+import com.github.palFinderTeam.palfinder.utils.Location
 import java.util.*
 
 data class MeetUp(
