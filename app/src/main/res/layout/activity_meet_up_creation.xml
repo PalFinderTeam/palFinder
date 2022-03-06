@@ -23,13 +23,13 @@
             android:scrollbars="vertical">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/tv_EventName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/meetup_creation_meetup_name" />
 
             <EditText
-                android:id="@+id/editTextTextPersonName2"
+                android:id="@+id/et_EventName"
                 android:layout_width="match_parent"
                 android:layout_height="58dp"
                 android:ems="10"

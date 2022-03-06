@@ -12,6 +12,7 @@ import com.github.palFinderTeam.palfinder.utils.SimpleDate
 import com.github.palFinderTeam.palfinder.utils.SimpleTime
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Future
 
 // Based on Android Official Documentation
 @RequiresApi(Build.VERSION_CODES.N)

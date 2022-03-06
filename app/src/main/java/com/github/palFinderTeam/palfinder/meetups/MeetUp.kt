@@ -1,12 +1,16 @@
 package com.github.palFinderTeam.palfinder.meetups
 
+import android.icu.util.Calendar
 import android.media.Image
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.github.palFinderTeam.palfinder.utils.Location
 import java.util.*
 
+@RequiresApi(Build.VERSION_CODES.N)
 data class MeetUp(
     val creator: TempUser, // TODO -  Change to Real User
-    val icon: Image,
+    val icon: Image?,
     val name: String,
     val description: String,
     val startDate: Calendar,
@@ -22,13 +26,13 @@ data class MeetUp(
     fun isFull(): Boolean{
         return capacity <= participants.size
     }
-    fun canJoin():Boolean{
-        return !isFull()
+    fun canJoin(now: Calendar):Boolean{
+        return !isFull() && !isFinished(now)
     }
-    fun isFinished(): Boolean {
-        return Calendar.getInstance().timeInMillis >= endDate.timeInMillis
+    fun isFinished(now: Calendar): Boolean {
+        return now.timeInMillis >= endDate.timeInMillis
     }
-    fun isStarted():Boolean{
-        return Calendar.getInstance().timeInMillis >= startDate.timeInMillis
+    fun isStarted(now: Calendar):Boolean{
+        return now.timeInMillis >= startDate.timeInMillis
     }
 }
