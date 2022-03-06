@@ -32,17 +32,17 @@ fun Calendar.toSimpleTime():SimpleTime {
 }
 
 @RequiresApi(Build.VERSION_CODES.N)
-fun askTime(supportFragmentManager: FragmentManager): CompletableFuture<Calendar>{
-    val dateFrag = DatePickerFragment()
-    val timeFrag = TimePickerFragment()
-    var date: SimpleDate? = null
+fun askTime(supportFragmentManager: FragmentManager, date: SimpleDate? = null, time: SimpleTime? = null): CompletableFuture<Calendar>{
+    val dateFrag = DatePickerFragment(date)
+    val timeFrag = TimePickerFragment(time)
+    var dateRes: SimpleDate? = null
 
     dateFrag.show(supportFragmentManager, "datePicker")
     dateFrag.value.thenAccept {
         timeFrag.show(supportFragmentManager, "timePicker")
-        date = it
+        dateRes = it
     }
     return timeFrag.value.thenApply{
-        date!!.withTime(it)
+        dateRes!!.withTime(it)
     }
 }

@@ -15,6 +15,7 @@
 
     <!-- Strings used for meetup creation -->
     <string name="meetup_creation_meetup_name">Event Name</string>
+    <string name="meetup_creation_meetup_name_example">Party with the boys!</string>
     <string name="meetup_creation_meetup_description">Event Description</string>
     <string name="meetup_creation_meetup_icon">Icon</string>
     <string name="meetup_creation_meetup_start_date">Start Date</string>
@@ -23,9 +24,13 @@
     <string name="meetup_creation_meetup_location">Location</string>
     <string name="meetup_creation_meetup_has_participant_limit">Has Participant Limit?</string>
     <string name="meetup_creation_meetup_participant_limit">Participant Limit</string>
-    <string name="meetup_creation_meetup_tags">Tags</string>
     <string name="meetup_creation_meetup_start_date_bt">Select Start Date</string>
     <string name="meetup_creation_meetup_end_date_bt">Select End Date</string>
+    <string name="meetup_creation_meetup_tags">Tags</string>
+    <string name="meetup_creation_meetup_no_tags">No Tags Selected</string>
+    <string name="meetup_creation_meetup_tags_bt">Add Tags</string>
+    <string name="meetup_creation_meetup_entries">Limit Entries</string>
+    <string name="meetup_creation_meetup_done">Done</string>
 
     <string name="date_long_format">EEEE, MMMM d, yyyy \'at\' h:mm a</string>
 </resources>

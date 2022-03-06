@@ -18,7 +18,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:scrollbars="vertical">
 
@@ -34,7 +34,7 @@
                 android:layout_height="58dp"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:text="Name" />
+                android:text="@string/meetup_creation_meetup_name_example" />
 
             <TextView
                 android:id="@+id/textView2"
@@ -43,7 +43,7 @@
                 android:text="@string/meetup_creation_meetup_description" />
 
             <EditText
-                android:id="@+id/editTextTextMultiLine"
+                android:id="@+id/et_Description"
                 android:layout_width="match_parent"
                 android:layout_height="159dp"
                 android:ems="10"
@@ -57,7 +57,7 @@
                 android:background="?android:attr/listDivider" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/tv_icon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/meetup_creation_meetup_icon" />
@@ -75,7 +75,7 @@
                     tools:srcCompat="@tools:sample/avatars" />
 
                 <Button
-                    android:id="@+id/button3"
+                    android:id="@+id/bt_SelectIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -90,38 +90,38 @@
                 android:background="?android:attr/listDivider" />
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/tv_StartDateLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/meetup_creation_meetup_start_date" />
 
             <TextView
-                android:id="@+id/StartTime"
+                android:id="@+id/tv_StartDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="@string/date_long_format" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/bt_SelectStartDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="onStartTimeSelectButton"
                 android:text="@string/meetup_creation_meetup_start_date_bt" />
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/tv_EndDateLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/meetup_creation_meetup_end_date" />
 
             <TextView
-                android:id="@+id/EndTime"
+                android:id="@+id/tv_EndDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="@string/date_long_format" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/bt_SelectEndDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="onEndTimeSelectButton"
@@ -134,22 +134,29 @@
                 android:background="?android:attr/listDivider" />
 
             <TextView
-                android:id="@+id/textView7"
+                android:id="@+id/tv_TagsLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="@string/meetup_creation_meetup_tags" />
 
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/tv_Tags"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="@string/meetup_creation_meetup_no_tags" />
 
             <Button
-                android:id="@+id/button4"
+                android:id="@+id/bt_AddTags"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="@string/meetup_creation_meetup_tags_bt" />
+
+            <Button
+                android:id="@+id/bt_Done"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onDone"
+                android:text="@string/meetup_creation_meetup_done" />
 
         </LinearLayout>
     </ScrollView>
