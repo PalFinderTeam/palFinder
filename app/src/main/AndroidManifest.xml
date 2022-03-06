@@ -13,11 +13,6 @@
             android:name=".meetups.activities.MeetUpCreation"
             android:exported="false" />
         <activity
-            android:name=".meetups.meetup_creation"
-            android:exported="false"
-            android:label="@string/title_activity_meetup_creation"
-            android:theme="@style/Theme.PalFinder.NoActionBar" />
-        <activity
             android:name=".GreetingActivity"
             android:exported="false" />
         <activity

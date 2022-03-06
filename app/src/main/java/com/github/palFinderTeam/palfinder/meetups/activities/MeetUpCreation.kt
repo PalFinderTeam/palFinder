@@ -1,37 +1,49 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
+import android.annotation.SuppressLint
+import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.fragment.picker.DatePickerFragment
-import com.github.palFinderTeam.palfinder.fragment.picker.TimePickerFragment
-import com.github.palFinderTeam.palfinder.utils.SimpleDate
+import com.github.palFinderTeam.palfinder.utils.askTime
+import java.util.*
 
+@RequiresApi(Build.VERSION_CODES.N)
+@SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 class MeetUpCreation : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_creation)
 
+        // Filles Date
+        findViewById<TextView>(R.id.StartTime).apply {
+            val format = SimpleDateFormat(getString(R.string.date_long_format))
+            text = format.format(Calendar.getInstance())
+        }
+        findViewById<TextView>(R.id.EndTime).apply {
+            val format = SimpleDateFormat(getString(R.string.date_long_format))
+            text = format.format(Calendar.getInstance())
+        }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun onTimeSelectButton(v: View){
-        val dateFrag = DatePickerFragment()
-        val timeFrag = TimePickerFragment()
-        var date: SimpleDate? = null
-
-        dateFrag.show(supportFragmentManager, "datePicker")
-        dateFrag.value.thenAccept {
-            timeFrag.show(supportFragmentManager, "timePicker")
-            date = it
-        }
-        timeFrag.value.thenAccept{
+    fun onStartTimeSelectButton(v: View){
+        askTime(supportFragmentManager).thenAccept{
             findViewById<TextView>(R.id.StartTime).apply {
-                text = date!!.withTime(it).toString()
+                val format = SimpleDateFormat(getString(R.string.date_long_format))
+                text = format.format(it.time)
+            }
+        }
+    }
+    fun onEndTimeSelectButton(v: View){
+        askTime(supportFragmentManager).thenAccept{
+            findViewById<TextView>(R.id.EndTime).apply {
+                val format = SimpleDateFormat(getString(R.string.date_long_format))
+                text = format.format(it.time)
             }
         }
     }
