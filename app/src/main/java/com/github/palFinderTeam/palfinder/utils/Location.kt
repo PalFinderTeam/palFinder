@@ -2,11 +2,21 @@ package com.github.palFinderTeam.palfinder.utils
 
 import kotlin.math.*
 
+private const val earthRadius = 6371e3
+
 data class Location(val longitude: Double, val latitude: Double){
     fun distanceInKm(other: Location): Double{
-        return 2*asin(sqrt(
-            sin((latitude - other.latitude) / 2).pow(2.0) +
-                cos(latitude)*cos(other.latitude)* sin((longitude - other.longitude) / 2).pow(2)
-        ))
+        val phi1 = latitude * PI/180
+        val phi2 = other.latitude * PI/180
+        val deltaPhi = (other.latitude-latitude) * PI/180
+        val deltaLambda = (other.longitude-longitude) * PI/180
+
+        val a = sin(deltaPhi/2) * sin(deltaPhi/2) +
+                cos(phi1) * cos(phi2) *
+                sin(deltaLambda/2) * sin(deltaLambda/2)
+        val c = 2 * atan2(sqrt(a), sqrt(1-a))
+
+        val d = earthRadius * c
+        return d / 1000
     }
 }
