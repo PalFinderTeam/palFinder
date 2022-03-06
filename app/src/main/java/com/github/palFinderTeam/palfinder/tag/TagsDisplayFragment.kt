@@ -16,10 +16,12 @@ import com.google.android.material.chip.ChipGroup
  * Fragment that display a set of tag as chips. If the set is editable, it also provides visual ways
  * to modify it.
  */
-class TagsDisplayFragment() : Fragment() {
+class TagsDisplayFragment<T>(private val tagClass: Class<T>) : Fragment()
+    where T : Enum<T>,
+          T : Tag {
 
     // Grab the viewModel from the parent activity/fragment.
-    private val viewModel: TagsViewModel by activityViewModels()
+    private val viewModel: TagsViewModel<T> by activityViewModels()
     private lateinit var tagGroup: ChipGroup
     private lateinit var plusButton: Button
 
@@ -45,7 +47,7 @@ class TagsDisplayFragment() : Fragment() {
         return binding.rootView
     }
 
-    private fun displayTags(tags: Set<Tag>) {
+    private fun displayTags(tags: Set<T>) {
         // We recreate the whole list, it is a bit overkill but much simpler
         tagGroup.removeAllViews()
         tags.forEach { tag ->
@@ -68,10 +70,12 @@ class TagsDisplayFragment() : Fragment() {
     private fun showTagSelector() {
         val fm = parentFragmentManager
         val currentTags = viewModel.tagContainer.value
+        val allTags = tagClass.enumConstants
 
-        if (currentTags != null) {
+        if (currentTags != null && allTags != null) {
             // Only show tags that are not already added
-            val tagsOptions = Tag.values().toSet().minus(currentTags)
+            val tagsOptions = allTags.toSet().minus(currentTags)
+
             TagSelectorFragment(tagsOptions.toList()) { tag -> viewModel.addTag(tag)}
                 .show(fm, "Tag selector")
         }

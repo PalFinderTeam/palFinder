@@ -11,10 +11,12 @@ import com.github.palFinderTeam.palfinder.R
 import com.google.android.material.chip.Chip
 import java.util.*
 
-class TagAdapter(private val dataSet: List<Tag>) : RecyclerView.Adapter<TagAdapter.ViewHolder>(), Filterable {
+class TagAdapter<T>(private val dataSet: List<T>) : RecyclerView.Adapter<TagAdapter.ViewHolder>(), Filterable
+    where T : Enum<T>,
+          T : Tag {
     private val currentDataSet = dataSet.toMutableList()
-    private val _selectedTags = mutableSetOf<Tag>()
-    val selectedTags: Set<Tag> = _selectedTags
+    private val _selectedTags = mutableSetOf<T>()
+    val selectedTags: Set<T> = _selectedTags
     /**
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder).
@@ -73,7 +75,7 @@ class TagAdapter(private val dataSet: List<Tag>) : RecyclerView.Adapter<TagAdapt
 
         override fun publishResults(constraint: CharSequence, results: FilterResults) {
             currentDataSet.clear()
-            currentDataSet.addAll(results.values as List<Tag>)
+            currentDataSet.addAll(results.values as List<T>)
             notifyDataSetChanged()
         }
     }

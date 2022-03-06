@@ -9,20 +9,22 @@ import androidx.lifecycle.ViewModel
  *
  * @property tagsRepository the repository containing the original tags (from a user, activity, ...)
  */
-class TagsViewModel(private val tagsRepository: TagsRepository) : ViewModel() {
+class TagsViewModel<T>(private val tagsRepository: TagsRepository<T>) : ViewModel()
+    where T : Enum<T>,
+          T : Tag {
     private val _tagContainer = MutableLiveData(tagsRepository.tags)
     // Encapsulate the liveData and only expose it as immutable LiveData
-    val tagContainer: LiveData<Set<Tag>> = _tagContainer
+    val tagContainer: LiveData<Set<T>> = _tagContainer
     val isEditable = tagsRepository.isEditable
 
-    fun addTag(tag: Tag) {
+    fun addTag(tag: T) {
         val changed = tagsRepository.addTag(tag)
         if (changed) {
             _tagContainer.value = tagsRepository.tags
         }
     }
 
-    fun removeTag(tag: Tag) {
+    fun removeTag(tag: T) {
         val changed = tagsRepository.removeTag(tag)
         if (changed) {
             _tagContainer.value = tagsRepository.tags

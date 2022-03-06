@@ -11,10 +11,20 @@
         android:theme="@style/Theme.PalFinder">
         <activity
             android:name=".tag.example.ImmutableTagsShowcaseActivity"
-            android:exported="false" />
+            android:parentActivityName=".MainActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
         <activity
             android:name=".tag.example.TagShowcaseActivity"
-            android:exported="false" />
+            android:parentActivityName=".MainActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
         <activity
             android:name=".GreetingActivity"
             android:exported="false" />
