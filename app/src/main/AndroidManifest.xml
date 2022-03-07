@@ -21,6 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MeetupListActivity" android:exported="true">
+
+        </activity>
     </application>
 
 </manifest>

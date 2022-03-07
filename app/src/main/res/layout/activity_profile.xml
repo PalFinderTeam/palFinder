@@ -78,7 +78,7 @@
 
     <View
         android:id="@+id/userProfileSeparator"
-        android:layout_width="5dp"
+        android:layout_width="2dp"
         android:layout_height="5dp"
         android:layout_marginStart="12dp"
         android:background="@drawable/circle_shape"
