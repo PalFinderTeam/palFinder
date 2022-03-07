@@ -34,17 +34,27 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     fun seeList(view: View?) {
         var c1 = Calendar.getInstance()
-        c1.set(2009, 8, 23)
+        c1.set(2022, 2, 6)
         var c2 = Calendar.getInstance()
-        c2.set(2009, 8, 25)
+        c2.set(2022, 1, 8)
+        var c3 = Calendar.getInstance()
+        c3.set(2022, 2, 1)
+        var c4 = Calendar.getInstance()
+        c4.set(2022, 0, 1)
 
         val meetups_list = listOf<MeetUpDumb>(
             MeetUpDumb(icon = null, name = "cuire des carottes",
             description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre", startDate = c1,
             endDate = c2, location = null, tags = null, capacity = 45),
             MeetUpDumb(icon = null, name = "cuire des patates",
-                description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre", startDate = c1,
-                endDate = c2, location = null, tags = null, capacity = 45)
+                description = "nous aimerions bien nous atteler à la cuisson de patates au beurre", startDate = c2,
+                endDate = c1, location = null, tags = null, capacity = 48),
+            MeetUpDumb(icon = null, name = "Street workout",
+            description = "workout pepouse au pont chauderon", startDate = c3,
+            endDate = c1, location = null, tags = null, capacity = 4),
+            MeetUpDumb(icon = null, name = "Van Gogh Beaulieu",
+                description = "Expo sans tableau c'est bo", startDate = c4,
+                endDate = c1, location = null, tags = null, capacity = 15),
         )
         val intent = Intent(this, MeetupListActivity::class.java)
             .apply{
