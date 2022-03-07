@@ -41,7 +41,10 @@ class MainActivity : AppCompatActivity() {
         val meetups_list = listOf<MeetUpDumb>(
             MeetUpDumb(icon = null, name = "cuire des carottes",
             description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre", startDate = c1,
-            endDate = c2, location = null, tags = null, capacity = 45)
+            endDate = c2, location = null, tags = null, capacity = 45),
+            MeetUpDumb(icon = null, name = "cuire des patates",
+                description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre", startDate = c1,
+                endDate = c2, location = null, tags = null, capacity = 45)
         )
         val intent = Intent(this, MeetupListActivity::class.java)
             .apply{
