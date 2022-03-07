@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
             client.signOut()
             val logoutIntent = Intent(this, LoginActivity::class.java)
             logoutIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(logoutIntent )
+            startActivity(logoutIntent)
         }
 
         return super.onOptionsItemSelected(item)

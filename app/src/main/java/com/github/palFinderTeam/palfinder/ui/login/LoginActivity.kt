@@ -2,12 +2,12 @@ package com.github.palFinderTeam.palfinder.ui.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+//import android.text.Editable
+//import android.text.TextWatcher
 import android.util.Log
-import android.widget.EditText
-import android.widget.Toast
-import androidx.annotation.StringRes
+//import android.widget.EditText
+//import android.widget.Toast
+//import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.MainActivity
 import com.github.palFinderTeam.palfinder.R
@@ -30,6 +30,8 @@ class LoginActivity : AppCompatActivity() {
     private companion object{
         private const val TAG = "LoginActivity"
         private const val RC_GOOGLE_SIGN_IN = 4926
+        //Google service id 
+        private const val GID = "341371843047-6i3a92lfmcb6555vsj9sb02tnhmkh4c8.apps.googleusercontent.com"
     }
 
     public override fun onStart() {
@@ -54,7 +56,7 @@ class LoginActivity : AppCompatActivity() {
 
         // Configure Google Sign In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("341371843047-6i3a92lfmcb6555vsj9sb02tnhmkh4c8.apps.googleusercontent.com") //somehow cannot access value through google-service values.xml
+            .requestIdToken(GID) //somehow cannot access value through google-service values.xml
             .requestEmail()
             .build()
 
@@ -111,11 +113,12 @@ class LoginActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun showLoginFailed(@StringRes errorString: Int) {
+    /*private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
-    }
+    }*/
 }
 
+/*
 /**
  * Extension function to simplify setting an afterTextChanged action to EditText components.
  */
@@ -129,4 +132,4 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
     })
-}
+}*/
