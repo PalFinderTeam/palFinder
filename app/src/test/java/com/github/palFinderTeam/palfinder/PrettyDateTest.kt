@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder
 
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
-import com.github.palFinderTeam.palfinder.utils.PrettyDate.Companion.JUST_NOW
 import org.junit.Assert
 import org.junit.Test
 import java.util.*
@@ -11,7 +10,7 @@ class PrettyDateTest {
     @Test
     fun PrettyDateJustNowDisplaysCorrect() {
         val d = Date(122, 2, 6, 14, 1, 0)
-        Assert.assertEquals(JUST_NOW, PrettyDate(d).timeSince(d))
+        Assert.assertEquals(PrettyDate.ZERO, PrettyDate(d).timeSince(d))
     }
 
     @Test
