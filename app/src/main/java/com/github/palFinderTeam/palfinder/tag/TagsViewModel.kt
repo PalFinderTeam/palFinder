@@ -16,6 +16,7 @@ class TagsViewModel<T>(private val tagsRepository: TagsRepository<T>) : ViewMode
     // Encapsulate the liveData and only expose it as immutable LiveData
     val tagContainer: LiveData<Set<T>> = _tagContainer
     val isEditable = tagsRepository.isEditable
+    val allTags = tagsRepository.allTags
 
     fun addTag(tag: T) {
         val changed = tagsRepository.addTag(tag)

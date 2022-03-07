@@ -16,7 +16,7 @@ import com.google.android.material.chip.ChipGroup
  * Fragment that display a set of tag as chips. If the set is editable, it also provides visual ways
  * to modify it.
  */
-class TagsDisplayFragment<T>(private val tagClass: Class<T>) : Fragment()
+class TagsDisplayFragment<T>() : Fragment()
     where T : Enum<T>,
           T : Tag {
 
@@ -70,9 +70,9 @@ class TagsDisplayFragment<T>(private val tagClass: Class<T>) : Fragment()
     private fun showTagSelector() {
         val fm = parentFragmentManager
         val currentTags = viewModel.tagContainer.value
-        val allTags = tagClass.enumConstants
+        val allTags = viewModel.allTags
 
-        if (currentTags != null && allTags != null) {
+        if (currentTags != null) {
             // Only show tags that are not already added
             val tagsOptions = allTags.toSet().minus(currentTags)
 
