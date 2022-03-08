@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.SearchView
@@ -60,5 +61,13 @@ class TagSelectorFragment<T>(private val availableTags: List<T>, private val tag
         }
         //get your recycler view and populate it.
         return v
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        // Force the dialog to take whole width
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 }
