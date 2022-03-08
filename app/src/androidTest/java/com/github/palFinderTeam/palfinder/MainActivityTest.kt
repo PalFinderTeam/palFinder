@@ -19,19 +19,4 @@ class MainActivityTest {
     @get:Rule
     val testRule = ActivityScenarioRule(MainActivity::class.java)
 
-    @Test
-    fun testSendMessage(){
-        val message = "username"
-        Intents.init()
-        onView(ViewMatchers.withId(R.id.mainName))
-            .perform(ViewActions.replaceText(message))
-            .perform(ViewActions.closeSoftKeyboard())
-
-        onView(ViewMatchers.withId(R.id.mainGoButton))
-            .perform(ViewActions.click())
-
-        intended(IntentMatchers.hasExtra(EXTRA_MESSAGE, message))
-        Intents.release()
-        }
-
 }
