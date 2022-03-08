@@ -12,7 +12,7 @@
         <entry key="app/src/main/res/layout/dialog_tag_selector.xml" value="0.29257246376811596" />
         <entry key="app/src/main/res/layout/fragment_tag_container_display.xml" value="0.31023550724637683" />
         <entry key="app/src/main/res/layout/fragment_tags_display.xml" value="0.31023550724637683" />
-        <entry key="app/src/main/res/layout/tag_row_item.xml" value="1.0625" />
+        <entry key="app/src/main/res/layout/tag_row_item.xml" value="0.33" />
       </map>
     </option>
   </component>
