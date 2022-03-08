@@ -29,5 +29,29 @@
             android:layout_height="wrap_content"
             android:text="TextView" />
 
+        <TextView
+            android:id="@+id/tv_StartLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/meetup_view_meetup_start_at" />
+
+        <TextView
+            android:id="@+id/tv_ViewStartDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/tv_EndDate_Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/meetup_view_meetup_end_at" />
+
+        <TextView
+            android:id="@+id/tv_ViewEndDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

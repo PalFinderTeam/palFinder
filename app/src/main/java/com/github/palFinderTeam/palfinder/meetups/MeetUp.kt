@@ -5,6 +5,7 @@ import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.isBefore
 
 data class MeetUp(
+    val uuid: String,
     val creator: TempUser, // TODO -  Change to Real User
     val icon: String,
     val name: String,

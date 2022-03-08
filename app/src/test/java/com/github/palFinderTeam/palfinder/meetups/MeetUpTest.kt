@@ -16,6 +16,7 @@ class MeetUpTest {
         Mockito.`when`(date2.timeInMillis).thenReturn(0)
 
         val m = MeetUp(
+            "dummy",
             TempUser("", "Bob"),
             "",
             "dummy",
@@ -42,6 +43,7 @@ class MeetUpTest {
         Mockito.`when`(date2.timeInMillis).thenReturn(1)
 
         val m = MeetUp(
+            "dummy",
             TempUser("", "Bob"),
             "",
             "dummy",
@@ -68,6 +70,7 @@ class MeetUpTest {
         Mockito.`when`(date2.timeInMillis).thenReturn(1)
 
         val m = MeetUp(
+            "dummy",
             TempUser("", "Bob"),
             "",
             "dummy",
