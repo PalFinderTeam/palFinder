@@ -18,13 +18,13 @@
             tools:src="@tools:sample/avatars" />
 
         <TextView
-            android:id="@+id/tv_EventName"
+            android:id="@+id/tv_ViewEventName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView" />
 
         <TextView
-            android:id="@+id/tv_EventDescritpion"
+            android:id="@+id/tv_ViewEventDescritpion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView" />

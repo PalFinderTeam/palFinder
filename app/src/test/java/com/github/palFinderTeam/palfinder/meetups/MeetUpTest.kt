@@ -9,8 +9,11 @@ import org.mockito.Mockito
 class MeetUpTest {
     @Test
     fun isFullTest(){
-        val date1 = 0L
-        val date2 = 1L
+        val date1 = Mockito.mock(Calendar::class.java)
+        Mockito.`when`(date1.timeInMillis).thenReturn(0)
+
+        val date2 = Mockito.mock(Calendar::class.java)
+        Mockito.`when`(date2.timeInMillis).thenReturn(0)
 
         val m = MeetUp(
             TempUser("", "Bob"),
@@ -24,7 +27,7 @@ class MeetUpTest {
             1,
             listOf(TempUser("", "Alice"))
         )
-        assertEquals(m.isFull(), true)
+        assertEquals(true, m.isFull())
     }
 
     @Test
@@ -32,8 +35,11 @@ class MeetUpTest {
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
 
-        val date1 = 0L
-        val date2 = 1L
+        val date1 = Mockito.mock(Calendar::class.java)
+        Mockito.`when`(date1.timeInMillis).thenReturn(0)
+
+        val date2 = Mockito.mock(Calendar::class.java)
+        Mockito.`when`(date2.timeInMillis).thenReturn(1)
 
         val m = MeetUp(
             TempUser("", "Bob"),
@@ -47,7 +53,7 @@ class MeetUpTest {
             1,
             emptyList()
         )
-        assertEquals(m.canJoin(now), true)
+        assertEquals(true, m.canJoin(now))
     }
 
     @Test
@@ -55,8 +61,11 @@ class MeetUpTest {
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
 
-        val date1 = 0L
-        val date2 = 1L
+        val date1 = Mockito.mock(Calendar::class.java)
+        Mockito.`when`(date1.timeInMillis).thenReturn(0)
+
+        val date2 = Mockito.mock(Calendar::class.java)
+        Mockito.`when`(date2.timeInMillis).thenReturn(1)
 
         val m = MeetUp(
             TempUser("", "Bob"),
@@ -65,11 +74,11 @@ class MeetUpTest {
             "dummy",
             date1,
             date2,
-            Location(0.0, 0.0),
+            Location(0.0,0.0),
             emptyList(),
             1,
             emptyList()
         )
-        assertEquals(m.isStarted(now), true)
+        assertEquals( true, m.isStarted(now))
     }
 }

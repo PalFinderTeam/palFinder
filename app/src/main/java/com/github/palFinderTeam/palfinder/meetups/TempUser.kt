@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 data class TempUser(
     val icon: String,
     val name: String
-) {
+): java.io.Serializable {
 }

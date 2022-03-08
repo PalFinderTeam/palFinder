@@ -1,12 +1,11 @@
 package com.github.palFinderTeam.palfinder.utils
 
-import kotlinx.serialization.Serializable
+import java.io.Serializable
 import kotlin.math.*
 
 private const val earthRadius = 6371e3
 
-@Serializable
-data class Location(val longitude: Double, val latitude: Double){
+data class Location(val longitude: Double, val latitude: Double): Serializable{
     fun distanceInKm(other: Location): Double{
         val phi1 = latitude * PI/180
         val phi2 = other.latitude * PI/180
