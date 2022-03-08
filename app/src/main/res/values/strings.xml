@@ -12,7 +12,6 @@
     <string name="title_activity_meetup_creation">meetup_creation</string>
 
 
-
     <!-- Strings used for meetup creation -->
     <string name="meetup_creation_meetup_name">Event Name</string>
     <string name="meetup_creation_meetup_name_example">Party with the boys!</string>

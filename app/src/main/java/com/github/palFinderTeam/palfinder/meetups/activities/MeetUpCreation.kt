@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import android.location.Location
 import android.os.Bundle
 import android.view.View
@@ -12,10 +13,12 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.TempUser
 import com.github.palFinderTeam.palfinder.utils.askTime
+import com.github.palFinderTeam.palfinder.utils.isBefore
 
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 class MeetUpCreation : AppCompatActivity() {
     private val model: MeetUpCreationViewModel by viewModels()
+    private val defaultTimeDelta = 30
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +41,7 @@ class MeetUpCreation : AppCompatActivity() {
                 val format = SimpleDateFormat(getString(R.string.date_long_format))
                 text = format.format(it.time)
                 model.startDate = it
+                checkDateIntegrity()
             }
         }
     }
@@ -47,17 +51,25 @@ class MeetUpCreation : AppCompatActivity() {
                 val format = SimpleDateFormat(getString(R.string.date_long_format))
                 text = format.format(it.time)
                 model.startDate = it
+                checkDateIntegrity()
             }
         }
     }
+    private fun checkDateIntegrity(){
+        if (model.endDate.isBefore(model.startDate)){
+            model.startDate = model.startDate
+            model.startDate.add(Calendar.MINUTE, defaultTimeDelta)
+        }
+    }
+
     fun onDone(v: View){
         val m = MeetUp(
-            TempUser(null, "dummy"),
-            null,
+            TempUser("", "dummy"),
+            "",
             findViewById<TextView>(R.id.et_EventName).text.toString(),
             findViewById<TextView>(R.id.et_Description).text.toString(),
-            model.startDate,
-            model.endDate,
+            model.startDate.timeInMillis,
+            model.endDate.timeInMillis,
             Location("0.0,0.0"),
             emptyList(),
             0,

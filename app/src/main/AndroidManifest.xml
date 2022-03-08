@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PalFinder">
         <activity
+            android:name=".meetups.activities.MeetUpView"
+            android:exported="false" />
+        <activity
             android:name=".meetups.activities.MeetUpCreation"
             android:exported="false" />
         <activity

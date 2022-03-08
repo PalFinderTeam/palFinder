@@ -1,10 +1,11 @@
 package com.github.palFinderTeam.palfinder.meetups
 
-import android.media.Image
+import kotlinx.serialization.Serializable
 
 // TODO change with real class
+@Serializable
 data class TempUser(
-    val icon: Image?,
+    val icon: String,
     val name: String
 ) {
 }

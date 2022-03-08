@@ -1,24 +1,24 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
-import android.location.Location
-import android.media.Image
-import java.util.*
+import com.github.palFinderTeam.palfinder.utils.Location
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class MeetUp(
     val creator: TempUser, // TODO -  Change to Real User
-    val icon: Image?,
+    val icon: String,
     val name: String,
     val description: String,
-    val startDate: Calendar,
-    val endDate: Calendar,
+    val startDate: Long,
+    val endDate: Long,
     val location: Location,
-    val tags: List<Objects>, // TODO - Change to tag
+    val tags: List<String>, // TODO - Change to tag
     val capacity: Int,
     val participants: List<TempUser>, // TODO -  Change to Real User
 ) {
-    fun distanceInKm(currentLocation: Location): Float{
-        return location.distanceTo(currentLocation)
+    fun distanceInKm(currentLocation: Location): Double{
+        return location.distanceInKm(currentLocation)
     }
     fun isFull(): Boolean{
         return capacity <= participants.size
@@ -27,9 +27,9 @@ data class MeetUp(
         return !isFull() && !isFinished(now)
     }
     fun isFinished(now: Calendar): Boolean {
-        return now.timeInMillis >= endDate.timeInMillis
+        return now.timeInMillis > endDate
     }
     fun isStarted(now: Calendar):Boolean{
-        return now.timeInMillis >= startDate.timeInMillis
+        return now.timeInMillis > startDate
     }
 }

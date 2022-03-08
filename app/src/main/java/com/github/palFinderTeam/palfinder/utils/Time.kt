@@ -23,6 +23,10 @@ fun Calendar.toSimpleTime():SimpleTime {
     return SimpleTime(this.get(Calendar.HOUR), this.get(Calendar.MINUTE))
 }
 
+fun Calendar.isBefore(other: Calendar): Boolean{
+    return this.timeInMillis <= other.timeInMillis
+}
+
 fun askTime(supportFragmentManager: FragmentManager, date: SimpleDate? = null, time: SimpleTime? = null): CompletableFuture<Calendar>{
     val dateFrag = DatePickerFragment(date)
     val timeFrag = TimePickerFragment(time)
