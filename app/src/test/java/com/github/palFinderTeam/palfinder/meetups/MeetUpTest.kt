@@ -1,11 +1,10 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
-import com.github.palFinderTeam.palfinder.utils.Location
+import android.location.Location
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito
-import java.util.*
 
 class MeetUpTest {
     @Test
@@ -19,7 +18,7 @@ class MeetUpTest {
             "dummy",
             calendar!!,
             calendar!!,
-            Location(0.0,0.0),
+            Location("0.0,0.0"),
             emptyList(),
             1,
             listOf(TempUser(null, "Alice"))
@@ -42,7 +41,7 @@ class MeetUpTest {
             "dummy",
             eventDate!!,
             eventDate,
-            Location(0.0,0.0),
+            Location("0.0,0.0"),
             emptyList(),
             1,
             emptyList()
@@ -65,7 +64,7 @@ class MeetUpTest {
             "dummy",
             date2!!,
             date2,
-            Location(0.0,0.0),
+            Location("0.0,0.0"),
             emptyList(),
             1,
             emptyList()

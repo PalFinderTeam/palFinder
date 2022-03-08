@@ -2,37 +2,33 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
-import android.icu.util.Calendar
-import android.os.Build
+import android.location.Location
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import androidx.annotation.RequiresApi
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.TempUser
-import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.askTime
 
-@RequiresApi(Build.VERSION_CODES.N)
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 class MeetUpCreation : AppCompatActivity() {
-    private var startDate: Calendar = Calendar.getInstance()
-    private var endDate: Calendar = Calendar.getInstance()
+    private val model: MeetUpCreationViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_creation)
 
-        // Filles Date
+        // Fills Date
         findViewById<TextView>(R.id.tv_StartDate).apply {
             val format = SimpleDateFormat(getString(R.string.date_long_format))
-            text = format.format(Calendar.getInstance())
+            text = format.format(model.startDate)
         }
         findViewById<TextView>(R.id.tv_EndDate).apply {
             val format = SimpleDateFormat(getString(R.string.date_long_format))
-            text = format.format(Calendar.getInstance())
+            text = format.format(model.endDate)
         }
     }
 
@@ -41,7 +37,7 @@ class MeetUpCreation : AppCompatActivity() {
             findViewById<TextView>(R.id.tv_StartDate).apply {
                 val format = SimpleDateFormat(getString(R.string.date_long_format))
                 text = format.format(it.time)
-                startDate = it
+                model.startDate = it
             }
         }
     }
@@ -50,7 +46,7 @@ class MeetUpCreation : AppCompatActivity() {
             findViewById<TextView>(R.id.tv_EndDate).apply {
                 val format = SimpleDateFormat(getString(R.string.date_long_format))
                 text = format.format(it.time)
-                endDate = it
+                model.startDate = it
             }
         }
     }
@@ -60,9 +56,9 @@ class MeetUpCreation : AppCompatActivity() {
             null,
             findViewById<TextView>(R.id.et_EventName).text.toString(),
             findViewById<TextView>(R.id.et_Description).text.toString(),
-            startDate,
-            endDate,
-            Location(0.0,0.0),
+            model.startDate,
+            model.endDate,
+            Location("0.0,0.0"),
             emptyList(),
             0,
             emptyList()

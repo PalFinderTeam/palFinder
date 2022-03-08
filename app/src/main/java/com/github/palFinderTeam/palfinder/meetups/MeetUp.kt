@@ -1,13 +1,10 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.location.Location
 import android.media.Image
-import android.os.Build
-import androidx.annotation.RequiresApi
-import com.github.palFinderTeam.palfinder.utils.Location
 import java.util.*
 
-@RequiresApi(Build.VERSION_CODES.N)
 data class MeetUp(
     val creator: TempUser, // TODO -  Change to Real User
     val icon: Image?,
@@ -20,8 +17,8 @@ data class MeetUp(
     val capacity: Int,
     val participants: List<TempUser>, // TODO -  Change to Real User
 ) {
-    fun distanceInKm(currentLocation: Location): Double{
-        return location.distanceInKm(currentLocation)
+    fun distanceInKm(currentLocation: Location): Float{
+        return location.distanceTo(currentLocation)
     }
     fun isFull(): Boolean{
         return capacity <= participants.size
