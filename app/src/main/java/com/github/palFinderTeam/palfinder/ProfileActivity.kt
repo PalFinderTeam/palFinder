@@ -19,11 +19,8 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        // placeholder user
-        val joinDate = Date(122, 2, 6, 14, 1, 0)
-        val user = ProfileUser("gerussi", "Louca", "Gerussi", joinDate)
-
-        injectUserInfo(user)
+        // Fetch user
+        injectUserInfo(intent.getSerializableExtra(DUMMY_USER) as ProfileUser)
     }
 
     fun injectUserInfo(user: ProfileUser) {

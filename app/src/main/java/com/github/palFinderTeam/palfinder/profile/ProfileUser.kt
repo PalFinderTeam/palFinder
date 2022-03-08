@@ -2,12 +2,19 @@ package com.github.palFinderTeam.palfinder.profile
 
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import java.util.*
+import java.io.Serializable
 
 /**
  * A class to hold the data for a user to be displayed on the profile activity
  * Username as unique identifier
  */
-class ProfileUser(private val username: String, private val name: String, private val surname: String, private val joinDate: Date) {
+
+data class ProfileUser(
+    private val username: String,
+    private val name: String,
+    private val surname: String,
+    private val joinDate: Date
+) : Serializable {
 
     fun getName(): String {
         return name

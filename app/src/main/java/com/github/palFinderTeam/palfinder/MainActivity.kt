@@ -5,15 +5,19 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import java.io.Serializable
+import java.util.*
 
 const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
+const val DUMMY_USER = "com.github.palFinderTeam.palFinder.DUMMY_PROFILE_USER"
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-    }a
+    }
 
     /** Called when the user taps the Send button  */
     fun sendMessage(view: View?) {
@@ -26,7 +30,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun goToProfile(view: View?) {
-        val intent = Intent(this, ProfileActivity::class.java)
+        // Create a fake user for demo
+        val joinDate = Date(122, 2, 6, 14, 1, 0)
+        val intent = Intent(this, ProfileActivity::class.java).apply {
+            putExtra(DUMMY_USER, ProfileUser("gerussi", "Louca", "Gerussi", joinDate) as Serializable)
+        }
         startActivity(intent)
     }
 }
