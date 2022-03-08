@@ -1,7 +1,11 @@
 package com.github.palFinderTeam.palfinder
 
+import com.github.palFinderTeam.palfinder.R
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -57,5 +61,22 @@ class MeetupListActivity : AppCompatActivity() {
         } else {
             return "commence dans " + (hours/24 + 1) + " jours"
         }
+    }
+
+    // create an action bar button
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // R.menu.mymenu is a reference to an xml file named mymenu.xml which should be inside your res/menu directory.
+        // If you don't have res/menu, just create a directory named "menu" inside res
+        menuInflater.inflate(R.menu.sort, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    // handle button activities
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id: Int = item.getItemId()
+        if (id == R.id.mybutton) {
+
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
