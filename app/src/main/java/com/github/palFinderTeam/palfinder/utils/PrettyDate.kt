@@ -10,7 +10,6 @@ const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
  * in a pretty format "30 minutes ago"
  * TODO: If target date is after current date, then change text to "in 30 minutes"
  * TODO: Ask if min API can be changed to 24 so as to use the Calendar android class
- * TODO: Find a smarter way to inject a specific date for testing
  */
 class PrettyDate(private val now: Date = Date()) {
 

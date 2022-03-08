@@ -6,11 +6,9 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.Serializable
@@ -39,7 +37,7 @@ class ProfileActivityTest {
         try{
             onView(ViewMatchers.withId(R.id.userProfileName)).check(
                 ViewAssertions.matches(
-                    ViewMatchers.withText(p.getFullName())
+                    ViewMatchers.withText(p.fullName())
                 )
             )
         }finally{

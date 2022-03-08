@@ -10,37 +10,21 @@ import java.io.Serializable
  */
 
 data class ProfileUser(
-    private val username: String,
-    private val name: String,
-    private val surname: String,
-    private val joinDate: Date
+    val username: String,
+    val name: String,
+    val surname: String,
+    val joinDate: Date
 ) : Serializable {
 
-    fun getName(): String {
-        return name
-    }
-
-    fun getSurname(): String {
-        return surname
-    }
-
-    fun getFullName(): String {
+    fun fullName(): String {
         return "$name $surname"
     }
 
-    fun getUsername(): String {
-        return username
-    }
-
-    fun getAtUsername(): String {
+    fun atUsername(): String {
         return "@$username"
     }
 
-    fun getJoinTime(): Date {
-        return joinDate
-    }
-
-    fun getPrettyJoinTime(): String {
+    fun prettyJoinTime(): String {
         val prettyDate = PrettyDate()
         return "Joined " + prettyDate.timeSince(joinDate) + " ago"
     }
