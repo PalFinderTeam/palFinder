@@ -36,7 +36,6 @@
         android:layout_marginTop="35dp"
         android:adjustViewBounds="true"
         android:background="@color/theme_primary"
-
         android:scaleType="fitCenter"
         android:src="@drawable/demo_pfp"
         app:layout_constraintStart_toStartOf="@id/userProfileTop"

@@ -1,5 +1,4 @@
 package com.github.palFinderTeam.palfinder.profile
-
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import java.util.*
 import java.io.Serializable

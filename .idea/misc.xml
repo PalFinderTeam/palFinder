@@ -3,9 +3,19 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/EPFL/palFinder/app/src/main/res/drawable/circle_shape.xml" value="0.1005" />
+        <entry key="..\:/EPFL/palFinder/app/src/main/res/drawable/sort_button.xml" value="0.194" />
+        <entry key="..\:/EPFL/palFinder/app/src/main/res/layout/activity_list.xml" value="0.1" />
+        <entry key="..\:/EPFL/palFinder/app/src/main/res/layout/activity_main.xml" value="0.18541666666666667" />
+        <entry key="..\:/EPFL/palFinder/app/src/main/res/layout/activity_profile.xml" value="0.1" />
+        <entry key="..\:/EPFL/palFinder/app/src/main/res/layout/meetup_listview.xml" value="0.22" />
+        <entry key="..\:/EPFL/palFinder/app/src/main/res/menu/sort.xml" value="0.1859375" />
         <entry key="..\:/Users/spor6/Desktop/EPFl/BA-6/sdp/palFinder/app/src/main/res/layout/activity_greeting.xml" value="0.3333333333333333" />
         <entry key="..\:/Users/spor6/Desktop/EPFl/BA-6/sdp/palFinder/app/src/main/res/layout/activity_main.xml" value="0.1" />
-
+        <entry key="app/src/main/res/drawable/circle_shape.xml" value="0.1605" />
+        <entry key="app/src/main/res/layout/activity_list.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/activity_profile.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/meetup_listview.xml" value="0.35625" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1905" />
         <entry key="app/src/main/res/drawable/demo_pfp.xml" value="0.2815" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.1905" />
@@ -14,7 +24,6 @@
         <entry key="app/src/main/res/layout/activity_greeting.xml" value="0.1889564336372847" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.22282608695652173" />
         <entry key="app/src/main/res/layout/activity_profile.xml" value="0.3515688681626107" />
-
         <entry key="app/src/main/res/layout-w1240dp/activity_login.xml" value="0.13353413654618473" />
         <entry key="app/src/main/res/layout-w936dp/activity_login.xml" value="0.155859375" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.2078125" />
