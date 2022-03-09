@@ -7,8 +7,10 @@
     tools:context=".meetups.activities.MeetUpCreation">
 
     <ScrollView
+        android:id="@+id/sv_meetupcreation"
         android:layout_width="409dp"
         android:layout_height="600dp"
+        android:clipToPadding="false"
         android:scrollIndicators="right"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

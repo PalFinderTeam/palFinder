@@ -30,7 +30,7 @@ class MeetUpTest {
             emptyList(),
             true,
             2,
-            listOf(TempUser("", "Alice"))
+            mutableListOf(TempUser("", "Alice"))
         )
     }
 
@@ -48,10 +48,39 @@ class MeetUpTest {
     }
 
     @Test
+    fun cannotJoin(){
+        val now = Mockito.mock(Calendar::class.java)
+        Mockito.`when`(now.timeInMillis).thenReturn(5)
+
+        assertEquals(false, meetUp!!.canJoin(now))
+    }
+
+    @Test
     fun iStarted(){
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
 
         assertEquals( true, meetUp!!.isStarted(now))
     }
+
+    @Test
+    fun join(){
+        val now = Mockito.mock(Calendar::class.java)
+        Mockito.`when`(now.timeInMillis).thenReturn(0)
+        val user = TempUser("", "Bob")
+        meetUp!!.join(now, user)
+        assertEquals( true, meetUp!!.isParticipating(user))
+    }
+
+    @Test
+    fun joinAndLeave(){
+        val now = Mockito.mock(Calendar::class.java)
+        Mockito.`when`(now.timeInMillis).thenReturn(0)
+        val user = TempUser("", "Bob")
+        meetUp!!.join(now, user)
+        meetUp!!.leave(now, user)
+        assertEquals( false, meetUp!!.isParticipating(user))
+    }
+
+
 }

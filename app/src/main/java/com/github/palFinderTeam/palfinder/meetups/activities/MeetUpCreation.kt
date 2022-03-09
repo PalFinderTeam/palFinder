@@ -131,7 +131,7 @@ class MeetUpCreation : AppCompatActivity() {
             emptyList(),
             hasMaxCapacity,
             capacity,
-            emptyList()
+            mutableListOf()
         )
 
         val intent = Intent(this, MeetUpView::class.java).apply {

@@ -16,7 +16,7 @@ data class MeetUp(
     val tags: List<String>, // TODO - Change to tag
     val hasMaxCapacity: Boolean,
     val capacity: Int,
-    val participants: List<TempUser>, // TODO -  Change to Real User
+    val participants: MutableList<TempUser>, // TODO -  Change to Real User
 ): java.io.Serializable {
     fun distanceInKm(currentLocation: Location): Double{
         return location.distanceInKm(currentLocation)
@@ -32,5 +32,18 @@ data class MeetUp(
     }
     fun isStarted(now: Calendar):Boolean{
         return startDate.isBefore(now)
+    }
+    fun join(now: Calendar, user: TempUser){
+        if (canJoin(now) && !isParticipating(user)){
+            participants.add(user)
+        }
+    }
+    fun leave(now: Calendar, user: TempUser){
+        if (isParticipating(user)){
+            participants.remove(user)
+        }
+    }
+    fun isParticipating(user: TempUser):Boolean{
+        return participants.contains(user)
     }
 }
