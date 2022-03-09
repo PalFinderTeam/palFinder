@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.TempUser
@@ -35,8 +36,21 @@ class MeetUpCreation : AppCompatActivity() {
             val meetup = intent.getSerializableExtra(MEETUP_EDIT) as MeetUp
             fillFields(meetup)
         } else {
-            updateDateFields()
+            model.startDate.value = Calendar.getInstance()
+            model.endDate.value = Calendar.getInstance()
         }
+
+        val startDateObs = Observer<Calendar> { newDate ->
+            checkDateIntegrity()
+            setTextView(R.id.tv_StartDate, dateFormat.format(newDate))
+        }
+        model.startDate.observe(this, startDateObs)
+
+        val endDateObs = Observer<Calendar> { newDate ->
+            checkDateIntegrity()
+            setTextView(R.id.tv_EndDate, dateFormat.format(newDate))
+        }
+        model.endDate.observe(this, endDateObs)
     }
 
     private fun fillFields(meetUp: MeetUp){
@@ -57,27 +71,18 @@ class MeetUpCreation : AppCompatActivity() {
         findViewById<TextView>(id).apply { this.text = value }
     }
 
-    private fun updateDateFields(){
-        setTextView(R.id.tv_StartDate, dateFormat.format(model.startDate))
-        setTextView(R.id.tv_EndDate, dateFormat.format(model.endDate))
-    }
-
     /**
      * Set Start Date on Model and update UI
      */
     private fun setStartDate(date: Calendar){
-        model.startDate = date
-        checkDateIntegrity()
-        updateDateFields()
+        model.startDate.value = date
     }
 
     /**
      * Set End Date on Model and update UI
      */
     private fun setEndDate(date: Calendar){
-        model.endDate = date
-        checkDateIntegrity()
-        updateDateFields()
+        model.endDate.value = date
     }
 
     fun onStartTimeSelectButton(v: View){
@@ -96,9 +101,11 @@ class MeetUpCreation : AppCompatActivity() {
      */
     private fun checkDateIntegrity(){
         // Check if at least defaultTimeDelta between start and end
-        if (!model.startDate.isDeltaBefore(model.endDate, defaultTimeDelta)){
-            model.endDate = model.startDate
-            model.endDate.add(Calendar.MILLISECOND, defaultTimeDelta)
+        if (!model.startDate.value!!.isDeltaBefore(model.endDate.value!!, defaultTimeDelta)){
+            val newCalendar = Calendar.getInstance()
+            newCalendar.timeInMillis = model.startDate.value!!.timeInMillis
+            newCalendar.add(Calendar.MILLISECOND, defaultTimeDelta)
+            model.endDate.value = newCalendar
         }
     }
 
@@ -125,7 +132,7 @@ class MeetUpCreation : AppCompatActivity() {
 
         val m = MeetUp("dummy", TempUser("", "dummy"),
             "", name, description,
-            model.startDate, model.endDate,
+            model.startDate.value!!, model.endDate.value!!,
             Location(0.0,0.0),
             emptyList(),
             hasMaxCapacity, capacity, mutableListOf())
