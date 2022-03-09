@@ -31,11 +31,9 @@
     <string name="meetup_creation_meetup_entries">Limit Entries</string>
     <string name="meetup_creation_meetup_done">Done</string>
 
-    <string name="meetup_creation_missing_name">Please add an Event Name</string>
-    <string name="meetup_creation_missing_name_title">Missing Event Name</string>
+    <string name="meetup_creation_missing_name_desc">Please add an Event Name and an Event Description</string>
+    <string name="meetup_creation_missing_name_desc_title">Missing Data</string>
 
-    <string name="meetup_creation_missing_description">Please add an Event Description</string>
-    <string name="meetup_creation_missing_description_title">Missing Event Description</string>
 
     <!-- Strings used for meetup view -->
     <string name="meetup_view_meetup_start_at">Start At</string>

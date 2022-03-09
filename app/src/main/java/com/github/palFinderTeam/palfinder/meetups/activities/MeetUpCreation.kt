@@ -58,13 +58,8 @@ class MeetUpCreation : AppCompatActivity() {
     }
 
     private fun updateDateFields(){
-        // Fills Date field with current date
-        findViewById<TextView>(R.id.tv_StartDate).apply {
-            text = dateFormat.format(model.startDate)
-        }
-        findViewById<TextView>(R.id.tv_EndDate).apply {
-            text = dateFormat.format(model.endDate)
-        }
+        setTextView(R.id.tv_StartDate, dateFormat.format(model.startDate))
+        setTextView(R.id.tv_EndDate, dateFormat.format(model.endDate))
     }
 
     /**
@@ -111,14 +106,9 @@ class MeetUpCreation : AppCompatActivity() {
      * Check Name and Description are present
      */
     private fun checkFieldValid(name: String, description: String): Boolean{
-        if (name == ""){
-            showMessage(R.string.meetup_creation_missing_name,
-                R.string.meetup_creation_missing_name_title)
-            return false
-        }
-        if (description == ""){
-            showMessage(R.string.meetup_creation_missing_description,
-                R.string.meetup_creation_missing_description_title)
+        if (name == "" || description == ""){
+            showMessage(R.string.meetup_creation_missing_name_desc,
+                R.string.meetup_creation_missing_name_desc_title)
             return false
         }
         return true
