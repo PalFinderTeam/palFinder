@@ -13,6 +13,8 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUpDumb
 import java.io.Serializable
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import java.util.*
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -21,6 +23,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
+const val DUMMY_USER = "com.github.palFinderTeam.palFinder.DUMMY_PROFILE_USER"
 
 class MainActivity : AppCompatActivity() {
 
@@ -70,7 +73,15 @@ class MainActivity : AppCompatActivity() {
             putExtra(EXTRA_MESSAGE, message)
         }
         startActivity(intent)
+    }
 
+    fun goToProfile(view: View?) {
+        // Create a fake user for demo
+        val joinDate = Date(122, 2, 6, 14, 1, 0)
+        val intent = Intent(this, ProfileActivity::class.java).apply {
+            putExtra(DUMMY_USER, ProfileUser("gerussi", "Louca", "Gerussi", joinDate) as Serializable)
+        }
+        startActivity(intent)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)

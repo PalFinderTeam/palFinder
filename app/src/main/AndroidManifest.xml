@@ -20,12 +20,14 @@
         </activity>
         <activity android:name=".MeetupListActivity" android:exported="true" android:parentActivityName=".MainActivity"/>
         <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".GreetingActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false"/>
-
     </application>
 
 </manifest>

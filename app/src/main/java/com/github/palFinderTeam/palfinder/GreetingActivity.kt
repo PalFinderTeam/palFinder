@@ -13,7 +13,6 @@ class GreetingActivity : AppCompatActivity() {
 
         val textView = findViewById<TextView>(R.id.GreetingMessage).apply {
             text = "Bonjour " + message
-
         }
     }
 }
