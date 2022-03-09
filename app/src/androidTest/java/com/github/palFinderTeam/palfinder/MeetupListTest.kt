@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder
 
 import android.content.Intent
 import android.icu.util.Calendar
+import android.view.View
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
@@ -10,16 +11,21 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.palFinderTeam.palfinder.meetups.MeetUpDumb
+import org.hamcrest.Description
+import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
+import org.hamcrest.TypeSafeMatcher
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.Serializable
 
 @RunWith(AndroidJUnit4::class)
 class MeetUpListTest {
+    private lateinit var meetups_list: List<MeetUpDumb>;//TODO - correct to use right meetup
 
-    @Test
-    fun testAddingMeetup(){
+    @Before
+    fun create_meetups_lists() {
         var c1 = Calendar.getInstance()
         c1.set(2022, 2, 6)
         var c2 = Calendar.getInstance()
@@ -29,7 +35,7 @@ class MeetUpListTest {
         var c4 = Calendar.getInstance()
         c4.set(2022, 0, 1)
 
-        val meetups_list = listOf<MeetUpDumb>(
+        meetups_list = listOf(
             MeetUpDumb(icon = null, name = "cuire des carottes",
                 description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre", startDate = c1,
                 endDate = c2, location = null, tags = null, capacity = 45),
@@ -46,17 +52,36 @@ class MeetUpListTest {
                 description = "popopo", startDate = c4,
                 endDate = c2, location = null, tags = null, capacity = 18),
         )
+    }
+
+    @Test
+    fun testAddingMeetup(){
         val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
             .apply{
                 putExtra("MEETUPS", meetups_list as Serializable)
             }
         val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
         try { //TODO - extend tests to test all fields
-                onView(allOf(withId(R.id.meetup_title), withText("carottes")).).check(matches(withText(meetups_list.get(0).name)))
-
+            onView(withIndex(withId(R.id.meetup_title), 0)).check(matches(withText(meetups_list.get(0).name)))
+            onView(withIndex(withId(R.id.meetup_description), 2)).check(matches(
+                withText(meetups_list.get(2).description)))
         } finally {
             scenario.close()
         }
+    }
+}
 
+fun withIndex(matcher: Matcher<View?>, index: Int): Matcher<View?>? {
+    return object : TypeSafeMatcher<View?>() {
+        var currentIndex = 0
+        override fun describeTo(description: Description) {
+            description.appendText("with index: ")
+            description.appendValue(index)
+            matcher.describeTo(description)
+        }
+
+        override fun matchesSafely(view: View?): Boolean {
+            return matcher.matches(view) && currentIndex++ == index
+        }
     }
 }
