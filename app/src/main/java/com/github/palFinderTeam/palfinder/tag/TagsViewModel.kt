@@ -11,14 +11,14 @@ import androidx.lifecycle.ViewModel
  */
 class TagsViewModel<T: Tag>(private val tagsRepository: TagsRepository<T>) : ViewModel() {
     private val _tagContainer = MutableLiveData(tagsRepository.tags)
+    private val _isEditable = MutableLiveData<Boolean>(tagsRepository.isEditable)
     // Encapsulate the liveData and only expose it as immutable LiveData
     val tagContainer: LiveData<Set<T>> = _tagContainer
-    val isEditable
-        get() = tagsRepository.isEditable
+    val isEditable: LiveData<Boolean> = _isEditable
     val allTags = tagsRepository.allTags
 
     fun addTag(tag: T) {
-        if (!isEditable) {
+        if (!isEditable.value!!) {
             return
         }
         val changed = tagsRepository.addTag(tag)
@@ -28,12 +28,22 @@ class TagsViewModel<T: Tag>(private val tagsRepository: TagsRepository<T>) : Vie
     }
 
     fun removeTag(tag: T) {
-        if (!isEditable) {
+        if (!isEditable.value!!) {
             return
         }
         val changed = tagsRepository.removeTag(tag)
         if (changed) {
             _tagContainer.value = tagsRepository.tags
+        }
+    }
+
+    /**
+     * Set editable status, which is possible only if the repository allows it (is editable itself)
+     * This allows the UI to have an edit button even if it is already editable.
+     */
+    fun setEditable(editable: Boolean) {
+        if (tagsRepository.isEditable) {
+            _isEditable.value = editable
         }
     }
 }

@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.github.palFinderTeam.palfinder.R
@@ -33,8 +36,8 @@ class TagsDisplayFragment<T: Tag>() : Fragment() {
         tagGroup = binding.findViewById(R.id.tag_group)
         plusButton = binding.findViewById(R.id.addTagButton)
 
-        if (!viewModel.isEditable) {
-            plusButton.visibility = View.GONE
+        viewModel.isEditable.observe(viewLifecycleOwner) { isEditable ->
+            setEditableUI(isEditable)
         }
         plusButton.setOnClickListener { showTagSelector() }
 
@@ -43,6 +46,20 @@ class TagsDisplayFragment<T: Tag>() : Fragment() {
         }
 
         return binding.rootView
+    }
+
+    private fun setEditableUI(editable: Boolean) {
+        tagGroup.forEach { chip ->
+            if (chip is Chip) {
+                chip.isCloseIconVisible = editable
+            }
+        }
+
+        if (editable) {
+            plusButton.visibility = VISIBLE
+        } else {
+            plusButton.visibility = GONE
+        }
     }
 
     private fun displayTags(tags: Set<T>) {
@@ -56,7 +73,7 @@ class TagsDisplayFragment<T: Tag>() : Fragment() {
             ).toInt()
             chip.setPadding(paddingDp, paddingDp, paddingDp, paddingDp)
             chip.text = tag.tagName
-            chip.isCloseIconVisible = viewModel.isEditable
+            chip.isCloseIconVisible = viewModel.isEditable.value == true
             chip.setOnCloseIconClickListener {
                 viewModel.removeTag(tag)
             }

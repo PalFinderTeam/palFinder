@@ -48,6 +48,24 @@ class TagsViewModelTest {
         viewModel.removeTag(TestTags.TEST_1)
         assertThat(viewModel.tagContainer.value, hasItem(TestTags.TEST_1))
     }
+
+    @Test
+    fun `set to editable immutable viewModel does nothing`() {
+        fakeRepository._isEditable = false
+        viewModel.setEditable(true)
+        viewModel.addTag(TestTags.TEST_1)
+        assertThat(viewModel.tagContainer.value, not(hasItem(TestTags.TEST_1)))
+    }
+
+    @Test
+    fun `set to editable a mutable viewModel allows us to change tags`() {
+        viewModel.setEditable(false)
+        viewModel.addTag(TestTags.TEST_1)
+        assertThat(viewModel.tagContainer.value, not(hasItem(TestTags.TEST_1)))
+        viewModel.setEditable(true)
+        viewModel.addTag(TestTags.TEST_1)
+        assertThat(viewModel.tagContainer.value, hasItem(TestTags.TEST_1))
+    }
 }
 
 enum class TestTags(override val tagName: String) : Tag {

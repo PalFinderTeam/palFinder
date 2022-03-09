@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Switch
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
@@ -24,6 +25,10 @@ class TagShowcaseActivity : AppCompatActivity() {
         tagsViewModel = ViewModelProvider(this, tagsViewModelFactory).get(TagsViewModel::class.java) as TagsViewModel<Category>
 
         setContentView(R.layout.activity_tag_showcase)
+
+        findViewById<Switch>(R.id.edit_tag_switch).setOnCheckedChangeListener { _, on ->
+            tagsViewModel.setEditable(on)
+        }
 
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {

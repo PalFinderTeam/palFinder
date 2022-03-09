@@ -10,8 +10,7 @@
     <EditText
         android:id="@+id/muttable_fragment_text"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.3"
+        android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Mutable tag list" />
@@ -19,12 +18,19 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/tag_fragment"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1" />
+
+    <Switch
+        android:id="@+id/edit_tag_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Editable" />
 
     <Button
         android:id="@+id/go_to_immutable_tag_showcase"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Try with immutable tags" />
+
 </LinearLayout>
