@@ -30,6 +30,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
+            android:exported="true"/>
         <activity
             android:name=".ui.login.LoginActivity"
             android:exported="true">
@@ -43,12 +44,6 @@
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
-        <activity
-            android:name=".GreetingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="false"/>
     </application>
 
 </manifest>
