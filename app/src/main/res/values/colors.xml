@@ -7,4 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Add app color palette -->
+    <color name="theme_brighter">#FFFAEE</color>
+    <color name="theme_bright">#EFEBE2</color>
+    <color name="theme_dark">#3A3335</color>
+    <color name="theme_darker">#191517</color>
+    <color name="theme_highlight">#406045</color>
+    <color name="theme_primary">#F3AC3E</color>
 </resources>

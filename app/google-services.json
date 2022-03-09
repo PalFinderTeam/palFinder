@@ -7,13 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:341371843047:android:de3082beb634d2b2d68d42",
+        "mobilesdk_app_id": "1:341371843047:android:f3d790a434f2beb2d68d42",
         "android_client_info": {
           "package_name": "com.github.palFinderTeam.palfinder"
         }
       },
       "oauth_client": [
         {
+          "client_id": "341371843047-kueuektvpgiuqqk2jhu8u3d690ufcs01.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.palFinderTeam.palfinder",
+            "certificate_hash": "ce0e0034c25fa119e092dfa09321a4ddd4b78c22"
+          }
+        },
           "client_id": "341371843047-6i3a92lfmcb6555vsj9sb02tnhmkh4c8.apps.googleusercontent.com",
           "client_type": 3
         }
