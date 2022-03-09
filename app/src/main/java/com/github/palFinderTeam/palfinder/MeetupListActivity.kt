@@ -23,7 +23,8 @@ class MeetupListActivity : AppCompatActivity() {
         meetupList = findViewById(R.id.meetup_layout)
         listOfMeetup = intent.getSerializableExtra("MEETUPS") as List<MeetUpDumb>
 
-        for (meetup : MeetUpDumb in listOfMeetup) {
+
+        for (meetup : MeetUpDumb in listOfMeetup.sortedBy { it.capacity}) {
             addMeetup(meetup)
         }
     }

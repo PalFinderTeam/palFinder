@@ -39,9 +39,12 @@ class MeetUpListTest {
             MeetUpDumb(icon = null, name = "Street workout",
                 description = "workout pepouse au pont chauderon", startDate = c3,
                 endDate = c1, location = null, tags = null, capacity = 4),
-            MeetUpDumb(icon = null, name = "Van Gogh Beaulieu",
+            MeetUpDumb(icon = null, name = "Van Gogh Beaulieux",
                 description = "Expo sans tableau c'est bo", startDate = c4,
                 endDate = c1, location = null, tags = null, capacity = 15),
+            MeetUpDumb(icon = null, name = "Palexpo",
+                description = "popopo", startDate = c4,
+                endDate = c2, location = null, tags = null, capacity = 18),
         )
         val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
             .apply{
