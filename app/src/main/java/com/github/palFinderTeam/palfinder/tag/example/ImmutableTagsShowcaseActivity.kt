@@ -15,8 +15,14 @@ class ImmutableTagsShowcaseActivity : AppCompatActivity() {
     private lateinit var tagsViewModel: TagsViewModel<Category>
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Get tags from intent if any
+        tagsViewModelFactory = if (intent.hasExtra(TAG_LIST)) {
+            val tags = intent.getSerializableExtra(TAG_LIST) as Array<Category>
+            TagsViewModelFactory(NonEditableTags(tags.toSet(), Category.values().toSet()))
+        } else {
+            TagsViewModelFactory(NonEditableTags(setOf(Category.DRINKING, Category.CINEMA), Category.values().toSet()))
+        }
         // Create the viewModel here, it will be automatically shared to every child fragments.
-        tagsViewModelFactory = TagsViewModelFactory(NonEditableTags(setOf(Category.DRINKING, Category.CINEMA), Category.values().toSet()))
         tagsViewModel = ViewModelProvider(this, tagsViewModelFactory).get(TagsViewModel::class.java) as TagsViewModel<Category>
 
         setContentView(R.layout.activity_immutable_tags_showcase)
@@ -31,7 +37,9 @@ class ImmutableTagsShowcaseActivity : AppCompatActivity() {
 
         val goButton = findViewById<Button>(R.id.go_to_mutable_tag_showcase)
         goButton.setOnClickListener {
-            val intent = Intent(this, TagShowcaseActivity::class.java)
+            val intent = Intent(this, TagShowcaseActivity::class.java).apply {
+                putExtra(TAG_LIST, tagsViewModel.tagContainer.value!!.toTypedArray())
+            }
             startActivity(intent)
         }
 

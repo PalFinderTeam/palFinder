@@ -1,9 +1,12 @@
 package com.github.palFinderTeam.palfinder.tag
 
+import kotlinx.serialization.Serializable
+
 /**
  * All possible activity tags.
  * Also the tagName should probably be a string resource to facilitate translation.
  */
+@Serializable
 enum class Category(override val tagName: String) : Tag {
     // We should later populate with meaningful tags
     DRINKING("drinking"),

@@ -5,11 +5,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Switch
+import androidx.activity.viewModels
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.tag.*
+
+const val TAG_LIST = "com.github.palFinderTeam.tag_showcase.TAG_LIST"
 
 /**
  * An activity to showcase the feature, it can be used as an example but should not be part of the
@@ -21,7 +24,12 @@ class TagShowcaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Create the viewModel here, it will be automatically shared to every child fragments.
-        tagsViewModelFactory = TagsViewModelFactory(EditableTags(mutableSetOf(Category.DRINKING, Category.CINEMA), Category.values().toSet()))
+        tagsViewModelFactory = if (intent.hasExtra(TAG_LIST)) {
+            val tags = intent.getSerializableExtra(TAG_LIST) as Array<Category>
+            TagsViewModelFactory(EditableTags(tags.toMutableSet(), Category.values().toSet()))
+        } else {
+            TagsViewModelFactory(EditableTags(mutableSetOf(Category.DRINKING, Category.CINEMA), Category.values().toSet()))
+        }
         tagsViewModel = ViewModelProvider(this, tagsViewModelFactory).get(TagsViewModel::class.java) as TagsViewModel<Category>
 
         setContentView(R.layout.activity_tag_showcase)
@@ -39,7 +47,9 @@ class TagShowcaseActivity : AppCompatActivity() {
         }
         val goButton = findViewById<Button>(R.id.go_to_immutable_tag_showcase)
         goButton.setOnClickListener {
-            val intent = Intent(this, ImmutableTagsShowcaseActivity::class.java)
+            val intent = Intent(this, ImmutableTagsShowcaseActivity::class.java).apply {
+                putExtra(TAG_LIST,  tagsViewModel.tagContainer.value!!.toTypedArray())
+            }
             startActivity(intent)
         }
 
