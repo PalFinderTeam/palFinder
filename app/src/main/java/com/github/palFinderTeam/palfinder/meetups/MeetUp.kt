@@ -14,6 +14,7 @@ data class MeetUp(
     val endDate: Calendar,
     val location: Location,
     val tags: List<String>, // TODO - Change to tag
+    val hasMaxCapacity: Boolean,
     val capacity: Int,
     val participants: List<TempUser>, // TODO -  Change to Real User
 ): java.io.Serializable {
@@ -21,7 +22,7 @@ data class MeetUp(
         return location.distanceInKm(currentLocation)
     }
     fun isFull(): Boolean{
-        return capacity <= participants.size
+        return hasMaxCapacity && capacity <= participants.size
     }
     fun canJoin(now: Calendar):Boolean{
         return !isFull() && !isFinished(now)

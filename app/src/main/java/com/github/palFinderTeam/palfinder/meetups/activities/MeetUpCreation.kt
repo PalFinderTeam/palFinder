@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
@@ -34,8 +35,21 @@ class MeetUpCreation : AppCompatActivity() {
         }
     }
 
+    private fun fillFields(meetUp: MeetUp){
+        findViewById<TextView>(R.id.et_EventName).apply { this.text = meetUp.name }
+        findViewById<TextView>(R.id.et_Description).apply { this.text = meetUp.description }
+        if (meetUp.hasMaxCapacity){
+            findViewById<TextView>(R.id.et_Capacity).apply { this.text = meetUp.capacity.toString() }
+        }
+
+        setStartDate(meetUp.startDate)
+        setEndDate(meetUp.endDate)
+        model.capacity = meetUp.capacity
+        model.hasMaxCapacity = meetUp.hasMaxCapacity
+    }
+
     private fun defaultFields(){
-        // Fills Date
+        // Fills Date field with current date
         findViewById<TextView>(R.id.tv_StartDate).apply {
             val format = SimpleDateFormat(getString(R.string.date_long_format))
             text = format.format(model.startDate)
@@ -63,13 +77,6 @@ class MeetUpCreation : AppCompatActivity() {
         }
     }
 
-    private fun fillFields(meetUp: MeetUp){
-        findViewById<TextView>(R.id.et_EventName).apply { this.text = meetUp.name }
-        findViewById<TextView>(R.id.et_Description).apply { this.text = meetUp.description }
-        setStartDate(meetUp.startDate)
-        setEndDate(meetUp.endDate)
-    }
-
     fun onStartTimeSelectButton(v: View){
         askTime(supportFragmentManager).thenAccept{
             setStartDate(it)
@@ -80,6 +87,10 @@ class MeetUpCreation : AppCompatActivity() {
             setEndDate(it)
         }
     }
+
+    /**
+     * Enforce that End Date is After Start Date
+     */
     private fun checkDateIntegrity(){
         if (model.endDate.isBefore(model.startDate)){
             model.startDate = model.startDate
@@ -88,17 +99,38 @@ class MeetUpCreation : AppCompatActivity() {
     }
 
     fun onDone(v: View){
+        // Check Valid Name
+        val name = findViewById<TextView>(R.id.et_EventName).text.toString()
+        if (name == ""){
+            showMessage(R.string.meetup_creation_missing_name,
+                        R.string.meetup_creation_missing_name_title)
+            return
+        }
+
+        // Check Valid Description
+        val description = findViewById<TextView>(R.id.et_Description).text.toString()
+        if (description == ""){
+            showMessage(R.string.meetup_creation_missing_description,
+                R.string.meetup_creation_missing_description_title)
+            return
+        }
+
+        val capacityText = findViewById<TextView>(R.id.et_Capacity).text.toString()
+        val hasMaxCapacity = (capacityText != "")
+        val capacity = if (hasMaxCapacity) { capacityText.toInt()} else { Int.MAX_VALUE }
+
         val m = MeetUp(
             "dummy",
             TempUser("", "dummy"),
             "",
-            findViewById<TextView>(R.id.et_EventName).text.toString(),
-            findViewById<TextView>(R.id.et_Description).text.toString(),
+            name,
+            description,
             model.startDate,
             model.endDate,
             Location(0.0,0.0),
             emptyList(),
-            0,
+            hasMaxCapacity,
+            capacity,
             emptyList()
         )
 
@@ -106,5 +138,14 @@ class MeetUpCreation : AppCompatActivity() {
             putExtra(MEETUP_SHOWN, m)
         }
         startActivity(intent)
+    }
+
+    private fun showMessage(message: Int, title: Int) {
+        val dlgAlert = AlertDialog.Builder(this);
+        dlgAlert.setMessage(message);
+        dlgAlert.setTitle(title);
+        dlgAlert.setPositiveButton(R.string.ok, null);
+        dlgAlert.setCancelable(true);
+        dlgAlert.create().show();
     }
 }

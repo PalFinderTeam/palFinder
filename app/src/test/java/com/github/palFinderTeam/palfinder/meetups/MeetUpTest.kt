@@ -3,19 +3,22 @@ package com.github.palFinderTeam.palfinder.meetups
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.utils.Location
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 
 class MeetUpTest {
-    @Test
-    fun isFullTest(){
+    var meetUp: MeetUp? = null
+
+    @Before
+    fun initMeetup(){
         val date1 = Mockito.mock(Calendar::class.java)
         Mockito.`when`(date1.timeInMillis).thenReturn(0)
 
         val date2 = Mockito.mock(Calendar::class.java)
-        Mockito.`when`(date2.timeInMillis).thenReturn(0)
+        Mockito.`when`(date2.timeInMillis).thenReturn(1)
 
-        val m = MeetUp(
+        meetUp = MeetUp(
             "dummy",
             TempUser("", "Bob"),
             "",
@@ -25,10 +28,15 @@ class MeetUpTest {
             date2,
             Location(0.0,0.0),
             emptyList(),
-            1,
+            true,
+            2,
             listOf(TempUser("", "Alice"))
         )
-        assertEquals(true, m.isFull())
+    }
+
+    @Test
+    fun isFullTest(){
+        assertEquals(false, meetUp!!.isFull())
     }
 
     @Test
@@ -36,26 +44,7 @@ class MeetUpTest {
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
 
-        val date1 = Mockito.mock(Calendar::class.java)
-        Mockito.`when`(date1.timeInMillis).thenReturn(0)
-
-        val date2 = Mockito.mock(Calendar::class.java)
-        Mockito.`when`(date2.timeInMillis).thenReturn(1)
-
-        val m = MeetUp(
-            "dummy",
-            TempUser("", "Bob"),
-            "",
-            "dummy",
-            "dummy",
-            date1,
-            date2,
-            Location(0.0,0.0),
-            emptyList(),
-            1,
-            emptyList()
-        )
-        assertEquals(true, m.canJoin(now))
+        assertEquals(true, meetUp!!.canJoin(now))
     }
 
     @Test
@@ -63,25 +52,6 @@ class MeetUpTest {
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
 
-        val date1 = Mockito.mock(Calendar::class.java)
-        Mockito.`when`(date1.timeInMillis).thenReturn(0)
-
-        val date2 = Mockito.mock(Calendar::class.java)
-        Mockito.`when`(date2.timeInMillis).thenReturn(1)
-
-        val m = MeetUp(
-            "dummy",
-            TempUser("", "Bob"),
-            "",
-            "dummy",
-            "dummy",
-            date1,
-            date2,
-            Location(0.0,0.0),
-            emptyList(),
-            1,
-            emptyList()
-        )
-        assertEquals( true, m.isStarted(now))
+        assertEquals( true, meetUp!!.isStarted(now))
     }
 }
