@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 
 const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
 
@@ -28,11 +27,6 @@ class MainActivity : AppCompatActivity() {
     }
     fun openMeetupCreationPage(view: View?){
         val intent = Intent(this, MeetUpCreation::class.java).apply {
-        }
-        startActivity(intent)
-    }
-    fun openMeetupViewPage(view: View?){
-        val intent = Intent(this, MeetUpView::class.java).apply {
         }
         startActivity(intent)
     }
