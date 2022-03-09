@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/theme_dark">
+
+    <View
+        android:id="@+id/userProfileTop"
+        android:layout_width="0dp"
+        android:layout_height="300dp"
+        android:background="#EFEBE2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/userProfileUpTabCircle"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="-18dp"
+        android:background="@drawable/circle_shape"
+        android:backgroundTint="@color/theme_bright"
+        android:scaleX="1.4"
+        app:layout_constraintEnd_toEndOf="@+id/userProfileTop"
+        app:layout_constraintStart_toStartOf="@+id/userProfileTop"
+        app:layout_constraintTop_toBottomOf="@+id/userProfileTop" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/userProfileImage"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="35dp"
+        android:adjustViewBounds="true"
+        android:background="@color/theme_primary"
+
+        android:scaleType="fitCenter"
+        android:src="@drawable/demo_pfp"
+        app:layout_constraintStart_toStartOf="@id/userProfileTop"
+        app:layout_constraintTop_toTopOf="@id/userProfileTop"
+        app:shapeAppearanceOverlay="@style/profileRoundEdge" />
+
+    <TextView
+        android:id="@+id/userProfileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/fredoka_bold"
+        android:text="@string/placeholder_name"
+        android:textColor="@color/theme_darker"
+        android:textSize="40sp"
+        app:layout_constraintStart_toStartOf="@+id/userProfileImage"
+        app:layout_constraintTop_toBottomOf="@+id/userProfileImage" />
+
+    <TextView
+        android:id="@+id/userProfileJoinDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:fontFamily="@font/fredoka_normal"
+        android:text="@string/placeholder_date"
+        android:textColor="@color/theme_darker"
+        app:layout_constraintBottom_toBottomOf="@+id/userProfileSeparator"
+        app:layout_constraintStart_toEndOf="@+id/userProfileSeparator"
+        app:layout_constraintTop_toTopOf="@+id/userProfileSeparator" />
+
+    <TextView
+        android:id="@+id/userProfileUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/fredoka_normal"
+        android:text="@string/placeholder_username"
+        android:textColor="@color/theme_highlight"
+        android:textSize="22sp"
+        app:layout_constraintStart_toStartOf="@+id/userProfileName"
+        app:layout_constraintTop_toBottomOf="@+id/userProfileName" />
+
+    <View
+        android:id="@+id/userProfileSeparator"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/circle_shape"
+        app:layout_constraintBottom_toBottomOf="@+id/userProfileUsername"
+        app:layout_constraintStart_toEndOf="@+id/userProfileUsername"
+        app:layout_constraintTop_toTopOf="@+id/userProfileUsername" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
