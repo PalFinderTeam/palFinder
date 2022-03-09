@@ -12,7 +12,8 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Pal Finder"
+
+rootProject.name = "palFinder"
 include ':app'
 
 ext.isCiServer = System.getenv().containsKey("CIRRUS_CI")
