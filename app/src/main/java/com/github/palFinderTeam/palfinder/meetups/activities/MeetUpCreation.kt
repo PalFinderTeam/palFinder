@@ -35,15 +35,16 @@ class MeetUpCreation : AppCompatActivity() {
             val meetup = intent.getSerializableExtra(MEETUP_EDIT) as MeetUp
             fillFields(meetup)
         } else {
-            defaultFields()
+            updateDateFields()
         }
     }
 
     private fun fillFields(meetUp: MeetUp){
-        findViewById<TextView>(R.id.et_EventName).apply { this.text = meetUp.name }
-        findViewById<TextView>(R.id.et_Description).apply { this.text = meetUp.description }
+        setTextView(R.id.et_EventName, meetUp.name)
+        setTextView(R.id.et_Description, meetUp.description)
+
         if (meetUp.hasMaxCapacity){
-            findViewById<TextView>(R.id.et_Capacity).apply { this.text = meetUp.capacity.toString() }
+            setTextView(R.id.et_Capacity, meetUp.capacity.toString())
         }
 
         setStartDate(meetUp.startDate)
@@ -52,7 +53,11 @@ class MeetUpCreation : AppCompatActivity() {
         model.hasMaxCapacity = meetUp.hasMaxCapacity
     }
 
-    private fun defaultFields(){
+    private fun setTextView(id: Int, value: String){
+        findViewById<TextView>(id).apply { this.text = value }
+    }
+
+    private fun updateDateFields(){
         // Fills Date field with current date
         findViewById<TextView>(R.id.tv_StartDate).apply {
             text = dateFormat.format(model.startDate)
@@ -62,19 +67,22 @@ class MeetUpCreation : AppCompatActivity() {
         }
     }
 
+    /**
+     * Set Start Date on Model and update UI
+     */
     private fun setStartDate(date: Calendar){
-        findViewById<TextView>(R.id.tv_StartDate).apply {
-            text = dateFormat.format(date.time)
-            model.startDate = date
-            checkDateIntegrity()
-        }
+        model.startDate = date
+        checkDateIntegrity()
+        updateDateFields()
     }
+
+    /**
+     * Set End Date on Model and update UI
+     */
     private fun setEndDate(date: Calendar){
-        findViewById<TextView>(R.id.tv_EndDate).apply {
-            text = dateFormat.format(date.time)
-            model.endDate = date
-            checkDateIntegrity()
-        }
+        model.endDate = date
+        checkDateIntegrity()
+        updateDateFields()
     }
 
     fun onStartTimeSelectButton(v: View){
@@ -96,14 +104,12 @@ class MeetUpCreation : AppCompatActivity() {
         if (!model.startDate.isDeltaBefore(model.endDate, defaultTimeDelta)){
             model.endDate = model.startDate
             model.endDate.add(Calendar.MILLISECOND, defaultTimeDelta)
-
-            // Update UI
-            findViewById<TextView>(R.id.tv_EndDate).apply {
-                text = dateFormat.format(model.endDate)
-            }
         }
     }
 
+    /**
+     * Check Name and Description are present
+     */
     private fun checkFieldValid(name: String, description: String): Boolean{
         if (name == ""){
             showMessage(R.string.meetup_creation_missing_name,

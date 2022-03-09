@@ -35,7 +35,7 @@ class MeetupViewTest {
         date1 = Calendar.getInstance()
         date1!!.set(2022, 2,1,0,0,0)
         date2 = Calendar.getInstance()
-        date2!!.set(2022, 2,1,0,50,0)
+        date2!!.set(2022, 2,1,1,0,0)
 
         expectDate1 = format.format(date1)!!
         expectDate2 = format.format(date2)!!

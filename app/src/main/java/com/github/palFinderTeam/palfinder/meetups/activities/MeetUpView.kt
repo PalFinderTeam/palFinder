@@ -23,31 +23,27 @@ class MeetUpView : AppCompatActivity() {
         setContentView(R.layout.activity_meet_up_view)
 
         val meetup = intent.getSerializableExtra(MEETUP_SHOWN) as MeetUp
-        fillFields(meetup)
         model.meetUp = meetup
+
+        fillFields(meetup)
+    }
+
+    private fun setTextView(id: Int, value: String){
+        findViewById<TextView>(id).apply { this.text = value }
     }
 
     private fun fillFields(meetup: MeetUp){
-        // Set Name Field
-        findViewById<TextView>(R.id.tv_ViewEventName).apply { text = meetup.name }
-
-        // Set Description Field
-        findViewById<TextView>(R.id.tv_ViewEventDescritpion).apply { text = meetup.description }
-
-        // Set Creator Field
-        findViewById<TextView>(R.id.tv_ViewEventCreator).apply {
-            text = getString(R.string.meetup_view_creator, meetup.creator.name)
-        }
-
         val format = SimpleDateFormat(getString(R.string.date_long_format))
         val startDate = format.format(meetup.startDate.time)
         val endDate = format.format(meetup.endDate.time)
 
-        // Set Start Date Field
-        findViewById<TextView>(R.id.tv_ViewStartDate).apply { text = startDate }
+        setTextView(R.id.tv_ViewEventName,meetup.name)
+        setTextView(R.id.tv_ViewEventDescritpion,meetup.description)
+        setTextView(R.id.tv_ViewEventCreator,
+            getString(R.string.meetup_view_creator, meetup.creator.name))
 
-        // Set End Date Field
-        findViewById<TextView>(R.id.tv_ViewEndDate).apply { text = endDate }
+        setTextView(R.id.tv_ViewStartDate, startDate)
+        setTextView(R.id.tv_ViewEndDate,endDate)
     }
 
     fun onEdit(v: View){
