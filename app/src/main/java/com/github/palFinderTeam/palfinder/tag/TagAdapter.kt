@@ -11,9 +11,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.google.android.material.chip.Chip
 import java.util.*
 
-class TagAdapter<T>(private val dataSet: List<T>) : RecyclerView.Adapter<TagAdapter.ViewHolder>(), Filterable
-    where T : Enum<T>,
-          T : Tag {
+class TagAdapter<T: Tag>(private val dataSet: List<T>) : RecyclerView.Adapter<TagAdapter.ViewHolder>(), Filterable {
     private val currentDataSet = dataSet.toMutableList()
     private val _selectedTags = mutableSetOf<T>()
     val selectedTags: Set<T> = _selectedTags

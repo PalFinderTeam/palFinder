@@ -7,9 +7,7 @@ package com.github.palFinderTeam.palfinder.tag
  * @property isEditable true if the tag list should be editable.
  * @property allTags set of all possible tags in this context.
  */
-interface TagsRepository<T>
-    where T : Enum<T>,
-          T : Tag {
+interface TagsRepository<T: Tag> {
     val tags: Set<T>
     val isEditable: Boolean
     val allTags: Set<T>
@@ -32,9 +30,7 @@ interface TagsRepository<T>
 /**
  * Simple implementation if the tags should be readonly.
  */
-class NonEditableTags<T>(override val tags: Set<T>, override val allTags: Set<T>) : TagsRepository<T>
-    where T : Enum<T>,
-          T : Tag {
+class NonEditableTags<T: Tag>(override val tags: Set<T>, override val allTags: Set<T>) : TagsRepository<T> {
     override val isEditable = false
 
     override fun removeTag(tag: T): Boolean {
@@ -51,9 +47,7 @@ class NonEditableTags<T>(override val tags: Set<T>, override val allTags: Set<T>
 /**
  * Simple implementation if the tags should be editable.
  */
-class EditableTags<T>(private val _tags: MutableSet<T>, override val allTags: Set<T>) : TagsRepository<T>
-    where T : Enum<T>,
-          T : Tag {
+class EditableTags<T: Tag>(private val _tags: MutableSet<T>, override val allTags: Set<T>) : TagsRepository<T> {
     override val isEditable = true
     override val tags: Set<T> = _tags
 

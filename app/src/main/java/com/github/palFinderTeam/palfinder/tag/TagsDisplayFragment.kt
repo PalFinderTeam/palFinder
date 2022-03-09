@@ -16,9 +16,7 @@ import com.google.android.material.chip.ChipGroup
  * Fragment that display a set of tag as chips. If the set is editable, it also provides visual ways
  * to modify it.
  */
-class TagsDisplayFragment<T>() : Fragment()
-    where T : Enum<T>,
-          T : Tag {
+class TagsDisplayFragment<T: Tag>() : Fragment() {
 
     // Grab the viewModel from the parent activity/fragment.
     private val viewModel: TagsViewModel<T> by activityViewModels()

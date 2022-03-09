@@ -21,9 +21,7 @@ import com.github.palFinderTeam.palfinder.R
  * @property availableTags options that are displayed.
  * @property tagClickListener lambda to call when an option is chosen.
  */
-class TagSelectorFragment<T>(private val availableTags: List<T>, private val tagClickListener: (T) -> Unit) : DialogFragment()
-    where T : Enum<T>,
-          T : Tag {
+class TagSelectorFragment<T: Tag>(private val availableTags: List<T>, private val tagClickListener: (T) -> Unit) : DialogFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
