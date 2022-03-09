@@ -16,13 +16,18 @@ class TagsViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var viewModel: TagsViewModel<TestTags>
+    private lateinit var immutableViewModel: TagsViewModel<TestTags>
     private lateinit var fakeRepository: TestRepository
+    private lateinit var immutableFakeRepository: TestRepository
 
 
     @Before
     fun setup() {
         fakeRepository = TestRepository()
+        immutableFakeRepository = TestRepository()
+        immutableFakeRepository._isEditable = false
         viewModel = TagsViewModel(fakeRepository)
+        immutableViewModel = TagsViewModel(immutableFakeRepository)
     }
 
     @Test
@@ -36,25 +41,21 @@ class TagsViewModelTest {
 
     @Test
     fun `cannot add tag when immutable`() {
-        fakeRepository._isEditable = false
-        viewModel.addTag(TestTags.TEST_1)
-        assertThat(viewModel.tagContainer.value, not(hasItem(TestTags.TEST_1)))
+        immutableViewModel.addTag(TestTags.TEST_1)
+        assertThat(immutableViewModel.tagContainer.value, not(hasItem(TestTags.TEST_1)))
     }
 
     @Test
     fun `cannot remove tag when immutable`() {
-        viewModel.addTag(TestTags.TEST_1)
-        fakeRepository._isEditable = false
-        viewModel.removeTag(TestTags.TEST_1)
-        assertThat(viewModel.tagContainer.value, hasItem(TestTags.TEST_1))
+        immutableViewModel.removeTag(TestTags.TEST_3)
+        assertThat(immutableViewModel.tagContainer.value, hasItem(TestTags.TEST_3))
     }
 
     @Test
     fun `set to editable immutable viewModel does nothing`() {
-        fakeRepository._isEditable = false
-        viewModel.setEditable(true)
-        viewModel.addTag(TestTags.TEST_1)
-        assertThat(viewModel.tagContainer.value, not(hasItem(TestTags.TEST_1)))
+        immutableViewModel.setEditable(true)
+        immutableViewModel.addTag(TestTags.TEST_1)
+        assertThat(immutableViewModel.tagContainer.value, not(hasItem(TestTags.TEST_1)))
     }
 
     @Test
@@ -78,7 +79,7 @@ enum class TestTags(override val tagName: String) : Tag {
 }
 
 class TestRepository : TagsRepository<TestTags> {
-    private var _tags = mutableSetOf<TestTags>()
+    private var _tags = mutableSetOf<TestTags>(TestTags.TEST_3)
 
     var _isEditable = true
 
