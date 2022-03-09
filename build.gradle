@@ -6,16 +6,17 @@ buildscript {
         google()  // Google's Maven repository
     }
     dependencies {
-        // Add this line
         classpath 'com.google.gms:google-services:4.3.10'
     }
 }
+
 
 plugins {
     id 'com.android.application' version '7.1.2' apply false
     id 'com.android.library' version '7.1.2' apply false
     id 'org.jetbrains.kotlin.android' version '1.6.10' apply false
 }
+
 
 
 task clean(type: Delete) {
