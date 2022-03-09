@@ -7,6 +7,12 @@ private const val earthRadius = 6371e3
 private const val degToRad = PI/180
 private const val mToKm = 1/1000f
 
+/**
+ * Class to represent a position on a map.
+ * Alternative to android.Location which is not Serializable
+ * @param longitude
+ * @param latitude
+ */
 data class Location(val longitude: Double, val latitude: Double): Serializable{
     fun distanceInKm(other: Location): Double{
         val phi1 = latitude * degToRad

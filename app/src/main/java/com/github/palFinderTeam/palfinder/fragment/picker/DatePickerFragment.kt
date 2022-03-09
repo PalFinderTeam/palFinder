@@ -5,15 +5,16 @@ import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
 import android.widget.DatePicker
-import android.widget.SimpleAdapter
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import com.github.palFinderTeam.palfinder.utils.SimpleDate
-import com.github.palFinderTeam.palfinder.utils.SimpleTime
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
 
+/**
+ * Ask user a date (year, month and day) and return the value in the future "value"
+ * @param date: Date to display by default
+ */
 // Based on Android Official Documentation
 @RequiresApi(Build.VERSION_CODES.N)
 class DatePickerFragment(private val date: SimpleDate? = null) : DialogFragment(), DatePickerDialog.OnDateSetListener {

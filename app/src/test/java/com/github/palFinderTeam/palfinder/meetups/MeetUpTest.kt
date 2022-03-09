@@ -78,7 +78,7 @@ class MeetUpTest {
         Mockito.`when`(now.timeInMillis).thenReturn(0)
         val user = TempUser("", "Bob")
         meetUp!!.join(now, user)
-        meetUp!!.leave(now, user)
+        meetUp!!.leave(user)
         assertEquals( false, meetUp!!.isParticipating(user))
     }
 
