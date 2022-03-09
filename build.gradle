@@ -6,10 +6,10 @@ buildscript {
         google()  // Google's Maven repository
     }
     dependencies {
-        // Add this line
         classpath 'com.google.gms:google-services:4.3.10'
     }
 }
+
 
 plugins {
     id 'com.android.application' version '7.1.2' apply false
@@ -18,6 +18,21 @@ plugins {
 }
 
 
+
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+// Force jacoco to be at version 0.8.7
+// https://github.com/jacoco/jacoco/issues/1155
+subprojects {
+    configurations.all {
+        resolutionStrategy {
+            eachDependency { details ->
+                if ('org.jacoco' == details.requested.group) {
+                    details.useVersion "0.8.7"
+                }
+            }
+        }
+    }
 }
