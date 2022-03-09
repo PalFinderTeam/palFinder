@@ -14,9 +14,13 @@
         <entry key="..\:/Users/spor6/Desktop/EPFl/BA-6/sdp/palFinder/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/circle_shape.xml" value="0.1605" />
         <entry key="app/src/main/res/layout/activity_list.xml" value="0.35625" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.10869565217391304" />
         <entry key="app/src/main/res/layout/activity_profile.xml" value="0.33" />
         <entry key="app/src/main/res/layout/meetup_listview.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout-w1240dp/activity_login.xml" value="0.13353413654618473" />
+        <entry key="app/src/main/res/layout-w936dp/activity_login.xml" value="0.155859375" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.2078125" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/menu/menu_main.xml" value="0.1" />
       </map>
     </option>
   </component>
