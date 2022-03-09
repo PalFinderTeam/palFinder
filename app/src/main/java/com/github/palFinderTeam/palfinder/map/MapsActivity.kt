@@ -1,0 +1,126 @@
+package com.github.palFinderTeam.palfinder.map
+
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import androidx.core.app.ActivityCompat
+import com.github.palFinderTeam.palfinder.R
+
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+
+    private lateinit var map: GoogleMap
+    private lateinit var binding: ActivityMapsBinding
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var lastLocation: Location
+
+
+    companion object {
+        private const val USER_LOCATION_PERMISSION_REQUEST_CODE = 1
+    }
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        binding = ActivityMapsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        val mapFragment = supportFragmentManager
+            .findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+    }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+
+        map.uiSettings.isZoomControlsEnabled = true
+        map.setOnMarkerClickListener(this)
+
+        setUserLocation()
+    }
+
+
+    private fun setUserLocation(){
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ){
+            ActivityCompat.requestPermissions(this,
+                arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
+                USER_LOCATION_PERMISSION_REQUEST_CODE
+            )
+            return
+        }
+
+        map.isMyLocationEnabled = true
+        fusedLocationClient.lastLocation.addOnSuccessListener(this){
+            location -> if(location != null){
+                lastLocation = location
+                val currentLatLng = LatLng(location.latitude, location.longitude)
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
+            }
+        }
+    }
+
+    /**
+     * When a meetUp marker is clicked, open the marker description
+     */
+    override fun onMarkerClick(marker: Marker): Boolean {
+        /**var meetUp:MeetUp = marker.tag
+        val intent = Intent(this, MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, meetUp)
+        }
+        startActivity(intent)
+         return true
+         **/
+
+        return false
+    }
+
+
+    /**
+     /**
+      * add a marker corresponding to a meetUp
+      **/
+    fun addMarker(meetUp: MeetUp){
+        val location = LatLng(meetUp.location.longitude, meetUp.location.latitude)
+        val marker:Marker = map.addMarker(MarkerOptions().position(location).title(meetUp.name))
+        marker.tag = meetUp
+    }
+
+    **/
+
+
+}

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import com.github.palFinderTeam.palfinder.map.MapsActivity
 
 const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
 
@@ -24,5 +25,10 @@ class MainActivity : AppCompatActivity() {
         }
         startActivity(intent)
 
+    }
+
+    fun accessMap(view: View?) {
+        val intent = Intent(this, MapsActivity::class.java).apply {  }
+        startActivity(intent)
     }
 }
