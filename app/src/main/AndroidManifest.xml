@@ -11,10 +11,12 @@
         android:theme="@style/Theme.PalFinder">
         <activity
             android:name=".meetups.activities.MeetUpView"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".meetups.activities.MeetUpCreation"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".GreetingActivity"
             android:exported="false" />

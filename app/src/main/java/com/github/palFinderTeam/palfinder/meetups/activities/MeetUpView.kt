@@ -41,7 +41,7 @@ class MeetUpView : AppCompatActivity() {
 
         val format = SimpleDateFormat(getString(R.string.date_long_format))
         val startDate = format.format(meetup.startDate.time)
-        val endDate = format.format(meetup.startDate.time)
+        val endDate = format.format(meetup.endDate.time)
 
         // Set Start Date Field
         findViewById<TextView>(R.id.tv_ViewStartDate).apply { text = startDate }

@@ -15,18 +15,22 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.TempUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.askTime
-import com.github.palFinderTeam.palfinder.utils.isBefore
+import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
 
 const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
+const val defaultTimeDelta = 1000 * 60 * 60
 
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 class MeetUpCreation : AppCompatActivity() {
     private val model: MeetUpCreationViewModel by viewModels()
-    private val defaultTimeDelta = 30
+    private var dateFormat = SimpleDateFormat()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_creation)
+
+        dateFormat = SimpleDateFormat(getString(R.string.date_long_format))
+
         if (intent.hasExtra(MEETUP_EDIT)) {
             val meetup = intent.getSerializableExtra(MEETUP_EDIT) as MeetUp
             fillFields(meetup)
@@ -51,27 +55,23 @@ class MeetUpCreation : AppCompatActivity() {
     private fun defaultFields(){
         // Fills Date field with current date
         findViewById<TextView>(R.id.tv_StartDate).apply {
-            val format = SimpleDateFormat(getString(R.string.date_long_format))
-            text = format.format(model.startDate)
+            text = dateFormat.format(model.startDate)
         }
         findViewById<TextView>(R.id.tv_EndDate).apply {
-            val format = SimpleDateFormat(getString(R.string.date_long_format))
-            text = format.format(model.endDate)
+            text = dateFormat.format(model.endDate)
         }
     }
 
     private fun setStartDate(date: Calendar){
         findViewById<TextView>(R.id.tv_StartDate).apply {
-            val format = SimpleDateFormat(getString(R.string.date_long_format))
-            text = format.format(date.time)
+            text = dateFormat.format(date.time)
             model.startDate = date
             checkDateIntegrity()
         }
     }
     private fun setEndDate(date: Calendar){
         findViewById<TextView>(R.id.tv_EndDate).apply {
-            val format = SimpleDateFormat(getString(R.string.date_long_format))
-            text = format.format(date.time)
+            text = dateFormat.format(date.time)
             model.endDate = date
             checkDateIntegrity()
         }
@@ -92,47 +92,47 @@ class MeetUpCreation : AppCompatActivity() {
      * Enforce that End Date is After Start Date
      */
     private fun checkDateIntegrity(){
-        if (model.endDate.isBefore(model.startDate)){
-            model.startDate = model.startDate
-            model.startDate.add(Calendar.MINUTE, defaultTimeDelta)
+        // Check if at least defaultTimeDelta between start and end
+        if (!model.startDate.isDeltaBefore(model.endDate, defaultTimeDelta)){
+            model.endDate = model.startDate
+            model.endDate.add(Calendar.MILLISECOND, defaultTimeDelta)
+
+            // Update UI
+            findViewById<TextView>(R.id.tv_EndDate).apply {
+                text = dateFormat.format(model.endDate)
+            }
         }
     }
 
-    fun onDone(v: View){
-        // Check Valid Name
-        val name = findViewById<TextView>(R.id.et_EventName).text.toString()
+    private fun checkFieldValid(name: String, description: String): Boolean{
         if (name == ""){
             showMessage(R.string.meetup_creation_missing_name,
-                        R.string.meetup_creation_missing_name_title)
-            return
+                R.string.meetup_creation_missing_name_title)
+            return false
         }
-
-        // Check Valid Description
-        val description = findViewById<TextView>(R.id.et_Description).text.toString()
         if (description == ""){
             showMessage(R.string.meetup_creation_missing_description,
                 R.string.meetup_creation_missing_description_title)
-            return
+            return false
         }
+        return true
+    }
+
+    fun onDone(v: View){
+        val name = findViewById<TextView>(R.id.et_EventName).text.toString()
+        val description = findViewById<TextView>(R.id.et_Description).text.toString()
+        if (!checkFieldValid(name, description)) return
 
         val capacityText = findViewById<TextView>(R.id.et_Capacity).text.toString()
         val hasMaxCapacity = (capacityText != "")
         val capacity = if (hasMaxCapacity) { capacityText.toInt()} else { Int.MAX_VALUE }
 
-        val m = MeetUp(
-            "dummy",
-            TempUser("", "dummy"),
-            "",
-            name,
-            description,
-            model.startDate,
-            model.endDate,
+        val m = MeetUp("dummy", TempUser("", "dummy"),
+            "", name, description,
+            model.startDate, model.endDate,
             Location(0.0,0.0),
             emptyList(),
-            hasMaxCapacity,
-            capacity,
-            mutableListOf()
-        )
+            hasMaxCapacity, capacity, mutableListOf())
 
         val intent = Intent(this, MeetUpView::class.java).apply {
             putExtra(MEETUP_SHOWN, m)

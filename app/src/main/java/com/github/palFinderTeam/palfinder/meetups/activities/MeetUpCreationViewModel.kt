@@ -9,4 +9,8 @@ class MeetUpCreationViewModel: ViewModel() {
     var startDate: Calendar = Calendar.getInstance()
     var capacity: Int = Int.MAX_VALUE
     var hasMaxCapacity: Boolean = false
+
+    init {
+        endDate.add(Calendar.MILLISECOND, defaultTimeDelta)
+    }
 }
