@@ -36,52 +36,35 @@ class MeetUpListTest {
         c4.set(2022, 0, 1)
 
         meetups_list = listOf(
-            MeetUpDumb(icon = null, name = "cuire des carottes",
-                description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre", startDate = c1,
-                endDate = c2, location = null, tags = null, capacity = 45),
-            MeetUpDumb(icon = null, name = "cuire des patates",
-                description = "nous aimerions bien nous atteler à la cuisson de patates au beurre", startDate = c2,
-                endDate = c1, location = null, tags = null, capacity = 48),
-            MeetUpDumb(icon = null, name = "Street workout",
-                description = "workout pepouse au pont chauderon", startDate = c3,
-                endDate = c1, location = null, tags = null, capacity = 4),
-            MeetUpDumb(icon = null, name = "Van Gogh Beaulieux",
-                description = "Expo sans tableau c'est bo", startDate = c4,
-                endDate = c1, location = null, tags = null, capacity = 15),
-            MeetUpDumb(icon = null, name = "Palexpo",
-                description = "popopo", startDate = c4,
-                endDate = c2, location = null, tags = null, capacity = 18),
+            MeetUpDumb(
+                icon = null,
+                name = "cuire des carottes",
+                description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre",
+                startDate = c1,
+                endDate = c2,
+                location = null,
+                tags = null,
+                capacity = 45
+            )
         )
     }
 
     @Test
-    fun testAddingMeetup(){
+    fun testAddingMeetup() {
         val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
-            .apply{
+            .apply {
                 putExtra("MEETUPS", meetups_list as Serializable)
             }
         val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
         try { //TODO - extend tests to test all fields
-            onView(withIndex(withId(R.id.meetup_title), 0)).check(matches(withText(meetups_list.get(0).name)))
-            onView(withIndex(withId(R.id.meetup_description), 2)).check(matches(
-                withText(meetups_list.get(2).description)))
+            onView(withId(R.id.meetup_title)).check(matches(withText(meetups_list.get(0).name)))
+            onView(withId(R.id.meetup_description)).check(
+                matches(
+                    withText(meetups_list.get(0).description)
+                )
+            )
         } finally {
             scenario.close()
-        }
-    }
-}
-
-fun withIndex(matcher: Matcher<View?>, index: Int): Matcher<View?>? {
-    return object : TypeSafeMatcher<View?>() {
-        var currentIndex = 0
-        override fun describeTo(description: Description) {
-            description.appendText("with index: ")
-            description.appendValue(index)
-            matcher.describeTo(description)
-        }
-
-        override fun matchesSafely(view: View?): Boolean {
-            return matcher.matches(view) && currentIndex++ == index
         }
     }
 }
