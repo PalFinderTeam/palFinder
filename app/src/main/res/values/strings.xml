@@ -7,6 +7,9 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+    <!-- Strings used for Map Activity-->
+    <string name="title_activity_maps">MapsActivity</string>
+
     <string name="tag_element_text">tag</string>
     <string name="add_tags">Add tags</string>
 
@@ -53,7 +56,7 @@
     <string name="placeholder_name">someone</string>
     <string name="placeholder_username">\@username</string>
     <string name="placeholder_date">yyyy/mm/dd</string>
-  
+
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>

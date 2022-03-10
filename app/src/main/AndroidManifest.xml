@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.palFinderTeam.palfinder">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,6 +13,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PalFinder">
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAhnmWxAFDDb9pjgg4aKCI_mSGeVplrHxE" />
+
+        <activity
+            android:name=".map.MapsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_maps"
+            android:parentActivityName=".MainActivity"/>
+
+        <activity
+            android:name=".GreetingActivity"
+            android:exported="false" />
         <activity
             android:name=".meetups.activities.MeetUpView"
             android:exported="false"
@@ -18,9 +34,7 @@
             android:name=".meetups.activities.MeetUpCreation"
             android:exported="false"
             android:parentActivityName=".MainActivity"/>
-        <activity
-            android:name=".GreetingActivity"
-            android:exported="false" />
+     
 
         <activity
             android:name=".tag.example.ImmutableTagsShowcaseActivity"
@@ -47,7 +61,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MeetupListActivity" android:exported="true" android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".MeetupListActivity" android:exported="true" android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
