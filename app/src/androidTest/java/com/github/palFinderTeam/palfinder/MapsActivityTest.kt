@@ -1,15 +1,14 @@
 package com.github.palFinderTeam.palfinder
 
 import android.icu.util.Calendar
-import android.support.test.uiautomator.UiDevice
-import android.support.test.uiautomator.UiSelector
 import androidx.test.espresso.intent.Intents
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiSelector
 import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.TempUser
@@ -28,7 +27,7 @@ class MapsActivityTest {
 
     @Test
     fun testClickOnMarker(){
-        val uuid = "someuuid"
+        val uuid = "uuid"
         val date1 = Calendar.getInstance()
         date1!!.set(2022, 2,1,0,0,0)
         val date2 = Calendar.getInstance()
@@ -48,11 +47,13 @@ class MapsActivityTest {
             mutableListOf(TempUser("", "Alice"))
         )
 
-        val marker:Marker = MapsActivity.addMeetUpMarker(meetup)
+        MapsActivity.addMeetUpMarker(meetup)
         Intents.init()
-        val UIDevice = UiDevice.getInstance(getInstrumentation())
-        val UIMarker = UIDevice.findObject(UiSelector().descriptionContains(uuid))
-        UIMarker.click()
+        val device = UiDevice.getInstance(getInstrumentation())
+        val marker = device.findObject(UiSelector().descriptionContains("Google Map").childSelector(UiSelector().descriptionContains(uuid)))
+        marker.waitForExists(5000)
+        marker.click()
         intended(IntentMatchers.hasExtra(MEETUP_SHOWN, meetup))
+        Intents.release()
     }
 }

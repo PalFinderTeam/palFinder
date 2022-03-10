@@ -24,31 +24,30 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import java.util.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var binding: ActivityMapsBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
-
+    private lateinit var map: GoogleMap
 
     companion object {
         private const val USER_LOCATION_PERMISSION_REQUEST_CODE = 1
-        private lateinit var map: GoogleMap
+        private var meetUps = LinkedList<MeetUp>()
+
 
         /**
          * add a marker corresponding to a meetup
          */
-        fun addMeetUpMarker(meetUp: MeetUp): Marker{
-            val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
-            val marker = map.addMarker(MarkerOptions().position(position).title(meetUp.uuid))
-            marker.tag = meetUp
-            return marker
-        }
+        fun addMeetUpMarker(meetUp: MeetUp) {
+            meetUps.add(meetUp)
+            }
 
     }
 
-
+    // TODO add all meetup to map
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -62,6 +61,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+    }
+
+    private fun addMarkers(){
+        meetUps.forEach{
+            val position = LatLng(it.location.latitude, it.location.longitude)
+            val marker = map.addMarker(MarkerOptions().position(position).title(it.uuid))
+            if(marker != null) marker.tag = it
+        }
     }
 
     /**
@@ -79,6 +86,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         map.setOnMarkerClickListener(this)
 
         setUserLocation()
+
+        addMarkers()
+
     }
 
 
@@ -116,7 +126,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
      */
     override fun onMarkerClick(marker: Marker): Boolean {
         if(marker.tag is MeetUp) {
-            var meetUp: MeetUp = marker.tag as MeetUp
+            val meetUp: MeetUp = marker.tag as MeetUp
             val intent = Intent(this, MeetUpView::class.java).apply {
                 putExtra(MEETUP_SHOWN, meetUp)
             }
