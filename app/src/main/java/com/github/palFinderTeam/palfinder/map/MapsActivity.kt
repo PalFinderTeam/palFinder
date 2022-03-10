@@ -67,7 +67,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         meetUps.forEach{
             val position = LatLng(it.location.latitude, it.location.longitude)
             val marker = map.addMarker(MarkerOptions().position(position).title(it.uuid))
-            if(marker != null) marker.tag = it
+            marker?.tag = it
         }
     }
 
