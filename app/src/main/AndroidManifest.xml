@@ -23,6 +23,22 @@
             android:exported="false" />
 
         <activity
+            android:name=".tag.example.ImmutableTagsShowcaseActivity"
+            android:parentActivityName=".MainActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".tag.example.TagShowcaseActivity"
+            android:parentActivityName=".MainActivity"
+            android:exported="false" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
             android:name=".ui.login.LoginActivity"
             android:exported="true">
             <intent-filter>
