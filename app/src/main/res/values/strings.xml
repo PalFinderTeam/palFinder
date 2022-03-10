@@ -10,6 +10,40 @@
     <!-- Strings used for login activity-->
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_meetup_creation">meetup_creation</string>
+
+
+    <!-- Strings used for meetup creation -->
+    <string name="meetup_creation_meetup_name">Event Name</string>
+    <string name="meetup_creation_meetup_name_example">Party with the boys!</string>
+    <string name="meetup_creation_meetup_description">Event Description</string>
+    <string name="meetup_creation_meetup_icon">Icon</string>
+    <string name="meetup_creation_meetup_start_date">Start Date</string>
+    <string name="meetup_creation_meetup_end_date">End Date</string>
+    <string name="meetup_creation_meetup_duration">Duration</string>
+    <string name="meetup_creation_meetup_location">Location</string>
+    <string name="meetup_creation_meetup_has_participant_limit">Has Participant Limit?</string>
+    <string name="meetup_creation_meetup_participant_limit">Participant Limit</string>
+    <string name="meetup_creation_meetup_start_date_bt">Select Start Date</string>
+    <string name="meetup_creation_meetup_end_date_bt">Select End Date</string>
+    <string name="meetup_creation_meetup_tags">Tags</string>
+    <string name="meetup_creation_meetup_no_tags">No Tags Selected</string>
+    <string name="meetup_creation_meetup_tags_bt">Add Tags</string>
+    <string name="meetup_creation_meetup_entries">Limit Entries</string>
+    <string name="meetup_creation_meetup_done">Done</string>
+
+    <string name="meetup_creation_missing_name_desc">Please add an Event Name and an Event Description</string>
+    <string name="meetup_creation_missing_name_desc_title">Missing Data</string>
+
+
+    <!-- Strings used for meetup view -->
+    <string name="meetup_view_meetup_start_at">Start At</string>
+    <string name="meetup_view_meetup_end_at">End At</string>
+    <string name="meetup_view_creator">Created by @%1$s</string>
+
+    <string name="ok">OK</string>
+
+    <string name="date_long_format">EEEE, MMMM d, yyyy \'at\' h:mm a</string>
 
     <string name="placeholder_name">someone</string>
     <string name="placeholder_username">\@username</string>
