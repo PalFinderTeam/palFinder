@@ -6,8 +6,15 @@
     android:layout_height="match_parent">
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sort_alph"
+        tools:ignore="SpeakableTextPresentCheck">
 
         <LinearLayout
             android:id="@+id/meetup_layout"
@@ -17,7 +24,29 @@
             android:backgroundTintMode="src_in"
             android:divider="?attr/dividerVertical"
             android:orientation="vertical"
-            android:showDividers="middle"></LinearLayout>
+            android:showDividers="middle">
+
+        </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/sort_alph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:onClick="sortByName"
+        android:text="@string/list_sort_by_alphabetical_order"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintEnd_toStartOf="@id/sort_capacity" />
+
+    <Button
+        android:id="@+id/sort_capacity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:onClick="sortByCap"
+        android:text="@string/list_sort_by_capacity"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintStart_toEndOf="@id/sort_alph" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,9 +8,14 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+
+import com.github.palFinderTeam.palfinder.map.MapsActivity
+import com.github.palFinderTeam.palfinder.tag.example.TagShowcaseActivity
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.MeetUpDumb
 import java.io.Serializable
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
@@ -36,6 +41,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        findViewById<Button>(R.id.mainGoToTagButton).setOnClickListener {
+            val intent = Intent(this, TagShowcaseActivity::class.java)
+            startActivity(intent)
+        }
         auth = Firebase.auth
     }
 
@@ -64,13 +74,9 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
 
     }
-
-    /** Called when the user taps the Send button  */
-    fun sendMessage(view: View?) {
-        val editText = findViewById<EditText>(R.id.mainName)
-        val message = editText.text.toString()
-        val intent = Intent(this, GreetingActivity::class.java).apply {
-            putExtra(EXTRA_MESSAGE, message)
+    
+    fun openMeetupCreationPage(view: View?){
+        val intent = Intent(this, MeetUpCreation::class.java).apply {
         }
         startActivity(intent)
     }
@@ -116,6 +122,11 @@ class MainActivity : AppCompatActivity() {
             .apply{
                 putExtra("MEETUPS", meetups_list as Serializable)
             }
+        startActivity(intent)
+    }
+
+    fun accessMap(view: View?) {
+        val intent = Intent(this, MapsActivity::class.java).apply {  }
         startActivity(intent)
     }
 }
