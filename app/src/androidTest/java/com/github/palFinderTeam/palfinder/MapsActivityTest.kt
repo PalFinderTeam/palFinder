@@ -1,12 +1,15 @@
 package com.github.palFinderTeam.palfinder
 
+import android.app.Instrumentation
 import android.icu.util.Calendar
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import com.github.palFinderTeam.palfinder.map.MapsActivity
@@ -23,6 +26,11 @@ class MapsActivityTest {
 
     @get:Rule
     val testRule = ActivityScenarioRule(MapsActivity::class.java)
+    @get:Rule
+    var fineLocationPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
+    @get:Rule
+    var coarseLocationPermissionRule : GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+
 
 
     @Test

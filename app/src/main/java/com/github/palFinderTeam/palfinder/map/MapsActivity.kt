@@ -47,7 +47,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     }
 
-    // TODO add all meetup to map
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -79,6 +78,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    // TODO add all meetup to map
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
 
@@ -114,7 +114,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             location -> if(location != null){
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 3f))
             }
         }
     }
