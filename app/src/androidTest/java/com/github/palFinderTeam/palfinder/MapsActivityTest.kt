@@ -22,7 +22,7 @@ import com.google.android.gms.maps.model.Marker
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
+/**
 @RunWith(AndroidJUnit4::class)
 class MapsActivityTest {
 
@@ -72,3 +72,4 @@ class MapsActivityTest {
         Intents.release()
     }
 }
+        **/
