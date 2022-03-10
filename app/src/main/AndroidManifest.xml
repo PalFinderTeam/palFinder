@@ -13,7 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PalFinder">
 
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAhnmWxAFDDb9pjgg4aKCI_mSGeVplrHxE" />
@@ -26,8 +25,14 @@
             android:name=".GreetingActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
-
+            android:name=".meetups.activities.MeetUpView"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".meetups.activities.MeetUpCreation"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>
+     
         <activity
             android:name=".ui.login.LoginActivity"
 
@@ -41,9 +46,6 @@
         <activity android:name=".MeetupListActivity" android:exported="true" android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".ProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".GreetingActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
