@@ -16,6 +16,8 @@ import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.TempUser
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.utils.Location
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import org.junit.Rule
 import org.junit.Test
@@ -36,6 +38,8 @@ class MapsActivityTest {
     @Test
     fun testClickOnMarker(){
         val uuid = "uuid"
+        val lat = 0.0
+        val long = 0.0
         val date1 = Calendar.getInstance()
         date1!!.set(2022, 2,1,0,0,0)
         val date2 = Calendar.getInstance()
@@ -48,14 +52,17 @@ class MapsActivityTest {
             "eventDescription",
             date1,
             date2,
-            com.github.palFinderTeam.palfinder.utils.Location(0.0, 0.0),
+            com.github.palFinderTeam.palfinder.utils.Location(long, lat),
             emptyList(),
             true,
             2,
             mutableListOf(TempUser("", "Alice"))
         )
 
+        MapsActivity.setBaseLocation(LatLng(lat, long))
+
         MapsActivity.addMeetUpMarker(meetup)
+
         Intents.init()
         val device = UiDevice.getInstance(getInstrumentation())
         val marker = device.findObject(UiSelector().descriptionContains("Google Map").childSelector(UiSelector().descriptionContains(uuid)))

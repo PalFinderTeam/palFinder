@@ -36,7 +36,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     companion object {
         private const val USER_LOCATION_PERMISSION_REQUEST_CODE = 1
         private var meetUps = LinkedList<MeetUp>()
-
+        private var baseLocation: LatLng? = null
 
         /**
          * add a marker corresponding to a meetup
@@ -45,7 +45,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             meetUps.add(meetUp)
             }
 
+        fun setBaseLocation(location:LatLng){
+            baseLocation = location
+        }
+
     }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,6 +95,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         addMarkers()
 
+
     }
 
 
@@ -114,7 +121,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             location -> if(location != null){
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 3f))
+                if(baseLocation != null){
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(baseLocation!!, 15f))
+                }else map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
             }
         }
     }
