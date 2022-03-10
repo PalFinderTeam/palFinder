@@ -13,6 +13,7 @@ import android.widget.EditText
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.tag.example.TagShowcaseActivity
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.MeetUpDumb
 import java.io.Serializable
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
@@ -78,6 +79,12 @@ class MainActivity : AppCompatActivity() {
         val message = editText.text.toString()
         val intent = Intent(this, GreetingActivity::class.java).apply {
             putExtra(EXTRA_MESSAGE, message)
+        }
+        startActivity(intent)
+    }
+    
+    fun openMeetupCreationPage(view: View?){
+        val intent = Intent(this, MeetUpCreation::class.java).apply {
         }
         startActivity(intent)
     }
