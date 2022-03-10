@@ -16,7 +16,7 @@ import java.util.*
 
 
 class MeetupListActivity : AppCompatActivity() {
-    private lateinit var listOfMeetup : List<MeetUpDumb>
+    private var listOfMeetup = ArrayList<MeetUpDumb>()
     private lateinit  var meetupList : LinearLayout
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -25,7 +25,7 @@ class MeetupListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_list)
 
         meetupList = findViewById(R.id.meetup_layout)
-        listOfMeetup = intent.getSerializableExtra("MEETUPS") as List<MeetUpDumb>
+        listOfMeetup = intent.getSerializableExtra("MEETUPS") as ArrayList<MeetUpDumb>
 
 
         for (meetup : MeetUpDumb in listOfMeetup.sortedBy { it.capacity}) {
@@ -64,20 +64,17 @@ class MeetupListActivity : AppCompatActivity() {
         }
     }
 
-    // create an action bar button
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        // R.menu.mymenu is a reference to an xml file named mymenu.xml which should be inside your res/menu directory.
-        // If you don't have res/menu, just create a directory named "menu" inside res
-        menuInflater.inflate(R.menu.sort, menu)
-        return super.onCreateOptionsMenu(menu)
+    fun sortByCap(view: View?) {
+        meetupList.removeAllViews()
+        for (meetup : MeetUpDumb in listOfMeetup.sortedBy { it.capacity}) {
+            addMeetup(meetup)
+        }
     }
 
-    // handle button activities
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id: Int = item.getItemId()
-        if (id == R.id.mybutton) {
-
+    fun sortByName(view: View?) {
+        meetupList.removeAllViews()
+        for (meetup : MeetUpDumb in listOfMeetup.sortedBy { it.name.lowercase()}) {
+            addMeetup(meetup)
         }
-        return super.onOptionsItemSelected(item)
     }
 }

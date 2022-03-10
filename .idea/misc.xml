@@ -3,6 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/EPFL/palFinder/app/src/main/res/layout/activity_greeting.xml" value="0.17074275362318841" />
+        <entry key="..\:/EPFL/palFinder/app/src/main/res/layout/activity_list.xml" value="0.33" />
+        <entry key="..\:/EPFL/palFinder/app/src/main/res/layout/activity_main.xml" value="0.3625" />
+        <entry key="..\:/EPFL/palFinder/app/src/main/res/layout/activity_meet_up_creation.xml" value="0.18541666666666667" />
         <entry key="..\:/SDP/palFinder/app/src/main/res/layout-w936dp/activity_login.xml" value="0.258879781420765" />
         <entry key="..\:/SDP/palFinder/app/src/main/res/layout/activity_greeting.xml" value="0.3432971014492754" />
         <entry key="..\:/SDP/palFinder/app/src/main/res/layout/activity_login.xml" value="0.3432971014492754" />
