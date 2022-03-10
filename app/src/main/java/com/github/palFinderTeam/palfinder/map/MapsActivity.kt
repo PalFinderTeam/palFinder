@@ -13,6 +13,9 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
+import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -24,7 +27,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
-    private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
@@ -32,6 +34,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     companion object {
         private const val USER_LOCATION_PERMISSION_REQUEST_CODE = 1
+        private lateinit var map: GoogleMap
+
+        /**
+         * add a marker corresponding to a meetup
+         */
+        fun addMeetUpMarker(meetUp: MeetUp): Marker{
+            val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
+            val marker = map.addMarker(MarkerOptions().position(position).title(meetUp.uuid))
+            marker.tag = meetUp
+            return marker
+        }
+
     }
 
 
@@ -68,6 +82,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
 
+
     private fun setUserLocation(){
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -94,33 +109,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
+
+
     /**
      * When a meetUp marker is clicked, open the marker description
      */
     override fun onMarkerClick(marker: Marker): Boolean {
-        /**var meetUp:MeetUp = marker.tag
-        val intent = Intent(this, MeetUpView::class.java).apply {
-            putExtra(MEETUP_SHOWN, meetUp)
+        if(marker.tag is MeetUp) {
+            var meetUp: MeetUp = marker.tag as MeetUp
+            val intent = Intent(this, MeetUpView::class.java).apply {
+                putExtra(MEETUP_SHOWN, meetUp)
+            }
+            startActivity(intent)
+            return true
         }
-        startActivity(intent)
-         return true
-         **/
-
         return false
     }
 
 
-    /**
-     /**
-      * add a marker corresponding to a meetUp
-      **/
-    fun addMarker(meetUp: MeetUp){
-        val location = LatLng(meetUp.location.longitude, meetUp.location.latitude)
-        val marker:Marker = map.addMarker(MarkerOptions().position(location).title(meetUp.name))
-        marker.tag = meetUp
-    }
 
-    **/
+
+
+
 
 
 }
