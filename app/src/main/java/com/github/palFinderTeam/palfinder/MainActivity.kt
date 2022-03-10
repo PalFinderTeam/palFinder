@@ -12,6 +12,8 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+
+import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.tag.example.TagShowcaseActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.MeetUpDumb
@@ -120,6 +122,11 @@ class MainActivity : AppCompatActivity() {
             .apply{
                 putExtra("MEETUPS", meetups_list as Serializable)
             }
+        startActivity(intent)
+    }
+
+    fun accessMap(view: View?) {
+        val intent = Intent(this, MapsActivity::class.java).apply {  }
         startActivity(intent)
     }
 }

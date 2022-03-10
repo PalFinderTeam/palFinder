@@ -58,4 +58,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mainGoButton3" />
 
+    <Button
+        android:id="@+id/mapGoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="162dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="162dp"
+        android:layout_marginBottom="94dp"
+        android:onClick="accessMap"
+        android:text="Map"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mainGoButton3" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

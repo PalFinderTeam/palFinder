@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProvider
  * @property tagsRepository repository pass to the viewModel.
  */
 class TagsViewModelFactory<T: Tag>(private val tagsRepository: TagsRepository<T>) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TagsViewModel::class.java)) {
             return TagsViewModel(tagsRepository) as T
         }
