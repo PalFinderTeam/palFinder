@@ -39,9 +39,6 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".GreetingActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.login.LoginActivity"
             android:exported="true">
             <intent-filter>
