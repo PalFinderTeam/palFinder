@@ -32,6 +32,8 @@
     <string name="meetup_creation_meetup_entries">Limit Entries</string>
     <string name="meetup_creation_meetup_done">Done</string>
 
+    <string name="list_sort_by_alphabetical_order">Sort by Alph.</string>
+    <string name="list_sort_by_capacity">Sort by Cap.</string>
     <string name="meetup_creation_missing_name_desc">Please add an Event Name and an Event Description</string>
     <string name="meetup_creation_missing_name_desc_title">Missing Data</string>
 

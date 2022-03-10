@@ -53,6 +53,7 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.2.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+    implementation 'com.google.android.gms:play-services-base:17.6.0'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.powermock:powermock-mockito-release-full:1.5.4'

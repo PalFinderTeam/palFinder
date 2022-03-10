@@ -66,16 +66,6 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
 
     }
-
-    /** Called when the user taps the Send button  */
-    fun sendMessage(view: View?) {
-        val editText = findViewById<EditText>(R.id.mainName)
-        val message = editText.text.toString()
-        val intent = Intent(this, GreetingActivity::class.java).apply {
-            putExtra(EXTRA_MESSAGE, message)
-        }
-        startActivity(intent)
-    }
     
     fun openMeetupCreationPage(view: View?){
         val intent = Intent(this, MeetUpCreation::class.java).apply {
