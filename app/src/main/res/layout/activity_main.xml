@@ -25,7 +25,7 @@
         android:id="@+id/mainGoToTagButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="20dp"
         android:text="Tags"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
@@ -37,11 +37,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="160dp"
-        android:layout_marginTop="229dp"
+        android:layout_marginTop="100dp"
         android:layout_marginEnd="160dp"
         android:onClick="openMeetupCreationPage"
         android:text="Create"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -63,15 +64,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="162dp"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="162dp"
-        android:layout_marginBottom="94dp"
+        android:layout_marginBottom="83dp"
         android:onClick="accessMap"
         android:text="Map"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainGoButton3" />
+        app:layout_constraintTop_toBottomOf="@+id/mainGoToTagButton"
+        app:layout_constraintVertical_bias="0.038" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
