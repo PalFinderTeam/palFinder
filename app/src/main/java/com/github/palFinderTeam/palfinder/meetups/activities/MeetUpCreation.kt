@@ -10,10 +10,14 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.tag.*
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.askTime
 import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
@@ -25,6 +29,8 @@ const val defaultTimeDelta = 1000 * 60 * 60
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 class MeetUpCreation : AppCompatActivity() {
     private val model: MeetUpCreationViewModel by viewModels()
+    private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
+    private lateinit var tagsViewModel: TagsViewModel<Category>
     private var dateFormat = SimpleDateFormat()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,14 +39,19 @@ class MeetUpCreation : AppCompatActivity() {
 
         dateFormat = SimpleDateFormat(getString(R.string.date_long_format))
 
-        if (intent.hasExtra(MEETUP_EDIT)) {
-            val meetup = intent.getSerializableExtra(MEETUP_EDIT) as MeetUp
-            fillFields(meetup)
-        } else {
-            model.startDate.value = Calendar.getInstance()
-            model.endDate.value = Calendar.getInstance()
+        loadIntent()
+
+        if (savedInstanceState == null) {
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                add<TagsDisplayFragment<Category>>(R.id.fc_tags)
+            }
         }
 
+        loadDate()
+    }
+
+    private fun loadDate() {
         val startDateObs = Observer<Calendar> { newDate ->
             checkDateIntegrity()
             setTextView(R.id.tv_StartDate, dateFormat.format(newDate))
@@ -52,6 +63,30 @@ class MeetUpCreation : AppCompatActivity() {
             setTextView(R.id.tv_EndDate, dateFormat.format(newDate))
         }
         model.endDate.observe(this, endDateObs)
+    }
+
+    private fun loadIntent() {
+        if (intent.hasExtra(MEETUP_EDIT)) {
+            val meetup = intent.getSerializableExtra(MEETUP_EDIT) as MeetUp
+            tagsViewModelFactory = TagsViewModelFactory(
+                EditableTags(
+                    meetup.tags.toMutableSet(),
+                    Category.values().toSet()
+                )
+            )
+            fillFields(meetup)
+        } else {
+            model.startDate.value = Calendar.getInstance()
+            model.endDate.value = Calendar.getInstance()
+            tagsViewModelFactory = TagsViewModelFactory(
+                EditableTags(mutableSetOf(), Category.values().toSet())
+            )
+        }
+
+        tagsViewModel = ViewModelProvider(
+            this,
+            tagsViewModelFactory
+        ).get(TagsViewModel::class.java) as TagsViewModel<Category>
     }
 
     private fun fillFields(meetUp: MeetUp){
@@ -135,7 +170,7 @@ class MeetUpCreation : AppCompatActivity() {
             "", name, description,
             model.startDate.value!!, model.endDate.value!!,
             Location(0.0,0.0),
-            emptyList(),
+            tagsViewModel.tagContainer.value!!,
             hasMaxCapacity, capacity, mutableListOf())
 
         val intent = Intent(this, MeetUpView::class.java).apply {

@@ -130,17 +130,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/meetup_creation_meetup_tags" />
 
-            <TextView
-                android:id="@+id/tv_Tags"
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fc_tags"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/meetup_creation_meetup_no_tags" />
-
-            <Button
-                android:id="@+id/bt_AddTags"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/meetup_creation_meetup_tags_bt" />
+                android:layout_height="146dp" />
 
             <EditText
                 android:id="@+id/et_Capacity"

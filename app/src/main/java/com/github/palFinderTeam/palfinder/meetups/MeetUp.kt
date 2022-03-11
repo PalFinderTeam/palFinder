@@ -29,7 +29,7 @@ data class MeetUp(
     val startDate: Calendar,
     val endDate: Calendar,
     val location: Location,
-    val tags: List<Category>,
+    val tags: Set<Category>,
     val hasMaxCapacity: Boolean,
     val capacity: Int,
     val participants: MutableList<ProfileUser>, // TODO -  Change to Real User

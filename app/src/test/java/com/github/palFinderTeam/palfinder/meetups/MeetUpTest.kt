@@ -31,7 +31,7 @@ class MeetUpTest {
             date1,
             date2,
             Location(0.0,0.0),
-            emptyList(),
+            emptySet(),
             true,
             2,
             mutableListOf(user)
