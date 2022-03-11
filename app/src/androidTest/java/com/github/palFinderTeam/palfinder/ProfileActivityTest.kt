@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder
 
 import android.content.Intent
+import android.icu.util.Calendar
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -21,8 +22,7 @@ class ProfileActivityTest {
 
     @Before
     fun getProfile(){
-        val joinDate = Date(122, 2, 6, 14, 1, 0)
-        p = ProfileUser("gerussi", "Louca", "Gerussi", joinDate)
+        p = ProfileUser("gerussi", "Louca", "Gerussi", Calendar.getInstance())
     }
 
     @Test
