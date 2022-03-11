@@ -1,8 +1,12 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.util.Log
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.isBefore
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.firestore.ktx.getField
 
 /**
  * @param uuid: Unique Identifier of the meetup
@@ -97,5 +101,72 @@ data class MeetUp(
      */
     fun isParticipating(user: TempUser):Boolean{
         return participants.contains(user)
+    }
+
+    /**
+     * @return a representation which is Firestore friendly of the MeetUp
+     */
+    fun toFirestoreData(): HashMap<String, Any> {
+        return hashMapOf(
+            "capacity" to capacity,
+            "creator" to creator.name,
+            "description" to description,
+            "startDate" to startDate.time,
+            "endDate" to endDate.time,
+            "hasMaxCapacity" to hasMaxCapacity,
+            "capacity" to capacity.toLong(),
+            "icon" to icon,
+            "location" to GeoPoint(location.latitude, location.longitude),
+            "name" to name,
+            "participants" to participants.map { it.name }.toList(),
+            "tags" to tags,
+        )
+    }
+
+    /**
+     * Provide a way to convert a firestore query result, in a MeetUp
+     */
+    companion object {
+        fun DocumentSnapshot.toMeetUp(): MeetUp? {
+            try {
+                val uuid = id
+                // TODO Make it fetch other document
+                val creator = TempUser("wathever", "wathever")
+                val capacity = getLong("capacity")!!
+                val description = getString("description")!!
+                val startDate = getDate("startDate")!!
+                val endDate = getDate("endDate")!!
+                val location = getGeoPoint("location")!!
+                val name = getString("name")!!
+                // TODO find something
+                val participants = getField<List<String>>("participants")!!
+                val tags = getField<Array<String>>("tags")!!
+                val hasMaxCapacity = getBoolean("hasMaxCapacity")!!
+
+                // Convert Date to calendar
+                val startDateCal = Calendar.getInstance()
+                val endDateCal = Calendar.getInstance()
+                startDateCal.time = startDate
+                endDateCal.time = endDate
+
+                return MeetUp(
+                    id,
+                    creator,
+                    "wathevericon",
+                    name,
+                    description,
+                    startDateCal,
+                    endDateCal,
+                    Location(location.longitude, location.latitude),
+                    tags.toList(),
+                    hasMaxCapacity,
+                    capacity.toInt(),
+                    mutableListOf()
+                )
+            } catch (e: Exception) {
+                Log.e("User", "Error converting user profile", e)
+                return null
+            }
+        }
     }
 }
