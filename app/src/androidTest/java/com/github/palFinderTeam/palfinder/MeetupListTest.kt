@@ -2,7 +2,6 @@ package com.github.palFinderTeam.palfinder
 
 import android.content.Intent
 import android.icu.util.Calendar
-import android.view.View
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
@@ -11,10 +10,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.palFinderTeam.palfinder.meetups.MeetUpDumb
-import org.hamcrest.Description
-import org.hamcrest.Matcher
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.TypeSafeMatcher
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

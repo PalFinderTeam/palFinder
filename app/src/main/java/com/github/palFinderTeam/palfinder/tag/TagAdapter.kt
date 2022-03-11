@@ -7,6 +7,7 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.utils.searchedFilter
 import com.google.android.material.chip.Chip
 import java.util.*
 
@@ -50,10 +51,10 @@ class TagAdapter<T: Tag>(private val dataSet: List<T>) : RecyclerView.Adapter<Ta
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = currentDataSet.size
-    override fun getFilter() = searchedFilter
+    override fun getFilter() = searchedFilter(dataSet, currentDataSet, { notifyDataSetChanged() })
 
-    private val searchedFilter: Filter = object : Filter() {
-        override fun performFiltering(constraint: CharSequence): FilterResults {
+    /*private val searchedFilter: Filter = object : Filter() {
+        override fun performFiltering(constraint: CharSequence, dataSet : List<T>): FilterResults {
             val filteredList: MutableList<Tag> = mutableListOf()
             if (constraint.isEmpty()) {
                 filteredList.addAll(dataSet)
@@ -70,10 +71,14 @@ class TagAdapter<T: Tag>(private val dataSet: List<T>) : RecyclerView.Adapter<Ta
             return results
         }
 
+        override fun performFiltering(p0: CharSequence?): FilterResults {
+            TODO("Not yet implemented")
+        }
+
         override fun publishResults(constraint: CharSequence, results: FilterResults) {
             currentDataSet.clear()
             currentDataSet.addAll(results.values as List<T>)
             notifyDataSetChanged()
         }
-    }
+    }*/
 }

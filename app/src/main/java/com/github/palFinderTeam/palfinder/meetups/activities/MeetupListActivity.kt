@@ -1,40 +1,42 @@
-package com.github.palFinderTeam.palfinder
+package com.github.palFinderTeam.palfinder.meetups.activities
 
-import com.github.palFinderTeam.palfinder.R
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.github.palFinderTeam.palfinder.meetups.MeetUpDumb
+import androidx.recyclerview.widget.RecyclerView
+import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.utils.searchedFilter
 import java.util.*
 
 
 class MeetupListActivity : AppCompatActivity() {
-    private var listOfMeetup = ArrayList<MeetUpDumb>()
-    private lateinit  var meetupList : LinearLayout
+    private lateinit  var meetupList : RecyclerView
+    private lateinit var listOfMeetup : List<MeetUp>
+
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
 
-        meetupList = findViewById(R.id.meetup_layout)
-        listOfMeetup = intent.getSerializableExtra("MEETUPS") as ArrayList<MeetUpDumb>
+        listOfMeetup = intent.getSerializableExtra("MEETUPS") as ArrayList<MeetUp>
+        meetupList = findViewById(R.id.meetup_list_recycler)
 
 
-        for (meetup : MeetUpDumb in listOfMeetup.sortedBy { it.capacity}) {
+        for (meetup : MeetUp in listOfMeetup.sortedBy { it.capacity}) {
             addMeetup(meetup)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    private fun addMeetup(meetup : MeetUpDumb) { //TODO - take into account real values
+    private fun addMeetup(meetup : MeetUp) { //TODO - take into account real values
         val v: View = layoutInflater.inflate(R.layout.meetup_listview, null)
         var text: TextView = v.findViewById(R.id.meetup_title)
         text.text = meetup.name
@@ -66,14 +68,14 @@ class MeetupListActivity : AppCompatActivity() {
 
     fun sortByCap(view: View?) {
         meetupList.removeAllViews()
-        for (meetup : MeetUpDumb in listOfMeetup.sortedBy { it.capacity}) {
+        for (meetup : MeetUp in listOfMeetup.sortedBy { it.capacity}) {
             addMeetup(meetup)
         }
     }
 
     fun sortByName(view: View?) {
         meetupList.removeAllViews()
-        for (meetup : MeetUpDumb in listOfMeetup.sortedBy { it.name.lowercase()}) {
+        for (meetup : MeetUp in listOfMeetup.sortedBy { it.name.lowercase()}) {
             addMeetup(meetup)
         }
     }
