@@ -1,6 +1,8 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.isBefore
 
@@ -20,17 +22,17 @@ import com.github.palFinderTeam.palfinder.utils.isBefore
  */
 data class MeetUp(
     val uuid: String,
-    val creator: TempUser, // TODO -  Change to Real User
+    val creator: ProfileUser,
     val icon: String,
     val name: String,
     val description: String,
     val startDate: Calendar,
     val endDate: Calendar,
     val location: Location,
-    val tags: List<String>, // TODO - Change to tag
+    val tags: List<Category>,
     val hasMaxCapacity: Boolean,
     val capacity: Int,
-    val participants: MutableList<TempUser>, // TODO -  Change to Real User
+    val participants: MutableList<ProfileUser>, // TODO -  Change to Real User
 ): java.io.Serializable {
 
     /**
@@ -76,7 +78,7 @@ data class MeetUp(
      *  Add [user] to the Event if [now] is a valid date to join
      *  @param now: current date
      */
-    fun join(now: Calendar, user: TempUser){
+    fun join(now: Calendar, user: ProfileUser){
         if (canJoin(now) && !isParticipating(user)){
             participants.add(user)
         }
@@ -86,7 +88,7 @@ data class MeetUp(
      *  Remove [user] from the event
      *  if user is not in the event, does nothing
      */
-    fun leave(user: TempUser){
+    fun leave(user: ProfileUser){
         if (isParticipating(user)){
             participants.remove(user)
         }
@@ -95,7 +97,7 @@ data class MeetUp(
     /**
      *  @return if the user is taking part in the event
      */
-    fun isParticipating(user: TempUser):Boolean{
+    fun isParticipating(user: ProfileUser):Boolean{
         return participants.contains(user)
     }
 }

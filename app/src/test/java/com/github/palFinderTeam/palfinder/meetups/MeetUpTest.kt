@@ -1,11 +1,13 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import java.util.*
 
 class MeetUpTest {
     var meetUp: MeetUp? = null
@@ -18,9 +20,11 @@ class MeetUpTest {
         val date2 = Mockito.mock(Calendar::class.java)
         Mockito.`when`(date2.timeInMillis).thenReturn(1)
 
+        val user = ProfileUser("dummy","dummy","dummy", Date())
+
         meetUp = MeetUp(
             "dummy",
-            TempUser("", "Bob"),
+            user,
             "",
             "dummy",
             "dummy",
@@ -30,7 +34,7 @@ class MeetUpTest {
             emptyList(),
             true,
             2,
-            mutableListOf(TempUser("", "Alice"))
+            mutableListOf(user)
         )
     }
 
@@ -67,7 +71,8 @@ class MeetUpTest {
     fun join(){
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
-        val user = TempUser("", "Bob")
+        val user = ProfileUser("dummy1","dummy2","dummy", Date())
+
         meetUp!!.join(now, user)
         assertEquals( true, meetUp!!.isParticipating(user))
     }
@@ -76,7 +81,8 @@ class MeetUpTest {
     fun joinAndLeave(){
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
-        val user = TempUser("", "Bob")
+        val user = ProfileUser("dummy1","dummy2","dummy", Date())
+
         meetUp!!.join(now, user)
         meetUp!!.leave(user)
         assertEquals( false, meetUp!!.isParticipating(user))
