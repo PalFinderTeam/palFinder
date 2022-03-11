@@ -21,7 +21,6 @@ import com.github.palFinderTeam.palfinder.tag.*
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.askTime
 import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
-import java.util.*
 
 const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
 const val defaultTimeDelta = 1000 * 60 * 60
@@ -166,7 +165,7 @@ class MeetUpCreation : AppCompatActivity() {
         val hasMaxCapacity = (capacityText != "")
         val capacity = if (hasMaxCapacity) { capacityText.toInt()} else { Int.MAX_VALUE }
 
-        val m = MeetUp("dummy", ProfileUser("dummy1", "dummy2", "dummy1", Date()),
+        val m = MeetUp("dummy", ProfileUser("dummy1", "dummy2", "dummy1", model.startDate.value!!),
             "", name, description,
             model.startDate.value!!, model.endDate.value!!,
             Location(0.0,0.0),

@@ -7,7 +7,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import java.util.*
 
 class MeetUpTest {
     var meetUp: MeetUp? = null
@@ -20,7 +19,7 @@ class MeetUpTest {
         val date2 = Mockito.mock(Calendar::class.java)
         Mockito.`when`(date2.timeInMillis).thenReturn(1)
 
-        val user = ProfileUser("dummy","dummy","dummy", Date())
+        val user = ProfileUser("dummy","dummy","dummy", date1)
 
         meetUp = MeetUp(
             "dummy",
@@ -60,18 +59,25 @@ class MeetUpTest {
     }
 
     @Test
-    fun iStarted(){
+    fun isStarted(){
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
 
         assertEquals( true, meetUp!!.isStarted(now))
+    }
+    @Test
+    fun isNotStarted(){
+        val now = Mockito.mock(Calendar::class.java)
+        Mockito.`when`(now.timeInMillis).thenReturn(-1)
+
+        assertEquals( false, meetUp!!.isStarted(now))
     }
 
     @Test
     fun join(){
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
-        val user = ProfileUser("dummy1","dummy2","dummy", Date())
+        val user = ProfileUser("dummy1","dummy2","dummy", now)
 
         meetUp!!.join(now, user)
         assertEquals( true, meetUp!!.isParticipating(user))
@@ -81,12 +87,10 @@ class MeetUpTest {
     fun joinAndLeave(){
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
-        val user = ProfileUser("dummy1","dummy2","dummy", Date())
+        val user = ProfileUser("dummy1","dummy2","dummy", now)
 
         meetUp!!.join(now, user)
         meetUp!!.leave(user)
         assertEquals( false, meetUp!!.isParticipating(user))
     }
-
-
 }
