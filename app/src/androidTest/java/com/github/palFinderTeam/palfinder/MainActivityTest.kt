@@ -54,5 +54,4 @@ class MainActivityTest {
         intended(hasComponent(LoginActivity::class.java.name))
         Intents.release()
     }
-
 }
