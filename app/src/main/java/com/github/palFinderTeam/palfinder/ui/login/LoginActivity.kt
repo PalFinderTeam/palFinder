@@ -13,6 +13,7 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.MainActivity
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -25,7 +26,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.security.Timestamp
+import java.util.*
 
 
 class LoginActivity : AppCompatActivity() {
@@ -41,6 +47,7 @@ class LoginActivity : AppCompatActivity() {
         private const val RC_GOOGLE_SIGN_IN = 4926
         private val REQ_ONE_TAP = 2  // Can be any integer unique to the Activity
         private var showOneTapUI = true
+        val db = Firebase.firestore
     }
 
     public override fun onStart() {
@@ -242,6 +249,33 @@ class LoginActivity : AppCompatActivity() {
             Log.w(TAG, "Not user")
             return
         }
+        val dbUser = hashMapOf(
+            "name" to user.displayName,
+            "email" to user.email,
+            "join_date" to Date(),
+            "picture" to user.photoUrl.toString()
+        )
+        val docRef = db.collection("users").document(user.uid)
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document.data != null) {
+                    Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+                } else {
+                    Log.d(TAG, "No such document")
+                    db.collection("users")
+                        .document(user.uid).set(dbUser, SetOptions.merge())
+                        .addOnSuccessListener {
+                            Log.d(TAG, "DocumentSnapshot added with ID: ${user.uid}")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w(TAG, "Error adding document", e)
+                        }
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d(TAG, "get failed with ", exception)
+            }
+
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }

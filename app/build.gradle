@@ -88,6 +88,8 @@ dependencies {
     // Also declare the dependency for the Google Play services library and specify its version
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
 
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+
     // Required only if Facebook login support is required
     // Find the latest Facebook SDK releases here: https://goo.gl/Ce5L94
     //implementation 'com.facebook.android:facebook-android-sdk:8.x'
