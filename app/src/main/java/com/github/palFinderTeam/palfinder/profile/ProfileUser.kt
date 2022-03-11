@@ -15,6 +15,10 @@ data class ProfileUser(
     val joinDate: Calendar
 ) : Serializable {
 
+    companion object{
+        const val JOIN_FORMAT = "Joined %s"
+    }
+
     fun fullName(): String {
         return "$name $surname"
     }
@@ -25,6 +29,6 @@ data class ProfileUser(
 
     fun prettyJoinTime(): String {
         val prettyDate = PrettyDate()
-        return "Joined " + prettyDate.timeDiff(joinDate)
+        return String.format(JOIN_FORMAT, prettyDate.timeDiff(joinDate))
     }
 }
