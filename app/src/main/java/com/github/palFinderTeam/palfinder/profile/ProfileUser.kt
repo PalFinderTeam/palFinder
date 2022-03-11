@@ -1,6 +1,6 @@
 package com.github.palFinderTeam.palfinder.profile
+import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
-import java.util.*
 import java.io.Serializable
 
 /**
@@ -12,7 +12,7 @@ data class ProfileUser(
     val username: String,
     val name: String,
     val surname: String,
-    val joinDate: Date
+    val joinDate: Calendar
 ) : Serializable {
 
     fun fullName(): String {
@@ -25,6 +25,6 @@ data class ProfileUser(
 
     fun prettyJoinTime(): String {
         val prettyDate = PrettyDate()
-        return "Joined " + prettyDate.timeSince(joinDate) + " ago"
+        return "Joined " + prettyDate.timeDiff(joinDate)
     }
 }
