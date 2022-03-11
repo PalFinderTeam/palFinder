@@ -65,6 +65,7 @@ class MeetUpTest {
 
         assertEquals( true, meetUp!!.isStarted(now))
     }
+
     @Test
     fun isNotStarted(){
         val now = Mockito.mock(Calendar::class.java)
