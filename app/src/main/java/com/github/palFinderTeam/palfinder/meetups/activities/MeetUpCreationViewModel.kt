@@ -15,9 +15,9 @@ import kotlinx.coroutines.launch
 class MeetUpCreationViewModel: ViewModel() {
     private var uuid: String? = null
 
-    private val _startDate: MutableLiveData<Calendar> = MutableLiveData()
-    private val _endDate: MutableLiveData<Calendar> = MutableLiveData()
-    private val _capacity: MutableLiveData<Int> = MutableLiveData(1)
+    private val _startDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
+    private val _endDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
+    private val _capacity: MutableLiveData<Int> = MutableLiveData(0)
     private val _hasMaxCapacity: MutableLiveData<Boolean> = MutableLiveData(false)
     private val _name: MutableLiveData<String> = MutableLiveData("")
     private val _description: MutableLiveData<String> = MutableLiveData("")
@@ -66,7 +66,6 @@ class MeetUpCreationViewModel: ViewModel() {
                 _hasMaxCapacity.value = meetUp.hasMaxCapacity
                 _capacity.value = meetUp.capacity
             }
-
         }
     }
 
@@ -89,8 +88,8 @@ class MeetUpCreationViewModel: ViewModel() {
             )
             // create new meetup
             viewModelScope.launch {
-                val meetUpId = FirebaseMeetUpService.createMeetUp(meetUp)
-                _sendSuccess.value = (meetUpId != null)
+                uuid = FirebaseMeetUpService.createMeetUp(meetUp)
+                _sendSuccess.value = (uuid != null)
             }
         } else {
             // edit existing meetup

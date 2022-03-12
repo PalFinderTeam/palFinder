@@ -16,16 +16,18 @@ const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_
 
 @SuppressLint("SimpleDateFormat")
 class MeetUpView : AppCompatActivity() {
-    private val model: MeetUpViewViewModel by viewModels()
+    private val viewModel: MeetUpViewViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_view)
 
-        val meetup = intent.getSerializableExtra(MEETUP_SHOWN) as MeetUp
-        model.meetUp = meetup
+        val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
+        viewModel.loadMeetUp(meetupId)
 
-        fillFields(meetup)
+        viewModel.meetUp.observe(this) { meetUp ->
+            fillFields(meetUp)
+        }
     }
 
     private fun setTextView(id: Int, value: String){
@@ -48,7 +50,7 @@ class MeetUpView : AppCompatActivity() {
 
     fun onEdit(v: View){
         val intent = Intent(this, MeetUpCreation::class.java).apply {
-            putExtra(MEETUP_EDIT, model.meetUp)
+            putExtra(MEETUP_EDIT, viewModel.meetUp.value?.uuid)
         }
         startActivity(intent)
     }

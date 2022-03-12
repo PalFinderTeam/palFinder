@@ -31,9 +31,6 @@ class MeetUpCreation : AppCompatActivity() {
 
         dateFormat = SimpleDateFormat(getString(R.string.date_long_format))
 
-        viewModel.setStartDate(Calendar.getInstance())
-        viewModel.setEndDate(Calendar.getInstance())
-
         if (intent.hasExtra(MEETUP_EDIT)) {
             val meetupId = intent.getStringExtra(MEETUP_EDIT)
             if (meetupId != null) {

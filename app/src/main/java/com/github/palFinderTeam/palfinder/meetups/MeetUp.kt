@@ -4,6 +4,7 @@ import android.icu.util.Calendar
 import android.util.Log
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.isBefore
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.getField
@@ -124,9 +125,12 @@ data class MeetUp(
     }
 
     /**
-     * Provide a way to convert a firestore query result, in a MeetUp
+     * Provide a way to convert a Firestore query result, in a MeetUp
      */
     companion object {
+
+        class MeetUpUsers(val users: List<TempUser>)
+
         fun DocumentSnapshot.toMeetUp(): MeetUp? {
             try {
                 val uuid = id
@@ -139,8 +143,8 @@ data class MeetUp(
                 val location = getGeoPoint("location")!!
                 val name = getString("name")!!
                 // TODO find something
-                val participants = getField<List<String>>("participants")!!
-                val tags = getField<Array<String>>("tags")!!
+                // val participants = getField<List<Any>>("participants")!!
+                val tags = get("tags")!!
                 val hasMaxCapacity = getBoolean("hasMaxCapacity")!!
 
                 // Convert Date to calendar
@@ -158,13 +162,13 @@ data class MeetUp(
                     startDateCal,
                     endDateCal,
                     Location(location.longitude, location.latitude),
-                    tags.toList(),
+                    tags as List<String>,
                     hasMaxCapacity,
                     capacity.toInt(),
                     mutableListOf()
                 )
             } catch (e: Exception) {
-                Log.e("User", "Error converting user profile", e)
+                Log.e("Meetup", "Error deserializing meetup", e)
                 return null
             }
         }
