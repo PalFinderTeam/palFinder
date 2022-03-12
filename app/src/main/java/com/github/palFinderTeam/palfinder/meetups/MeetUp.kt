@@ -2,12 +2,12 @@ package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
 import android.util.Log
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.isBefore
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
-import com.google.firebase.firestore.ktx.getField
 
 /**
  * @param uuid: Unique Identifier of the meetup
@@ -25,17 +25,17 @@ import com.google.firebase.firestore.ktx.getField
  */
 data class MeetUp(
     val uuid: String,
-    val creator: TempUser, // TODO -  Change to Real User
+    val creator: ProfileUser,
     val icon: String,
     val name: String,
     val description: String,
     val startDate: Calendar,
     val endDate: Calendar,
     val location: Location,
-    val tags: List<String>, // TODO - Change to tag
+    val tags: Set<Category>,
     val hasMaxCapacity: Boolean,
     val capacity: Int,
-    val participants: MutableList<TempUser>, // TODO -  Change to Real User
+    val participants: MutableList<ProfileUser>, // TODO -  Change to Real User
 ): java.io.Serializable {
 
     /**
@@ -81,7 +81,7 @@ data class MeetUp(
      *  Add [user] to the Event if [now] is a valid date to join
      *  @param now: current date
      */
-    fun join(now: Calendar, user: TempUser){
+    fun join(now: Calendar, user: ProfileUser){
         if (canJoin(now) && !isParticipating(user)){
             participants.add(user)
         }
@@ -91,7 +91,7 @@ data class MeetUp(
      *  Remove [user] from the event
      *  if user is not in the event, does nothing
      */
-    fun leave(user: TempUser){
+    fun leave(user: ProfileUser){
         if (isParticipating(user)){
             participants.remove(user)
         }
@@ -100,7 +100,7 @@ data class MeetUp(
     /**
      *  @return if the user is taking part in the event
      */
-    fun isParticipating(user: TempUser):Boolean{
+    fun isParticipating(user: ProfileUser): Boolean {
         return participants.contains(user)
     }
 
@@ -120,7 +120,7 @@ data class MeetUp(
             "location" to GeoPoint(location.latitude, location.longitude),
             "name" to name,
             "participants" to participants.map { it.name }.toList(),
-            "tags" to tags,
+            "tags" to tags.map { it.toString() },
         )
     }
 
@@ -135,7 +135,7 @@ data class MeetUp(
             try {
                 val uuid = id
                 // TODO Make it fetch other document
-                val creator = TempUser("wathever", "wathever")
+                val creator = ProfileUser("michel", "whatever", "miche", Calendar.getInstance())
                 val capacity = getLong("capacity")!!
                 val description = getString("description")!!
                 val startDate = getDate("startDate")!!
@@ -144,7 +144,7 @@ data class MeetUp(
                 val name = getString("name")!!
                 // TODO find something
                 // val participants = getField<List<Any>>("participants")!!
-                val tags = get("tags")!!
+                val tags = get("tags")!! as List<String>
                 val hasMaxCapacity = getBoolean("hasMaxCapacity")!!
 
                 // Convert Date to calendar
@@ -162,7 +162,7 @@ data class MeetUp(
                     startDateCal,
                     endDateCal,
                     Location(location.longitude, location.latitude),
-                    tags as List<String>,
+                    tags.map { Category.valueOf(it) }.toSet(),
                     hasMaxCapacity,
                     capacity.toInt(),
                     mutableListOf()

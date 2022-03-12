@@ -12,7 +12,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
-import com.github.palFinderTeam.palfinder.meetups.TempUser
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import org.junit.Before
 import org.junit.Test
@@ -24,36 +24,38 @@ class MeetupViewTest {
     private var meetup: MeetUp? = null
     private val eventName = "dummy1"
     private val eventDescription = "dummy2"
-    private var date1: Calendar? = null
-    private var date2: Calendar? = null
+    private lateinit var date1: Calendar
+    private lateinit var date2: Calendar
 
-    val format = SimpleDateFormat("EEEE, MMMM d, yyyy \'at\' h:mm a")
-    var expectDate2: String? = null
-    var expectDate1: String? = null
+    private val format = SimpleDateFormat("EEEE, MMMM d, yyyy \'at\' h:mm a")
+    private lateinit var expectDate2: String
+    private lateinit var expectDate1: String
 
     @Before
     fun init(){
         date1 = Calendar.getInstance()
-        date1!!.set(2022, 2,1,0,0,0)
+        date1.set(2022, 2,1,0,0,0)
         date2 = Calendar.getInstance()
-        date2!!.set(2022, 2,1,1,0,0)
+        date2.set(2022, 2,1,1,0,0)
 
-        expectDate1 = format.format(date1)!!
-        expectDate2 = format.format(date2)!!
+        val user = ProfileUser("dummy1","dummy2","dummy", date1)
+
+        expectDate1 = format.format(date1)
+        expectDate2 = format.format(date2)
 
         meetup = MeetUp(
             "dummy",
-            TempUser("", "Bob"),
+            user,
             "",
             eventName,
             eventDescription,
-            date1!!,
-            date2!!,
+            date1,
+            date2,
             Location(0.0,0.0),
-            emptyList(),
+            emptySet(),
             true,
             2,
-            mutableListOf(TempUser("", "Alice"))
+            mutableListOf(user)
         )
     }
 

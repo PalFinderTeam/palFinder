@@ -8,9 +8,13 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
+import androidx.lifecycle.ViewModelProvider
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import dagger.hilt.android.AndroidEntryPoint
+import com.github.palFinderTeam.palfinder.tag.*
 
 
 const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_SHOWN"
@@ -19,6 +23,8 @@ const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_
 @AndroidEntryPoint
 class MeetUpView : AppCompatActivity() {
     private val viewModel: MeetUpViewViewModel by viewModels()
+    private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
+    private lateinit var tagsViewModel: TagsViewModel<Category>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +35,19 @@ class MeetUpView : AppCompatActivity() {
 
         viewModel.meetUp.observe(this) { meetUp ->
             fillFields(meetUp)
+        }
+
+        tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
+        tagsViewModel = ViewModelProvider(
+            this,
+            tagsViewModelFactory
+        )[TagsViewModel::class.java] as TagsViewModel<Category>
+
+        if (savedInstanceState == null) {
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                add<TagsDisplayFragment<Category>>(R.id.fc_tags)
+            }
         }
     }
 
@@ -43,8 +62,7 @@ class MeetUpView : AppCompatActivity() {
 
         setTextView(R.id.tv_ViewEventName,meetup.name)
         setTextView(R.id.tv_ViewEventDescritpion,meetup.description)
-        setTextView(R.id.tv_ViewEventCreator,
-            getString(R.string.meetup_view_creator, meetup.creator.name))
+        setTextView(R.id.tv_ViewEventCreator, getString(R.string.meetup_view_creator, meetup.creator.name))
 
         setTextView(R.id.tv_ViewStartDate, startDate)
         setTextView(R.id.tv_ViewEndDate,endDate)

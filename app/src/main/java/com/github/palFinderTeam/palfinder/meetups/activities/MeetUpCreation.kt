@@ -10,7 +10,14 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
+import androidx.lifecycle.ViewModelProvider
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment
+import com.github.palFinderTeam.palfinder.tag.TagsViewModel
+import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import com.github.palFinderTeam.palfinder.utils.askTime
 import com.google.android.material.snackbar.Snackbar
@@ -23,6 +30,9 @@ const val defaultTimeDelta = 1000 * 60 * 60
 @AndroidEntryPoint
 class MeetUpCreation : AppCompatActivity() {
     private val viewModel: MeetUpCreationViewModel by viewModels()
+    private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
+    private lateinit var tagsViewModel: TagsViewModel<Category>
+
     private var dateFormat = SimpleDateFormat()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,13 +41,30 @@ class MeetUpCreation : AppCompatActivity() {
 
         dateFormat = SimpleDateFormat(getString(R.string.date_long_format))
 
+
+        bindUI()
+        tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
+        tagsViewModel = ViewModelProvider(
+            this,
+            tagsViewModelFactory
+        )[TagsViewModel::class.java] as TagsViewModel<Category>
+
+        if (savedInstanceState == null) {
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                add<TagsDisplayFragment<Category>>(R.id.fc_tags)
+            }
+        }
+
         if (intent.hasExtra(MEETUP_EDIT)) {
             val meetupId = intent.getStringExtra(MEETUP_EDIT)
             if (meetupId != null) {
                 viewModel.loadMeetUp(meetupId)
             }
         }
+    }
 
+    private fun bindUI() {
         viewModel.startDate.observe(this) { newDate ->
             setTextView(R.id.tv_StartDate, dateFormat.format(newDate))
         }
@@ -65,16 +92,16 @@ class MeetUpCreation : AppCompatActivity() {
         }
     }
 
-    private fun setTextView(id: Int, value: String){
+    private fun setTextView(id: Int, value: String) {
         findViewById<TextView>(id).apply { this.text = value }
     }
-
 
     fun onStartTimeSelectButton(v: View){
         askTime(supportFragmentManager).thenAccept{
             viewModel.setStartDate(it)
         }
     }
+
     fun onEndTimeSelectButton(v: View){
         askTime(supportFragmentManager).thenAccept{
             viewModel.setEndDate(it)
@@ -113,7 +140,6 @@ class MeetUpCreation : AppCompatActivity() {
         if (!checkFieldValid(name, description)) return
 
         viewModel.sendMeetUp()
-
     }
 
     private fun showMessage(message: Int, title: Int) {

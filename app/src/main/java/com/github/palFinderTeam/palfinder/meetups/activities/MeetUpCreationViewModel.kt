@@ -5,6 +5,9 @@ import androidx.lifecycle.*
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.TempUser
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,8 +24,9 @@ class MeetUpCreationViewModel @Inject constructor(
     private val _endDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
     private val _capacity: MutableLiveData<Int> = MutableLiveData(0)
     private val _hasMaxCapacity: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val _name: MutableLiveData<String> = MutableLiveData()
+    private val _name: MutableLiveData<String> = MutableLiveData("")
     private val _description: MutableLiveData<String> = MutableLiveData("")
+    private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
 
     private val _sendSuccess: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>()
@@ -35,6 +39,7 @@ class MeetUpCreationViewModel @Inject constructor(
     val name: LiveData<String> = _name
     val description: LiveData<String> = _description
     val sendSuccess: LiveData<Boolean> = _sendSuccess
+    val tags: LiveData<Set<Category>> = _tags
 
     fun setStartDate(date: Calendar) {
         _startDate.value = date
@@ -82,16 +87,18 @@ class MeetUpCreationViewModel @Inject constructor(
 
     fun sendMeetUp() {
         if (uuid == null) {
+            // TODO Finish
             val meetUp = MeetUp(
                 "",
-                TempUser("d", "michel"),
+                // TODO Put real user
+                ProfileUser("d", "michel","michou", Calendar.getInstance()),
                 "wathever",
                 name.value!!,
                 description.value!!,
                 startDate.value!!,
                 endDate.value!!,
                 Location(1.0, 2.0),
-                listOf(),
+                tags.value.orEmpty(),
                 hasMaxCapacity.value!!,
                 capacity.value!!,
                 mutableListOf()
@@ -102,7 +109,7 @@ class MeetUpCreationViewModel @Inject constructor(
                 _sendSuccess.value = (uuid != null)
             }
         } else {
-            // edit existing meetup
+            // TODO edit existing meetup
         }
     }
 
@@ -122,4 +129,34 @@ class MeetUpCreationViewModel @Inject constructor(
         }
     }
 
+    /**
+     *
+     */
+    val tagRepository = object : TagsRepository<Category> {
+        override val tags: Set<Category>
+            get() = _tags.value ?: setOf()
+
+        override val isEditable = true
+        override val allTags = Category.values().toSet()
+
+        override fun removeTag(tag: Category): Boolean {
+            val tags = _tags.value
+            return if (tags == null || !tags.contains(tag)) {
+                false
+            } else {
+                _tags.value = tags.minus(tag)
+                true
+            }
+        }
+
+        override fun addTag(tag: Category): Boolean {
+            val tags = _tags.value
+            return if (tags == null || tags.contains(tag)) {
+                false
+            } else {
+                _tags.value = tags.plus(tag)
+                true
+            }
+        }
+    }
 }

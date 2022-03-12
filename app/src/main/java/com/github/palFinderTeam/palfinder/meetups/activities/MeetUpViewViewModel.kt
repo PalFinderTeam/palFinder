@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import kotlinx.coroutines.launch
 
 class MeetUpViewViewModel: ViewModel() {
@@ -20,9 +22,23 @@ class MeetUpViewViewModel: ViewModel() {
     fun loadMeetUp(meetUpId: String) {
         viewModelScope.launch {
             val fetchedMeetUp = FirebaseMeetUpService.getMeetUpData(meetUpId)
-            if (fetchedMeetUp != null) {
-                _meetUp.value = fetchedMeetUp
-            }
+            // TODO do something on error
+            fetchedMeetUp?.let { _meetUp.value = it }
         }
+    }
+
+    /**
+     *
+     */
+    val tagRepository = object : TagsRepository<Category> {
+        override val tags: Set<Category>
+            get() = meetUp.value?.tags ?: setOf()
+
+        override val isEditable = false
+        override val allTags = Category.values().toSet()
+
+        override fun removeTag(tag: Category): Boolean = false
+
+        override fun addTag(tag: Category): Boolean = false
     }
 }
