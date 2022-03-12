@@ -92,20 +92,7 @@ class LoginActivity : AppCompatActivity() {
         val signInButton = findViewById<SignInButton>(R.id.signInButton)
         auth = Firebase.auth
         oneTapClient = Identity.getSignInClient(this)
-        signInRequest= BeginSignInRequest.builder()
-            .setPasswordRequestOptions(BeginSignInRequest.PasswordRequestOptions.builder()
-                .setSupported(true)
-                .build())
-            .setGoogleIdTokenRequestOptions(
-                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-                    .setSupported(true)
-                    .setServerClientId(getString(R.string.default_web_client_id))
-                    // Only show accounts previously used to sign in.
-                    .setFilterByAuthorizedAccounts(true)
-                    .build())
-            .setAutoSelectEnabled(true)
-            .build()
-
+        signInRequest= beginSignInRequest()
         displayOneTap()
 
 
@@ -126,7 +113,24 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    fun displayOneTap(){
+    private fun beginSignInRequest() = BeginSignInRequest.builder()
+        .setPasswordRequestOptions(
+            BeginSignInRequest.PasswordRequestOptions.builder()
+                .setSupported(true)
+                .build()
+        )
+        .setGoogleIdTokenRequestOptions(
+            BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                .setSupported(true)
+                .setServerClientId(getString(R.string.default_web_client_id))
+                // Only show accounts previously used to sign in.
+                .setFilterByAuthorizedAccounts(true)
+                .build()
+        )
+        .setAutoSelectEnabled(true)
+        .build()
+
+    private fun displayOneTap(){
         oneTapClient.beginSignIn(signInRequest)
             .addOnSuccessListener(this) { result ->
                 try {
@@ -160,7 +164,6 @@ class LoginActivity : AppCompatActivity() {
                             // Got an ID token from Google. Use it to authenticate
                             // with your backend.
                             Log.d(TAG, "Got ID token.")
-
                             firebaseAuthWithGoogle(idToken)
                         }
                         password != null -> {
@@ -174,21 +177,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                     }
                 } catch (e: ApiException) {
-                    when (e.statusCode) {
-                        CommonStatusCodes.CANCELED -> {
-                            Log.d(TAG, "One-tap dialog was closed.")
-                            // Don't re-prompt the user.
-                            showOneTapUI = false
-                        }
-                        CommonStatusCodes.NETWORK_ERROR -> {
-                            Log.d(TAG, "One-tap encountered a network error.")
-                            // Try again or just ignore.
-                        }
-                        else -> {
-                            Log.d(TAG, "Couldn't get credential from result." +
-                                    " (${e.localizedMessage})")
-                        }
-                    }
+                    oneTapException(e)
                 }
             }
             RC_GOOGLE_SIGN_IN -> {
@@ -204,8 +193,26 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
+    }
 
-
+    private fun oneTapException(e: ApiException) {
+        when (e.statusCode) {
+            CommonStatusCodes.CANCELED -> {
+                Log.d(TAG, "One-tap dialog was closed.")
+                // Don't re-prompt the user.
+                showOneTapUI = false
+            }
+            CommonStatusCodes.NETWORK_ERROR -> {
+                Log.d(TAG, "One-tap encountered a network error.")
+                // Try again or just ignore.
+            }
+            else -> {
+                Log.d(
+                    TAG, "Couldn't get credential from result." +
+                            " (${e.localizedMessage})"
+                )
+            }
+        }
     }
     /* previous onActivityResult
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -255,6 +262,12 @@ class LoginActivity : AppCompatActivity() {
             "join_date" to Date(),
             "picture" to user.photoUrl.toString()
         )
+        addNewUser(user, dbUser)
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+    }
+
+    private fun addNewUser(user: FirebaseUser, dbUser: Cloneable) {
         val docRef = db.collection("users").document(user.uid)
         docRef.get()
             .addOnSuccessListener { document ->
@@ -275,9 +288,6 @@ class LoginActivity : AppCompatActivity() {
             .addOnFailureListener { exception ->
                 Log.d(TAG, "get failed with ", exception)
             }
-
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
     }
 
     /*private fun showLoginFailed(@StringRes errorString: Int) {
