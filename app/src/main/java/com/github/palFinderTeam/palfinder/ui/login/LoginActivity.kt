@@ -159,23 +159,7 @@ class LoginActivity : AppCompatActivity() {
                     val idToken = credential.googleIdToken
                     val username = credential.id
                     val password = credential.password
-                    when {
-                        idToken != null -> {
-                            // Got an ID token from Google. Use it to authenticate
-                            // with your backend.
-                            Log.d(TAG, "Got ID token.")
-                            firebaseAuthWithGoogle(idToken)
-                        }
-                        password != null -> {
-                            // Got a saved username and password. Use them to authenticate
-                            // with your backend.
-                            Log.d(TAG, "Got password.")
-                        }
-                        else -> {
-                            // Shouldn't happen.
-                            Log.d(TAG, "No ID token or password!")
-                        }
-                    }
+                    checkOneTapCredential(idToken, password)
                 } catch (e: ApiException) {
                     oneTapException(e)
                 }
@@ -191,6 +175,26 @@ class LoginActivity : AppCompatActivity() {
                     // Google Sign In failed, update UI appropriately
                     Log.w(TAG, "Google sign in failed", e)
                 }
+            }
+        }
+    }
+
+    private fun checkOneTapCredential(idToken: String?, password: String?) {
+        when {
+            idToken != null -> {
+                // Got an ID token from Google. Use it to authenticate
+                // with your backend.
+                Log.d(TAG, "Got ID token.")
+                firebaseAuthWithGoogle(idToken)
+            }
+            password != null -> {
+                // Got a saved username and password. Use them to authenticate
+                // with your backend.
+                Log.d(TAG, "Got password.")
+            }
+            else -> {
+                // Shouldn't happen.
+                Log.d(TAG, "No ID token or password!")
             }
         }
     }
