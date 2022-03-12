@@ -4,23 +4,23 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
-import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
-import com.github.palFinderTeam.palfinder.meetups.TempUser
-import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import com.github.palFinderTeam.palfinder.utils.askTime
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
 const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
 const val defaultTimeDelta = 1000 * 60 * 60
 
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
+@AndroidEntryPoint
 class MeetUpCreation : AppCompatActivity() {
     private val viewModel: MeetUpCreationViewModel by viewModels()
     private var dateFormat = SimpleDateFormat()
@@ -44,11 +44,17 @@ class MeetUpCreation : AppCompatActivity() {
         viewModel.endDate.observe(this) { newDate ->
             setTextView(R.id.tv_EndDate, dateFormat.format(newDate))
         }
-        viewModel.name.observe(this) { newName ->
-            setTextView(R.id.et_EventName, newName)
+        viewModel.name.observeOnce(this) {
+            setTextView(R.id.et_EventName, it)
         }
-        viewModel.description.observe(this) { newDescription ->
-            setTextView(R.id.et_Description, newDescription)
+        findViewById<TextView>(R.id.et_EventName).doAfterTextChanged { text ->
+            viewModel.setName(text.toString())
+        }
+        viewModel.description.observeOnce(this) {
+            setTextView(R.id.et_Description, it)
+        }
+        findViewById<TextView>(R.id.et_Description).doAfterTextChanged { text ->
+            viewModel.setDescription(text.toString())
         }
         viewModel.hasMaxCapacity.observe(this) { hasMaxCapacity ->
             if (hasMaxCapacity) {

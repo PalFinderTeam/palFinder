@@ -1,25 +1,27 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.icu.util.Calendar
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
+import androidx.lifecycle.*
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.TempUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MeetUpCreationViewModel: ViewModel() {
+@HiltViewModel
+class MeetUpCreationViewModel @Inject constructor(
+    private val meetUpRepository: MeetUpRepository
+): ViewModel() {
     private var uuid: String? = null
 
     private val _startDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
     private val _endDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
     private val _capacity: MutableLiveData<Int> = MutableLiveData(0)
     private val _hasMaxCapacity: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val _name: MutableLiveData<String> = MutableLiveData("")
+    private val _name: MutableLiveData<String> = MutableLiveData()
     private val _description: MutableLiveData<String> = MutableLiveData("")
 
     private val _sendSuccess: MutableLiveData<Boolean> by lazy {
@@ -52,11 +54,19 @@ class MeetUpCreationViewModel: ViewModel() {
         _hasMaxCapacity.value = hasMaxCapacity
     }
 
+    fun setName(name: String) {
+        _name.value = name
+    }
+
+    fun setDescription(description: String) {
+        _description.value = description
+    }
+
     fun getMeetUpId() = uuid
 
     fun loadMeetUp(meetUpId: String) {
         viewModelScope.launch {
-            val meetUp = FirebaseMeetUpService.getMeetUpData(meetUpId)
+            val meetUp = meetUpRepository.getMeetUpData(meetUpId)
             if (meetUp != null) {
                 uuid = meetUp.uuid
                 _name.value = meetUp.name
@@ -88,7 +98,7 @@ class MeetUpCreationViewModel: ViewModel() {
             )
             // create new meetup
             viewModelScope.launch {
-                uuid = FirebaseMeetUpService.createMeetUp(meetUp)
+                uuid = meetUpRepository.createMeetUp(meetUp)
                 _sendSuccess.value = (uuid != null)
             }
         } else {
@@ -111,4 +121,5 @@ class MeetUpCreationViewModel: ViewModel() {
             _endDate.value = newCalendar
         }
     }
+
 }

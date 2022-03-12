@@ -10,11 +10,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import dagger.hilt.android.AndroidEntryPoint
 
 
 const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_SHOWN"
 
 @SuppressLint("SimpleDateFormat")
+@AndroidEntryPoint
 class MeetUpView : AppCompatActivity() {
     private val viewModel: MeetUpViewViewModel by viewModels()
 
