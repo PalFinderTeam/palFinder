@@ -6,6 +6,7 @@ import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -83,12 +84,20 @@ class MeetUpCreation : AppCompatActivity() {
         findViewById<TextView>(R.id.et_Description).doAfterTextChanged { text ->
             viewModel.setDescription(text.toString())
         }
-        viewModel.hasMaxCapacity.observe(this) { hasMaxCapacity ->
-            if (hasMaxCapacity) {
-                setTextView(R.id.et_Capacity, viewModel.capacity.toString())
-            } else {
-                // TODO Hide Capacity
-            }
+        viewModel.hasMaxCapacity.observeOnce(this) { hasMaxCapacity ->
+            setCapacityField(hasMaxCapacity)
+            setTextView(R.id.et_Capacity, viewModel.capacity.toString())
+        }
+    }
+
+    private fun setCapacityField(isEditable: Boolean) {
+        val capacityField = findViewById<EditText>(R.id.et_Capacity)
+        if (isEditable) {
+            capacityField.isEnabled = true
+        } else {
+            capacityField.isEnabled = false
+            capacityField.text.clear()
+
         }
     }
 

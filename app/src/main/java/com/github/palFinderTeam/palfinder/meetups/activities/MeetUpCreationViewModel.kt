@@ -86,30 +86,32 @@ class MeetUpCreationViewModel @Inject constructor(
 
 
     fun sendMeetUp() {
+        // TODO Finish
+        val meetUp = MeetUp(
+            uuid.orEmpty(),
+            // TODO Put real user
+            ProfileUser("d", "michel","michou", Calendar.getInstance()),
+            "wathever",
+            name.value!!,
+            description.value!!,
+            startDate.value!!,
+            endDate.value!!,
+            Location(1.0, 2.0),
+            tags.value.orEmpty(),
+            hasMaxCapacity.value!!,
+            capacity.value!!,
+            mutableListOf()
+        )
         if (uuid == null) {
-            // TODO Finish
-            val meetUp = MeetUp(
-                "",
-                // TODO Put real user
-                ProfileUser("d", "michel","michou", Calendar.getInstance()),
-                "wathever",
-                name.value!!,
-                description.value!!,
-                startDate.value!!,
-                endDate.value!!,
-                Location(1.0, 2.0),
-                tags.value.orEmpty(),
-                hasMaxCapacity.value!!,
-                capacity.value!!,
-                mutableListOf()
-            )
             // create new meetup
             viewModelScope.launch {
                 uuid = meetUpRepository.createMeetUp(meetUp)
                 _sendSuccess.value = (uuid != null)
             }
         } else {
-            // TODO edit existing meetup
+            viewModelScope.launch {
+                meetUpRepository.editMeetUp(uuid!!, meetUp)
+            }
         }
     }
 

@@ -30,6 +30,13 @@ interface MeetUpRepository {
      * @param value new value.
      */
     suspend fun editMeetUp(meetUpId: String, field: String, value: Any): String?
+    /**
+     * Edit an existing meetUp in db.
+     *
+     * @param meetUpId id of MeetUp.
+     * @param meetUp meetUp that will overwrite the existing one.
+     */
+    suspend fun editMeetUp(meetUpId: String, meetUp: MeetUp): String?
 
     /**
      * Return a list of meetups around a certain location.

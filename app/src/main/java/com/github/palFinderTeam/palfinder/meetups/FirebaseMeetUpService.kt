@@ -44,6 +44,17 @@ object FirebaseMeetUpService : MeetUpRepository {
         }
     }
 
+    override suspend fun editMeetUp(meetUpId: String, meetUp: MeetUp): String? {
+        val db = FirebaseFirestore.getInstance()
+
+        return try {
+            db.collection(MEETUP_COLL).document(meetUpId).update(meetUp.toFirestoreData())
+            meetUpId
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     override suspend fun getMeetUpsAroundLocation(location: Location): Array<MeetUp>? {
         return null
     }
