@@ -97,4 +97,16 @@ class MeetUpListTest {
         }
     }
 
+    @Test
+    fun sortByCapacityWorks() {
+        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+            .apply {
+                putExtra("MEETUPS", meetups_list as Serializable)
+            }
+        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        scenario.use{
+            onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
+                .check(matches(withText(meetups_list[0].name)))
+        }
+    }
 }
