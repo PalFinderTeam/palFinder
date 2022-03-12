@@ -67,5 +67,6 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="limit_people">limit people</string>
+    <string name="DB_error_msg">Cannot contact database</string>
 
 </resources>

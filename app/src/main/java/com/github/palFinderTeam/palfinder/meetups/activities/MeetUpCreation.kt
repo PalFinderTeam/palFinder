@@ -6,6 +6,7 @@ import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.view.View
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -36,14 +37,25 @@ class MeetUpCreation : AppCompatActivity() {
 
     private var dateFormat = SimpleDateFormat()
 
+    private lateinit var hasLimitCheckBox: CheckBox
+    private lateinit var limitEditText: EditText
+    private lateinit var nameEditText: EditText
+    private lateinit var descriptionEditText: EditText
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_creation)
 
         dateFormat = SimpleDateFormat(getString(R.string.date_long_format))
 
+        hasLimitCheckBox = findViewById(R.id.hasCapacityButton)
+        limitEditText = findViewById(R.id.et_Capacity)
+        nameEditText = findViewById(R.id.et_EventName)
+        descriptionEditText = findViewById(R.id.et_Description)
 
         bindUI()
+
+        // Create tag fragment
         tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
         tagsViewModel = ViewModelProvider(
             this,
@@ -57,11 +69,19 @@ class MeetUpCreation : AppCompatActivity() {
             }
         }
 
+        // Load meetup or start from scratch
         if (intent.hasExtra(MEETUP_EDIT)) {
             val meetupId = intent.getStringExtra(MEETUP_EDIT)
             if (meetupId != null) {
                 viewModel.loadMeetUp(meetupId)
             }
+        } else {
+            viewModel.fillWithDefaultValues()
+        }
+
+        // Make sure tags are refreshed once when fetching from DB
+        viewModel.tags.observeOnce(this) {
+            tagsViewModel.refreshTags()
         }
     }
 
@@ -75,29 +95,44 @@ class MeetUpCreation : AppCompatActivity() {
         viewModel.name.observeOnce(this) {
             setTextView(R.id.et_EventName, it)
         }
-        findViewById<TextView>(R.id.et_EventName).doAfterTextChanged { text ->
+        nameEditText.doAfterTextChanged { text ->
             viewModel.setName(text.toString())
         }
         viewModel.description.observeOnce(this) {
             setTextView(R.id.et_Description, it)
         }
-        findViewById<TextView>(R.id.et_Description).doAfterTextChanged { text ->
+        descriptionEditText.doAfterTextChanged { text ->
             viewModel.setDescription(text.toString())
         }
         viewModel.hasMaxCapacity.observeOnce(this) { hasMaxCapacity ->
-            setCapacityField(hasMaxCapacity)
-            setTextView(R.id.et_Capacity, viewModel.capacity.toString())
+            hasLimitCheckBox.isChecked = hasMaxCapacity
+            limitEditText.isEnabled = hasMaxCapacity
         }
+        viewModel.capacity.observeOnce(this) {
+            setTextView(R.id.et_Capacity, it.toString())
+        }
+        hasLimitCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            setCapacityField(isChecked)
+            viewModel.setHasMaxCapacity(isChecked)
+        }
+        limitEditText.doAfterTextChanged { text ->
+            val parsed = text.toString().toIntOrNull()
+            if (parsed != null) {
+                viewModel.setCapacity(parsed)
+            } else {
+                // TODO find something meaningful to do
+                viewModel.setCapacity(1)
+            }
+        }
+        limitEditText.isEnabled = hasLimitCheckBox.isChecked
     }
 
     private fun setCapacityField(isEditable: Boolean) {
-        val capacityField = findViewById<EditText>(R.id.et_Capacity)
         if (isEditable) {
-            capacityField.isEnabled = true
+            limitEditText.isEnabled = true
         } else {
-            capacityField.isEnabled = false
-            capacityField.text.clear()
-
+            limitEditText.isEnabled = false
+            limitEditText.text.clear()
         }
     }
 
@@ -105,14 +140,14 @@ class MeetUpCreation : AppCompatActivity() {
         findViewById<TextView>(id).apply { this.text = value }
     }
 
-    fun onStartTimeSelectButton(v: View){
-        askTime(supportFragmentManager).thenAccept{
+    fun onStartTimeSelectButton(v: View) {
+        askTime(supportFragmentManager).thenAccept {
             viewModel.setStartDate(it)
         }
     }
 
-    fun onEndTimeSelectButton(v: View){
-        askTime(supportFragmentManager).thenAccept{
+    fun onEndTimeSelectButton(v: View) {
+        askTime(supportFragmentManager).thenAccept {
             viewModel.setEndDate(it)
         }
     }
@@ -121,17 +156,25 @@ class MeetUpCreation : AppCompatActivity() {
     /**
      * Check Name and Description are present
      */
-    private fun checkFieldValid(name: String, description: String): Boolean{
-        if (name == "" || description == ""){
-            showMessage(R.string.meetup_creation_missing_name_desc,
-                R.string.meetup_creation_missing_name_desc_title)
+    private fun checkFieldValid(name: String, description: String): Boolean {
+        if (name == "" || description == "") {
+            showMessage(
+                R.string.meetup_creation_missing_name_desc,
+                R.string.meetup_creation_missing_name_desc_title
+            )
             return false
         }
         return true
     }
 
-    fun onDone(v: View){
+    fun onDone(v: View) {
 
+        // Check field validity
+        val name = nameEditText.text.toString()
+        val description = descriptionEditText.text.toString()
+        if (!checkFieldValid(name, description)) return
+
+        // Listen on DB response to move forward.
         viewModel.sendSuccess.observe(this) { isSuccessFull ->
             if (isSuccessFull) {
                 val intent = Intent(this, MeetUpView::class.java).apply {
@@ -139,24 +182,19 @@ class MeetUpCreation : AppCompatActivity() {
                 }
                 startActivity(intent)
             } else {
-                val errorSnackbar = Snackbar.make(v, "Lmao", 4)
-                errorSnackbar.show()
+                Snackbar.make(v, getString(R.string.DB_error_msg), 4).show()
             }
         }
-
-        val name = findViewById<TextView>(R.id.et_EventName).text.toString()
-        val description = findViewById<TextView>(R.id.et_Description).text.toString()
-        if (!checkFieldValid(name, description)) return
 
         viewModel.sendMeetUp()
     }
 
     private fun showMessage(message: Int, title: Int) {
-        val dlgAlert = AlertDialog.Builder(this);
-        dlgAlert.setMessage(message);
-        dlgAlert.setTitle(title);
-        dlgAlert.setPositiveButton(R.string.ok, null);
-        dlgAlert.setCancelable(true);
-        dlgAlert.create().show();
+        val dlgAlert = AlertDialog.Builder(this)
+        dlgAlert.setMessage(message)
+        dlgAlert.setTitle(title)
+        dlgAlert.setPositiveButton(R.string.ok, null)
+        dlgAlert.setCancelable(true)
+        dlgAlert.create().show()
     }
 }

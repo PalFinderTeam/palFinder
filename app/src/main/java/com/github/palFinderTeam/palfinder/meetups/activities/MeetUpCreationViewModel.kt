@@ -22,11 +22,11 @@ class MeetUpCreationViewModel @Inject constructor(
 
     private val _startDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
     private val _endDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
-    private val _capacity: MutableLiveData<Int> = MutableLiveData(0)
-    private val _hasMaxCapacity: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val _name: MutableLiveData<String> = MutableLiveData("")
-    private val _description: MutableLiveData<String> = MutableLiveData("")
-    private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
+    private val _capacity: MutableLiveData<Int> = MutableLiveData()
+    private val _hasMaxCapacity: MutableLiveData<Boolean> = MutableLiveData()
+    private val _name: MutableLiveData<String> = MutableLiveData()
+    private val _description: MutableLiveData<String> = MutableLiveData()
+    private val _tags: MutableLiveData<Set<Category>> = MutableLiveData()
 
     private val _sendSuccess: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>()
@@ -40,6 +40,17 @@ class MeetUpCreationViewModel @Inject constructor(
     val description: LiveData<String> = _description
     val sendSuccess: LiveData<Boolean> = _sendSuccess
     val tags: LiveData<Set<Category>> = _tags
+
+    /**
+     * Fill every field with default value (in case of meetup creation)
+     */
+    fun fillWithDefaultValues() {
+        _capacity.value = 1
+        _hasMaxCapacity.value = false
+        _name.value = ""
+        _description.value = ""
+        _tags.value = setOf()
+    }
 
     fun setStartDate(date: Calendar) {
         _startDate.value = date
@@ -69,6 +80,11 @@ class MeetUpCreationViewModel @Inject constructor(
 
     fun getMeetUpId() = uuid
 
+    /**
+     * Load asynchronously a meetUp and update liveData on success.
+     *
+     * @param meetUpId Id of the meetUp to fetch
+     */
     fun loadMeetUp(meetUpId: String) {
         viewModelScope.launch {
             val meetUp = meetUpRepository.getMeetUpData(meetUpId)
@@ -80,18 +96,23 @@ class MeetUpCreationViewModel @Inject constructor(
                 _endDate.value = meetUp.endDate
                 _hasMaxCapacity.value = meetUp.hasMaxCapacity
                 _capacity.value = meetUp.capacity
+                _tags.value = meetUp.tags
+            } else {
+                fillWithDefaultValues()
             }
         }
     }
 
-
+    /**
+     * Send every field as a MeetUp to DB.
+     */
     fun sendMeetUp() {
-        // TODO Finish
         val meetUp = MeetUp(
             uuid.orEmpty(),
             // TODO Put real user
-            ProfileUser("d", "michel","michou", Calendar.getInstance()),
-            "wathever",
+            ProfileUser("le miche 420", "Michel","Francis", Calendar.getInstance()),
+            // TODO Put real icon
+            "whatever",
             name.value!!,
             description.value!!,
             startDate.value!!,
@@ -100,17 +121,21 @@ class MeetUpCreationViewModel @Inject constructor(
             tags.value.orEmpty(),
             hasMaxCapacity.value!!,
             capacity.value!!,
+            // TODO Put real users
             mutableListOf()
         )
         if (uuid == null) {
             // create new meetup
             viewModelScope.launch {
                 uuid = meetUpRepository.createMeetUp(meetUp)
+                // Notify sending result
                 _sendSuccess.value = (uuid != null)
             }
         } else {
+            // Edit existing one
             viewModelScope.launch {
                 meetUpRepository.editMeetUp(uuid!!, meetUp)
+                _sendSuccess.value = true
             }
         }
     }
@@ -132,7 +157,7 @@ class MeetUpCreationViewModel @Inject constructor(
     }
 
     /**
-     *
+     *  Provides the tagContainer with the necessary tags and allows it to edit them.
      */
     val tagRepository = object : TagsRepository<Category> {
         override val tags: Set<Category>
