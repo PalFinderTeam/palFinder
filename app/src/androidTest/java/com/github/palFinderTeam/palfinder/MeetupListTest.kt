@@ -2,15 +2,19 @@ package com.github.palFinderTeam.palfinder
 
 import android.content.Intent
 import android.icu.util.Calendar
+import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.palFinderTeam.palfinder.meetups.MeetUpDumb
+import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.meetups.TempUser
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.RecyclerViewMatcher
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,7 +22,7 @@ import java.io.Serializable
 
 @RunWith(AndroidJUnit4::class)
 class MeetUpListTest {
-    private lateinit var meetups_list: List<MeetUpDumb>;//TODO - correct to use right meetup
+    private lateinit var meetups_list: List<MeetUp>;//TODO - correct to use right meetup
 
     @Before
     fun create_meetups_lists() {
@@ -32,21 +36,50 @@ class MeetUpListTest {
         c4.set(2022, 0, 1)
 
         meetups_list = listOf(
-            MeetUpDumb(
-                icon = null,
-                name = "cuire des carottes",
-                description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre",
-                startDate = c1,
-                endDate = c2,
-                location = null,
-                tags = null,
-                capacity = 45
-            )
+            MeetUp(icon = "", name = "cuire des carottes",
+                description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre", startDate = c1,
+                endDate = c2, location = Location(0.0, 0.0), tags = listOf(Category.DRINKING.toString()), capacity = 45,
+                creator = TempUser("", "as"), hasMaxCapacity = true, participants = listOf<TempUser>(
+                    TempUser("", "cae")
+                ).toMutableList(),
+                uuid = "ce"
+            ),
+            MeetUp(icon = "", name = "cuire des patates",
+                description = "nous aimerions bien nous atteler à la cuisson de patates au beurre", startDate = c2,
+                endDate = c1, location = Location(0.0, 0.0), tags = listOf(Category.DRINKING.toString()), capacity = 48,
+                creator = TempUser("", "as"), hasMaxCapacity = true, participants = listOf<TempUser>(
+                    TempUser("", "cae")
+                ).toMutableList(),
+                uuid = "ce"),
+            MeetUp(icon = "", name = "Street workout",
+                description = "workout pepouse au pont chauderon", startDate = c3,
+                endDate = c1, location = Location(0.0, 0.0), tags = listOf(Category.DRINKING.toString()), capacity = 9,
+                creator = TempUser("", "as"), hasMaxCapacity = true, participants = listOf<TempUser>(
+                    TempUser("", "cae")
+                ).toMutableList(),
+                uuid = "ce"
+            ),
+            MeetUp(icon = "", name = "Van Gogh Beaulieux",
+                description = "Expo sans tableau c'est bo", startDate = c4,
+                endDate = c1, location = Location(0.0, 0.0), tags = listOf(Category.DRINKING.toString()), capacity = 15,
+                creator = TempUser("", "as"), hasMaxCapacity = true, participants = listOf<TempUser>(
+                    TempUser("", "cae")
+                ).toMutableList(),
+                uuid = "ce"
+            ),
+            MeetUp(icon = "", name = "Palexpo",
+                description = "popopo", startDate = c4,
+                endDate = c2, location = Location(0.0, 0.0), tags = listOf(Category.DRINKING.toString()), capacity = 13,
+                creator = TempUser("", "as"), hasMaxCapacity = true, participants = listOf<TempUser>(
+                    TempUser("", "cae")
+                ).toMutableList(),
+                uuid = "ce"
+            ),
         )
     }
 
     @Test
-    fun testAddingMeetup() {
+    fun testDisplayActivity() {
         val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
             .apply {
                 putExtra("MEETUPS", meetups_list as Serializable)
@@ -63,4 +96,5 @@ class MeetUpListTest {
             scenario.close()
         }
     }
+
 }
