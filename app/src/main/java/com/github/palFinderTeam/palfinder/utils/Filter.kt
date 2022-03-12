@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.utils
 
 import android.widget.Filter
+import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.tag.Tag
 import java.util.*
 
@@ -16,6 +17,10 @@ import java.util.*
                     when(item) {
                         is Tag ->
                             if ((item as Tag).tagName.lowercase(Locale.getDefault()).contains(filterPattern)) {
+                                filteredList.add(item)
+                            }
+                        is MeetUp ->
+                            if ((item as MeetUp).name.lowercase(Locale.getDefault()).contains(filterPattern)) {
                                 filteredList.add(item)
                             }
                         else ->

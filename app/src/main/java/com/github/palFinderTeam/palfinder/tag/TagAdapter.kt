@@ -53,32 +53,5 @@ class TagAdapter<T: Tag>(private val dataSet: List<T>) : RecyclerView.Adapter<Ta
     override fun getItemCount() = currentDataSet.size
     override fun getFilter() = searchedFilter(dataSet, currentDataSet, { notifyDataSetChanged() })
 
-    /*private val searchedFilter: Filter = object : Filter() {
-        override fun performFiltering(constraint: CharSequence, dataSet : List<T>): FilterResults {
-            val filteredList: MutableList<Tag> = mutableListOf()
-            if (constraint.isEmpty()) {
-                filteredList.addAll(dataSet)
-            } else {
-                val filterPattern = constraint.toString().lowercase(Locale.getDefault()).trim { it <= ' ' }
-                for (item in dataSet) {
-                    if (item.tagName.lowercase(Locale.getDefault()).contains(filterPattern)) {
-                        filteredList.add(item)
-                    }
-                }
-            }
-            val results = FilterResults()
-            results.values = filteredList
-            return results
-        }
 
-        override fun performFiltering(p0: CharSequence?): FilterResults {
-            TODO("Not yet implemented")
-        }
-
-        override fun publishResults(constraint: CharSequence, results: FilterResults) {
-            currentDataSet.clear()
-            currentDataSet.addAll(results.values as List<T>)
-            notifyDataSetChanged()
-        }
-    }*/
 }

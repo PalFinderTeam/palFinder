@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
         var c4 = Calendar.getInstance()
         c4.set(2022, 0, 1)
 
-        val meetups_list = listOf<MeetUp>(
+        val meetups_list = listOf(
             MeetUp(icon = "", name = "cuire des carottes",
                 description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre", startDate = c1,
                 endDate = c2, location = Location(0.0, 0.0), tags = listOf(Category.DRINKING.toString()), capacity = 45,

@@ -13,10 +13,9 @@ const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
  */
 class PrettyDate(private val now: Date = Date()) {
 
-    companion object{
+    companion object {
         const val ZERO = "just now"
     }
-
     // Time since formatting
     fun timeSince(d: Date): String {
         val secDiff = floor(((now.time - d.time) / 1000).toDouble())
@@ -32,6 +31,7 @@ class PrettyDate(private val now: Date = Date()) {
 
         return ZERO
     }
+
 
     // Helper method of `timeSince` to define plural
     private fun pluralInt(i: Int): String {
