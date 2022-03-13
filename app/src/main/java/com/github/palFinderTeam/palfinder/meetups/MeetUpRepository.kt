@@ -45,5 +45,5 @@ interface MeetUpRepository {
      *
      * @param location Location around which to search.
      */
-    suspend fun getMeetUpsAroundLocation(location: Location): Array<MeetUp>?
+    suspend fun getMeetUpsAroundLocation(location: Location, radiusInM: Double): List<MeetUp>?
 }

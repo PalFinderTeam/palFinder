@@ -2,6 +2,8 @@ package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
 import android.util.Log
+import com.firebase.geofire.GeoFireUtils
+import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
@@ -118,6 +120,7 @@ data class MeetUp(
             "capacity" to capacity.toLong(),
             "icon" to icon,
             "location" to GeoPoint(location.latitude, location.longitude),
+            "geohash" to GeoFireUtils.getGeoHashForLocation(GeoLocation(location.latitude, location.longitude)),
             "name" to name,
             "participants" to participants.map { it.name }.toList(),
             "tags" to tags.map { it.toString() },

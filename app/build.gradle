@@ -84,6 +84,9 @@ dependencies {
     androidTestAnnotationProcessor 'com.google.dagger:hilt-compiler:2.41'
     kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.38.1'
 
+    // Firebase utils to manipulate geopoints
+    implementation 'com.firebase:geofire-android-common:3.1.0'
+
 
 
     // Hilt instrumented test
