@@ -9,6 +9,7 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,7 +23,7 @@ class ProfileActivityTest {
 
     @Before
     fun getProfile(){
-        p = ProfileUser("gerussi", "Louca", "Gerussi", Calendar.getInstance())
+        p = ProfileUser("gerussi", "Louca", "Gerussi", Calendar.getInstance(), ImageInstance("icons/demo_pfp.jpeg"))
     }
 
     @Test
