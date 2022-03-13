@@ -8,6 +8,9 @@ import dagger.hilt.android.components.ViewModelComponent
 
 @Module
 @InstallIn(ViewModelComponent::class)
+/**
+ * Inject calendar when needed, it makes certain class more testable.
+ */
 object CalendarModule {
 
     @Provides
