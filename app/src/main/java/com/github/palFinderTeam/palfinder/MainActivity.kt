@@ -9,12 +9,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 
 import com.github.palFinderTeam.palfinder.map.MapsActivity
-import com.github.palFinderTeam.palfinder.tag.example.TagShowcaseActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.MeetUpDumb
 import java.io.Serializable
@@ -41,10 +39,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<Button>(R.id.mainGoToTagButton).setOnClickListener {
-            val intent = Intent(this, TagShowcaseActivity::class.java)
-            startActivity(intent)
-        }
         auth = Firebase.auth
     }
 
