@@ -111,7 +111,7 @@ class MeetUpCreationViewModel @Inject constructor(
         val meetUp = MeetUp(
             uuid.orEmpty(),
             // TODO Put real user
-            ProfileUser("le miche 420", "Michel","Francis", Calendar.getInstance()),
+            ProfileUser("le miche 420", "Michel","Francis", calendar),
             // TODO Put real icon
             "whatever",
             name.value!!,

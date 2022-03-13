@@ -3,15 +3,11 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.icu.util.Calendar
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
-import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.MainCoroutineDispatcher
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
@@ -29,7 +25,7 @@ class MeetUpCreationViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var viewModel: MeetUpCreationViewModel
-    private lateinit var meetUpRepository: MeetUpRepository
+    private lateinit var meetUpRepository: MockMeetUpRepository
     private lateinit var testStartDate: Calendar
     private lateinit var testEndDate: Calendar
 
@@ -102,5 +98,24 @@ class MeetUpCreationViewModelTest {
         assertThat(viewModel.description.value, `is`("description"))
         assertThat(viewModel.name.value, `is`("name"))
 
+    }
+
+    @Test
+    fun `create new meetup insert in DB`() = runTest {
+        viewModel.setCapacity(4)
+        viewModel.setHasMaxCapacity(true)
+        viewModel.setDescription("manger des bananes")
+        viewModel.setName("Manger")
+        viewModel.sendMeetUp()
+        assertThat(viewModel.sendSuccess.value, `is`(true))
+        assertThat(viewModel.getMeetUpId(), notNullValue())
+        val meetUp = meetUpRepository.db[viewModel.getMeetUpId()]
+        assertThat(meetUp, notNullValue())
+        if (meetUp != null) {
+            assertThat(meetUp.capacity, `is`(4))
+            assertThat(viewModel.hasMaxCapacity.value, `is`(true))
+            assertThat(viewModel.description.value, `is`("manger des bananes"))
+            assertThat(viewModel.name.value, `is`("Manger"))
+        }
     }
 }

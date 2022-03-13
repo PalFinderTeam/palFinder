@@ -6,11 +6,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MeetUpViewViewModel: ViewModel() {
+@HiltViewModel
+class MeetUpViewViewModel @Inject constructor(
+    private val meetUpRepository: MeetUpRepository
+): ViewModel() {
     private var _meetUp: MutableLiveData<MeetUp> = MutableLiveData<MeetUp>()
     val meetUp: LiveData<MeetUp> = _meetUp
 
@@ -21,7 +27,7 @@ class MeetUpViewViewModel: ViewModel() {
      */
     fun loadMeetUp(meetUpId: String) {
         viewModelScope.launch {
-            val fetchedMeetUp = FirebaseMeetUpService.getMeetUpData(meetUpId)
+            val fetchedMeetUp = meetUpRepository.getMeetUpData(meetUpId)
             // TODO do something on error
             fetchedMeetUp?.let { _meetUp.value = it }
         }

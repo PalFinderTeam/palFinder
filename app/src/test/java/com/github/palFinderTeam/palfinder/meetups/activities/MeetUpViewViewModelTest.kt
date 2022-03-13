@@ -1,0 +1,71 @@
+package com.github.palFinderTeam.palfinder.meetups.activities
+
+import android.icu.util.Calendar
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.utils.Location
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.hamcrest.CoreMatchers
+import org.hamcrest.MatcherAssert
+import org.hamcrest.CoreMatchers.*
+import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
+import org.mockito.Mockito
+
+@RunWith(JUnit4::class)
+class MeetUpViewViewModelTest {
+
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    private lateinit var viewModel: MeetUpViewViewModel
+    private lateinit var meetUpRepository: MockMeetUpRepository
+    private lateinit var testStartDate: Calendar
+    private lateinit var testEndDate: Calendar
+
+    @Before
+    fun setup() {
+        testStartDate = Mockito.mock(Calendar::class.java)
+        testEndDate = Mockito.mock(Calendar::class.java)
+        Mockito.`when`(testStartDate.timeInMillis).thenReturn( 69)
+        Mockito.`when`(testEndDate.timeInMillis).thenReturn( 420)
+        meetUpRepository = MockMeetUpRepository()
+        viewModel = MeetUpViewViewModel(meetUpRepository)
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+    }
+
+    @Test
+    fun `display infos from valid meetUp`() = runTest {
+        val dummyMeetUp = MeetUp(
+            "",
+            ProfileUser("username", "whatever", "surname", testStartDate),
+            "icon",
+            "name",
+            "description",
+            testStartDate,
+            testEndDate,
+            Location(1.0, 2.0),
+            setOf(Category.CINEMA),
+            true,
+            2,
+            mutableListOf()
+        )
+
+        val id = meetUpRepository.createMeetUp(dummyMeetUp)
+
+        MatcherAssert.assertThat(id, CoreMatchers.notNullValue())
+        viewModel.loadMeetUp(id!!)
+
+        assertThat(viewModel.meetUp.value, `is`(dummyMeetUp))
+    }
+}
