@@ -65,10 +65,17 @@
             android:name=".MeetupListActivity" android:exported="true" android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".ProfileActivity"
+            android:parentActivityName=".MainActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false"/>
+
+        <activity
+            android:name=".utils.image.ImgLoaderActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>
+
     </application>
 
 </manifest>

@@ -1,6 +1,8 @@
 package com.github.palFinderTeam.palfinder
 
+import android.media.Image
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
@@ -20,10 +22,11 @@ class ProfileActivity : AppCompatActivity() {
         injectUserInfo(intent.getSerializableExtra(DUMMY_USER) as ProfileUser)
     }
 
-    fun injectUserInfo(user: ProfileUser) {
+    private fun injectUserInfo(user: ProfileUser) {
         findViewById<TextView>(R.id.userProfileName).apply { text = user.fullName() }
         findViewById<TextView>(R.id.userProfileUsername).apply { text = user.atUsername() }
         findViewById<TextView>(R.id.userProfileJoinDate).apply { text = user.prettyJoinTime() }
+        user.pfp.loadImageInto(findViewById<ImageView>(R.id.userProfileImage))
     }
 
 }

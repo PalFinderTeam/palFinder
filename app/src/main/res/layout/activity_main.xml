@@ -76,5 +76,16 @@
         app:layout_constraintTop_toBottomOf="@+id/mainGoToTagButton"
         app:layout_constraintVertical_bias="0.038" />
 
+    <Button
+        android:id="@+id/accessImgLoader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:onClick="accessImgLoader"
+        android:text="Img Loader"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mapGoButton" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
