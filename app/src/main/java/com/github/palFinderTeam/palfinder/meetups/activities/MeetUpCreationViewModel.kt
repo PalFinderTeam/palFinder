@@ -16,12 +16,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MeetUpCreationViewModel @Inject constructor(
-    private val meetUpRepository: MeetUpRepository
+    private val meetUpRepository: MeetUpRepository,
+    private val calendar: Calendar
 ): ViewModel() {
     private var uuid: String? = null
 
-    private val _startDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
-    private val _endDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
+    private val _startDate: MutableLiveData<Calendar> = MutableLiveData(calendar)
+    private val _endDate: MutableLiveData<Calendar> = MutableLiveData(calendar)
     private val _capacity: MutableLiveData<Int> = MutableLiveData()
     private val _hasMaxCapacity: MutableLiveData<Boolean> = MutableLiveData()
     private val _name: MutableLiveData<String> = MutableLiveData()

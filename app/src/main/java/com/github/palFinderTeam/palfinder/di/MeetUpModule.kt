@@ -1,5 +1,7 @@
-package com.github.palFinderTeam.palfinder.meetups
+package com.github.palFinderTeam.palfinder.di
 
+import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
+import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
