@@ -13,15 +13,22 @@ import java.util.*
             if (constraint.isEmpty()) {
                 filteredList.addAll(dataSet)
             } else {
+                val filterPattern =
+                    constraint.toString().lowercase(Locale.getDefault()).trim { it <= ' ' }
+                var isContained = false
                 for (item in dataSet) {
                     when(item) {
                         is Tag ->
-                            filter(filteredList, (item as Tag).tagName, item, constraint)
+                            isContained = filter((item as Tag).tagName, filterPattern)
                         is MeetUp ->
-                            filter(filteredList, (item as MeetUp).name, item, constraint)
+                            isContained = filter((item as MeetUp).name, filterPattern)
                         else ->
                             break
                     }
+                    if (isContained) {
+                        filteredList.add(item)
+                    }
+                    isContained = false
                 }
             }
             val results = FilterResults()
@@ -29,12 +36,8 @@ import java.util.*
             return results
         }
 
-        private fun filter(filteredList: MutableList<T>, field: String, item: T, constraint:CharSequence) {
-            val filterPattern =
-                constraint.toString().lowercase(Locale.getDefault()).trim { it <= ' ' }
-            if (field.lowercase(Locale.getDefault()).contains(filterPattern)) {
-                filteredList.add(item)
-            }
+        private fun filter(field: String, filterPattern: String) : Boolean{
+            return field.lowercase(Locale.getDefault()).contains(filterPattern)
         }
 
         override fun publishResults(constraint: CharSequence, results: FilterResults) {

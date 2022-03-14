@@ -33,10 +33,8 @@ class TagSelectorFragment<T: Tag>(private val availableTags: List<T>, private va
         val v: View = inflater.inflate(R.layout.dialog_tag_selector, container, false)
         val recyclerView = v.findViewById(R.id.tag_selector_recycler) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
-
         val adapter = TagAdapter(availableTags)
         recyclerView.adapter = adapter
-
         val searchField = v.findViewById<SearchView>(R.id.tag_selector_search)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
         searchedFilter.setupSearchField(searchField, adapter.filter )

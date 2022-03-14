@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -24,10 +25,9 @@ class MeetupListAdapter<T : MeetUp>(private val dataSet : List<MeetUp>): Recycle
         val meetup_number_participants: TextView = view.findViewById(R.id.number_participants)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, type: Int): ViewHolder {
         //create a new view for each meetup
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.meetup_listview, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.meetup_listview, parent, false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
