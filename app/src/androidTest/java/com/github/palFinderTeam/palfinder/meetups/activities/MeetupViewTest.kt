@@ -7,8 +7,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -125,6 +124,8 @@ class MeetupViewTest {
         val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
         val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
         scenario.use {
+            onView(withId(R.id.hasCapacityButton)).perform(scrollTo())
+
             onView(withId(R.id.et_Capacity)).check(matches(isNotEnabled()))
             onView(withId(R.id.hasCapacityButton)).check(matches(isNotChecked()))
 
@@ -150,7 +151,7 @@ class MeetupViewTest {
             onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
             onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
             closeSoftKeyboard()
-            onView(withId(R.id.bt_Done)).perform(click())
+            onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
 
             Intents.intended(IntentMatchers.hasComponent(MeetUpView::class.java.name))
             Intents.release()
