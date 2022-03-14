@@ -111,10 +111,10 @@ class MeetUpListTest {
         scenario.use{
             onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
                 .check(matches(withText(meetups_list[0].name)))
-            scenario.onActivity { it.sortByCap() }
+            scenario.onActivity { it.sortByCap(null) }
             onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
                 .check(matches(withText(meetups_list.sortedBy { it.capacity }[0].name)))
-            scenario.onActivity { it.sortByName() }
+            scenario.onActivity { it.sortByName(null) }
             onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
                 .check(matches(withText(meetups_list.sortedBy { it.name.lowercase() }[0].name)))
         }

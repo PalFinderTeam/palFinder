@@ -37,28 +37,18 @@ class MeetupListActivity : AppCompatActivity() {
 
         val searchField = findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
-        searchField.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                adapter.filter.filter(newText)
-                return false
-            }
-
-        })
+        searchedFilter.setupSearchField(searchField, adapter.filter )
 
 
     }
 
-    fun sortByCap() {
+    fun sortByCap(view: View?) {
         adapter.currentDataSet.clear()
         adapter.currentDataSet.addAll(listOfMeetup.sortedBy { it.capacity })
         adapter.notifyDataSetChanged()
     }
 
-    fun sortByName() {
+    fun sortByName(view: View?) {
         adapter.currentDataSet.clear()
         adapter.currentDataSet.addAll(listOfMeetup.sortedBy { it.name.lowercase()})
         adapter.notifyDataSetChanged()
