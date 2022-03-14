@@ -16,7 +16,8 @@ import java.util.*
 
 
 @RunWith(AndroidJUnit4::class)
-class ProfileActivityTest {
+class
+ProfileActivityTest {
     lateinit var p : ProfileUser
 
     @Before

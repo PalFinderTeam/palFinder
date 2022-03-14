@@ -52,13 +52,13 @@ class MeetupListActivity : AppCompatActivity() {
 
     }
 
-    fun sortByCap(view: View?) {
+    fun sortByCap() {
         adapter.currentDataSet.clear()
         adapter.currentDataSet.addAll(listOfMeetup.sortedBy { it.capacity })
         adapter.notifyDataSetChanged()
     }
 
-    fun sortByName(view: View?) {
+    fun sortByName() {
         adapter.currentDataSet.clear()
         adapter.currentDataSet.addAll(listOfMeetup.sortedBy { it.name.lowercase()})
         adapter.notifyDataSetChanged()
