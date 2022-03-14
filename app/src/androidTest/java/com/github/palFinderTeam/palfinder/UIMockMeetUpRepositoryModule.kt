@@ -11,7 +11,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Singleton
+import kotlin.system.measureTimeMillis
 
 @Module
 @TestInstallIn(
@@ -23,7 +27,7 @@ import javax.inject.Singleton
  */
 object UIMockMeetUpRepositoryModule {
 
-    val mockRepository = UIMockRepository()
+    private val mockRepository = UIMockRepository()
 
     @Singleton
     @Provides
@@ -45,7 +49,7 @@ object UIMockMeetUpRepositoryModule {
         override suspend fun createMeetUp(newMeetUp: MeetUp): String? {
             val key = counter.toString()
             db[key] = newMeetUp
-            counter.inc()
+            counter += 1
             return key
         }
 
@@ -85,6 +89,17 @@ object UIMockMeetUpRepositoryModule {
             radiusInM: Double
         ): List<MeetUp>? {
             TODO("Not yet implemented")
+        }
+
+        @ExperimentalCoroutinesApi
+        override fun getAllMeetUps(): Flow<List<MeetUp>> {
+            return flow {
+                emit(db.values.toList())
+            }
+        }
+
+        fun clearDB() {
+            db.clear()
         }
     }
 }

@@ -67,6 +67,8 @@ class MeetUpView : AppCompatActivity() {
 
         setTextView(R.id.tv_ViewStartDate, startDate)
         setTextView(R.id.tv_ViewEndDate,endDate)
+
+        tagsViewModel.refreshTags()
     }
 
     fun onEdit(v: View){

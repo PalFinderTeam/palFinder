@@ -8,9 +8,11 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -18,6 +20,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.mockito.Mockito
 
+@ExperimentalCoroutinesApi
 @RunWith(JUnit4::class)
 class MeetUpCreationViewModelTest {
 
@@ -40,8 +43,14 @@ class MeetUpCreationViewModelTest {
 //        Mockito.`when`(testEndDate.isDeltaBefore(Mockito.any(), defaultTimeDelta)).thenReturn(false)
 
         meetUpRepository = MockMeetUpRepository()
+        meetUpRepository.clearDB()
         viewModel = MeetUpCreationViewModel(meetUpRepository, testStartDate)
         Dispatchers.setMain(UnconfinedTestDispatcher())
+    }
+
+    @After
+    fun cleanUp() {
+        meetUpRepository.clearDB()
     }
 
     @Test

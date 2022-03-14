@@ -1,7 +1,5 @@
 package com.github.palFinderTeam.palfinder.meetups
 
-import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,15 +12,15 @@ import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 
 
-class MeetupListAdapter<T : MeetUp>(private val dataSet : List<T>): RecyclerView.Adapter<MeetupListAdapter.ViewHolder>(), Filterable {
+class MeetupListAdapter(private val dataSet : List<MeetUp>): RecyclerView.Adapter<MeetupListAdapter.ViewHolder>(), Filterable {
     val currentDataSet = dataSet.toMutableList()
 
     class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         //TODO - add some remaining fields to display
-        val meetup_title: TextView = view.findViewById(R.id.meetup_title)
-        val meetup_date: TextView = view.findViewById(R.id.date)
-        val meetup_description: TextView = view.findViewById(R.id.meetup_description)
-        val meetup_number_participants: TextView = view.findViewById(R.id.number_participants)
+        val meetupTitle: TextView = view.findViewById(R.id.meetup_title)
+        val meetupDate: TextView = view.findViewById(R.id.date)
+        val meetupDescription: TextView = view.findViewById(R.id.meetup_description)
+        val meetupNumberParticipants: TextView = view.findViewById(R.id.number_participants)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, type: Int): ViewHolder {
@@ -32,15 +30,15 @@ class MeetupListAdapter<T : MeetUp>(private val dataSet : List<T>): RecyclerView
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         //update displayed elements with the content of the current dataset
-        val meetup_title = holder.meetup_title
-        meetup_title.text = currentDataSet[position].name
-        val meetup_date = holder.meetup_date
+        val meetupTitle = holder.meetupTitle
+        meetupTitle.text = currentDataSet[position].name
+        val meetupDate = holder.meetupDate
         val prettyDate = PrettyDate()
-        meetup_date.text = prettyDate.timeDiff(currentDataSet[position].startDate)
-        val meetup_description = holder.meetup_description
-        meetup_description.text = currentDataSet[position].description
-        val meetup_number_participants = holder.meetup_number_participants
-        meetup_number_participants.text = currentDataSet[position].capacity.toString()
+        meetupDate.text = prettyDate.timeDiff(currentDataSet[position].startDate)
+        val meetupDescription = holder.meetupDescription
+        meetupDescription.text = currentDataSet[position].description
+        val meetupNumberParticipants = holder.meetupNumberParticipants
+        meetupNumberParticipants.text = currentDataSet[position].capacity.toString()
 
     }
 

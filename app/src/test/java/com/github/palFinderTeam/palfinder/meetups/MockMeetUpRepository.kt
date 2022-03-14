@@ -7,6 +7,9 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.firebase.firestore.GeoPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class MockMeetUpRepository : MeetUpRepository {
     val db: HashMap<String, MeetUp> = hashMapOf()
@@ -59,5 +62,16 @@ class MockMeetUpRepository : MeetUpRepository {
         radiusInM: Double
     ): List<MeetUp>? {
         TODO("Not yet implemented")
+    }
+
+    @ExperimentalCoroutinesApi
+    override fun getAllMeetUps(): Flow<List<MeetUp>> {
+        return flow {
+            emit(db.values.toList())
+        }
+    }
+
+    fun clearDB() {
+        db.clear()
     }
 }

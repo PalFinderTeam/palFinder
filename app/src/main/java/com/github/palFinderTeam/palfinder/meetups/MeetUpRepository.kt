@@ -1,6 +1,8 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import com.github.palFinderTeam.palfinder.utils.Location
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Describes a service that can fetch, create and edit MeetUps.
@@ -46,4 +48,7 @@ interface MeetUpRepository {
      * @param location Location around which to search.
      */
     suspend fun getMeetUpsAroundLocation(location: Location, radiusInM: Double): List<MeetUp>?
+
+    @ExperimentalCoroutinesApi
+    fun getAllMeetUps(): Flow<List<MeetUp>>
 }

@@ -29,9 +29,7 @@ class MeetUpCreationViewModel @Inject constructor(
     private val _description: MutableLiveData<String> = MutableLiveData()
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData()
 
-    private val _sendSuccess: MutableLiveData<Boolean> by lazy {
-        MutableLiveData<Boolean>()
-    }
+    private val _sendSuccess: MutableLiveData<Boolean> = MutableLiveData()
 
     val startDate: LiveData<Calendar> = _startDate
     val endDate: LiveData<Calendar> = _endDate
@@ -91,13 +89,13 @@ class MeetUpCreationViewModel @Inject constructor(
             val meetUp = meetUpRepository.getMeetUpData(meetUpId)
             if (meetUp != null) {
                 uuid = meetUp.uuid
-                _name.value = meetUp.name
-                _description.value = meetUp.description
-                _startDate.value = meetUp.startDate
-                _endDate.value = meetUp.endDate
-                _hasMaxCapacity.value = meetUp.hasMaxCapacity
-                _capacity.value = meetUp.capacity
-                _tags.value = meetUp.tags
+                _name.postValue(meetUp.name)
+                _description.postValue(meetUp.description)
+                _startDate.postValue(meetUp.startDate)
+                _endDate.postValue(meetUp.endDate)
+                _hasMaxCapacity.postValue(meetUp.hasMaxCapacity)
+                _capacity.postValue(meetUp.capacity)
+                _tags.postValue(meetUp.tags)
             } else {
                 fillWithDefaultValues()
             }
@@ -130,13 +128,13 @@ class MeetUpCreationViewModel @Inject constructor(
             viewModelScope.launch {
                 uuid = meetUpRepository.createMeetUp(meetUp)
                 // Notify sending result
-                _sendSuccess.value = (uuid != null)
+                _sendSuccess.postValue(uuid != null)
             }
         } else {
             // Edit existing one
             viewModelScope.launch {
                 meetUpRepository.editMeetUp(uuid!!, meetUp)
-                _sendSuccess.value = true
+                _sendSuccess.postValue(true)
             }
         }
     }

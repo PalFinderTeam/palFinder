@@ -5,8 +5,14 @@ import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.tasks.Tasks
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.QuerySnapshot
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 
@@ -93,5 +99,33 @@ object FirebaseMeetUpService : MeetUpRepository {
 
 
         return matchingDocs
+    }
+
+    /**
+     * This function fetches all MeetUps from DB
+     * It will be removed later, it just is better for experimentation, while fetchingAround
+     * location is being build.
+     */
+    @ExperimentalCoroutinesApi
+    override fun getAllMeetUps(): Flow<List<MeetUp>> {
+        val db = FirebaseFirestore.getInstance()
+        return callbackFlow {
+            val listenerRegistration = db.collection(MEETUP_COLL)
+                .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
+                    if (firebaseFirestoreException != null) {
+                        cancel(message = "Error fetching meetups",
+                            cause = firebaseFirestoreException)
+                        return@addSnapshotListener
+                    }
+                    val map = querySnapshot?.documents
+                        ?.mapNotNull { it.toMeetUp() }
+                    if (map != null) {
+                        trySend(map)
+                    }
+                }
+            awaitClose {
+                listenerRegistration.remove()
+            }
+        }
     }
 }
