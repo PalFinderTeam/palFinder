@@ -10,7 +10,7 @@ import kotlin.math.floor
  */
 class PrettyDate(private val now: Calendar = Calendar.getInstance()) {
 
-    companion object{
+    companion object {
         const val ZERO = "just now"
         const val FUTURE = "in %s"
         const val PAST = "%s ago"
