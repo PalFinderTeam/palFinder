@@ -13,8 +13,7 @@ import java.util.*
             if (constraint.isEmpty()) {
                 filteredList.addAll(dataSet)
             } else {
-                val filterPattern =
-                    constraint.toString().lowercase(Locale.getDefault()).trim { it <= ' ' }
+                val filterPattern = constraint.toString().lowercase(Locale.getDefault()).trim { it <= ' ' }
                 var isContained = false
                 for (item in dataSet) {
                     when(item) {
@@ -22,12 +21,9 @@ import java.util.*
                             isContained = filter((item as Tag).tagName, filterPattern)
                         is MeetUp ->
                             isContained = filter((item as MeetUp).name, filterPattern)
-                        else ->
-                            break
-                    }
+                        else -> break }
                     if (isContained) {
-                        filteredList.add(item)
-                    }
+                        filteredList.add(item) }
                     isContained = false
                 }
             }
