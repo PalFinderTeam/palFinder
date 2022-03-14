@@ -36,7 +36,7 @@ class MeetupListAdapter<T : MeetUp>(private val dataSet : List<T>): RecyclerView
         meetup_title.text = currentDataSet[position].name
         val meetup_date = holder.meetup_date
         val prettyDate = PrettyDate()
-        meetup_date.text = prettyDate.timeSince(currentDataSet[position].startDate.time)
+        meetup_date.text = prettyDate.timeDiff(currentDataSet[position].startDate)
         val meetup_description = holder.meetup_description
         meetup_description.text = currentDataSet[position].description
         val meetup_number_participants = holder.meetup_number_participants

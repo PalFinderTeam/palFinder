@@ -88,7 +88,8 @@ class MainActivity : AppCompatActivity() {
 
     fun goToProfile(view: View?) {
         // Create a fake user for demo
-        val joinDate = Date(122, 2, 6, 14, 1, 0)
+        val joinDate = Calendar.getInstance()
+        joinDate.set(2022, 2, 6, 14, 1, 0)
         val intent = Intent(this, ProfileActivity::class.java).apply {
             putExtra(DUMMY_USER, ProfileUser("gerussi", "Louca", "Gerussi", joinDate) as Serializable)
         }
