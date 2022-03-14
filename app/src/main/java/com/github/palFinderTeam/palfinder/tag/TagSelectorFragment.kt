@@ -13,6 +13,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 
 
 /**
@@ -32,23 +33,11 @@ class TagSelectorFragment<T: Tag>(private val availableTags: List<T>, private va
         val v: View = inflater.inflate(R.layout.dialog_tag_selector, container, false)
         val recyclerView = v.findViewById(R.id.tag_selector_recycler) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
-
         val adapter = TagAdapter(availableTags)
         recyclerView.adapter = adapter
-
         val searchField = v.findViewById<SearchView>(R.id.tag_selector_search)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
-        searchField.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                adapter.filter.filter(newText)
-                return false
-            }
-
-        })
+        SearchedFilter.setupSearchField(searchField, adapter.filter )
 
         val addTagButton = v.findViewById<Button>(R.id.add_tag_button)
         addTagButton.setOnClickListener {
