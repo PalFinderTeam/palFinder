@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -21,7 +22,7 @@ class MeetUpView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_view)
-
+        Log.d("meetup", intent.getSerializableExtra(MEETUP_SHOWN).toString())
         val meetup = intent.getSerializableExtra(MEETUP_SHOWN) as MeetUp
         model.meetUp = meetup
 

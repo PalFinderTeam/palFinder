@@ -14,20 +14,28 @@ import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 
 
-class MeetupListAdapter<T : MeetUp>(private val dataSet : List<T>): RecyclerView.Adapter<MeetupListAdapter.ViewHolder>(), Filterable {
+class MeetupListAdapter<T : MeetUp>(private val dataSet : List<T>, private val onItemClicked: (position: Int) -> Unit): RecyclerView.Adapter<MeetupListAdapter.ViewHolder>(), Filterable {
     val currentDataSet = dataSet.toMutableList()
 
-    class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(view : View, private val onItemClicked: (position: Int) -> Unit) : RecyclerView.ViewHolder(view), View.OnClickListener{
         //TODO - add some remaining fields to display
         val meetup_title: TextView = view.findViewById(R.id.meetup_title)
         val meetup_date: TextView = view.findViewById(R.id.date)
         val meetup_description: TextView = view.findViewById(R.id.meetup_description)
         val meetup_number_participants: TextView = view.findViewById(R.id.number_participants)
+        init {
+            view.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View) {
+            val position = adapterPosition
+            onItemClicked(position)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, type: Int): ViewHolder {
         //create a new view for each meetup
-        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.meetup_listview, parent, false))
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.meetup_listview, parent, false), onItemClicked)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
