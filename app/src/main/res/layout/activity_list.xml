@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/meetup_list_recycler"
+        android:layout_width="413dp"
+        android:layout_height="511dp"
+        android:layout_weight="1"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_list">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <Button
+        android:id="@+id/sort_alph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:onClick="sortByName"
+        android:text="@string/list_sort_by_alphabetical_order"
+        app:layout_constraintBottom_toTopOf="@id/search_list"
+        app:layout_constraintEnd_toStartOf="@id/sort_capacity" />
+
+    <Button
+        android:id="@+id/sort_capacity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:onClick="sortByCap"
+        android:text="@string/list_sort_by_capacity"
+        app:layout_constraintBottom_toTopOf="@id/search_list"
+        app:layout_constraintStart_toEndOf="@id/sort_alph" />
+
+    <SearchView
+        android:id="@+id/search_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/meetup_list_recycler"
+        app:layout_constraintTop_toBottomOf="@+id/sort_alph"
+        tools:layout_editor_absoluteX="16dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
