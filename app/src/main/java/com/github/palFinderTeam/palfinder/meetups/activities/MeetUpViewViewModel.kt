@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.tag.Category
@@ -16,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MeetUpViewViewModel @Inject constructor(
     private val meetUpRepository: MeetUpRepository
-): ViewModel() {
+) : ViewModel() {
     private var _meetUp: MutableLiveData<MeetUp> = MutableLiveData<MeetUp>()
     val meetUp: LiveData<MeetUp> = _meetUp
 
@@ -34,7 +33,7 @@ class MeetUpViewViewModel @Inject constructor(
     }
 
     /**
-     *
+     * Describe how tags should be transferred from this viewModel to the tag viewModel.
      */
     val tagRepository = object : TagsRepository<Category> {
         override val tags: Set<Category>

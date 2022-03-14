@@ -1,10 +1,12 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.icu.util.Calendar
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.meetups.TempUser
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
@@ -18,7 +20,7 @@ import javax.inject.Inject
 class MeetUpCreationViewModel @Inject constructor(
     private val meetUpRepository: MeetUpRepository,
     private val calendar: Calendar
-): ViewModel() {
+) : ViewModel() {
     private var uuid: String? = null
 
     private val _startDate: MutableLiveData<Calendar> = MutableLiveData(calendar)
@@ -109,7 +111,7 @@ class MeetUpCreationViewModel @Inject constructor(
         val meetUp = MeetUp(
             uuid.orEmpty(),
             // TODO Put real user
-            ProfileUser("le miche 420", "Michel","Francis", calendar),
+            ProfileUser("le miche 420", "Michel", "Francis", calendar),
             // TODO Put real icon
             "whatever",
             name.value!!,
@@ -142,12 +144,12 @@ class MeetUpCreationViewModel @Inject constructor(
     /**
      * Enforce that End Date is After Start Date
      */
-    private fun checkDateIntegrity(){
+    private fun checkDateIntegrity() {
         if (startDate.value == null || endDate.value == null) {
             return
         }
         // Check if at least defaultTimeDelta between start and end
-        if (!startDate.value!!.isDeltaBefore(endDate.value!!, defaultTimeDelta)){
+        if (!startDate.value!!.isDeltaBefore(endDate.value!!, defaultTimeDelta)) {
             val newCalendar = Calendar.getInstance()
             newCalendar.timeInMillis = startDate.value!!.timeInMillis
             newCalendar.add(Calendar.MILLISECOND, defaultTimeDelta)

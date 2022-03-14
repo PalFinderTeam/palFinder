@@ -5,7 +5,6 @@ import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.view.View
-import android.widget.CheckBox
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -14,8 +13,11 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment
+import com.github.palFinderTeam.palfinder.tag.TagsViewModel
+import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
-import com.github.palFinderTeam.palfinder.tag.*
 
 
 const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_SHOWN"
@@ -52,26 +54,29 @@ class MeetUpView : AppCompatActivity() {
         }
     }
 
-    private fun setTextView(id: Int, value: String){
+    private fun setTextView(id: Int, value: String) {
         findViewById<TextView>(id).apply { this.text = value }
     }
 
-    private fun fillFields(meetup: MeetUp){
+    private fun fillFields(meetup: MeetUp) {
         val format = SimpleDateFormat(getString(R.string.date_long_format))
         val startDate = format.format(meetup.startDate.time)
         val endDate = format.format(meetup.endDate.time)
 
-        setTextView(R.id.tv_ViewEventName,meetup.name)
-        setTextView(R.id.tv_ViewEventDescritpion,meetup.description)
-        setTextView(R.id.tv_ViewEventCreator, getString(R.string.meetup_view_creator, meetup.creator.name))
+        setTextView(R.id.tv_ViewEventName, meetup.name)
+        setTextView(R.id.tv_ViewEventDescritpion, meetup.description)
+        setTextView(
+            R.id.tv_ViewEventCreator,
+            getString(R.string.meetup_view_creator, meetup.creator.name)
+        )
 
         setTextView(R.id.tv_ViewStartDate, startDate)
-        setTextView(R.id.tv_ViewEndDate,endDate)
+        setTextView(R.id.tv_ViewEndDate, endDate)
 
         tagsViewModel.refreshTags()
     }
 
-    fun onEdit(v: View){
+    fun onEdit(v: View) {
         val intent = Intent(this, MeetUpCreation::class.java).apply {
             putExtra(MEETUP_EDIT, viewModel.meetUp.value?.uuid)
         }

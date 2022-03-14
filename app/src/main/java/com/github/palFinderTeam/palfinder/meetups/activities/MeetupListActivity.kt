@@ -4,14 +4,13 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.*
+import android.widget.SearchView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MeetupListActivity : AppCompatActivity() {
-    private lateinit var meetupList : RecyclerView
+    private lateinit var meetupList: RecyclerView
     private lateinit var adapter: MeetupListAdapter
 
     private val viewModel: MeetUpListViewModel by viewModels()
@@ -38,7 +37,7 @@ class MeetupListActivity : AppCompatActivity() {
         viewModel.listOfMeetUp.observe(this) {
             adapter = MeetupListAdapter(it)
             meetupList.adapter = adapter
-            SearchedFilter.setupSearchField(searchField, adapter.filter )
+            SearchedFilter.setupSearchField(searchField, adapter.filter)
         }
     }
 

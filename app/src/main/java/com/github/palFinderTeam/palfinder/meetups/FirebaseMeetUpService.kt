@@ -66,11 +66,14 @@ object FirebaseMeetUpService : MeetUpRepository {
         }
     }
 
-    override suspend fun getMeetUpsAroundLocation(location: Location, radius: Double): List<MeetUp>? {
+    override suspend fun getMeetUpsAroundLocation(
+        location: Location,
+        radiusInM: Double
+    ): List<MeetUp>? {
         val db = FirebaseFirestore.getInstance()
 
         val geoLocation = GeoLocation(location.latitude, location.longitude)
-        val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radius)
+        val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInM)
 
         val tasks = bounds.map {
             db.collection(MEETUP_COLL)
@@ -89,7 +92,7 @@ object FirebaseMeetUpService : MeetUpRepository {
 
                     val docLocation: GeoLocation = doc.get("position") as GeoLocation
                     val distanceInM = GeoFireUtils.getDistanceBetween(docLocation, geoLocation)
-                    if (distanceInM <= radius) {
+                    if (distanceInM <= radiusInM) {
                         matchingDocs.add(doc.toMeetUp()!!)
                     }
                 }
@@ -113,8 +116,10 @@ object FirebaseMeetUpService : MeetUpRepository {
             val listenerRegistration = db.collection(MEETUP_COLL)
                 .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
                     if (firebaseFirestoreException != null) {
-                        cancel(message = "Error fetching meetups",
-                            cause = firebaseFirestoreException)
+                        cancel(
+                            message = "Error fetching meetups",
+                            cause = firebaseFirestoreException
+                        )
                         return@addSnapshotListener
                     }
                     val map = querySnapshot?.documents

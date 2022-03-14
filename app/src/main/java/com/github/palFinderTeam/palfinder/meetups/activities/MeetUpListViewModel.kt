@@ -6,8 +6,10 @@ import androidx.lifecycle.asLiveData
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class MeetUpListViewModel @Inject constructor(
     private val meetUpRepository: MeetUpRepository

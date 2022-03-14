@@ -12,10 +12,11 @@ import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 
 
-class MeetupListAdapter(private val dataSet : List<MeetUp>): RecyclerView.Adapter<MeetupListAdapter.ViewHolder>(), Filterable {
+class MeetupListAdapter(private val dataSet: List<MeetUp>) :
+    RecyclerView.Adapter<MeetupListAdapter.ViewHolder>(), Filterable {
     val currentDataSet = dataSet.toMutableList()
 
-    class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         //TODO - add some remaining fields to display
         val meetupTitle: TextView = view.findViewById(R.id.meetup_title)
         val meetupDate: TextView = view.findViewById(R.id.date)
@@ -25,7 +26,9 @@ class MeetupListAdapter(private val dataSet : List<MeetUp>): RecyclerView.Adapte
 
     override fun onCreateViewHolder(parent: ViewGroup, type: Int): ViewHolder {
         //create a new view for each meetup
-        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.meetup_listview, parent, false))
+        return ViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.meetup_listview, parent, false)
+        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -44,7 +47,8 @@ class MeetupListAdapter(private val dataSet : List<MeetUp>): RecyclerView.Adapte
 
     override fun getItemCount(): Int = currentDataSet.size
 
-    override fun getFilter(): Filter = SearchedFilter(dataSet, currentDataSet, { notifyDataSetChanged() })
+    override fun getFilter(): Filter =
+        SearchedFilter(dataSet, currentDataSet, { notifyDataSetChanged() })
 }
 
 

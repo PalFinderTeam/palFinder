@@ -38,20 +38,20 @@ data class MeetUp(
     val hasMaxCapacity: Boolean,
     val capacity: Int,
     val participants: MutableList<ProfileUser>, // TODO -  Change to Real User
-): java.io.Serializable {
+) : java.io.Serializable {
 
     /**
      * @param currentLocation
      * @return distance from [currentLocation] to the event in km
      */
-    fun distanceInKm(currentLocation: Location): Double{
+    fun distanceInKm(currentLocation: Location): Double {
         return location.distanceInKm(currentLocation)
     }
 
     /**
      * @return if the event has reach its participant limit
      */
-    fun isFull(): Boolean{
+    fun isFull(): Boolean {
         return hasMaxCapacity && capacity <= participants.size
     }
 
@@ -59,7 +59,7 @@ data class MeetUp(
      * @param now: current date
      * @return if a user can join
      */
-    fun canJoin(now: Calendar):Boolean{
+    fun canJoin(now: Calendar): Boolean {
         return !isFull() && !isFinished(now)
     }
 
@@ -75,7 +75,7 @@ data class MeetUp(
      * @param now: current date
      * @return if the meetup has started
      */
-    fun isStarted(now: Calendar):Boolean{
+    fun isStarted(now: Calendar): Boolean {
         return startDate.isBefore(now)
     }
 
@@ -83,8 +83,8 @@ data class MeetUp(
      *  Add [user] to the Event if [now] is a valid date to join
      *  @param now: current date
      */
-    fun join(now: Calendar, user: ProfileUser){
-        if (canJoin(now) && !isParticipating(user)){
+    fun join(now: Calendar, user: ProfileUser) {
+        if (canJoin(now) && !isParticipating(user)) {
             participants.add(user)
         }
     }
@@ -93,8 +93,8 @@ data class MeetUp(
      *  Remove [user] from the event
      *  if user is not in the event, does nothing
      */
-    fun leave(user: ProfileUser){
-        if (isParticipating(user)){
+    fun leave(user: ProfileUser) {
+        if (isParticipating(user)) {
             participants.remove(user)
         }
     }
@@ -120,7 +120,12 @@ data class MeetUp(
             "capacity" to capacity.toLong(),
             "icon" to icon,
             "location" to GeoPoint(location.latitude, location.longitude),
-            "geohash" to GeoFireUtils.getGeoHashForLocation(GeoLocation(location.latitude, location.longitude)),
+            "geohash" to GeoFireUtils.getGeoHashForLocation(
+                GeoLocation(
+                    location.latitude,
+                    location.longitude
+                )
+            ),
             "name" to name,
             "participants" to participants.map { it.name }.toList(),
             "tags" to tags.map { it.toString() },
@@ -131,8 +136,6 @@ data class MeetUp(
      * Provide a way to convert a Firestore query result, in a MeetUp
      */
     companion object {
-
-        class MeetUpUsers(val users: List<TempUser>)
 
         fun DocumentSnapshot.toMeetUp(): MeetUp? {
             try {
