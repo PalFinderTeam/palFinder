@@ -11,10 +11,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
-import com.github.palFinderTeam.palfinder.utils.searchedFilter
+import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 
 
-class MeetupListAdapter<T : MeetUp>(private val dataSet : List<MeetUp>): RecyclerView.Adapter<MeetupListAdapter.ViewHolder>(), Filterable {
+class MeetupListAdapter<T : MeetUp>(private val dataSet : List<T>): RecyclerView.Adapter<MeetupListAdapter.ViewHolder>(), Filterable {
     val currentDataSet = dataSet.toMutableList()
 
     class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
@@ -36,7 +36,7 @@ class MeetupListAdapter<T : MeetUp>(private val dataSet : List<MeetUp>): Recycle
         meetup_title.text = currentDataSet[position].name
         val meetup_date = holder.meetup_date
         val prettyDate = PrettyDate()
-        meetup_date.text = "in" + prettyDate.timeSince(currentDataSet[position].startDate.time)
+        meetup_date.text = prettyDate.timeSince(currentDataSet[position].startDate.time)
         val meetup_description = holder.meetup_description
         meetup_description.text = currentDataSet[position].description
         val meetup_number_participants = holder.meetup_number_participants
@@ -46,7 +46,7 @@ class MeetupListAdapter<T : MeetUp>(private val dataSet : List<MeetUp>): Recycle
 
     override fun getItemCount(): Int = currentDataSet.size
 
-    override fun getFilter(): Filter = searchedFilter(dataSet, currentDataSet, { notifyDataSetChanged() })
+    override fun getFilter(): Filter = SearchedFilter(dataSet, currentDataSet, { notifyDataSetChanged() })
 }
 
 

@@ -7,7 +7,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.tag.Tag
 import java.util.*
 
-    public class searchedFilter<T>(private val dataSet : List<T>, private val currentDataSet : MutableList<T>, private val callBack : () -> Unit): Filter() {
+    public class SearchedFilter<T>(private val dataSet : List<T>, private val currentDataSet : MutableList<T>, private val callBack : () -> Unit): Filter() {
         override fun performFiltering(constraint: CharSequence): FilterResults {
             val filteredList: MutableList<T> = mutableListOf()
             if (constraint.isEmpty()) {

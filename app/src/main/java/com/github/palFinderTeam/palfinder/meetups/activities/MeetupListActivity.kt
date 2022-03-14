@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
-import com.github.palFinderTeam.palfinder.utils.searchedFilter
+import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import java.util.*
 
 
@@ -37,7 +37,7 @@ class MeetupListActivity : AppCompatActivity() {
 
         val searchField = findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
-        searchedFilter.setupSearchField(searchField, adapter.filter )
+        SearchedFilter.setupSearchField(searchField, adapter.filter )
 
 
     }
