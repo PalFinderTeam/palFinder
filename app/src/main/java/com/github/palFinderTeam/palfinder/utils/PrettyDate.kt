@@ -15,6 +15,7 @@ class PrettyDate(private val now: Calendar = Calendar.getInstance()) {
         const val FUTURE = "in %s"
         const val PAST = "%s ago"
     }
+
     /**
      * Get time difference pretty printed (works for both times in the future and
      * in the past)
@@ -39,14 +40,14 @@ class PrettyDate(private val now: Calendar = Calendar.getInstance()) {
     /**
      * Get the string formatting for the pretty printing ("in" or "ago")
      */
-    private fun prettyFormat(now: Calendar, target: Calendar) : String {
+    private fun prettyFormat(now: Calendar, target: Calendar): String {
         return if (now.timeInMillis < target.timeInMillis) FUTURE else PAST
     }
 
     /**
      * Get absolute time in seconds between 2 calendars
      */
-    private fun secBetween(d1: Calendar, d2:Calendar) : Double {
+    private fun secBetween(d1: Calendar, d2: Calendar): Double {
         return floor(abs((d1.timeInMillis - d2.timeInMillis) / 1000).toDouble())
     }
 

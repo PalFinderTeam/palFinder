@@ -3,27 +3,27 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.*
+import android.widget.SearchView
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
-import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import java.io.Serializable
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 
+@AndroidEntryPoint
 class MeetupListActivity : AppCompatActivity() {
-    private lateinit  var meetupList : RecyclerView
-    private lateinit var listOfMeetup : List<MeetUp>
-    private lateinit var adapter: MeetupListAdapter<MeetUp>
+    private lateinit var meetupList: RecyclerView
+    private lateinit var adapter: MeetupListAdapter
+
+    private val viewModel: MeetUpListViewModel by viewModels()
 
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -31,37 +31,37 @@ class MeetupListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
 
-        listOfMeetup = intent.getSerializableExtra("MEETUPS") as ArrayList<MeetUp>
-        Log.d("meetup", listOfMeetup.toString())
         meetupList = findViewById(R.id.meetup_list_recycler)
         meetupList.layoutManager = LinearLayoutManager(this)
-        adapter = MeetupListAdapter(listOfMeetup) { position -> onListItemClick(position) }
-        meetupList.adapter = adapter
-
         val searchField = findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
-        SearchedFilter.setupSearchField(searchField, adapter.filter )
 
-
+        viewModel.listOfMeetUp.observe(this) { meetups ->
+            adapter = MeetupListAdapter(meetups) { onListItemClick(it) }
+            meetupList.adapter = adapter
+            SearchedFilter.setupSearchField(searchField, adapter.filter)
+        }
     }
 
     fun sortByCap(view: View?) {
-        adapter.currentDataSet.clear()
-        listOfMeetup = listOfMeetup.sortedBy { it.capacity }
-        adapter.currentDataSet.addAll(listOfMeetup)
-        adapter.notifyDataSetChanged()
+        if (::adapter.isInitialized) {
+            adapter.currentDataSet.clear()
+            viewModel.listOfMeetUp.value?.let { meetups -> adapter.currentDataSet.addAll(meetups.sortedBy { it.capacity }) }
+            adapter.notifyDataSetChanged()
+        }
     }
 
     fun sortByName(view: View?) {
-        adapter.currentDataSet.clear()
-        listOfMeetup = listOfMeetup.sortedBy { it.name.lowercase()}
-        adapter.currentDataSet.addAll(listOfMeetup)
-        adapter.notifyDataSetChanged()
+        if (::adapter.isInitialized) {
+            adapter.currentDataSet.clear()
+            viewModel.listOfMeetUp.value?.let { meetups -> adapter.currentDataSet.addAll(meetups.sortedBy { it.name.lowercase() }) }
+            adapter.notifyDataSetChanged()
+        }
     }
 
     private fun onListItemClick(position: Int) {
         val intent = Intent(this, MeetUpView::class.java)
-            .apply { putExtra(MEETUP_SHOWN, listOfMeetup[position]) }
+            .apply { putExtra(MEETUP_SHOWN, viewModel.listOfMeetUp.value?.get(position)) }
         startActivity(intent)
     }
 }

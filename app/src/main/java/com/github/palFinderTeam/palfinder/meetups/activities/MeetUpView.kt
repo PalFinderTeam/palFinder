@@ -4,52 +4,72 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tag.TagsViewModel
+import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
+import com.github.palFinderTeam.palfinder.utils.addToFragmentManager
+import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
+import dagger.hilt.android.AndroidEntryPoint
 
 
 const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_SHOWN"
 
 @SuppressLint("SimpleDateFormat")
+@AndroidEntryPoint
 class MeetUpView : AppCompatActivity() {
-    private val model: MeetUpViewViewModel by viewModels()
+    private val viewModel: MeetUpViewViewModel by viewModels()
+    private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
+    private lateinit var tagsViewModel: TagsViewModel<Category>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_view)
-        Log.d("meetup", intent.getSerializableExtra(MEETUP_SHOWN).toString())
-        val meetup = intent.getSerializableExtra(MEETUP_SHOWN) as MeetUp
-        model.meetUp = meetup
 
-        fillFields(meetup)
+        val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
+        viewModel.loadMeetUp(meetupId)
+
+        viewModel.meetUp.observe(this) { meetUp ->
+            fillFields(meetUp)
+        }
+
+        tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
+        tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
+        if (savedInstanceState == null) {
+            addToFragmentManager(supportFragmentManager, R.id.fc_tags)
+        }
     }
 
-    private fun setTextView(id: Int, value: String){
+    private fun setTextView(id: Int, value: String) {
         findViewById<TextView>(id).apply { this.text = value }
     }
 
-    private fun fillFields(meetup: MeetUp){
+    private fun fillFields(meetup: MeetUp) {
         val format = SimpleDateFormat(getString(R.string.date_long_format))
         val startDate = format.format(meetup.startDate.time)
         val endDate = format.format(meetup.endDate.time)
 
-        setTextView(R.id.tv_ViewEventName,meetup.name)
-        setTextView(R.id.tv_ViewEventDescritpion,meetup.description)
-        setTextView(R.id.tv_ViewEventCreator,
-            getString(R.string.meetup_view_creator, meetup.creator.name))
+        setTextView(R.id.tv_ViewEventName, meetup.name)
+        setTextView(R.id.tv_ViewEventDescritpion, meetup.description)
+        setTextView(
+            R.id.tv_ViewEventCreator,
+            getString(R.string.meetup_view_creator, meetup.creator.name)
+        )
 
         setTextView(R.id.tv_ViewStartDate, startDate)
-        setTextView(R.id.tv_ViewEndDate,endDate)
+        setTextView(R.id.tv_ViewEndDate, endDate)
+
+        tagsViewModel.refreshTags()
     }
 
-    fun onEdit(v: View){
+    fun onEdit(v: View) {
         val intent = Intent(this, MeetUpCreation::class.java).apply {
-            putExtra(MEETUP_EDIT, model.meetUp)
+            putExtra(MEETUP_EDIT, viewModel.meetUp.value?.uuid)
         }
         startActivity(intent)
     }

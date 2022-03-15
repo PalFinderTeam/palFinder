@@ -8,15 +8,13 @@
 
     <ScrollView
         android:id="@+id/sv_meetupcreation"
-        android:layout_width="409dp"
-        android:layout_height="600dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:clipToPadding="false"
         android:scrollIndicators="right"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -132,25 +130,35 @@
                 android:layout_height="wrap_content"
                 android:text="@string/meetup_creation_meetup_tags" />
 
-            <TextView
-                android:id="@+id/tv_Tags"
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fc_tags"
+                android:name="com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/meetup_creation_meetup_no_tags" />
+                tools:layout="@layout/fragment_tags_display" />
 
-            <Button
-                android:id="@+id/bt_AddTags"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/meetup_creation_meetup_tags_bt" />
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/et_Capacity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/meetup_creation_meetup_entries"
-                android:inputType="numberSigned" />
+                <CheckBox
+                    android:id="@+id/hasCapacityButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.4"
+                    android:text="@string/limit_people" />
+
+                <EditText
+                    android:id="@+id/et_Capacity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="@string/meetup_creation_meetup_entries"
+                    android:inputType="numberSigned"
+                    android:autofillHints="" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/bt_Done"
