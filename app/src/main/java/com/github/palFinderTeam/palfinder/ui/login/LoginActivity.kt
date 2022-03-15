@@ -1,36 +1,39 @@
 package com.github.palFinderTeam.palfinder.ui.login
 
-import android.content.Intent
-import android.content.IntentSender
-import android.os.Bundle
 //import android.text.Editable
 //import android.text.TextWatcher
-import android.util.Log
-import android.widget.FrameLayout
 //import android.widget.EditText
 //import android.widget.Toast
 //import androidx.annotation.StringRes
+
+import android.app.Activity
+import android.content.Intent
+import android.content.IntentSender
+import android.os.Build
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.view.autofill.AutofillManager
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.MainActivity
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.utils.PrettyDate
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.auth.api.identity.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.security.Timestamp
 import java.util.*
 
 
@@ -45,7 +48,8 @@ class LoginActivity : AppCompatActivity() {
     private companion object{
         private const val TAG = "LoginActivity"
         private const val RC_GOOGLE_SIGN_IN = 4926
-        private val REQ_ONE_TAP = 2  // Can be any integer unique to the Activity
+        private val REQ_ONE_TAP = 4  // Can be any integer unique to the Activity
+        private const val REQUEST_CODE_GIS_SAVE_PASSWORD = 2 /* unique request id */
         private var showOneTapUI = true
         val db = Firebase.firestore
     }
@@ -87,10 +91,17 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         val signInButton = findViewById<SignInButton>(R.id.signInButton)
+        val signInOrRegister = findViewById<Button>(R.id.login)
         auth = Firebase.auth
         oneTapClient = Identity.getSignInClient(this)
         signInRequest= beginSignInRequest()
         displayOneTap()
+
+        //disable auto fill to enable onetap save password, work only with API >= 26
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            window
+                .decorView.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+        }
 
 
         // Configure Google Sign In
@@ -104,10 +115,46 @@ class LoginActivity : AppCompatActivity() {
             val signIntent = client.signInIntent
             startActivityForResult(signIntent, RC_GOOGLE_SIGN_IN)
         }
+        signInOrRegister.setOnClickListener {
+            val email = findViewById<TextView>(R.id.email).text.toString()
+            //no checks on password is made for now
+            val password= findViewById<TextView>(R.id.password).text.toString()
+            if (isValidEmail(email)) {
+                if (emailIsAvailability(email)){
+                    createAccount(email, password)
+                }else{
+                    signIn(email, password)
+                }
+            }
+            else {
+                //pop "email not valid"
+                Toast.makeText(baseContext, "Email not valid",
+                    Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
+    //could be moved in db utils
+    private fun emailIsAvailability(email: String): Boolean {
+        var available: Boolean = true
+        db.collection("users")
+            .whereEqualTo("email", email)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    Log.w(TAG, "Email already assigned")
+                    available = false
+                    break
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents: ", exception)
+            }.isComplete
+        return available
+    }
 
-
-
+    private fun isValidEmail(str: String): Boolean{
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(str).matches()
     }
 
     private fun beginSignInRequest() = BeginSignInRequest.builder()
@@ -173,8 +220,100 @@ class LoginActivity : AppCompatActivity() {
                     Log.w(TAG, "Google sign in failed", e)
                 }
             }
+            REQUEST_CODE_GIS_SAVE_PASSWORD -> {
+                Log.d(TAG, "in save password result")
+                if (resultCode == Activity.RESULT_OK) {
+                    /* password was saved */
+                    Toast.makeText(
+                        baseContext, "password saved",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else if (resultCode == Activity.RESULT_CANCELED) {
+                    /* password saving was cancelled */
+                    Toast.makeText(
+                        baseContext, "password not saved",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                updateUI(auth.currentUser)
+            }
         }
     }
+
+    private fun createAccount(email: String, password: String) {
+        // [START create_user_with_email]
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "createUserWithEmail:success")
+                    val user = auth.currentUser
+                    savePassword(email,password)
+                } else {
+                    // If user already in database, sign in
+                    if(task.exception is FirebaseAuthUserCollisionException){
+                        signIn(email, password)
+                    } else {
+                        //if creation fails, display error message
+                        Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                        Toast.makeText(
+                            baseContext, "Authentication failed.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        updateUI(null)
+                    }
+                }
+            }
+        // [END create_user_with_email]
+    }
+
+    private fun signIn(email: String, password: String) {
+        // [START sign_in_with_email]
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "signInWithEmail:success")
+                    val user = auth.currentUser
+                    savePassword(email,password)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "signInWithEmail:failure", task.exception)
+                    Toast.makeText(baseContext, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show()
+                    updateUI(null)
+                }
+            }
+        // [END sign_in_with_email]
+    }
+
+    private fun savePassword(email: String, password: String) {
+        val signInPassword = SignInPassword(email, password)
+        val savePasswordRequest =
+            SavePasswordRequest.builder().setSignInPassword(signInPassword).build()
+        Identity.getCredentialSavingClient(this).savePassword(savePasswordRequest)
+            .addOnSuccessListener { result ->
+                try {
+                startIntentSenderForResult(
+                    result.pendingIntent.intentSender,
+                    REQUEST_CODE_GIS_SAVE_PASSWORD,  /* fillInIntent= */
+                    null,  /* flagsMask= */
+                    0,  /* flagsValue= */
+                    0,  /* extraFlags= */
+                    0,  /* options= */
+                    null
+                )}catch (e: IntentSender.SendIntentException) {
+                    Log.e(TAG, "Couldn't save password: ${e.localizedMessage}")
+                }
+            }
+            .addOnFailureListener(this) { e ->
+                // No saved credentials found. Launch the One Tap sign-up flow, or
+                // do nothing and continue presenting the signed-out UI.
+                Log.d(TAG, e.localizedMessage)
+            }
+    }
+
+
 
     private fun checkOneTapCredential(idToken: String?, password: String?) {
         when {
@@ -268,6 +407,7 @@ class LoginActivity : AppCompatActivity() {
         finish()
     }
 
+    //could be moved into db utils
     private fun addNewUser(user: FirebaseUser, dbUser: Cloneable) {
         val docRef = db.collection("users").document(user.uid)
         docRef.get()
