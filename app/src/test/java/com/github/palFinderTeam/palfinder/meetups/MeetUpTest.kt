@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -18,19 +19,21 @@ class MeetUpTest {
         val date2 = Mockito.mock(Calendar::class.java)
         Mockito.`when`(date2.timeInMillis).thenReturn(1)
 
+        val user = ProfileUser("dummy","dummy","dummy", date1)
+
         meetUp = MeetUp(
             "dummy",
-            TempUser("", "Bob"),
+            user,
             "",
             "dummy",
             "dummy",
             date1,
             date2,
             Location(0.0,0.0),
-            emptyList(),
+            emptySet(),
             true,
             2,
-            mutableListOf(TempUser("", "Alice"))
+            mutableListOf(user)
         )
     }
 
@@ -56,7 +59,7 @@ class MeetUpTest {
     }
 
     @Test
-    fun iStarted(){
+    fun isStarted(){
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
 
@@ -64,10 +67,19 @@ class MeetUpTest {
     }
 
     @Test
+    fun isNotStarted(){
+        val now = Mockito.mock(Calendar::class.java)
+        Mockito.`when`(now.timeInMillis).thenReturn(-1)
+
+        assertEquals( false, meetUp!!.isStarted(now))
+    }
+
+    @Test
     fun join(){
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
-        val user = TempUser("", "Bob")
+        val user = ProfileUser("dummy1","dummy2","dummy", now)
+
         meetUp!!.join(now, user)
         assertEquals( true, meetUp!!.isParticipating(user))
     }
@@ -76,11 +88,10 @@ class MeetUpTest {
     fun joinAndLeave(){
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
-        val user = TempUser("", "Bob")
+        val user = ProfileUser("dummy1","dummy2","dummy", now)
+
         meetUp!!.join(now, user)
         meetUp!!.leave(user)
         assertEquals( false, meetUp!!.isParticipating(user))
     }
-
-
 }
