@@ -10,11 +10,9 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-
 import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
-import java.io.Serializable
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -22,13 +20,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import java.io.Serializable
 
 const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
 const val DUMMY_USER = "com.github.palFinderTeam.palFinder.DUMMY_PROFILE_USER"
 
 class MainActivity : AppCompatActivity() {
 
-    private companion object{
+    private companion object {
         private const val TAG = "MainActivity"
     }
 
@@ -47,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.miLogout){
+        if (item.itemId == R.id.miLogout) {
             Log.i(TAG, "Logout")
             //Logout the user
             auth.signOut()
@@ -66,8 +65,8 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
 
     }
-    
-    fun openMeetupCreationPage(view: View?){
+
+    fun openMeetupCreationPage(view: View?) {
         val intent = Intent(this, MeetUpCreation::class.java).apply {
         }
         startActivity(intent)
@@ -78,7 +77,10 @@ class MainActivity : AppCompatActivity() {
         val joinDate = Calendar.getInstance()
         joinDate.set(2022, 2, 6, 14, 1, 0)
         val intent = Intent(this, ProfileActivity::class.java).apply {
-            putExtra(DUMMY_USER, ProfileUser("gerussi", "Louca", "Gerussi", joinDate) as Serializable)
+            putExtra(
+                DUMMY_USER,
+                ProfileUser("gerussi", "Louca", "Gerussi", joinDate) as Serializable
+            )
         }
         startActivity(intent)
     }
@@ -90,7 +92,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun accessMap(view: View?) {
-        val intent = Intent(this, MapsActivity::class.java).apply {  }
+        val intent = Intent(this, MapsActivity::class.java).apply { }
         startActivity(intent)
     }
 }

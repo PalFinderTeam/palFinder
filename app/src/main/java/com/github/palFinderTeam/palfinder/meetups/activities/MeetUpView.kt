@@ -8,15 +8,13 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.add
-import androidx.fragment.app.commit
-import androidx.lifecycle.ViewModelProvider
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.tag.Category
-import com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
+import com.github.palFinderTeam.palfinder.utils.addToFragmentManager
+import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -41,16 +39,9 @@ class MeetUpView : AppCompatActivity() {
         }
 
         tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
-        tagsViewModel = ViewModelProvider(
-            this,
-            tagsViewModelFactory
-        )[TagsViewModel::class.java] as TagsViewModel<Category>
-
+        tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
         if (savedInstanceState == null) {
-            supportFragmentManager.commit {
-                setReorderingAllowed(true)
-                add<TagsDisplayFragment<Category>>(R.id.fc_tags)
-            }
+            addToFragmentManager(supportFragmentManager, R.id.fc_tags)
         }
     }
 
