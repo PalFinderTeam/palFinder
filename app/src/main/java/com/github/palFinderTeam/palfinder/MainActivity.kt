@@ -11,19 +11,13 @@ import android.view.View
 import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-
 import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
-import com.github.palFinderTeam.palfinder.tag.example.TagShowcaseActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
-import com.github.palFinderTeam.palfinder.meetups.MeetUpDumb
-import com.github.palFinderTeam.palfinder.meetups.TempUser
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
-import java.io.Serializable
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
-import com.github.palFinderTeam.palfinder.tag.Tag
-import java.util.*
+import com.github.palFinderTeam.palfinder.tag.example.TagShowcaseActivity
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -31,6 +25,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import java.io.Serializable
 
 const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
 const val DUMMY_USER = "com.github.palFinderTeam.palFinder.DUMMY_PROFILE_USER"
@@ -106,35 +101,38 @@ class MainActivity : AppCompatActivity() {
         c3.set(2022, 2, 1)
         var c4 = Calendar.getInstance()
         c4.set(2022, 0, 1)
+        
+        val creator = ProfileUser("as","as","as",c1)
+        val joiner = ProfileUser("cae","cae","cae",c1)
 
         val meetups_list = listOf(
             MeetUp(icon = "", name = "cuire des carottes",
                 description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre", startDate = c1,
-                endDate = c2, location = Location(0.0, 0.0), tags = listOf(Category.DRINKING.toString()), capacity = 45,
-                creator = TempUser("", "as"), hasMaxCapacity = true, participants = listOf<TempUser>(TempUser("", "cae")).toMutableList(),
+                endDate = c2, location = Location(0.0, 0.0), tags = setOf(Category.DRINKING), capacity = 45,
+                creator = creator, hasMaxCapacity = true, participants = mutableListOf(joiner),
                 uuid = "ce"
             ),
             MeetUp(icon = "", name = "cuire des patates",
                 description = "nous aimerions bien nous atteler à la cuisson de patates au beurre", startDate = c2,
-                endDate = c1, location = Location(0.0, 0.0), tags = listOf(Category.DRINKING.toString()), capacity = 48,
-                creator = TempUser("", "as"), hasMaxCapacity = true, participants = listOf<TempUser>(TempUser("", "cae")).toMutableList(),
+                endDate = c1, location = Location(0.0, 0.0), tags = setOf(Category.DRINKING), capacity = 48,
+                creator = creator, hasMaxCapacity = true, participants = mutableListOf(joiner),
                 uuid = "ce"),
             MeetUp(icon = "", name = "Street workout",
                 description = "workout pepouse au pont chauderon", startDate = c3,
-                endDate = c1, location = Location(0.0, 0.0), tags = listOf(Category.DRINKING.toString()), capacity = 9,
-                creator = TempUser("", "as"), hasMaxCapacity = true, participants = listOf<TempUser>(TempUser("", "cae")).toMutableList(),
+                endDate = c1, location = Location(0.0, 0.0), tags = setOf(Category.DRINKING), capacity = 9,
+                creator = creator, hasMaxCapacity = true, participants = mutableListOf(joiner),
                 uuid = "ce"
             ),
             MeetUp(icon = "", name = "Van Gogh Beaulieux",
                 description = "Expo sans tableau c'est bo", startDate = c4,
-                endDate = c1, location = Location(0.0, 0.0), tags = listOf(Category.DRINKING.toString()), capacity = 15,
-                creator = TempUser("", "as"), hasMaxCapacity = true, participants = listOf<TempUser>(TempUser("", "cae")).toMutableList(),
+                endDate = c1, location = Location(0.0, 0.0), tags = setOf(Category.DRINKING), capacity = 15,
+                creator = creator, hasMaxCapacity = true, participants = mutableListOf(joiner),
                 uuid = "ce"
             ),
             MeetUp(icon = "", name = "Palexpo",
                 description = "popopo", startDate = c4,
-                endDate = c2, location = Location(0.0, 0.0), tags = listOf(Category.DRINKING.toString()), capacity = 13,
-                creator = TempUser("", "as"), hasMaxCapacity = true, participants = listOf<TempUser>(TempUser("", "cae")).toMutableList(),
+                endDate = c2, location = Location(0.0, 0.0), tags = setOf(Category.DRINKING), capacity = 13,
+                creator = creator, hasMaxCapacity = true, participants = mutableListOf(joiner),
                 uuid = "ce"
             ),
         )
