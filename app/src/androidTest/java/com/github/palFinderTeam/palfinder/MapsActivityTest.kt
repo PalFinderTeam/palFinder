@@ -1,27 +1,5 @@
 package com.github.palFinderTeam.palfinder
 
-import android.app.Instrumentation
-import android.icu.util.Calendar
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import androidx.test.rule.GrantPermissionRule
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiSelector
-import com.github.palFinderTeam.palfinder.map.MapsActivity
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
-import com.github.palFinderTeam.palfinder.meetups.TempUser
-import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
-import com.github.palFinderTeam.palfinder.utils.Location
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
 /**
 @RunWith(AndroidJUnit4::class)
 class MapsActivityTest {

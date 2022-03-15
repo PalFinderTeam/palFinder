@@ -5,29 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
-        android:id="@+id/scrollView2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="50dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/meetup_list_recycler"
+        android:layout_width="413dp"
+        android:layout_height="511dp"
+        android:layout_weight="1"
+        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sort_alph"
-        tools:ignore="SpeakableTextPresentCheck">
+        app:layout_constraintTop_toBottomOf="@id/search_list">
 
-        <LinearLayout
-            android:id="@+id/meetup_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:backgroundTintMode="src_in"
-            android:divider="?attr/dividerVertical"
-            android:orientation="vertical"
-            android:showDividers="middle">
-
-        </LinearLayout>
-    </ScrollView>
+    </androidx.recyclerview.widget.RecyclerView>
 
     <Button
         android:id="@+id/sort_alph"
@@ -36,7 +24,7 @@
         android:layout_marginEnd="16dp"
         android:onClick="sortByName"
         android:text="@string/list_sort_by_alphabetical_order"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintBottom_toTopOf="@id/search_list"
         app:layout_constraintEnd_toStartOf="@id/sort_capacity" />
 
     <Button
@@ -46,7 +34,15 @@
         android:layout_marginStart="52dp"
         android:onClick="sortByCap"
         android:text="@string/list_sort_by_capacity"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintBottom_toTopOf="@id/search_list"
         app:layout_constraintStart_toEndOf="@id/sort_alph" />
+
+    <SearchView
+        android:id="@+id/search_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/meetup_list_recycler"
+        app:layout_constraintTop_toBottomOf="@+id/sort_alph"
+        tools:layout_editor_absoluteX="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

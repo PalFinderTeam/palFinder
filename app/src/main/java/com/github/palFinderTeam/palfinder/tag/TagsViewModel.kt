@@ -23,7 +23,7 @@ class TagsViewModel<T: Tag>(private val tagsRepository: TagsRepository<T>) : Vie
         }
         val changed = tagsRepository.addTag(tag)
         if (changed) {
-            _tagContainer.value = tagsRepository.tags
+            refreshTags()
         }
     }
 
@@ -33,8 +33,16 @@ class TagsViewModel<T: Tag>(private val tagsRepository: TagsRepository<T>) : Vie
         }
         val changed = tagsRepository.removeTag(tag)
         if (changed) {
-            _tagContainer.value = tagsRepository.tags
+            refreshTags()
         }
+    }
+
+    /**
+     * Refresh tags value from repository, useful when repository values are acquired
+     * asynchronously for instance.
+     */
+    fun refreshTags() {
+        _tagContainer.value = tagsRepository.tags
     }
 
     /**
