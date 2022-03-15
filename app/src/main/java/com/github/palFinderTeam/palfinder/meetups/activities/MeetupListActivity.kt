@@ -13,7 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tag.TagsViewModel
+import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
+import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
+import com.github.palFinderTeam.palfinder.utils.addToFragmentManager
+import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
@@ -22,6 +28,8 @@ import java.util.*
 class MeetupListActivity : AppCompatActivity() {
     private lateinit var meetupList: RecyclerView
     private lateinit var adapter: MeetupListAdapter
+    private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
+    private lateinit var tagsViewModel: TagsViewModel<Category>
 
     private val viewModel: MeetUpListViewModel by viewModels()
 
@@ -40,6 +48,15 @@ class MeetupListActivity : AppCompatActivity() {
             adapter = MeetupListAdapter(meetups) { onListItemClick(it) }
             meetupList.adapter = adapter
             SearchedFilter.setupSearchField(searchField, adapter.filter)
+        }
+
+        tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
+        tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
+        if (savedInstanceState == null) {
+            addToFragmentManager(supportFragmentManager, R.id.list_select_tag)
+        }
+        viewModel.tags.observeOnce(this) {
+            tagsViewModel.refreshTags()
         }
     }
 
