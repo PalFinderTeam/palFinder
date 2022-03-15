@@ -8,18 +8,13 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.map.MapsActivity
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
-import com.github.palFinderTeam.palfinder.tag.Category
-import com.github.palFinderTeam.palfinder.tag.example.TagShowcaseActivity
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
-import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -32,7 +27,7 @@ const val DUMMY_USER = "com.github.palFinderTeam.palFinder.DUMMY_PROFILE_USER"
 
 class MainActivity : AppCompatActivity() {
 
-    private companion object{
+    private companion object {
         private const val TAG = "MainActivity"
     }
 
@@ -42,10 +37,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<Button>(R.id.mainGoToTagButton).setOnClickListener {
-            val intent = Intent(this, TagShowcaseActivity::class.java)
-            startActivity(intent)
-        }
         auth = Firebase.auth
     }
 
@@ -55,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.miLogout){
+        if (item.itemId == R.id.miLogout) {
             Log.i(TAG, "Logout")
             //Logout the user
             auth.signOut()
@@ -74,8 +65,8 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
 
     }
-    
-    fun openMeetupCreationPage(view: View?){
+
+    fun openMeetupCreationPage(view: View?) {
         val intent = Intent(this, MeetUpCreation::class.java).apply {
         }
         startActivity(intent)
@@ -86,63 +77,22 @@ class MainActivity : AppCompatActivity() {
         val joinDate = Calendar.getInstance()
         joinDate.set(2022, 2, 6, 14, 1, 0)
         val intent = Intent(this, ProfileActivity::class.java).apply {
-            putExtra(DUMMY_USER, ProfileUser("gerussi", "Louca", "Gerussi", joinDate) as Serializable)
+            putExtra(
+                DUMMY_USER,
+                ProfileUser("gerussi", "Louca", "Gerussi", joinDate) as Serializable
+            )
         }
         startActivity(intent)
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun seeList(view: View?) {
-        var c1 = Calendar.getInstance()
-        c1.set(2022, 2, 6)
-        var c2 = Calendar.getInstance()
-        c2.set(2022, 1, 8)
-        var c3 = Calendar.getInstance()
-        c3.set(2022, 2, 1)
-        var c4 = Calendar.getInstance()
-        c4.set(2022, 0, 1)
-        
-        val creator = ProfileUser("as","as","as",c1)
-        val joiner = ProfileUser("cae","cae","cae",c1)
-
-        val meetups_list = listOf(
-            MeetUp(icon = "", name = "cuire des carottes",
-                description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre", startDate = c1,
-                endDate = c2, location = Location(0.0, 0.0), tags = setOf(Category.DRINKING), capacity = 45,
-                creator = creator, hasMaxCapacity = true, participants = mutableListOf(joiner),
-                uuid = "ce"
-            ),
-            MeetUp(icon = "", name = "cuire des patates",
-                description = "nous aimerions bien nous atteler à la cuisson de patates au beurre", startDate = c2,
-                endDate = c1, location = Location(0.0, 0.0), tags = setOf(Category.DRINKING), capacity = 48,
-                creator = creator, hasMaxCapacity = true, participants = mutableListOf(joiner),
-                uuid = "ce"),
-            MeetUp(icon = "", name = "Street workout",
-                description = "workout pepouse au pont chauderon", startDate = c3,
-                endDate = c1, location = Location(0.0, 0.0), tags = setOf(Category.DRINKING), capacity = 9,
-                creator = creator, hasMaxCapacity = true, participants = mutableListOf(joiner),
-                uuid = "ce"
-            ),
-            MeetUp(icon = "", name = "Van Gogh Beaulieux",
-                description = "Expo sans tableau c'est bo", startDate = c4,
-                endDate = c1, location = Location(0.0, 0.0), tags = setOf(Category.DRINKING), capacity = 15,
-                creator = creator, hasMaxCapacity = true, participants = mutableListOf(joiner),
-                uuid = "ce"
-            ),
-            MeetUp(icon = "", name = "Palexpo",
-                description = "popopo", startDate = c4,
-                endDate = c2, location = Location(0.0, 0.0), tags = setOf(Category.DRINKING), capacity = 13,
-                creator = creator, hasMaxCapacity = true, participants = mutableListOf(joiner),
-                uuid = "ce"
-            ),
-        )
         val intent = Intent(this, MeetupListActivity::class.java)
-            .putExtra("MEETUPS", meetups_list as Serializable)
         startActivity(intent)
     }
 
     fun accessMap(view: View?) {
-        val intent = Intent(this, MapsActivity::class.java).apply {  }
+        val intent = Intent(this, MapsActivity::class.java).apply { }
         startActivity(intent)
     }
 }
