@@ -61,7 +61,7 @@ class MeetupListActivity : AppCompatActivity() {
 
     private fun onListItemClick(position: Int) {
         val intent = Intent(this, MeetUpView::class.java)
-            .apply { putExtra(MEETUP_SHOWN, viewModel.listOfMeetUp.value?.get(position)) }
+            .apply { putExtra(MEETUP_SHOWN, viewModel.listOfMeetUp.value?.get(position)?.uuid) }
         startActivity(intent)
     }
 }
