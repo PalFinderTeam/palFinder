@@ -73,6 +73,11 @@
                 android:text="TextView" />
         </LinearLayout>
 
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fc_tags"
+            android:layout_width="match_parent"
+            android:layout_height="89dp" />
+
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

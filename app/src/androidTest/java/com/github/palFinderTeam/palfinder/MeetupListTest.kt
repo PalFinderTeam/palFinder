@@ -25,13 +25,14 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.Serializable
-
+/*
 @RunWith(AndroidJUnit4::class)
 class MeetUpListTest {
     private lateinit var meetups_list: List<MeetUp>;//TODO - correct to use right meetup
 
     @Before
     fun create_meetups_lists() {
+        /*
         var c1 = Calendar.getInstance()
         c1.set(2022, 2, 6)
         var c2 = Calendar.getInstance()
@@ -81,7 +82,7 @@ class MeetUpListTest {
                 ).toMutableList(),
                 uuid = "ce"
             ),
-        )
+        )*/
     }
 
     @Test
@@ -167,4 +168,4 @@ class RecyclerViewMatcher(private val recyclerViewId: Int) {
             }
         }
     }
-}
+}*/
