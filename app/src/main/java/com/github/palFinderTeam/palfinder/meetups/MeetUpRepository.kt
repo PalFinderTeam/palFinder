@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.Response
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
@@ -48,8 +49,11 @@ interface MeetUpRepository {
      *
      * @param location Location around which to search.
      */
-    suspend fun getMeetUpsAroundLocation(location: Location, radiusInM: Double): List<MeetUp>?
+    fun getMeetUpsAroundLocation(location: Location, radiusInM: Double): Flow<Response<List<MeetUp>>>
 
+    /**
+     * Fetches every meetups from DB. It will be removed later but is useful for development.
+     */
     @ExperimentalCoroutinesApi
     fun getAllMeetUps(): Flow<List<MeetUp>>
 }

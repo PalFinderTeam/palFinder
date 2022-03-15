@@ -4,6 +4,9 @@ import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.Response.*
+import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -13,6 +16,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
 
@@ -66,15 +71,15 @@ object FirebaseMeetUpService : MeetUpRepository {
         }
     }
 
-    override suspend fun getMeetUpsAroundLocation(
+    override fun getMeetUpsAroundLocation(
         location: Location,
         radiusInM: Double
-    ): List<MeetUp>? {
+    ): Flow<Response<List<MeetUp>>> {
+
         val db = FirebaseFirestore.getInstance()
 
         val geoLocation = GeoLocation(location.latitude, location.longitude)
         val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInM)
-
         val tasks = bounds.map {
             db.collection(MEETUP_COLL)
                 .orderBy(it.startHash)
@@ -82,33 +87,29 @@ object FirebaseMeetUpService : MeetUpRepository {
                 .get()
         }
 
-        val matchingDocs = mutableListOf<MeetUp>()
+        return flow {
+            emit(Loading())
 
-        Tasks.whenAllComplete(tasks).addOnSuccessListener {
+            val allTasks: Task<List<QuerySnapshot>> = Tasks.whenAllSuccess(tasks)
 
-            for (task in tasks) {
-                val snap = task.result
-                for (doc in snap.documents) {
-
-                    val docLocation: GeoLocation = doc.get("position") as GeoLocation
-                    val distanceInM = GeoFireUtils.getDistanceBetween(docLocation, geoLocation)
-                    if (distanceInM <= radiusInM) {
-                        matchingDocs.add(doc.toMeetUp()!!)
-                    }
+            val meetUps = allTasks.await().flatMap { snapshot ->
+                snapshot.documents.map { it.toMeetUp()!! }.filter {
+                    // Filter the last false positive
+                    val docLocation = it.location
+                    val distanceInM =
+                        docLocation.distanceInKm(location) * 1000 // TODO find better unit conversion
+                    distanceInM <= radiusInM
                 }
             }
+            emit(Success(meetUps))
+
+        }.catch { error ->
+            error.message?.let {
+                emit(Failure(it))
+            }
         }
-
-
-
-        return matchingDocs
     }
 
-    /**
-     * This function fetches all MeetUps from DB
-     * It will be removed later, it just is better for experimentation, while fetchingAround
-     * location is being build.
-     */
     @ExperimentalCoroutinesApi
     override fun getAllMeetUps(): Flow<List<MeetUp>> {
         val db = FirebaseFirestore.getInstance()
