@@ -8,12 +8,13 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.add
-import androidx.fragment.app.commit
-import androidx.lifecycle.ViewModelProvider
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
-import com.github.palFinderTeam.palfinder.tag.*
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tag.TagsViewModel
+import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
+import com.github.palFinderTeam.palfinder.utils.addToFragmentManager
+import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 
 
 const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_SHOWN"
@@ -34,25 +35,13 @@ class MeetUpView : AppCompatActivity() {
         loadTag()
 
         if (savedInstanceState == null) {
-            supportFragmentManager.commit {
-                setReorderingAllowed(true)
-                add<TagsDisplayFragment<Category>>(R.id.fc_tags)
-            }
+            addToFragmentManager(supportFragmentManager, R.id.fc_tags)
         }
 
         fillFields(meetup)
     }
     private fun loadTag(){
-        tagsViewModelFactory = TagsViewModelFactory(
-            NonEditableTags(
-                model.meetUp.tags.toSet(),
-                Category.values().toSet()
-            )
-        )
-        tagsViewModel = ViewModelProvider(
-            this,
-            tagsViewModelFactory
-        ).get(TagsViewModel::class.java) as TagsViewModel<Category>
+        tagsViewModel = createTagFragmentModel(this, model.meetUp.tags, false)
     }
     private fun setTextView(id: Int, value: String){
         findViewById<TextView>(id).apply { this.text = value }

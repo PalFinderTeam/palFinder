@@ -10,17 +10,13 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.add
-import androidx.fragment.app.commit
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
-import com.github.palFinderTeam.palfinder.tag.*
-import com.github.palFinderTeam.palfinder.utils.Location
-import com.github.palFinderTeam.palfinder.utils.askTime
-import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tag.TagsViewModel
+import com.github.palFinderTeam.palfinder.utils.*
 
 const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
 const val defaultTimeDelta = 1000 * 60 * 60
@@ -28,7 +24,6 @@ const val defaultTimeDelta = 1000 * 60 * 60
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 class MeetUpCreation : AppCompatActivity() {
     private val model: MeetUpCreationViewModel by viewModels()
-    private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     private lateinit var tagsViewModel: TagsViewModel<Category>
     private var dateFormat = SimpleDateFormat()
 
@@ -41,10 +36,7 @@ class MeetUpCreation : AppCompatActivity() {
         loadIntent()
 
         if (savedInstanceState == null) {
-            supportFragmentManager.commit {
-                setReorderingAllowed(true)
-                add<TagsDisplayFragment<Category>>(R.id.fc_tags)
-            }
+            addToFragmentManager(supportFragmentManager, R.id.fc_tags)
         }
 
         loadDate()
@@ -65,27 +57,18 @@ class MeetUpCreation : AppCompatActivity() {
     }
 
     private fun loadIntent() {
+        lateinit var tagsSet: Set<Category>
         if (intent.hasExtra(MEETUP_EDIT)) {
             val meetup = intent.getSerializableExtra(MEETUP_EDIT) as MeetUp
-            tagsViewModelFactory = TagsViewModelFactory(
-                EditableTags(
-                    meetup.tags.toMutableSet(),
-                    Category.values().toSet()
-                )
-            )
+            tagsSet = meetup.tags
             fillFields(meetup)
         } else {
             model.startDate.value = Calendar.getInstance()
             model.endDate.value = Calendar.getInstance()
-            tagsViewModelFactory = TagsViewModelFactory(
-                EditableTags(mutableSetOf(), Category.values().toSet())
-            )
+            tagsSet = emptySet()
         }
 
-        tagsViewModel = ViewModelProvider(
-            this,
-            tagsViewModelFactory
-        ).get(TagsViewModel::class.java) as TagsViewModel<Category>
+        tagsViewModel = createTagFragmentModel(this, tagsSet, true)
     }
 
     private fun fillFields(meetUp: MeetUp){
