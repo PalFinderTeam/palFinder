@@ -4,5 +4,5 @@ import androidx.lifecycle.ViewModel
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 
 class MeetUpViewViewModel: ViewModel() {
-    var meetUp: MeetUp? = null
+    lateinit var meetUp: MeetUp
 }

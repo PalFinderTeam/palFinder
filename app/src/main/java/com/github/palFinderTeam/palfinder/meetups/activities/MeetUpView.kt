@@ -10,6 +10,11 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tag.TagsViewModel
+import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
+import com.github.palFinderTeam.palfinder.utils.addToFragmentManager
+import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 
 
 const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_SHOWN"
@@ -17,6 +22,8 @@ const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_
 @SuppressLint("SimpleDateFormat")
 class MeetUpView : AppCompatActivity() {
     private val model: MeetUpViewViewModel by viewModels()
+    private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
+    private lateinit var tagsViewModel: TagsViewModel<Category>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,9 +32,17 @@ class MeetUpView : AppCompatActivity() {
         val meetup = intent.getSerializableExtra(MEETUP_SHOWN) as MeetUp
         model.meetUp = meetup
 
+        loadTag()
+
+        if (savedInstanceState == null) {
+            addToFragmentManager(supportFragmentManager, R.id.fc_tags)
+        }
+
         fillFields(meetup)
     }
-
+    private fun loadTag(){
+        tagsViewModel = createTagFragmentModel(this, model.meetUp.tags, false)
+    }
     private fun setTextView(id: Int, value: String){
         findViewById<TextView>(id).apply { this.text = value }
     }
