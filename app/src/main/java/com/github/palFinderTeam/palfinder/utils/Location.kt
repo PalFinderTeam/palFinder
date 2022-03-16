@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder.utils
 
+import com.google.firebase.firestore.GeoPoint
 import java.io.Serializable
 import kotlin.math.*
 
@@ -27,5 +28,21 @@ data class Location(val longitude: Double, val latitude: Double): Serializable{
 
         val distance = earthRadius * c
         return distance * mToKm
+    }
+
+    /**
+     * Conversion to GeoPoint (Firebase)
+     */
+    fun toGeoPoint(): GeoPoint {
+        return GeoPoint(latitude, longitude)
+    }
+
+    companion object {
+        /**
+         * Conversion from GeoPoint (Firebase)
+         */
+        fun GeoPoint.toLocation(): Location {
+            return Location(longitude, latitude)
+        }
     }
 }

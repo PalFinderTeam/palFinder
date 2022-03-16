@@ -50,7 +50,7 @@ object UIMockMeetUpRepositoryModule {
 
         override suspend fun createMeetUp(newMeetUp: MeetUp): String? {
             val key = counter.toString()
-            db[key] = newMeetUp
+            db[key] = newMeetUp.copy(uuid = key)
             counter += 1
             return key
         }

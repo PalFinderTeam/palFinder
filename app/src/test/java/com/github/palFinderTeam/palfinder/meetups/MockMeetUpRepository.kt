@@ -22,7 +22,7 @@ class MockMeetUpRepository : MeetUpRepository {
 
     override suspend fun createMeetUp(newMeetUp: MeetUp): String? {
         val key = counter.toString()
-        db[key] = newMeetUp
+        db[key] = newMeetUp.copy(uuid = key)
         counter.inc()
         return key
     }
