@@ -51,6 +51,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/meetup_creation_meetup_icon" />
 
+            <Button
+                android:id="@+id/bt_locationSelect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onSelectLocation"
+                android:text="@string/meetup_creation_meetup_select_location" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

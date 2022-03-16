@@ -4,27 +4,31 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.github.palFinderTeam.palfinder.R
-
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
+
+
+const val LOCATION_SELECT = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECT"
+const val LOCATION_SELECTED = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECTED"
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -32,6 +36,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
     private lateinit var map: GoogleMap
+    private lateinit var button: FloatingActionButton
+
+    private val mapSelection: MapsSelectionModel by viewModels()
 
     companion object {
         private const val USER_LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -58,6 +65,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        button = findViewById(R.id.bt_locationSelection)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -65,13 +73,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mapFragment.getMapAsync(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        loadSelectionButton()
+    }
 
+    private fun loadSelectionButton(){
+        if (intent.hasExtra(LOCATION_SELECT)) {
+            val pos = intent.getParcelableExtra<LatLng>(LOCATION_SELECT)
+            button.apply { this.isEnabled = false }
+            if (pos != null){
+                // TODO
+                //addSelectionMarker(pos)
+            }
+        } else {
+            button.apply { this.hide() }
+        }
     }
 
     private fun addMarkers(){
         meetUps.forEach{
             val position = LatLng(it.location.latitude, it.location.longitude)
-            val marker = map.addMarker(MarkerOptions().position(position).title(it.uuid))
+            val marker = map?.addMarker(MarkerOptions().position(position).title(it.uuid))
             marker?.tag = it
         }
     }
@@ -95,7 +116,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         addMarkers()
 
-
+        map.setOnMapClickListener(this::onMapClick)
     }
 
 
@@ -145,11 +166,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return false
     }
 
+    private fun onMapClick(p0: LatLng) {
+        if (intent.hasExtra(LOCATION_SELECT)) {
+            addSelectionMarker(p0)
+        }
+    }
+    private fun addSelectionMarker(p0: LatLng){
+        mapSelection.targetMarker.value?.remove()
+        mapSelection.targetMarker.value = map.addMarker(
+            MarkerOptions().position(p0).title("Here").draggable(true)
+        )
+        button.apply { this.isEnabled = mapSelection.targetMarker.value != null }
+    }
 
-
-
-
-
-
+    fun onConfirm(v: View){
+        val resultIntent = Intent()
+        resultIntent.putExtra(LOCATION_SELECTED, mapSelection.targetMarker.value!!.position)
+        setResult(RESULT_OK, resultIntent)
+        finish()
+    }
 
 }

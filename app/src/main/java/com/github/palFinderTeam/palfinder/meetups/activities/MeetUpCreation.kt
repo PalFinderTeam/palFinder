@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
@@ -8,15 +9,22 @@ import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
+import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
+import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.utils.*
+import com.google.android.gms.maps.model.LatLng
+
 
 const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
 const val defaultTimeDelta = 1000 * 60 * 60
@@ -25,9 +33,11 @@ const val defaultTimeDelta = 1000 * 60 * 60
 class MeetUpCreation : AppCompatActivity() {
     private val model: MeetUpCreationViewModel by viewModels()
     private lateinit var tagsViewModel: TagsViewModel<Category>
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
     private var dateFormat = SimpleDateFormat()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        registerActivityResult()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_creation)
 
@@ -40,6 +50,17 @@ class MeetUpCreation : AppCompatActivity() {
         }
 
         loadDate()
+    }
+
+    private fun registerActivityResult(){
+        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                if (data != null) {
+                    onLocationSelected(data.getParcelableExtra(LOCATION_SELECTED)!!)
+                }
+            }
+        }
     }
 
     private fun loadDate() {
@@ -161,7 +182,10 @@ class MeetUpCreation : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun showMessage(message: Int, title: Int) {
+    /**
+     * Show [message] with [title] in an alert box
+     */
+    fun showMessage(message: Int, title: Int) {
         val dlgAlert = AlertDialog.Builder(this);
         dlgAlert.setMessage(message);
         dlgAlert.setTitle(title);
@@ -169,4 +193,16 @@ class MeetUpCreation : AppCompatActivity() {
         dlgAlert.setCancelable(true);
         dlgAlert.create().show();
     }
+
+    fun onSelectLocation(v: View){
+        val intent = Intent(this, MapsActivity::class.java).apply {
+            putExtra(LOCATION_SELECT, LatLng(0.0,0.0))
+        }
+        startActivity(intent)
+    }
+
+    private fun onLocationSelected(p0: LatLng){
+        model.setLatLng(p0)
+    }
+
 }
