@@ -6,6 +6,7 @@ import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -57,11 +58,17 @@ class MockMeetUpRepository : MeetUpRepository {
         }
     }
 
-    override suspend fun getMeetUpsAroundLocation(
+    override fun getMeetUpsAroundLocation(
         location: Location,
         radiusInM: Double
-    ): List<MeetUp>? {
-        TODO("Not yet implemented")
+    ): Flow<Response<List<MeetUp>>> {
+        return flow {
+            val meetUps = db.values.filter { meetUp ->
+                meetUp.location.distanceInKm(location)*1000 <= radiusInM
+            }
+
+            emit(Response.Success(meetUps))
+        }
     }
 
     @ExperimentalCoroutinesApi
