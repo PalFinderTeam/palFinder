@@ -28,4 +28,8 @@ data class Location(val longitude: Double, val latitude: Double): Serializable{
         val distance = earthRadius * c
         return distance * mToKm
     }
+
+    override fun toString(): String{
+        return "${longitude},${latitude}"
+    }
 }

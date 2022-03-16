@@ -31,7 +31,7 @@ const val defaultTimeDelta = 1000 * 60 * 60
 
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 class MeetUpCreation : AppCompatActivity() {
-    private val model: MeetUpCreationViewModel by viewModels()
+    val model: MeetUpCreationViewModel by viewModels()
     private lateinit var tagsViewModel: TagsViewModel<Category>
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
     private var dateFormat = SimpleDateFormat()
@@ -49,7 +49,7 @@ class MeetUpCreation : AppCompatActivity() {
             addToFragmentManager(supportFragmentManager, R.id.fc_tags)
         }
 
-        loadDate()
+        loadObservers()
     }
 
     private fun registerActivityResult(){
@@ -63,7 +63,7 @@ class MeetUpCreation : AppCompatActivity() {
         }
     }
 
-    private fun loadDate() {
+    private fun loadObservers() {
         val startDateObs = Observer<Calendar> { newDate ->
             checkDateIntegrity()
             setTextView(R.id.tv_StartDate, dateFormat.format(newDate))
@@ -75,6 +75,11 @@ class MeetUpCreation : AppCompatActivity() {
             setTextView(R.id.tv_EndDate, dateFormat.format(newDate))
         }
         model.endDate.observe(this, endDateObs)
+
+        val locationObs = Observer<Location> { newLocation ->
+            setTextView(R.id.tv_LocationCoordinate, newLocation.toString())
+        }
+        model.location.observe(this, locationObs)
     }
 
     private fun loadIntent() {
@@ -198,7 +203,7 @@ class MeetUpCreation : AppCompatActivity() {
         val intent = Intent(this, MapsActivity::class.java).apply {
             putExtra(LOCATION_SELECT, LatLng(0.0,0.0))
         }
-        startActivity(intent)
+        resultLauncher.launch(intent)
     }
 
     private fun onLocationSelected(p0: LatLng){
