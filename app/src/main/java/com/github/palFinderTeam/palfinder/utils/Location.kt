@@ -53,7 +53,7 @@ data class Location(val longitude: Double, val latitude: Double): Serializable{
             }
             else -> {
                 val display = dist.roundToInt().toString()
-                context.getString(R.string.pretty_location_m, display)
+                context.getString(R.string.pretty_location_km, display)
             }
         }
     }
