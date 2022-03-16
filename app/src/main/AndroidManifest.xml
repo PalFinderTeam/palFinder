@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+        android:name=".PalFinderApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -34,24 +35,6 @@
             android:name=".meetups.activities.MeetUpCreation"
             android:exported="false"
             android:parentActivityName=".MainActivity"/>
-     
-
-        <activity
-            android:name=".tag.example.ImmutableTagsShowcaseActivity"
-            android:parentActivityName=".MainActivity"
-            android:exported="false" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
-            android:name=".tag.example.TagShowcaseActivity"
-            android:parentActivityName=".MainActivity"
-            android:exported="false" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
         <activity
             android:name=".ui.login.LoginActivity"
             android:exported="true">
@@ -62,13 +45,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MeetupListActivity" android:exported="true" android:parentActivityName=".MainActivity"/>
+            android:name=".meetups.activities.MeetupListActivity" android:exported="true" android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false"/>
+            android:exported="true"/>
     </application>
 
 </manifest>

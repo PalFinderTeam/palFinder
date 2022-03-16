@@ -30,7 +30,7 @@ class LoginActivity : AppCompatActivity() {
     private companion object{
         private const val TAG = "LoginActivity"
         private const val RC_GOOGLE_SIGN_IN = 4926
-        //Google service id 
+        //Google service id
         private const val GID = "341371843047-6i3a92lfmcb6555vsj9sb02tnhmkh4c8.apps.googleusercontent.com"
     }
 

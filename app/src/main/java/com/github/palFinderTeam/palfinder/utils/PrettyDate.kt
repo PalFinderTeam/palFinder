@@ -1,36 +1,54 @@
 package com.github.palFinderTeam.palfinder.utils
 
-import java.util.*
+import android.icu.util.Calendar
+import kotlin.math.abs
 import kotlin.math.floor
-
-const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
 
 /**
  * Class to represent time elapsed since another date until today (or specified date)
  * in a pretty format "30 minutes ago"
- * TODO: If target date is after current date, then change text to "in 30 minutes"
- * TODO: Ask if min API can be changed to 24 so as to use the Calendar android class
  */
-class PrettyDate(private val now: Date = Date()) {
+class PrettyDate(private val now: Calendar = Calendar.getInstance()) {
 
-    companion object{
+    companion object {
         const val ZERO = "just now"
+        const val FUTURE = "in %s"
+        const val PAST = "%s ago"
     }
 
-    // Time since formatting
-    fun timeSince(d: Date): String {
-        val secDiff = floor(((now.time - d.time) / 1000).toDouble())
+    /**
+     * Get time difference pretty printed (works for both times in the future and
+     * in the past)
+     */
+    fun timeDiff(d: Calendar): String {
+        val secDiff = secBetween(now, d)
 
         // Check if greater than a time unit
         TimeUnit.values().forEach {
             val interval = secDiff / it.toSecFactor
-            if (interval > 1) {
+            if (interval >= 1) {
                 val nb = floor(interval).toInt()
-                return "$nb " + it.unitName + pluralInt(nb)
+                val timeWithUnit = "$nb " + it.unitName + pluralInt(nb)
+
+                return String.format(prettyFormat(now, d), timeWithUnit)
             }
         }
 
         return ZERO
+    }
+
+    /**
+     * Get the string formatting for the pretty printing ("in" or "ago")
+     */
+    private fun prettyFormat(now: Calendar, target: Calendar): String {
+        return if (now.timeInMillis < target.timeInMillis) FUTURE else PAST
+    }
+
+    /**
+     * Get absolute time in seconds between 2 calendars
+     */
+    private fun secBetween(d1: Calendar, d2: Calendar): Double {
+        return floor(abs((d1.timeInMillis - d2.timeInMillis) / 1000).toDouble())
     }
 
     // Helper method of `timeSince` to define plural
