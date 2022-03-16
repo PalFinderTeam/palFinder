@@ -6,11 +6,11 @@ import android.icu.util.Calendar
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
@@ -90,29 +90,13 @@ class MeetupViewTest {
     }
 
     @Test
-    fun testLocationSelection(){
-        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
-            .apply{
-            }
-
-        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
-        scenario.use {
-            onView(withId(R.id.bt_locationSelect)).perform(click())
-            onView(withId(R.id.map)).perform(click())
-            onView(withId(R.id.bt_locationSelection)).perform(click())
-            onView(withId(R.id.tv_LocationCoordinate)).check(matches(withSubstring(",")))
-        }
-    }
-
-    @Test
     fun testLocationSelectionFail(){
-        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+        val intent = Intent(getApplicationContext(), MapsActivity::class.java)
             .apply{
             }
 
-        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        val scenario = ActivityScenario.launch<MapsActivity>(intent)
         scenario.use {
-            onView(withId(R.id.bt_locationSelect)).perform(click())
             onView(withId(R.id.bt_locationSelection)).check(matches(isNotEnabled()))
         }
     }
