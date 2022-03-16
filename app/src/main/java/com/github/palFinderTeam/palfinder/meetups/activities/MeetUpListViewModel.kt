@@ -22,6 +22,10 @@ class MeetUpListViewModel @Inject constructor(
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData()
     val tags: LiveData<Set<Category>> = _tags
 
+    fun init() {
+        _tags.value = setOf()
+    }
+
     /**
      *  Provides the tagContainer with the necessary tags and allows it to edit them.
      */
