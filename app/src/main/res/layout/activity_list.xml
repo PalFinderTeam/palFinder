@@ -55,8 +55,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/search_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sort_alph"
-        tools:layout="@layout/fragment_tags_display"
-        tools:layout_editor_absoluteX="147dp" />
+        tools:layout="@layout/fragment_tags_display" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.SearchView
@@ -12,16 +13,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
-import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import com.github.palFinderTeam.palfinder.utils.addToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 
 
 @AndroidEntryPoint
@@ -55,8 +55,35 @@ class MeetupListActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             addToFragmentManager(supportFragmentManager, R.id.list_select_tag)
         }
-        viewModel.tags.observeOnce(this) {
-            tagsViewModel.refreshTags()
+        viewModel.tags.observe(this) {
+            Log.d("tags", it.toString())
+            filterByTag(viewModel.tags.value)
+        }
+
+    }
+
+    private fun filterByTag(tags: Set<Category>?) {
+        if (::adapter.isInitialized) {
+            adapter.currentDataSet.clear()
+            viewModel.listOfMeetUp.value?.let { meetups -> performFilterBytag(meetups, adapter.currentDataSet, tags) }
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun performFilterBytag(
+        meetups: List<MeetUp>,
+        currentDataSet: MutableList<MeetUp>,
+        tags: Set<Category>?
+    ) {
+        Log.d("saluuuuuuuuuuuut  \n", "1")
+        if (tags!!.isEmpty()) {
+            currentDataSet.addAll(meetups)
+        } else {
+            for (meetup: MeetUp in meetups) {
+                if (!meetup.tags.containsAll(tags)) {
+                    currentDataSet.add(meetup)
+                }
+            }
         }
     }
 
@@ -75,6 +102,7 @@ class MeetupListActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged()
         }
     }
+
 
     private fun onListItemClick(position: Int) {
         val intent = Intent(this, MeetUpView::class.java)

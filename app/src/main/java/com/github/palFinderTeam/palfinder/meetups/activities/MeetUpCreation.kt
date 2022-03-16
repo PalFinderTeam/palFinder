@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.CheckBox
 import android.widget.EditText
@@ -73,7 +74,7 @@ class MeetUpCreation : AppCompatActivity() {
         }
 
         // Make sure tags are refreshed once when fetching from DB
-        viewModel.tags.observeOnce(this) {
+        viewModel.tags.observe(this) {
             tagsViewModel.refreshTags()
         }
     }

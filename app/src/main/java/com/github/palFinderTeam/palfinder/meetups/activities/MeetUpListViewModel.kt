@@ -13,12 +13,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
-@ExperimentalCoroutinesApi
+
 @HiltViewModel
 class MeetUpListViewModel @Inject constructor(
     private val meetUpRepository: MeetUpRepository
 ) : ViewModel() {
-
     val listOfMeetUp: LiveData<List<MeetUp>> = meetUpRepository.getAllMeetUps().asLiveData()
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData()
     val tags: LiveData<Set<Category>> = _tags
