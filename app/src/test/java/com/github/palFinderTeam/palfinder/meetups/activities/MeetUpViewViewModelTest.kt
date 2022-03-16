@@ -75,6 +75,6 @@ class MeetUpViewViewModelTest {
         MatcherAssert.assertThat(id, CoreMatchers.notNullValue())
         viewModel.loadMeetUp(id!!)
 
-        assertThat(viewModel.meetUp.value, `is`(dummyMeetUp))
+        assertThat(viewModel.meetUp.value, `is`(dummyMeetUp.copy(uuid=id)))
     }
 }
