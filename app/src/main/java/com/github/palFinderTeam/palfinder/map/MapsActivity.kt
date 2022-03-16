@@ -81,7 +81,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             val pos = intent.getParcelableExtra<LatLng>(LOCATION_SELECT)
             button.apply { this.isEnabled = false }
             if (pos != null){
-                // TODO
+                // TODO add marker when ready
                 //addSelectionMarker(pos)
             }
         } else {
@@ -167,11 +167,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun onMapClick(p0: LatLng) {
+        // Add a marker if the map is used to select a location
         if (intent.hasExtra(LOCATION_SELECT)) {
-            addSelectionMarker(p0)
+            setSelectionMarker(p0)
         }
     }
-    private fun addSelectionMarker(p0: LatLng){
+
+    /**
+     * Add or Update the Position Selection Marker
+     */
+    private fun setSelectionMarker(p0: LatLng){
         mapSelection.targetMarker.value?.remove()
         mapSelection.targetMarker.value = map.addMarker(
             MarkerOptions().position(p0).title("Here").draggable(true)
@@ -179,6 +184,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         button.apply { this.isEnabled = mapSelection.targetMarker.value != null }
     }
 
+    /**
+     * Return the selected Location to the previous activity
+     */
     fun onConfirm(v: View){
         val resultIntent = Intent()
         resultIntent.putExtra(LOCATION_SELECTED, mapSelection.targetMarker.value!!.position)
