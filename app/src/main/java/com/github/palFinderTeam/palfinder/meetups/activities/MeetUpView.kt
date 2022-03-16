@@ -13,7 +13,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
-import com.github.palFinderTeam.palfinder.utils.addToFragmentManager
+import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 
 
@@ -30,18 +30,18 @@ class MeetUpView : AppCompatActivity() {
         setContentView(R.layout.activity_meet_up_view)
 
         val meetup = intent.getSerializableExtra(MEETUP_SHOWN) as MeetUp
-        model.meetUp = meetup
+        model.meetUp.value = meetup
 
         loadTag()
 
         if (savedInstanceState == null) {
-            addToFragmentManager(supportFragmentManager, R.id.fc_tags)
+            addTagsToFragmentManager(supportFragmentManager, R.id.fc_tags)
         }
 
         fillFields(meetup)
     }
     private fun loadTag(){
-        tagsViewModel = createTagFragmentModel(this, model.meetUp.tags, false)
+        tagsViewModel = createTagFragmentModel(this, model.meetUp.value!!.tags, false)
     }
     private fun setTextView(id: Int, value: String){
         findViewById<TextView>(id).apply { this.text = value }
@@ -63,7 +63,7 @@ class MeetUpView : AppCompatActivity() {
 
     fun onEdit(v: View){
         val intent = Intent(this, MeetUpCreation::class.java).apply {
-            putExtra(MEETUP_EDIT, model.meetUp)
+            putExtra(MEETUP_EDIT, model.meetUp.value)
         }
         startActivity(intent)
     }

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".meetups.activities.MeetUpView">
+    tools:context=".MeetupViewFragment">
+
+    <!-- TODO: Update blank fragment layout -->
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -12,17 +13,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fc_meetup"
-            android:name="com.github.palFinderTeam.palfinder.meetups.fragments.MeetupViewFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:src="@tools:sample/avatars" />
+            android:layout_height="128dp"
+            tools:src="@drawable/demo_pfp" />
 
         <TextView
             android:id="@+id/tv_ViewEventName"
@@ -79,27 +74,6 @@
                 android:text="TextView" />
         </LinearLayout>
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fc_tags"
-            android:layout_width="match_parent"
-            android:layout_height="89dp" />
-
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:clickable="true"
-        android:foregroundGravity="center_vertical|center"
-        android:onClick="onEdit"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_edit"
-        tools:ignore="SpeakableTextPresentCheck" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

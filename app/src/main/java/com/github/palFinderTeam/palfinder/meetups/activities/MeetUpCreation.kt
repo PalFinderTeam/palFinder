@@ -46,7 +46,7 @@ class MeetUpCreation : AppCompatActivity() {
         loadIntent()
 
         if (savedInstanceState == null) {
-            addToFragmentManager(supportFragmentManager, R.id.fc_tags)
+            addTagsToFragmentManager(supportFragmentManager, R.id.fc_tags)
         }
 
         loadObservers()

@@ -25,7 +25,7 @@ fun createTagFragmentModel(that: ViewModelStoreOwner, tags: Set<Category>, mutab
     ).get(TagsViewModel::class.java) as TagsViewModel<Category>
 }
 
-fun addToFragmentManager(supportFragmentManager: FragmentManager, id: Int){
+fun addTagsToFragmentManager(supportFragmentManager: FragmentManager, id: Int){
     supportFragmentManager.commit {
         setReorderingAllowed(true)
         add<TagsDisplayFragment<Category>>(id)
