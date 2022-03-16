@@ -21,16 +21,17 @@ import org.junit.runner.RunWith
 import java.util.concurrent.CountDownLatch
 
 @RunWith(AndroidJUnit4::class)
-class MapsActivityTest {
+class MapActivityTest {
 
     @get:Rule
-    val testRule = ActivityScenarioRule(MapsActivity::class.java)
+    val testRule = ActivityScenarioRule(MapActivity::class.java)
     @get:Rule
     var fineLocationPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
     @get:Rule
     var coarseLocationPermissionRule : GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_COARSE_LOCATION)
 
-    val service = MapsActivity.mapsService
+    private val utils = MapActivity.utils
+
 
     @Test
     fun testMarkerClick(){
@@ -63,10 +64,10 @@ class MapsActivityTest {
 
 
 
-        service.addMeetupMarker(meetup)
+        utils.addMeetupMarker(meetup)
 
         Intents.init()
-        service.setCameraPosition(LatLng(lat, long))
+        utils.setCameraPosition(LatLng(lat, long))
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         val marker = device.findObject(UiSelector().descriptionContains("Google Map").childSelector(UiSelector().descriptionContains(id)))
         marker.waitForExists(1000)

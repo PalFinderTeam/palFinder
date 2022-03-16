@@ -13,7 +13,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -22,7 +21,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener {
+class MapActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener {
 
     private lateinit var binding: ActivityMapsBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -31,14 +30,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
 
     companion object {
         private const val USER_LOCATION_PERMISSION_REQUEST_CODE = 1
-        val mapsService = MapsService()
+        val utils = MapUtils()
 
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mapsService.setActivity(this)
 
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
@@ -47,17 +45,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         // Obtain the SupportMapFragmeOnt and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync{
-            this.onMapReady(it)
-            mapsService.onMapReady(it)
 
-        }
+        mapFragment.getMapAsync(this)
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
     }
 
 
-    fun setUserLocation(position: LatLng?){
+    private fun setUserLocation(){
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -78,8 +74,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
             location -> if(location != null){
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                if(position == null)map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
-                else map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15f))
+                if(utils.getStartingCameraPosition() == null)map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+                else map.moveCamera(CameraUpdateFactory.newLatLngZoom(utils.getStartingCameraPosition()!!, 15f))
             }
         }
     }
@@ -90,7 +86,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
      * When a meetUp marker is clicked, open the marker description
      */
     override fun onMarkerClick(marker: Marker): Boolean {
-        val meetUp = mapsService.getMeetup(marker.title!!)
+        val meetUp = utils.getMeetup(marker.title!!)
         if(meetUp != null){
             val intent = Intent(this, MeetUpView::class.java).apply {
                 putExtra(MEETUP_SHOWN, meetUp)
@@ -103,9 +99,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-
+        utils.setMap(map)
+        utils.refresh()
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
+
+        setUserLocation()
     }
 
 
