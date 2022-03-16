@@ -13,7 +13,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.autofill.AutofillManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -26,10 +25,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
@@ -48,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
     private companion object{
         private const val TAG = "LoginActivity"
         private const val RC_GOOGLE_SIGN_IN = 4926
-        private val REQ_ONE_TAP = 4  // Can be any integer unique to the Activity
+        private const val REQ_ONE_TAP = 4  // Can be any integer unique to the Activity
         private const val REQUEST_CODE_GIS_SAVE_PASSWORD = 2 /* unique request id */
         private var showOneTapUI = true
         val db = Firebase.firestore
@@ -102,8 +99,32 @@ class LoginActivity : AppCompatActivity() {
             window
                 .decorView.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
         }
+        configureGoogleSignIn(signInButton)
+        configurePasswordSignIn(signInOrRegister)
+    }
 
+    private fun configurePasswordSignIn(signInOrRegister: Button) {
+        signInOrRegister.setOnClickListener {
+            val email = findViewById<TextView>(R.id.email).text.toString()
+            //no checks on password is made for now
+            val password = findViewById<TextView>(R.id.password).text.toString()
+            if (isValidEmail(email)) {
+                if (emailIsAvailability(email)) {
+                    createAccount(email, password)
+                } else {
+                    signIn(email, password)
+                }
+            } else {
+                //pop "email not valid"
+                Toast.makeText(
+                    baseContext, "Email not valid",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
 
+    private fun configureGoogleSignIn(signInButton: SignInButton) {
         // Configure Google Sign In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id)) //somehow cannot access value through google-service values.xml
@@ -111,26 +132,9 @@ class LoginActivity : AppCompatActivity() {
             .build()
 
         val client = GoogleSignIn.getClient(this, gso)
-        signInButton.setOnClickListener{
+        signInButton.setOnClickListener {
             val signIntent = client.signInIntent
             startActivityForResult(signIntent, RC_GOOGLE_SIGN_IN)
-        }
-        signInOrRegister.setOnClickListener {
-            val email = findViewById<TextView>(R.id.email).text.toString()
-            //no checks on password is made for now
-            val password= findViewById<TextView>(R.id.password).text.toString()
-            if (isValidEmail(email)) {
-                if (emailIsAvailability(email)){
-                    createAccount(email, password)
-                }else{
-                    signIn(email, password)
-                }
-            }
-            else {
-                //pop "email not valid"
-                Toast.makeText(baseContext, "Email not valid",
-                    Toast.LENGTH_SHORT).show()
-            }
         }
     }
 
@@ -247,7 +251,6 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "createUserWithEmail:success")
-                    val user = auth.currentUser
                     savePassword(email,password)
                 } else {
                     // If user already in database, sign in
@@ -255,12 +258,7 @@ class LoginActivity : AppCompatActivity() {
                         signIn(email, password)
                     } else {
                         //if creation fails, display error message
-                        Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                        Toast.makeText(
-                            baseContext, "Authentication failed.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        updateUI(null)
+                        signInSignUpFailure(task, "createUserWithEmail:failure")
                     }
                 }
             }
@@ -274,17 +272,22 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithEmail:success")
-                    val user = auth.currentUser
                     savePassword(email,password)
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithEmail:failure", task.exception)
-                    Toast.makeText(baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT).show()
-                    updateUI(null)
+                    signInSignUpFailure(task, "signInWithEmail:failure")
                 }
             }
         // [END sign_in_with_email]
+    }
+
+    private fun signInSignUpFailure(task: Task<AuthResult>, logText: String) {
+        Log.w(TAG, logText, task.exception)
+        Toast.makeText(
+            baseContext, "Authentication failed.",
+            Toast.LENGTH_SHORT
+        ).show()
+        updateUI(null)
     }
 
     private fun savePassword(email: String, password: String) {
@@ -318,14 +321,12 @@ class LoginActivity : AppCompatActivity() {
     private fun checkOneTapCredential(idToken: String?, password: String?) {
         when {
             idToken != null -> {
-                // Got an ID token from Google. Use it to authenticate
-                // with your backend.
+                // Got an ID token from Google. Used to authenticate with the backend.
                 Log.d(TAG, "Got ID token.")
                 firebaseAuthWithGoogle(idToken)
             }
             password != null -> {
-                // Got a saved username and password. Use them to authenticate
-                // with your backend.
+                // Got a saved username and password. Used to authenticate with the backend.
                 Log.d(TAG, "Got password.")
             }
             else -> {
@@ -347,13 +348,11 @@ class LoginActivity : AppCompatActivity() {
                 // Try again or just ignore.
             }
             else -> {
-                Log.d(
-                    TAG, "Couldn't get credential from result." +
-                            " (${e.localizedMessage})"
-                )
+                Log.d(TAG, "Couldn't get credential from result." + " (${e.localizedMessage})")
             }
         }
     }
+
     /* previous onActivityResult
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -384,8 +383,7 @@ class LoginActivity : AppCompatActivity() {
                     updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
-                    updateUI(null)
+                    signInSignUpFailure(task, "signInWithCredential:failure")
                 }
             }
     }
