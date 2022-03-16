@@ -55,9 +55,9 @@ class MeetupListActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             addToFragmentManager(supportFragmentManager, R.id.list_select_tag)
         }
-        viewModel.init()
         viewModel.tags.observe(this) {
             tagsViewModel.refreshTags()
+            Log.i("Tag thingy",it.toString())
             filterByTag(it)
         }
 

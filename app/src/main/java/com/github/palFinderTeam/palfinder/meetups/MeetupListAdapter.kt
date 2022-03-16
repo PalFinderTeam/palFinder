@@ -37,9 +37,13 @@ class MeetupListAdapter(private val dataSet: List<MeetUp>, private val onItemCli
     override fun onCreateViewHolder(parent: ViewGroup, type: Int): ViewHolder {
         //create a new view for each meetup
         return ViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.meetup_listview, parent, false),
-            onItemClicked
-        )
+            LayoutInflater.from(parent.context).inflate(R.layout.meetup_listview, parent, false)
+        ) {
+            val item = currentDataSet[it]
+            val originalItemPos = dataSet.indexOf(item)
+
+            onItemClicked(originalItemPos)
+        }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
