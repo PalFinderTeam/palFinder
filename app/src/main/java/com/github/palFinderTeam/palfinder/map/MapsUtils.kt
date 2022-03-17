@@ -10,6 +10,7 @@ import kotlin.collections.HashMap
 
 class MapsUtils{
 
+    val BASE_ZOOM = 15f
     private lateinit var map:GoogleMap
     private var meetUps = HashMap<String, MeetUp>()
     private var markers = HashMap<String, Marker>()

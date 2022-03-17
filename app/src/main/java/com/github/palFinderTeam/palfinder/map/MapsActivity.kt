@@ -42,7 +42,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Obtain the SupportMapFragmeOnt and get notified when the map is ready to be used.
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
 
@@ -74,8 +74,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
             location -> if(location != null){
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                if(utils.getStartingCameraPosition() == null)map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
-                else map.moveCamera(CameraUpdateFactory.newLatLngZoom(utils.getStartingCameraPosition()!!, 15f))
+                if(utils.getStartingCameraPosition() == null)map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, utils.BASE_ZOOM))
+                else map.moveCamera(CameraUpdateFactory.newLatLngZoom(utils.getStartingCameraPosition()!!, utils.BASE_ZOOM))
             }
         }
     }
