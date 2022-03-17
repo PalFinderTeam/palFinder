@@ -73,7 +73,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mapFragment.getMapAsync(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        loadSelectionButton()
     }
 
     private fun loadSelectionButton(){
@@ -117,6 +116,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         addMarkers()
 
         map.setOnMapClickListener(this::onMapClick)
+
+        loadSelectionButton()
     }
 
 
