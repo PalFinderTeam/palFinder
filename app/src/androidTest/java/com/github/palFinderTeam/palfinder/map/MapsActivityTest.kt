@@ -68,9 +68,11 @@ class MapsActivityTest {
 
         Intents.init()
         utils.setCameraPosition(LatLng(lat, long))
+
+
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         val marker = device.findObject(UiSelector().descriptionContains("Google Map").childSelector(UiSelector().descriptionContains(id)))
-        marker.waitForExists(1000)
+        marker.waitForExists(10000)
         marker.click()
         intended(IntentMatchers.hasExtra(MEETUP_SHOWN, meetup))
         Intents.release()
