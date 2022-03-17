@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.meetups
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -19,7 +20,7 @@ class MeetUpTest {
         val date2 = Mockito.mock(Calendar::class.java)
         Mockito.`when`(date2.timeInMillis).thenReturn(1)
 
-        val user = ProfileUser("dummy","dummy","dummy", date1)
+        val user = ProfileUser("dummy","dummy","dummy", date1, ImageInstance("icons/demo_pfp.jpeg"))
 
         meetUp = MeetUp(
             "dummy",
@@ -78,7 +79,7 @@ class MeetUpTest {
     fun join(){
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
-        val user = ProfileUser("dummy1","dummy2","dummy", now)
+        val user = ProfileUser("dummy1","dummy2","dummy", now, ImageInstance("icons/demo_pfp.jpeg"))
 
         meetUp!!.join(now, user)
         assertEquals( true, meetUp!!.isParticipating(user))
@@ -88,7 +89,7 @@ class MeetUpTest {
     fun joinAndLeave(){
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
-        val user = ProfileUser("dummy1","dummy2","dummy", now)
+        val user = ProfileUser("dummy1","dummy2","dummy", now, ImageInstance("icons/demo_pfp.jpeg"))
 
         meetUp!!.join(now, user)
         meetUp!!.leave(user)
