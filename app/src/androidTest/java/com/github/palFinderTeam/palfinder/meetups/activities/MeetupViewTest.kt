@@ -107,6 +107,7 @@ class MeetupViewTest {
         }
     }
 
+/*
     @Test
     fun editExistingMeetupEditTheRightOneInDB() = runTest {
 
@@ -132,6 +133,7 @@ class MeetupViewTest {
             onView(withId(R.id.tv_ViewEventName)).check(matches(withText("dummy1Manger des patates")))
         }
     }
+*/
 
     @Test
     fun createMeetUpDisplayBlankInfo() = runTest {
