@@ -36,8 +36,6 @@ class MapsActivityTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
-//    @get:Rule
-//    val testRule = ActivityScenarioRule(MapsActivity::class.java)
     @get:Rule
     var fineLocationPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
     @get:Rule
