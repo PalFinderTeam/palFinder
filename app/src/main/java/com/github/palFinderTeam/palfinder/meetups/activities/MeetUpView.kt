@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
@@ -18,7 +19,7 @@ const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_
 
 @SuppressLint("SimpleDateFormat")
 class MeetUpView : AppCompatActivity() {
-    private lateinit var  model: MeetUpViewViewModel
+    private val model: MeetUpViewViewModel by viewModels()
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     private lateinit var tagsViewModel: TagsViewModel<Category>
 
@@ -26,7 +27,7 @@ class MeetUpView : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_view)
 
-        model = MeetUpViewViewModel.new(intent.getSerializableExtra(MEETUP_SHOWN) as MeetUp)
+        model.changeMeetup(intent.getSerializableExtra(MEETUP_SHOWN) as MeetUp)
 
         loadTag()
 

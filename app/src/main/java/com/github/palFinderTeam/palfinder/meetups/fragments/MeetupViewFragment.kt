@@ -24,14 +24,11 @@ class MeetupViewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-
         val meetupObs = Observer<MeetUp> { meetup ->
             fillFields(meetup)
         }
 
-
         model.meetUp.observe(viewLifecycleOwner, meetupObs)
-
 
         return inflater.inflate(R.layout.fragment_meetup_view, container, false)
     }
