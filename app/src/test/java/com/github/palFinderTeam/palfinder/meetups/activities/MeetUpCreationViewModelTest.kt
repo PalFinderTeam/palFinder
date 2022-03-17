@@ -7,6 +7,7 @@ import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
@@ -82,7 +83,7 @@ class MeetUpCreationViewModelTest {
     fun `fetch and display infos from database`() = runTest {
         val dummyMeetUp = MeetUp(
             "",
-            ProfileUser("username", "whatever", "surname", testStartDate),
+            ProfileUser("username", "whatever", "surname", testStartDate, ImageInstance("icons/demo_pfp.jpeg")),
             "icon",
             "name",
             "description",

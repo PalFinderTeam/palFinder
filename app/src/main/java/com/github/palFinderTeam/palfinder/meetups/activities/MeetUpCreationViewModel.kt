@@ -14,6 +14,8 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
+
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -114,7 +116,7 @@ class MeetUpCreationViewModel @Inject constructor(
         val meetUp = MeetUp(
             uuid.orEmpty(),
             // TODO Put real user
-            ProfileUser("le miche 420", "Michel", "Francis", calendar),
+            ProfileUser("le miche 420", "Michel", "Francis", calendar, ImageInstance("icons/demo_pfp.jpeg")),
             // TODO Put real icon
             "whatever",
             name.value!!,

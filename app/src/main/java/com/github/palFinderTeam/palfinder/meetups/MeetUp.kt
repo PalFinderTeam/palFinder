@@ -7,6 +7,7 @@ import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.isBefore
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
@@ -141,7 +142,7 @@ data class MeetUp(
             try {
                 val uuid = id
                 // TODO Make it fetch other document
-                val creator = ProfileUser("michel", "whatever", "miche", Calendar.getInstance())
+                val creator = ProfileUser("michel", "whatever", "miche", Calendar.getInstance(), ImageInstance("icons/demo_pfp.jpeg"))
                 val capacity = getLong("capacity")!!
                 val description = getString("description")!!
                 val startDate = getDate("startDate")!!

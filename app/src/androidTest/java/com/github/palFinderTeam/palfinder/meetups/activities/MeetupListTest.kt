@@ -17,6 +17,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -61,8 +62,8 @@ class MeetUpListTest {
         date4 = Calendar.getInstance()
         date4.set(2022, 0, 1)
 
-        user1 = ProfileUser("User1", "Us", "er1", date1)
-        user2 = ProfileUser("User2", "Us", "er2", date2)
+        user1 = ProfileUser("User1", "Us", "er1", date1, ImageInstance("icons/demo_pfp.jpeg"))
+        user2 = ProfileUser("User2", "Us", "er2", date2, ImageInstance("icons/demo_pfp.jpeg"))
 
 
         meetUpList = listOf(

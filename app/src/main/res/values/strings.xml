@@ -7,6 +7,9 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+    <!-- Strings used for image loading -->
+    <string name="image_load_failed">Sorry, we could not load the image that you requested</string>
+
     <!-- Strings used for Map Activity-->
     <string name="title_activity_maps">MapsActivity</string>
 

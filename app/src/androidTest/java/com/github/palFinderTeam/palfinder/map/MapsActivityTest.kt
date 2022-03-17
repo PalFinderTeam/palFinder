@@ -19,6 +19,7 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -71,7 +72,7 @@ class MapsActivityTest {
 
         val meetup = MeetUp(
             id,
-            ProfileUser("", "tempUser4", "user4", date2),
+            ProfileUser("", "tempUser4", "user4", date2, ImageInstance("icons/pfp_demo.jpg")),
             "",
             "meetUp4Name",
             "meetUp4Description",
@@ -81,7 +82,7 @@ class MapsActivityTest {
             emptySet(),
             false,
             42,
-            mutableListOf(ProfileUser("", "tempUser2", "tempUser2", date2))
+            mutableListOf(ProfileUser("", "tempUser2", "tempUser2", date2, ImageInstance("icons/pfp_demo.jpg")))
         )
 
 

@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".PalFinderApplication"
@@ -48,10 +49,13 @@
             android:name=".meetups.activities.MeetupListActivity" android:exported="true" android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".ProfileActivity"
+            android:parentActivityName=".MainActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"/>
+
+
     </application>
 
 </manifest>
