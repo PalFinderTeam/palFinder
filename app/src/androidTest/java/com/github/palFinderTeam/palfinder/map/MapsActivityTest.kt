@@ -11,8 +11,8 @@ import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
-import com.github.palFinderTeam.palfinder.meetups.TempUser
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Rule
@@ -21,16 +21,16 @@ import org.junit.runner.RunWith
 import java.util.concurrent.CountDownLatch
 
 @RunWith(AndroidJUnit4::class)
-class MapActivityTest {
+class MapsActivityTest {
 
     @get:Rule
-    val testRule = ActivityScenarioRule(MapActivity::class.java)
+    val testRule = ActivityScenarioRule(MapsActivity::class.java)
     @get:Rule
     var fineLocationPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
     @get:Rule
     var coarseLocationPermissionRule : GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_COARSE_LOCATION)
 
-    private val utils = MapActivity.utils
+    private val utils = MapsActivity.utils
 
 
     @Test
@@ -49,17 +49,17 @@ class MapActivityTest {
 
         val meetup = MeetUp(
             id,
-            TempUser("", "tempUser"),
+            ProfileUser("", "tempUser4", "user4", date2),
             "",
-            "meetUpName",
-            "meetUpDescription",
+            "meetUp4Name",
+            "meetUp4Description",
             date1,
             date2,
-            Location(long,lat),
-            emptyList(),
+            Location(long, lat),
+            emptySet(),
             false,
-            2,
-            mutableListOf(TempUser("", "tempUser"))
+            42,
+            mutableListOf(ProfileUser("", "tempUser2", "tempUser2", date2))
         )
 
 

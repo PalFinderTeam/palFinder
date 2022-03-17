@@ -8,7 +8,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlin.collections.HashMap
 
-class MapUtils{
+class MapsUtils{
 
     private lateinit var map:GoogleMap
     private var meetUps = HashMap<String, MeetUp>()
@@ -51,7 +51,7 @@ class MapUtils{
     fun addMeetupMarker(meetUp: MeetUp){
         meetUps[meetUp.uuid] = meetUp
 
-        if(mapReady) refresh()
+        refresh()
     }
 
     /**
@@ -95,10 +95,13 @@ class MapUtils{
      * clear the map of all markers
      */
     fun clearMarkers(){
-        markers.forEach{
-            it.value.remove()
-            markers.remove(it.key)
+        val iterator = markers.iterator()
+        while(iterator.hasNext()){
+            val marker = iterator.next()
+            marker.value.remove()
+            iterator.remove()
         }
+
     }
 
     /**
@@ -109,7 +112,6 @@ class MapUtils{
     fun setCameraPosition(position : LatLng){
         if(mapReady) {
             map.moveCamera(CameraUpdateFactory.newLatLng(position))
-            map.cameraPosition
         }else startingCameraPosition = position
     }
 

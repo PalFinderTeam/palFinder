@@ -8,14 +8,9 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 
-import com.github.palFinderTeam.palfinder.map.MapActivity
-import com.github.palFinderTeam.palfinder.tag.example.TagShowcaseActivity
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
@@ -98,7 +93,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun accessMap(view: View?) {
-        val intent = Intent(this, MapActivity::class.java).apply {  }
+        val intent = Intent(this, MapsActivity::class.java).apply {  }
         startActivity(intent)
     }
 }
