@@ -10,6 +10,8 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,6 +27,7 @@ ProfileActivityTest {
     @Before
     fun getProfile(){
         p = ProfileUser("gerussi", "Louca", "Gerussi", Calendar.getInstance(), ImageInstance("icons/cat.png"))
+        pImgHttps = ProfileUser("gerussi", "Louca", "Gerussi", Calendar.getInstance(), ImageInstance("https://fail"))
     }
 
     @Test
@@ -42,6 +45,28 @@ ProfileActivityTest {
                     ViewMatchers.withText(p.fullName())
                 )
             )
+        }finally{
+            scenario.close()
+        }
+    }
+
+    @Test
+    fun httpLoadImageAndClearCache() = runTest{
+        val intent = Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+            .apply{
+                putExtra(DUMMY_USER, pImgHttps as Serializable)
+            }
+        // Launch activity
+        val scenario = ActivityScenario.launch<GreetingActivity>(intent)
+        try{
+            onView(ViewMatchers.withId(R.id.userProfileName)).check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText(p.fullName())
+                )
+            )
+            // Check status of image after cache clear
+            pImgHttps.pfp.clearImageCache()
+            Assert.assertEquals(ImageInstance.NOT_LOADED, pImgHttps.pfp.imgStatus)
         }finally{
             scenario.close()
         }

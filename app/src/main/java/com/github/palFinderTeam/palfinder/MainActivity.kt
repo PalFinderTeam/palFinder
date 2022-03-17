@@ -2,7 +2,6 @@ package com.github.palFinderTeam.palfinder
 
 import android.content.Intent
 import android.icu.util.Calendar
-import android.media.Image
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -18,7 +17,6 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
-import com.github.palFinderTeam.palfinder.utils.image.ImgLoaderActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -108,8 +106,4 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun accessImgLoader(view: View?) {
-        val intent = Intent(this, ImgLoaderActivity::class.java).apply {  }
-        startActivity(intent)
-    }
 }

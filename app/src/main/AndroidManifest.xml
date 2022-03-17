@@ -55,11 +55,6 @@
             android:name=".MainActivity"
             android:exported="true"/>
 
-        <activity
-            android:name=".utils.image.ImgLoaderActivity"
-            android:exported="false"
-            android:parentActivityName=".MainActivity"/>
-
 
     </application>
 
