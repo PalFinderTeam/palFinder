@@ -71,7 +71,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
-    testImplementation 'org.mockito:mockito-core:2.19.0'
+    testImplementation 'org.mockito:mockito-core:3.2.0'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
 
 
@@ -113,6 +113,8 @@ dependencies {
 
     // Also declare the dependency for the Google Play services library and specify its version
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
+
+    implementation 'com.google.firebase:firebase-firestore-ktx'
 
     // Required only if Facebook login support is required
     // Find the latest Facebook SDK releases here: https://goo.gl/Ce5L94
