@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import kotlinx.coroutines.launch
 
 /**
  * When creating the profile page, the username (which is unique) will
@@ -25,7 +27,9 @@ class ProfileActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.userProfileName).apply { text = user.fullName() }
         findViewById<TextView>(R.id.userProfileUsername).apply { text = user.atUsername() }
         findViewById<TextView>(R.id.userProfileJoinDate).apply { text = user.prettyJoinTime() }
-        user.pfp.loadImageInto(findViewById<ImageView>(R.id.userProfileImage))
+        lifecycleScope.launch {
+            user.pfp.loadImageInto(findViewById(R.id.userProfileImage))
+        }
     }
 
 }
