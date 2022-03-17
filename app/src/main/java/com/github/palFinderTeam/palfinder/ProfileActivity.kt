@@ -17,7 +17,6 @@ class ProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
-
         // Fetch user
         injectUserInfo(intent.getSerializableExtra(DUMMY_USER) as ProfileUser)
     }
