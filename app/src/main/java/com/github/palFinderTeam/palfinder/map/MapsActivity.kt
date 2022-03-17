@@ -22,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener {
 
     private lateinit var binding: ActivityMapsBinding
@@ -90,7 +91,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         val meetUp = utils.getMeetup(marker.title!!)
         if(meetUp != null){
             val intent = Intent(this, MeetUpView::class.java).apply {
-                putExtra(MEETUP_SHOWN, meetUp)
+                putExtra(MEETUP_SHOWN, meetUp.uuid)
             }
             startActivity(intent)
             return true

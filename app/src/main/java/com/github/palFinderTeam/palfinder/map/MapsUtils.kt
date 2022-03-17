@@ -81,7 +81,7 @@ class MapsUtils{
      */
     fun removeMarker(id: String){
         meetUps.remove(id)
-        if(mapReady) refresh()
+        refresh()
     }
 
     /**

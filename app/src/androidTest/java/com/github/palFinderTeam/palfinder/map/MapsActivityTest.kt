@@ -2,6 +2,8 @@ package com.github.palFinderTeam.palfinder.map
 
 import android.content.Intent
 import android.icu.util.Calendar
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -14,6 +16,7 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.maps.model.LatLng
@@ -26,18 +29,15 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.CountDownLatch
 
-@RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class MapsActivityTest {
 
-    @Test
-    fun noTest(){
-        Assert.assertEquals(true, true)
-    }
 
-  /**  @get:Rule
-    val hiltRule = HiltAndroidRule(this)
+
     @get:Rule
-    val testRule = ActivityScenarioRule(MapsActivity::class.java)
+    val hiltRule = HiltAndroidRule(this)
+//    @get:Rule
+//    val testRule = ActivityScenarioRule(MapsActivity::class.java)
     @get:Rule
     var fineLocationPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION)
     @get:Rule
@@ -46,8 +46,19 @@ class MapsActivityTest {
     private val utils = MapsActivity.utils
 
 
+    @Before
+    fun init(){
+        hiltRule.inject()
+    }
+
+
     @Test
     fun testMarkerClick(){
+
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MapsActivity::class.java)
+        val scenario = ActivityScenario.launch<MapsActivity>(intent)
+
+
         val latch = CountDownLatch(1)
 
 
@@ -76,21 +87,23 @@ class MapsActivityTest {
         )
 
 
+        scenario.use{
+            utils.addMeetupMarker(meetup)
 
-        utils.addMeetupMarker(meetup)
-
-        Intents.init()
-        utils.setCameraPosition(LatLng(lat, long))
+            Intents.init()
+            utils.setCameraPosition(LatLng(lat, long))
 
 
-        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        val marker = device.findObject(UiSelector().descriptionContains("Google Map").childSelector(UiSelector().descriptionContains(id)))
-        marker.waitForExists(10000)
-        marker.click()
-        intended(IntentMatchers.hasExtra(MEETUP_SHOWN, meetup))
-        Intents.release()
+            val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+            val marker = device.findObject(UiSelector().descriptionContains("Google Map").childSelector(UiSelector().descriptionContains(id)))
+            marker.waitForExists(1000)
+            marker.click()
+            intended(IntentMatchers.hasExtra(MEETUP_SHOWN, id))
+            Intents.release()
+        }
+
     }
-  **/
+
 
 
 }
