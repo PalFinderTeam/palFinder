@@ -37,6 +37,7 @@
     <string name="meetup_creation_meetup_tags_bt">Add Tags</string>
     <string name="meetup_creation_meetup_entries">Limit Entries</string>
     <string name="meetup_creation_meetup_done">Done</string>
+    <string name="meetup_creation_meetup_select_location">Select Location</string>
 
     <string name="list_sort_by_alphabetical_order">Sort by Alph.</string>
     <string name="list_sort_by_capacity">Sort by Cap.</string>
@@ -68,5 +69,11 @@
     <string name="login_failed">"Login failed"</string>
     <string name="limit_people">limit people</string>
     <string name="DB_error_msg">Cannot contact database</string>
+
+    <string name="pretty_location_too_small">Here</string>
+    <string name="pretty_location_m">%1$s m away</string>
+    <string name="pretty_location_km">%1$s km away</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

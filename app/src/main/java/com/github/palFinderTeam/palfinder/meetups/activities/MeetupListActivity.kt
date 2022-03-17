@@ -19,7 +19,7 @@ import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import com.github.palFinderTeam.palfinder.utils.addToFragmentManager
+import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -53,7 +53,7 @@ class MeetupListActivity : AppCompatActivity() {
         tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
         tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
         if (savedInstanceState == null) {
-            addToFragmentManager(supportFragmentManager, R.id.list_select_tag)
+            addTagsToFragmentManager(supportFragmentManager, R.id.list_select_tag)
         }
         viewModel.tags.observe(this) {
             tagsViewModel.refreshTags()
