@@ -10,11 +10,13 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+
 import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -72,15 +74,23 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun goToProfile(view: View?) {
+    fun goToProfileLouca(view: View?) {
         // Create a fake user for demo
         val joinDate = Calendar.getInstance()
         joinDate.set(2022, 2, 6, 14, 1, 0)
+        val pfp = ImageInstance("icons/demo_pfp.jpeg")
         val intent = Intent(this, ProfileActivity::class.java).apply {
-            putExtra(
-                DUMMY_USER,
-                ProfileUser("gerussi", "Louca", "Gerussi", joinDate) as Serializable
-            )
+            putExtra(DUMMY_USER, ProfileUser("gerussi", "Louca", "Gerussi", joinDate, pfp) as Serializable)
+        }
+        startActivity(intent)
+    }
+
+    fun goToProfileCat(view: View?) {
+        val joinDate = Calendar.getInstance()
+        joinDate.set(2022, 2, 1, 14, 1, 0)
+        val pfp = ImageInstance("icons/cat.png")
+        val intent = Intent(this, ProfileActivity::class.java).apply {
+            putExtra(DUMMY_USER, ProfileUser("theCat", "Epic", "Cat", joinDate, pfp) as Serializable)
         }
         startActivity(intent)
     }
@@ -92,7 +102,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun accessMap(view: View?) {
-        val intent = Intent(this, MapsActivity::class.java).apply { }
+        val intent = Intent(this, MapsActivity::class.java).apply {  }
         startActivity(intent)
     }
+
 }

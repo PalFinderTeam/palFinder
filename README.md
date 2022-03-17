@@ -21,4 +21,7 @@ Scrum meeting days (as of sprint 2):
     
 Review cycle (sprint 2):
     Louca <-> Daniel <-> Zacharie <-> Christian <-> Antoine <-> Patrick <-> Louca
+    
+Review cycle (sprint 3):
+    Louca <-> Zacharie <-> Antoine <-> Daniel <-> Patrick <-> Christian <-> Louca
 
