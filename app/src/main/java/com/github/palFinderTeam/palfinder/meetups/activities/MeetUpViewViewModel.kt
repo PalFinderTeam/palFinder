@@ -15,15 +15,4 @@ class MeetUpViewViewModel: ViewModel() {
     fun changeMeetup(newMeetUp: MeetUp){
         this.meetUp.value = newMeetUp
     }
-
-    companion object{
-        /**
-         * Create MeetUpViewViewModel for [meetUp]
-         */
-        fun new(meetUp: MeetUp):MeetUpViewViewModel{
-            val model = MeetUpViewViewModel()
-            model.meetUp.value = meetUp
-            return model
-        }
-    }
 }
