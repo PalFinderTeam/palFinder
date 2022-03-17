@@ -1,11 +1,13 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.*
+import android.widget.SearchView
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,14 +15,23 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tag.TagsViewModel
+import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import java.util.*
+import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
+import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class MeetupListActivity : AppCompatActivity() {
-    private lateinit  var meetupList : RecyclerView
-    private lateinit var listOfMeetup : List<MeetUp>
-    private lateinit var adapter: MeetupListAdapter<MeetUp>
+    private lateinit var meetupList: RecyclerView
+    lateinit var adapter: MeetupListAdapter
+    private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
+    private lateinit var tagsViewModel: TagsViewModel<Category>
+
+    private val viewModel: MeetUpListViewModel by viewModels()
 
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -28,29 +39,74 @@ class MeetupListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
 
-        listOfMeetup = intent.getSerializableExtra("MEETUPS") as ArrayList<MeetUp>
-        Log.d("meetup", listOfMeetup.toString())
         meetupList = findViewById(R.id.meetup_list_recycler)
         meetupList.layoutManager = LinearLayoutManager(this)
-        adapter = MeetupListAdapter<MeetUp>(listOfMeetup)
-        meetupList.adapter = adapter
-
         val searchField = findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
-        SearchedFilter.setupSearchField(searchField, adapter.filter )
 
+        viewModel.listOfMeetUp.observe(this) { meetups ->
+            adapter = MeetupListAdapter(meetups) { onListItemClick(it) }
+            meetupList.adapter = adapter
+            SearchedFilter.setupSearchField(searchField, adapter.filter)
+        }
 
+        tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
+        tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
+        if (savedInstanceState == null) {
+            addTagsToFragmentManager(supportFragmentManager, R.id.list_select_tag)
+        }
+        viewModel.tags.observe(this) {
+            tagsViewModel.refreshTags()
+            Log.i("Tag thingy",it.toString())
+            filterByTag(it)
+        }
+
+    }
+
+    fun filterByTag(tags: Set<Category>?) {
+        if (::adapter.isInitialized) {
+            adapter.currentDataSet.clear()
+            viewModel.listOfMeetUp.value?.let { meetups -> performFilterByTag(meetups, adapter.currentDataSet, tags) }
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun performFilterByTag(
+        meetups: List<MeetUp>,
+        currentDataSet: MutableList<MeetUp>,
+        tags: Set<Category>?
+    ) {
+        if (tags!!.isEmpty()) {
+            currentDataSet.addAll(meetups)
+        } else {
+            for (meetup: MeetUp in meetups) {
+                if (meetup.tags.containsAll(tags)) {
+                    currentDataSet.add(meetup)
+                }
+            }
+        }
     }
 
     fun sortByCap(view: View?) {
-        adapter.currentDataSet.clear()
-        adapter.currentDataSet.addAll(listOfMeetup.sortedBy { it.capacity })
-        adapter.notifyDataSetChanged()
+        if (::adapter.isInitialized) {
+            adapter.currentDataSet.clear()
+            viewModel.listOfMeetUp.value?.let { meetups -> adapter.currentDataSet.addAll(meetups.sortedBy { it.capacity }) }
+            adapter.notifyDataSetChanged()
+        }
     }
 
     fun sortByName(view: View?) {
-        adapter.currentDataSet.clear()
-        adapter.currentDataSet.addAll(listOfMeetup.sortedBy { it.name.lowercase()})
-        adapter.notifyDataSetChanged()
+        if (::adapter.isInitialized) {
+            adapter.currentDataSet.clear()
+            viewModel.listOfMeetUp.value?.let { meetups -> adapter.currentDataSet.addAll(meetups.sortedBy { it.name.lowercase() }) }
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+
+    private fun onListItemClick(position: Int) {
+        val intent = Intent(this, MeetUpView::class.java)
+            .apply { putExtra(MEETUP_SHOWN, viewModel.listOfMeetUp.value?.get(position)?.uuid) }
+        startActivity(intent)
     }
 }

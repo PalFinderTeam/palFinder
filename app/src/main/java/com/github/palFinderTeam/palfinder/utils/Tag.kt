@@ -5,20 +5,15 @@ import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
-import com.github.palFinderTeam.palfinder.tag.*
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment
+import com.github.palFinderTeam.palfinder.tag.TagsViewModel
+import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 
-fun createTagFragmentModel(that: ViewModelStoreOwner, tags: Set<Category>, mutable: Boolean): TagsViewModel<Category> {
-    val all = Category.values().toSet()
-    val tagsViewModelFactory = if (mutable) {
-            TagsViewModelFactory(
-                EditableTags(tags.toMutableSet(), all)
-            )
-        } else{
-            TagsViewModelFactory(
-                NonEditableTags(tags, all)
-            )
-        }
-
+fun createTagFragmentModel(
+    that: ViewModelStoreOwner,
+    tagsViewModelFactory: TagsViewModelFactory<Category>
+): TagsViewModel<Category> {
     return ViewModelProvider(
         that,
         tagsViewModelFactory

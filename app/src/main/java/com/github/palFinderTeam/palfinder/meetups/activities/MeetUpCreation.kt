@@ -5,36 +5,53 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
-import android.icu.util.Calendar
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.CheckBox
+import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
+import androidx.core.widget.doAfterTextChanged
 import com.github.palFinderTeam.palfinder.R
+
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
 import com.github.palFinderTeam.palfinder.map.MapsActivity
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.utils.*
 import com.google.android.gms.maps.model.LatLng
 
+import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
+import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
+import com.github.palFinderTeam.palfinder.utils.askTime
+import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
 const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
 const val defaultTimeDelta = 1000 * 60 * 60
 
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
+@AndroidEntryPoint
 class MeetUpCreation : AppCompatActivity() {
-    val model: MeetUpCreationViewModel by viewModels()
-    private lateinit var tagsViewModel: TagsViewModel<Category>
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
+
+    private val viewModel: MeetUpCreationViewModel by viewModels()
+    private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
+    private lateinit var tagsViewModel: TagsViewModel<Category>
+
+
     private var dateFormat = SimpleDateFormat()
+
+    private lateinit var hasLimitCheckBox: CheckBox
+    private lateinit var limitEditText: EditText
+    private lateinit var nameEditText: EditText
+    private lateinit var descriptionEditText: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         registerActivityResult()
@@ -43,13 +60,37 @@ class MeetUpCreation : AppCompatActivity() {
 
         dateFormat = SimpleDateFormat(getString(R.string.date_long_format))
 
-        loadIntent()
+        hasLimitCheckBox = findViewById(R.id.hasCapacityButton)
+        limitEditText = findViewById(R.id.et_Capacity)
+        nameEditText = findViewById(R.id.et_EventName)
+        descriptionEditText = findViewById(R.id.et_Description)
+
+        bindUI()
+
+        // Create tag fragment
+        tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
+        tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
 
         if (savedInstanceState == null) {
             addTagsToFragmentManager(supportFragmentManager, R.id.fc_tags)
         }
 
-        loadObservers()
+        // Load meetup or start from scratch
+        if (intent.hasExtra(MEETUP_EDIT)) {
+            val meetupId = intent.getStringExtra(MEETUP_EDIT)
+            if (meetupId != null) {
+                viewModel.loadMeetUp(meetupId)
+            }
+        } else {
+            viewModel.fillWithDefaultValues()
+        }
+
+        // Make sure tags are refreshed once when fetching from DB
+        viewModel.tags.observe(this) {
+            tagsViewModel.refreshTags()
+        }
+
+        registerActivityResult()
     }
 
     private fun registerActivityResult(){
@@ -63,140 +104,121 @@ class MeetUpCreation : AppCompatActivity() {
         }
     }
 
-    private fun loadObservers() {
-        val startDateObs = Observer<Calendar> { newDate ->
-            checkDateIntegrity()
+    private fun bindUI() {
+        viewModel.startDate.observe(this) { newDate ->
             setTextView(R.id.tv_StartDate, dateFormat.format(newDate))
         }
-        model.startDate.observe(this, startDateObs)
-
-        val endDateObs = Observer<Calendar> { newDate ->
-            checkDateIntegrity()
+        viewModel.endDate.observe(this) { newDate ->
             setTextView(R.id.tv_EndDate, dateFormat.format(newDate))
         }
-        model.endDate.observe(this, endDateObs)
 
-        val locationObs = Observer<Location> { newLocation ->
-            setTextView(R.id.tv_LocationCoordinate, newLocation.toString())
+        viewModel.name.observeOnce(this) {
+            setTextView(R.id.et_EventName, it)
         }
-        model.location.observe(this, locationObs)
+        nameEditText.doAfterTextChanged { text ->
+            viewModel.setName(text.toString())
+        }
+        viewModel.description.observeOnce(this) {
+            setTextView(R.id.et_Description, it)
+        }
+        descriptionEditText.doAfterTextChanged { text ->
+            viewModel.setDescription(text.toString())
+        }
+        viewModel.hasMaxCapacity.observeOnce(this) { hasMaxCapacity ->
+            hasLimitCheckBox.isChecked = hasMaxCapacity
+            limitEditText.isEnabled = hasMaxCapacity
+        }
+        viewModel.capacity.observeOnce(this) {
+            setTextView(R.id.et_Capacity, it.toString())
+        }
+        hasLimitCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            setCapacityField(isChecked)
+            viewModel.setHasMaxCapacity(isChecked)
+        }
+        limitEditText.doAfterTextChanged { text ->
+            val parsed = text.toString().toIntOrNull()
+            if (parsed != null) {
+                viewModel.setCapacity(parsed)
+            } else {
+                // TODO find something meaningful to do
+                viewModel.setCapacity(1)
+            }
+        }
+        limitEditText.isEnabled = hasLimitCheckBox.isChecked
     }
 
-    private fun loadIntent() {
-        lateinit var tagsSet: Set<Category>
-        if (intent.hasExtra(MEETUP_EDIT)) {
-            val meetup = intent.getSerializableExtra(MEETUP_EDIT) as MeetUp
-            tagsSet = meetup.tags
-            fillFields(meetup)
+    private fun setCapacityField(isEditable: Boolean) {
+        if (isEditable) {
+            limitEditText.isEnabled = true
         } else {
-            model.startDate.value = Calendar.getInstance()
-            model.endDate.value = Calendar.getInstance()
-            tagsSet = emptySet()
+            limitEditText.isEnabled = false
+            limitEditText.text.clear()
         }
-
-        tagsViewModel = createTagFragmentModel(this, tagsSet, true)
     }
 
-    private fun fillFields(meetUp: MeetUp){
-        setTextView(R.id.et_EventName, meetUp.name)
-        setTextView(R.id.et_Description, meetUp.description)
-
-        if (meetUp.hasMaxCapacity){
-            setTextView(R.id.et_Capacity, meetUp.capacity.toString())
-        }
-
-        setStartDate(meetUp.startDate)
-        setEndDate(meetUp.endDate)
-        model.capacity = meetUp.capacity
-        model.hasMaxCapacity = meetUp.hasMaxCapacity
-    }
-
-    private fun setTextView(id: Int, value: String){
+    private fun setTextView(id: Int, value: String) {
         findViewById<TextView>(id).apply { this.text = value }
     }
 
-    /**
-     * Set Start Date on Model and update UI
-     */
-    private fun setStartDate(date: Calendar){
-        model.startDate.value = date
-    }
-
-    /**
-     * Set End Date on Model and update UI
-     */
-    private fun setEndDate(date: Calendar){
-        model.endDate.value = date
-    }
-
-    fun onStartTimeSelectButton(v: View){
-        askTime(supportFragmentManager).thenAccept{
-            setStartDate(it)
-        }
-    }
-    fun onEndTimeSelectButton(v: View){
-        askTime(supportFragmentManager).thenAccept{
-            setEndDate(it)
+    fun onStartTimeSelectButton(v: View) {
+        askTime(supportFragmentManager).thenAccept {
+            viewModel.setStartDate(it)
         }
     }
 
-    /**
-     * Enforce that End Date is After Start Date
-     */
-    private fun checkDateIntegrity(){
-        // Check if at least defaultTimeDelta between start and end
-        if (!model.startDate.value!!.isDeltaBefore(model.endDate.value!!, defaultTimeDelta)){
-            val newCalendar = Calendar.getInstance()
-            newCalendar.timeInMillis = model.startDate.value!!.timeInMillis
-            newCalendar.add(Calendar.MILLISECOND, defaultTimeDelta)
-            model.endDate.value = newCalendar
+    fun onEndTimeSelectButton(v: View) {
+        askTime(supportFragmentManager).thenAccept {
+            viewModel.setEndDate(it)
         }
     }
+
 
     /**
      * Check Name and Description are present
      */
-    private fun checkFieldValid(name: String, description: String): Boolean{
-        if (name == "" || description == ""){
-            showMessage(R.string.meetup_creation_missing_name_desc,
-                R.string.meetup_creation_missing_name_desc_title)
+    private fun checkFieldValid(name: String, description: String): Boolean {
+        if (name == "" || description == "") {
+            showMessage(
+                R.string.meetup_creation_missing_name_desc,
+                R.string.meetup_creation_missing_name_desc_title
+            )
             return false
         }
         return true
     }
 
-    fun onDone(v: View){
-        val name = findViewById<TextView>(R.id.et_EventName).text.toString()
-        val description = findViewById<TextView>(R.id.et_Description).text.toString()
+    fun onDone(v: View) {
+
+        // Check field validity
+        val name = nameEditText.text.toString()
+        val description = descriptionEditText.text.toString()
         if (!checkFieldValid(name, description)) return
 
-        val capacityText = findViewById<TextView>(R.id.et_Capacity).text.toString()
-        val hasMaxCapacity = (capacityText != "")
-        val capacity = if (hasMaxCapacity) { capacityText.toInt()} else { Int.MAX_VALUE }
-
-        val m = MeetUp("dummy", ProfileUser("dummy1", "dummy2", "dummy1", model.startDate.value!!),
-            "", name, description,
-            model.startDate.value!!, model.endDate.value!!,
-            Location(0.0,0.0),
-            tagsViewModel.tagContainer.value!!,
-            hasMaxCapacity, capacity, mutableListOf())
-
-        val intent = Intent(this, MeetUpView::class.java).apply {
-            putExtra(MEETUP_SHOWN, m)
+        // Listen on DB response to move forward.
+        viewModel.sendSuccess.observe(this) { isSuccessFull ->
+            if (isSuccessFull) {
+                val intent = Intent(this, MeetUpView::class.java).apply {
+                    putExtra(MEETUP_SHOWN, viewModel.getMeetUpId())
+                }
+                startActivity(intent)
+            } else {
+                Snackbar.make(v, getString(R.string.DB_error_msg), 4).show()
+            }
         }
-        startActivity(intent)
+
+        viewModel.sendMeetUp()
     }
 
     /**
      * Show [message] with [title] in an alert box
      */
-    fun showMessage(message: Int, title: Int) {
-        val dlgAlert = AlertDialog.Builder(this);
-        dlgAlert.setMessage(message);
-        dlgAlert.setTitle(title);
-        dlgAlert.setPositiveButton(R.string.ok, null);
-        dlgAlert.setCancelable(true);
-        dlgAlert.create().show();
+    private fun showMessage(message: Int, title: Int) {
+        val dlgAlert = AlertDialog.Builder(this)
+        dlgAlert.setMessage(message)
+        dlgAlert.setTitle(title)
+        dlgAlert.setPositiveButton(R.string.ok, null)
+        dlgAlert.setCancelable(true)
+        dlgAlert.create().show()
     }
 
     fun onSelectLocation(v: View){
@@ -207,7 +229,6 @@ class MeetUpCreation : AppCompatActivity() {
     }
 
     private fun onLocationSelected(p0: LatLng){
-        model.setLatLng(p0)
+        viewModel.setLatLng(p0)
     }
-
 }

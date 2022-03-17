@@ -13,13 +13,15 @@ import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
+import dagger.hilt.android.AndroidEntryPoint
 
 
 const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_SHOWN"
 
 @SuppressLint("SimpleDateFormat")
+@AndroidEntryPoint
 class MeetUpView : AppCompatActivity() {
-    private val model: MeetUpViewViewModel by viewModels()
+    private val viewModel: MeetUpViewViewModel by viewModels()
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     private lateinit var tagsViewModel: TagsViewModel<Category>
 
@@ -27,22 +29,27 @@ class MeetUpView : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_view)
 
-        model.changeMeetup(intent.getSerializableExtra(MEETUP_SHOWN) as MeetUp)
+        val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
+        viewModel.loadMeetUp(meetupId)
 
-        loadTag()
+        viewModel.meetUp.observe(this) { meetUp ->
+            fillFields(meetUp)
+        }
 
+        tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
+        tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
         if (savedInstanceState == null) {
             addTagsToFragmentManager(supportFragmentManager, R.id.fc_tags)
         }
     }
 
-    private fun loadTag(){
-        tagsViewModel = createTagFragmentModel(this, model.meetUp.value!!.tags, false)
+    private fun fillFields(meetup: MeetUp) {
+        tagsViewModel.refreshTags()
     }
 
-    fun onEdit(v: View){
+    fun onEdit(v: View) {
         val intent = Intent(this, MeetUpCreation::class.java).apply {
-            putExtra(MEETUP_EDIT, model.meetUp.value)
+            putExtra(MEETUP_EDIT, viewModel.meetUp.value?.uuid)
         }
         startActivity(intent)
     }
