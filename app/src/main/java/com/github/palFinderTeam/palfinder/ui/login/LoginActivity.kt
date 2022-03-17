@@ -112,7 +112,7 @@ class LoginActivity : AppCompatActivity() {
                 if (emailIsAvailability(email)) {
                     createAccount(email, password)
                 } else {
-                    signIn(email, password)
+                    signIn(email, password, true)
                 }
             } else {
                 //pop "email not valid"
@@ -207,7 +207,7 @@ class LoginActivity : AppCompatActivity() {
                     val idToken = credential.googleIdToken
                     val username = credential.id
                     val password = credential.password
-                    checkOneTapCredential(idToken, password)
+                    checkOneTapCredential(idToken, password, username)
                 } catch (e: ApiException) {
                     oneTapException(e)
                 }
@@ -255,7 +255,7 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     // If user already in database, sign in
                     if(task.exception is FirebaseAuthUserCollisionException){
-                        signIn(email, password)
+                        signIn(email, password, true)
                     } else {
                         //if creation fails, display error message
                         signInSignUpFailure(task, "createUserWithEmail:failure")
@@ -265,14 +265,17 @@ class LoginActivity : AppCompatActivity() {
         // [END create_user_with_email]
     }
 
-    private fun signIn(email: String, password: String) {
+    private fun signIn(email: String, password: String, savePassword: Boolean) {
         // [START sign_in_with_email]
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithEmail:success")
-                    savePassword(email,password)
+                    if(savePassword) {
+                        savePassword(email,password)
+                    }
+                    updateUI(auth.currentUser)
                 } else {
                     // If sign in fails, display a message to the user.
                     signInSignUpFailure(task, "signInWithEmail:failure")
@@ -318,16 +321,17 @@ class LoginActivity : AppCompatActivity() {
 
 
 
-    private fun checkOneTapCredential(idToken: String?, password: String?) {
+    private fun checkOneTapCredential(idToken: String?, password: String?, username: String?) {
         when {
             idToken != null -> {
                 // Got an ID token from Google. Used to authenticate with the backend.
                 Log.d(TAG, "Got ID token.")
                 firebaseAuthWithGoogle(idToken)
             }
-            password != null -> {
+            password != null && username != null-> {
                 // Got a saved username and password. Used to authenticate with the backend.
                 Log.d(TAG, "Got password.")
+                signIn(username, password, false)
             }
             else -> {
                 // Shouldn't happen.
