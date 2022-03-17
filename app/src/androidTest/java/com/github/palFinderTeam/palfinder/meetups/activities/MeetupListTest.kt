@@ -17,6 +17,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,10 +25,8 @@ import kotlinx.coroutines.test.runTest
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
+import org.junit.Assert.assertEquals
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -63,8 +62,8 @@ class MeetUpListTest {
         date4 = Calendar.getInstance()
         date4.set(2022, 0, 1)
 
-        user1 = ProfileUser("User1", "Us", "er1", date1)
-        user2 = ProfileUser("User2", "Us", "er2", date2)
+        user1 = ProfileUser("User1", "Us", "er1", date1, ImageInstance("icons/demo_pfp.jpeg"))
+        user2 = ProfileUser("User2", "Us", "er2", date2, ImageInstance("icons/demo_pfp.jpeg"))
 
 
         meetUpList = listOf(
@@ -91,7 +90,7 @@ class MeetUpListTest {
                 startDate = date2,
                 endDate = date1,
                 location = Location(0.0, 0.0),
-                tags = setOf(Category.DRINKING),
+                tags = setOf(Category.WORKING_OUT, Category.DUMMY_TAG1),
                 capacity = 48,
                 creator = user1,
                 hasMaxCapacity = true,
@@ -183,8 +182,6 @@ class MeetUpListTest {
 
         val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
         scenario.use{
-            onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
-                .check(matches(withText(meetUpList[0].name)))
             scenario.onActivity { it.sortByCap(null) }
             onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
                 .check(matches(withText(meetUpList.sortedBy { it.capacity }[0].name)))
@@ -193,7 +190,25 @@ class MeetUpListTest {
                 .check(matches(withText(meetUpList.sortedBy { it.name.lowercase() }[0].name)))
         }
     }
+
+    @Test
+    fun filterWorks() = runTest {
+        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+
+        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        scenario.use {
+            scenario.onActivity { it.filterByTag(setOf(Category.CINEMA)) }
+            scenario.onActivity { assert(it.adapter.currentDataSet.isEmpty()) }
+            scenario.onActivity { it.filterByTag(setOf(Category.WORKING_OUT, Category.DUMMY_TAG1)) }
+            scenario.onActivity { assertEquals(1, it.adapter.currentDataSet.size) }
+            scenario.onActivity { it.filterByTag(setOf()) }
+            scenario.onActivity { assertEquals(5, it.adapter.currentDataSet.size) }
+        }
+    }
+
 }
+
 
 
 class RecyclerViewMatcher(private val recyclerViewId: Int) {

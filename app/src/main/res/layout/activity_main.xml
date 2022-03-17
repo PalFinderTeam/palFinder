@@ -11,24 +11,19 @@
         android:id="@+id/mainGoButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="140dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="140dp"
         android:onClick="seeList"
         android:text="MeetupList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileGoButton" />
+        app:layout_constraintTop_toBottomOf="@+id/accessImgLoader2" />
 
     <Button
 
         android:id="@+id/mainGoToTagButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:text="Tags"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mainGoButton" />
 
@@ -36,45 +31,42 @@
         android:id="@+id/mainGoButton3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
-        android:layout_marginTop="100dp"
-        android:layout_marginEnd="160dp"
+        android:layout_marginTop="48dp"
         android:onClick="openMeetupCreationPage"
         android:text="Create"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/profileGoButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="132dp"
-        android:layout_marginTop="11dp"
-        android:layout_marginEnd="132dp"
-        android:onClick="goToProfile"
-        android:text="Go to Profile"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainGoButton3" />
 
     <Button
         android:id="@+id/mapGoButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="162dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="162dp"
-        android:layout_marginBottom="83dp"
         android:onClick="accessMap"
         android:text="Map"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainGoToTagButton"
-        app:layout_constraintVertical_bias="0.038" />
+        app:layout_constraintTop_toBottomOf="@+id/mainGoToTagButton" />
+
+    <Button
+        android:id="@+id/accessImgLoader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="goToProfileLouca"
+        android:text="Profile Louca"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mainGoButton3" />
+
+    <Button
+        android:id="@+id/accessImgLoader2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="goToProfileCat"
+        android:text="Profile Cat"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accessImgLoader" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

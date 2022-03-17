@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
@@ -9,18 +10,23 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
-import androidx.lifecycle.ViewModelProvider
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
+import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
+import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
-import com.github.palFinderTeam.palfinder.utils.addToFragmentManager
+import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.askTime
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -30,9 +36,12 @@ const val defaultTimeDelta = 1000 * 60 * 60
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 @AndroidEntryPoint
 class MeetUpCreation : AppCompatActivity() {
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
+
     private val viewModel: MeetUpCreationViewModel by viewModels()
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     private lateinit var tagsViewModel: TagsViewModel<Category>
+
 
     private var dateFormat = SimpleDateFormat()
 
@@ -42,6 +51,7 @@ class MeetUpCreation : AppCompatActivity() {
     private lateinit var descriptionEditText: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        registerActivityResult()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_creation)
 
@@ -59,7 +69,7 @@ class MeetUpCreation : AppCompatActivity() {
         tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
 
         if (savedInstanceState == null) {
-            addToFragmentManager(supportFragmentManager, R.id.fc_tags)
+            addTagsToFragmentManager(supportFragmentManager, R.id.fc_tags)
         }
 
         // Load meetup or start from scratch
@@ -73,8 +83,21 @@ class MeetUpCreation : AppCompatActivity() {
         }
 
         // Make sure tags are refreshed once when fetching from DB
-        viewModel.tags.observeOnce(this) {
+        viewModel.tags.observe(this) {
             tagsViewModel.refreshTags()
+        }
+
+        registerActivityResult()
+    }
+
+    private fun registerActivityResult(){
+        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                if (data != null) {
+                    onLocationSelected(data.getParcelableExtra(LOCATION_SELECTED)!!)
+                }
+            }
         }
     }
 
@@ -85,6 +108,7 @@ class MeetUpCreation : AppCompatActivity() {
         viewModel.endDate.observe(this) { newDate ->
             setTextView(R.id.tv_EndDate, dateFormat.format(newDate))
         }
+
         viewModel.name.observeOnce(this) {
             setTextView(R.id.et_EventName, it)
         }
@@ -182,6 +206,9 @@ class MeetUpCreation : AppCompatActivity() {
         viewModel.sendMeetUp()
     }
 
+    /**
+     * Show [message] with [title] in an alert box
+     */
     private fun showMessage(message: Int, title: Int) {
         val dlgAlert = AlertDialog.Builder(this)
         dlgAlert.setMessage(message)
@@ -189,5 +216,16 @@ class MeetUpCreation : AppCompatActivity() {
         dlgAlert.setPositiveButton(R.string.ok, null)
         dlgAlert.setCancelable(true)
         dlgAlert.create().show()
+    }
+
+    fun onSelectLocation(v: View){
+        val intent = Intent(this, MapsActivity::class.java).apply {
+            putExtra(LOCATION_SELECT, LatLng(0.0,0.0))
+        }
+        resultLauncher.launch(intent)
+    }
+
+    private fun onLocationSelected(p0: LatLng){
+        viewModel.setLatLng(p0)
     }
 }

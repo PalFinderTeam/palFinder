@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.profile
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import java.io.Serializable
 
 /**
@@ -12,7 +13,8 @@ data class ProfileUser(
     val username: String,
     val name: String,
     val surname: String,
-    val joinDate: Calendar
+    val joinDate: Calendar,
+    val pfp: ImageInstance
 ) : Serializable {
 
     companion object{
