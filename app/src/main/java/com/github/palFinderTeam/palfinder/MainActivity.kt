@@ -75,13 +75,23 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun goToProfile(view: View?) {
+    fun goToProfileLouca(view: View?) {
         // Create a fake user for demo
         val joinDate = Calendar.getInstance()
         joinDate.set(2022, 2, 6, 14, 1, 0)
         val pfp = ImageInstance("icons/demo_pfp.jpeg")
         val intent = Intent(this, ProfileActivity::class.java).apply {
             putExtra(DUMMY_USER, ProfileUser("gerussi", "Louca", "Gerussi", joinDate, pfp) as Serializable)
+        }
+        startActivity(intent)
+    }
+
+    fun goToProfileCat(view: View?) {
+        val joinDate = Calendar.getInstance()
+        joinDate.set(2022, 2, 1, 14, 1, 0)
+        val pfp = ImageInstance("icons/cat.png")
+        val intent = Intent(this, ProfileActivity::class.java).apply {
+            putExtra(DUMMY_USER, ProfileUser("theCat", "Epic", "Cat", joinDate, pfp) as Serializable)
         }
         startActivity(intent)
     }

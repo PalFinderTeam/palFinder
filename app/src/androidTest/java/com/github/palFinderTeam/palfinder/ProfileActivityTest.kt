@@ -24,8 +24,7 @@ ProfileActivityTest {
 
     @Before
     fun getProfile(){
-        p = ProfileUser("gerussi", "Louca", "Gerussi", Calendar.getInstance(), ImageInstance("icons/demo_pfp.jpeg"))
-        pImgHttps = ProfileUser("zac", "Zacharie", "Jean-Antoine Michel", Calendar.getInstance(), ImageInstance("https://fail"))
+        p = ProfileUser("gerussi", "Louca", "Gerussi", Calendar.getInstance(), ImageInstance("icons/cat.png"))
     }
 
     @Test
