@@ -14,17 +14,18 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.Serializable
-import java.util.*
 
 
 @RunWith(AndroidJUnit4::class)
 class
 ProfileActivityTest {
     lateinit var p : ProfileUser
+    lateinit var pImgHttps : ProfileUser
 
     @Before
     fun getProfile(){
         p = ProfileUser("gerussi", "Louca", "Gerussi", Calendar.getInstance(), ImageInstance("icons/demo_pfp.jpeg"))
+        pImgHttps = ProfileUser("zac", "Zacharie", "Jean-Antoine Michel", Calendar.getInstance(), ImageInstance("https://fail"))
     }
 
     @Test
@@ -46,4 +47,5 @@ ProfileActivityTest {
             scenario.close()
         }
     }
+
 }

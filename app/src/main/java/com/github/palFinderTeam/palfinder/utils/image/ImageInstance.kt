@@ -17,14 +17,20 @@ import java.lang.Exception
  * @param imgURL String image URL path
  */
 data class ImageInstance(
-    val imgURL : String
+    val imgURL : String, var imgFetch : ImageFetcher? = null
 ) : Serializable, ViewModel(){
 
-    private val TAG = "ImageInstance";
+    companion object{
+        const val NOT_LOADED = 0
+        const val FILE_NOT_FOUND = 1
+        const val CACHED = 2
+    }
 
-    private lateinit var localFile : File
     private var bitmapCache : Bitmap? = null
     var isCached : Boolean = false
+
+    // Solely to get the status of the image
+    var imgStatus = NOT_LOADED
 
     /**
      * Loads the image asynchronously into the desired Image View
@@ -33,11 +39,8 @@ data class ImageInstance(
     fun loadImageInto(view : ImageView){
         // Is image cached?
         if (isCached) {
-            Log.d(TAG, "Image is already existing!")
             view.setImageBitmap(bitmapCache)
         } else {
-            Log.d(TAG, "Fetching from Database")
-
             GlobalScope.launch(Dispatchers.Main){
                 try {
                     view.setImageResource(android.R.color.background_dark)
@@ -47,9 +50,11 @@ data class ImageInstance(
                         fetchFromDB()
                     }
 
+                    imgStatus = CACHED
                     view.setImageBitmap(bitmapCache)
                 } catch (e: Exception) {
                     view.setImageResource(R.drawable.not_found)
+                    imgStatus = FILE_NOT_FOUND
                     isCached = false
                 } finally {
                     view.alpha = 1.0f
@@ -65,6 +70,7 @@ data class ImageInstance(
     fun clearImageCache(){
         if (isCached) {
             bitmapCache = null
+            imgStatus = NOT_LOADED
             isCached = false
         }
     }
@@ -73,6 +79,11 @@ data class ImageInstance(
      * Load the online image with the correct tools
      */
     private suspend fun fetchFromDB(){
+        if (imgFetch!=null) {
+            bitmapCache = imgFetch!!.fetchImage()
+            isCached = true
+            return
+        }
         // Select corresponding fetcher
         val fetcher : ImageFetcher = if (UrlFormat.getUrlType(imgURL) == UrlFormat.URL_IS_FIREBASE) {
             ImageFetcherFirebase(imgURL)
