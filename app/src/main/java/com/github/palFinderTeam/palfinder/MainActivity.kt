@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     private companion object {
         private const val TAG = "MainActivity"
+        private const val PROFILE_DESC = "Hello this is the Cat, but you can call me Kitty. I like to lay around and do nothing. Also you can see that my profile picture looks cure but in real life I am a real biach. Enjoy!"
     }
 
     private lateinit var auth: FirebaseAuth

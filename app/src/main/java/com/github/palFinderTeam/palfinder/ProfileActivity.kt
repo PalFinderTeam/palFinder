@@ -18,6 +18,9 @@ import kotlinx.coroutines.launch
 class ProfileActivity : AppCompatActivity() {
 
     private val viewModel: ProfileViewModel by viewModels()
+    companion object{
+        const val EMPTY_FIELD = ""
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,12 +36,24 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun injectUserInfo(user: ProfileUser) {
-        findViewById<TextView>(R.id.userProfileName).apply { text = user.fullName() }
-        findViewById<TextView>(R.id.userProfileUsername).apply { text = user.atUsername() }
+        findViewById<TextView>(R.id.userProfileName).text = user.fullName()
+        findViewById<TextView>(R.id.userProfileUsername).text = user.atUsername()
         findViewById<TextView>(R.id.userProfileJoinDate).apply { text = user.prettyJoinTime() }
+        injectBio(user.description)
         lifecycleScope.launch {
             user.pfp.loadImageInto(findViewById(R.id.userProfileImage))
         }
     }
+
+
+    private fun injectBio(bio: String) {
+        if (bio == EMPTY_FIELD) {
+            findViewById<TextView>(R.id.userProfileAboutTitle).text = this.resources.getString(R.string.no_desc)
+            findViewById<TextView>(R.id.userProfileDescription).text = EMPTY_FIELD
+        } else {
+            findViewById<TextView>(R.id.userProfileDescription).text = bio
+        }
+    }
+
 
 }
