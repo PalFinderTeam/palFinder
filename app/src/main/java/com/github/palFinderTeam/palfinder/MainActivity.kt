@@ -16,6 +16,7 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
+import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -104,6 +105,11 @@ class MainActivity : AppCompatActivity() {
 
     fun accessMap(view: View?) {
         val intent = Intent(this, MapsActivity::class.java).apply {  }
+        startActivity(intent)
+    }
+
+    fun accessCreateProfile(view: View?) {
+        val intent = Intent(this, UserSettingsActivity::class.java).apply {  }
         startActivity(intent)
     }
 

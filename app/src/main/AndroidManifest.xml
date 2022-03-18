@@ -55,6 +55,10 @@
             android:name=".MainActivity"
             android:exported="true"/>
 
+        <activity
+            android:name=".user.settings.UserSettingsActivity"
+            android:exported="false"/>
+
 
     </application>
 
