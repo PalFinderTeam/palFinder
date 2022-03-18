@@ -4,10 +4,8 @@ import android.icu.util.Calendar
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
-import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
