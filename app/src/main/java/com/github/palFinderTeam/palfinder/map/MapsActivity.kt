@@ -162,7 +162,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
 
         setUserLocation()
 
-        map.setOnMapClickListener { setSelectionMarker(it) }
+        map.setOnMapClickListener { onMapClick(it) }
     }
 
 }
