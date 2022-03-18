@@ -4,8 +4,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.github.palFinderTeam.palfinder.utils.image.ImageFetcher.Companion.TMP_NAME
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
@@ -20,7 +22,9 @@ class ImageFetcherFirebase(var imgURL : String) : ImageFetcher {
         val storageRef = FirebaseStorage.getInstance().reference.child(imgURL)
 
         // Create a temporary local file
-        val localFile = File.createTempFile(TMP_NAME, UrlFormat.getUrlExtension(imgURL))
+        val localFile = withContext(Dispatchers.IO) {
+            File.createTempFile(TMP_NAME, UrlFormat.getUrlExtension(imgURL))
+        }
 
         // Async block thread
         storageRef.getFile(localFile).await()

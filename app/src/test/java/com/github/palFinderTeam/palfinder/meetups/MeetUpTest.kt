@@ -2,12 +2,15 @@ package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.hamcrest.CoreMatchers.*
+import org.hamcrest.MatcherAssert.assertThat
 
 class MeetUpTest {
     var meetUp: MeetUp? = null
@@ -31,7 +34,7 @@ class MeetUpTest {
             date1,
             date2,
             Location(0.0,0.0),
-            emptySet(),
+            setOf(Category.DRINKING),
             true,
             2,
             mutableListOf(user)
@@ -94,5 +97,16 @@ class MeetUpTest {
         meetUp!!.join(now, user)
         meetUp!!.leave(user)
         assertEquals( false, meetUp!!.isParticipating(user))
+    }
+
+    @Test
+    fun `to firebase document conversion keeps right values`() {
+        val firebaseDoc = meetUp?.toFirestoreData()
+        assertThat(firebaseDoc, notNullValue())
+        val fireBaseDocNN = firebaseDoc!!
+        assertThat(fireBaseDocNN["name"], `is`(meetUp!!.name))
+        assertThat(fireBaseDocNN["description"], `is`(meetUp!!.description))
+        assertThat(fireBaseDocNN["tags"], `is`(meetUp!!.tags.toList().map { it.toString() }))
+        assertThat(fireBaseDocNN["location"], `is`(meetUp!!.location.toGeoPoint()))
     }
 }

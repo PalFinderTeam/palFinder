@@ -36,29 +36,25 @@ data class ImageInstance(
      * Loads the image asynchronously into the desired Image View
      * @param view ImageView that needs to be change
      */
-    fun loadImageInto(view : ImageView){
+    suspend fun loadImageInto(view : ImageView){
         // Is image cached?
         if (isCached) {
             view.setImageBitmap(bitmapCache)
         } else {
-            GlobalScope.launch(Dispatchers.Main){
-                try {
-                    view.setImageResource(android.R.color.background_dark)
-                    view.alpha = 0.3f
+            try {
+                view.setImageResource(android.R.color.background_dark)
+                view.alpha = 0.3f
 
-                    withContext(Dispatchers.IO){
-                        fetchFromDB()
-                    }
+                fetchFromDB()
 
-                    imgStatus = CACHED
-                    view.setImageBitmap(bitmapCache)
-                } catch (e: Exception) {
-                    view.setImageResource(R.drawable.not_found)
-                    imgStatus = FILE_NOT_FOUND
-                    isCached = false
-                } finally {
-                    view.alpha = 1.0f
-                }
+                imgStatus = CACHED
+                view.setImageBitmap(bitmapCache)
+            } catch (e: Exception) {
+                view.setImageResource(R.drawable.not_found)
+                imgStatus = FILE_NOT_FOUND
+                isCached = false
+            } finally {
+                view.alpha = 1.0f
             }
         }
     }

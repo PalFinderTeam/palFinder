@@ -107,6 +107,34 @@ class MeetupViewTest {
         }
     }
 
+/*
+    @Test
+    fun editExistingMeetupEditTheRightOneInDB() = runTest {
+
+        val id = meetUpRepository.createMeetUp(meetup)
+        assertThat(id, notNullValue())
+
+        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+            .apply {
+                putExtra(MEETUP_EDIT, id)
+            }
+        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        scenario.use {
+
+            Intents.init()
+
+            onView(withId(R.id.et_EventName)).perform(typeText("Manger des patates"))
+            closeSoftKeyboard()
+            onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
+
+            Intents.intended(IntentMatchers.hasComponent(MeetUpView::class.java.name))
+            Intents.release()
+
+            onView(withId(R.id.tv_ViewEventName)).check(matches(withText("dummy1Manger des patates")))
+        }
+    }
+*/
+
     @Test
     fun createMeetUpDisplayBlankInfo() = runTest {
         val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)

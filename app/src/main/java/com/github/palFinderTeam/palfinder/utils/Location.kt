@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder.utils
 
+import com.google.firebase.firestore.GeoPoint
 import android.content.Context
 import com.github.palFinderTeam.palfinder.R
 import java.io.Serializable
@@ -20,6 +21,13 @@ data class Location(val longitude: Double, val latitude: Double): Serializable{
         const val MIN_M_DISTANCE = 0.01
         const val MIN_KM_DISTANCE = 1.0
         const val KM_TO_M = 0.001
+
+        /**
+         * Conversion from GeoPoint (Firebase)
+         */
+        fun GeoPoint.toLocation(): Location {
+            return Location(longitude, latitude)
+        }
     }
 
     fun distanceInKm(other: Location): Double{
@@ -35,6 +43,13 @@ data class Location(val longitude: Double, val latitude: Double): Serializable{
 
         val distance = earthRadius * c
         return distance * mToKm
+    }
+
+    /**
+     * Conversion to GeoPoint (Firebase)
+     */
+    fun toGeoPoint(): GeoPoint {
+        return GeoPoint(latitude, longitude)
     }
 
     override fun toString(): String{

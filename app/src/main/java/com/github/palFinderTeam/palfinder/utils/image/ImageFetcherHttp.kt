@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.AsyncTask
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.BufferedInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -22,15 +24,19 @@ class ImageFetcherHttp(var imgURL : String) : ImageFetcher {
     private val TAG = "ImageFetcherHttps";
 
     override suspend fun fetchImage(): Bitmap? {
-        val url = URL(imgURL)
-        val connection: HttpURLConnection?
+        val bufferedInputStream = withContext(Dispatchers.IO) {
 
-        connection = url.openConnection() as HttpURLConnection
-        connection.connect()
+            val url = URL(imgURL)
+            val connection: HttpURLConnection?
 
-        // NOTE: Can throw exception, deal with it in the activity
-        val inputStream: InputStream = connection.inputStream
-        val bufferedInputStream = BufferedInputStream(inputStream)
+            connection = url.openConnection() as HttpURLConnection
+            connection.connect()
+
+            // NOTE: Can throw exception, deal with it in the activity
+            val inputStream: InputStream = connection.inputStream
+            BufferedInputStream(inputStream)
+        }
+
         return BitmapFactory.decodeStream(bufferedInputStream)
     }
 
