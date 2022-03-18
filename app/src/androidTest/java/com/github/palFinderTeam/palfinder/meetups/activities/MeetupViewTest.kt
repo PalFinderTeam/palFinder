@@ -60,7 +60,7 @@ class MeetupViewTest {
         date2 = Calendar.getInstance()
         date2.set(2022, 2, 1, 1, 0, 0)
 
-        val user = ProfileUser("dummy1", "dummy2", "dummy", date1, ImageInstance("icons/demo_pfp.jpeg"))
+        val user = "user"
 
         expectDate1 = format.format(date1)
         expectDate2 = format.format(date2)

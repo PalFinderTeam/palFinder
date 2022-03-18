@@ -1,8 +1,6 @@
 package com.github.palFinderTeam.palfinder
 
-import android.media.Image
 import android.os.Bundle
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -20,7 +18,7 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
         // Fetch user
-        injectUserInfo(intent.getSerializableExtra(DUMMY_USER) as ProfileUser)
+        injectUserInfo(intent.getSerializableExtra(USER_ID) as ProfileUser)
     }
 
     private fun injectUserInfo(user: ProfileUser) {

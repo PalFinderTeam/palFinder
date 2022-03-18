@@ -58,7 +58,7 @@ class MeetUpViewViewModelTest {
     fun `display infos from valid meetUp`() = runTest {
         val dummyMeetUp = MeetUp(
             "",
-            ProfileUser("username", "whatever", "surname", testStartDate, ImageInstance("icons/demo_pfp.jpeg")),
+            "user",
             "icon",
             "name",
             "description",
@@ -73,7 +73,7 @@ class MeetUpViewViewModelTest {
 
         val id = meetUpRepository.createMeetUp(dummyMeetUp)
 
-        MatcherAssert.assertThat(id, CoreMatchers.notNullValue())
+        assertThat(id, notNullValue())
         viewModel.loadMeetUp(id!!)
 
         assertThat(viewModel.meetUp.value, `is`(dummyMeetUp.copy(uuid=id)))

@@ -35,6 +35,8 @@ class MeetUpCreationViewModel @Inject constructor(
     private val _name: MutableLiveData<String> = MutableLiveData()
     private val _description: MutableLiveData<String> = MutableLiveData()
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData()
+    private val _participantsId: MutableLiveData<List<String>> = MutableLiveData(emptyList())
+    private val _location: MutableLiveData<Location> = MutableLiveData()
 
     private val _sendSuccess: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -46,6 +48,10 @@ class MeetUpCreationViewModel @Inject constructor(
     val description: LiveData<String> = _description
     val sendSuccess: LiveData<Boolean> = _sendSuccess
     val tags: LiveData<Set<Category>> = _tags
+    val participantsId: LiveData<List<String>> = _participantsId
+
+    val location: LiveData<Location> = _location
+
 
     /**
      * Fill every field with default value (in case of meetup creation)
@@ -55,7 +61,9 @@ class MeetUpCreationViewModel @Inject constructor(
         _hasMaxCapacity.value = false
         _name.value = ""
         _description.value = ""
-        _tags.value = setOf()
+        _tags.value = emptySet()
+        _participantsId.value = emptyList()
+        _location.value = Location(0.0,0.0)
     }
 
     fun setStartDate(date: Calendar) {
@@ -103,6 +111,8 @@ class MeetUpCreationViewModel @Inject constructor(
                 _hasMaxCapacity.postValue(meetUp.hasMaxCapacity)
                 _capacity.postValue(meetUp.capacity)
                 _tags.postValue(meetUp.tags)
+                _participantsId.postValue(meetUp.participantsId)
+                _location.postValue(meetUp.location)
             } else {
                 fillWithDefaultValues()
             }
@@ -115,20 +125,19 @@ class MeetUpCreationViewModel @Inject constructor(
     fun sendMeetUp() {
         val meetUp = MeetUp(
             uuid.orEmpty(),
-            // TODO Put real user
-            ProfileUser("le miche 420", "Michel", "Francis", calendar, ImageInstance("icons/demo_pfp.jpeg")),
+            // TODO Get ID
+            "TODO GET YOU ID",
             // TODO Put real icon
-            "whatever",
+            "icons/cat.png",
             name.value!!,
             description.value!!,
             startDate.value!!,
             endDate.value!!,
-            Location(1.0, 2.0),
+            location.value!!,
             tags.value.orEmpty(),
             hasMaxCapacity.value!!,
             capacity.value!!,
-            // TODO Put real users
-            mutableListOf()
+            participantsId.value!!
         )
         if (uuid == null) {
             // create new meetup
@@ -193,10 +202,6 @@ class MeetUpCreationViewModel @Inject constructor(
         }
     }
 
-    val location: MutableLiveData<Location> by lazy {
-        MutableLiveData<Location>()
-    }
-
     fun getLatLng(): LatLng?{
         return if (location.value != null){
             LatLng(location.value!!.latitude, location.value!!.longitude)
@@ -205,6 +210,6 @@ class MeetUpCreationViewModel @Inject constructor(
         }
     }
     fun setLatLng(p0: LatLng){
-        location.value = Location(p0.longitude, p0.latitude)
+        _location.value = Location(p0.longitude, p0.latitude)
     }
 }

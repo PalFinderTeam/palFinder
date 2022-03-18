@@ -7,15 +7,15 @@ import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
-import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.isBefore
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
 
 /**
  * @param uuid: Unique Identifier of the meetup
- * @param creator: Creator of the meetup
- * @param icon: Path to the Icon
+ * @param creatorId: Creator of the meetup
+ * @param iconId: Path to the Icon
  * @param name: Name of the Meetup
  * @param description: Description of the meetup
  * @param startDate: Date & Time of the begin of the meetup
@@ -24,12 +24,12 @@ import com.google.firebase.firestore.GeoPoint
  * @param tags: Tags
  * @param hasMaxCapacity: Indicate if there is a limit to the number of people who can join
  * @param capacity: Limit number of people who can join. Not use if hasMaxCapacity = false
- * @param participants: List of participants
+ * @param participantsId: List of participants
  */
 data class MeetUp(
     val uuid: String,
-    val creator: ProfileUser,
-    val icon: String,
+    val creatorId: String,
+    val iconId: String,
     val name: String,
     val description: String,
     val startDate: Calendar,
@@ -38,7 +38,7 @@ data class MeetUp(
     val tags: Set<Category>,
     val hasMaxCapacity: Boolean,
     val capacity: Int,
-    val participants: MutableList<ProfileUser>, // TODO -  Change to Real User
+    val participantsId: List<String>,
 ) : java.io.Serializable {
 
     /**
@@ -53,7 +53,7 @@ data class MeetUp(
      * @return if the event has reach its participant limit
      */
     fun isFull(): Boolean {
-        return hasMaxCapacity && capacity <= participants.size
+        return hasMaxCapacity && capacity <= participantsId.size
     }
 
     /**
@@ -80,31 +80,37 @@ data class MeetUp(
         return startDate.isBefore(now)
     }
 
-    /**
+/*
+    */
+/**
      *  Add [user] to the Event if [now] is a valid date to join
      *  @param now: current date
-     */
+     *//*
+
     fun join(now: Calendar, user: ProfileUser) {
         if (canJoin(now) && !isParticipating(user)) {
-            participants.add(user)
+            participantsId.add(user)
         }
     }
 
-    /**
+    */
+/**
      *  Remove [user] from the event
      *  if user is not in the event, does nothing
-     */
+     *//*
+
     fun leave(user: ProfileUser) {
         if (isParticipating(user)) {
-            participants.remove(user)
+            participantsId.remove(user)
         }
     }
+*/
 
     /**
      *  @return if the user is taking part in the event
      */
     fun isParticipating(user: ProfileUser): Boolean {
-        return participants.contains(user)
+        return participantsId.contains(user.uuid)
     }
 
     /**
@@ -113,13 +119,13 @@ data class MeetUp(
     fun toFirestoreData(): HashMap<String, Any> {
         return hashMapOf(
             "capacity" to capacity,
-            "creator" to creator.name,
+            "creator" to creatorId,
             "description" to description,
             "startDate" to startDate.time,
             "endDate" to endDate.time,
             "hasMaxCapacity" to hasMaxCapacity,
             "capacity" to capacity.toLong(),
-            "icon" to icon,
+            "icon" to iconId,
             "location" to GeoPoint(location.latitude, location.longitude),
             "geohash" to GeoFireUtils.getGeoHashForLocation(
                 GeoLocation(
@@ -128,31 +134,30 @@ data class MeetUp(
                 )
             ),
             "name" to name,
-            "participants" to participants.map { it.name }.toList(),
+            "participants" to participantsId.toList(),
             "tags" to tags.map { it.toString() },
         )
     }
 
-    /**
-     * Provide a way to convert a Firestore query result, in a MeetUp
-     */
     companion object {
 
+        /**
+         * Provide a way to convert a Firestore query result, in a MeetUp
+         */
         fun DocumentSnapshot.toMeetUp(): MeetUp? {
             try {
                 val uuid = id
-                // TODO Make it fetch other document
-                val creator = ProfileUser("michel", "whatever", "miche", Calendar.getInstance(), ImageInstance("icons/demo_pfp.jpeg"))
+                val iconId = getString("icon")!!
+                val creator = getString("creator")!!
                 val capacity = getLong("capacity")!!
                 val description = getString("description")!!
                 val startDate = getDate("startDate")!!
                 val endDate = getDate("endDate")!!
-                val location = getGeoPoint("location")!!
+                val geoPoint = getGeoPoint("location")!!
                 val name = getString("name")!!
-                // TODO find something
-                // val participants = getField<List<Any>>("participants")!!
                 val tags = get("tags")!! as List<String>
                 val hasMaxCapacity = getBoolean("hasMaxCapacity")!!
+                val participantsId = get("participants")!! as List<String>
 
                 // Convert Date to calendar
                 val startDateCal = Calendar.getInstance()
@@ -163,16 +168,16 @@ data class MeetUp(
                 return MeetUp(
                     id,
                     creator,
-                    "wathevericon",
+                    iconId,
                     name,
                     description,
                     startDateCal,
                     endDateCal,
-                    Location(location.longitude, location.latitude),
+                    geoPoint.toLocation(),
                     tags.map { Category.valueOf(it) }.toSet(),
                     hasMaxCapacity,
                     capacity.toInt(),
-                    mutableListOf()
+                    participantsId
                 )
             } catch (e: Exception) {
                 Log.e("Meetup", "Error deserializing meetup", e)
