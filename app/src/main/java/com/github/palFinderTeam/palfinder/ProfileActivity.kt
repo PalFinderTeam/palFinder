@@ -2,10 +2,12 @@ package com.github.palFinderTeam.palfinder
 
 import android.os.Bundle
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.utils.Response
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -31,7 +33,11 @@ class ProfileActivity : AppCompatActivity() {
             viewModel.fetchProfile(userId)
         }
         viewModel.profile.observe(this) {
-            injectUserInfo(it)
+            when(it) {
+                is Response.Success -> injectUserInfo(it.data)
+                is Response.Loading ->  Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
+                is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
+            }
         }
     }
 
