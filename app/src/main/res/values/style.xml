@@ -5,4 +5,5 @@
         <item name="cornerSize">20dp</item>
         <item name="color">@color/theme_bright</item>
     </style>
+
 </resources>

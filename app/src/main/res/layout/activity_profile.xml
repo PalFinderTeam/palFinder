@@ -3,43 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/theme_dark">
+    android:layout_height="wrap_content"
+    android:background="@color/theme_bright"
+    android:padding="30dp">
 
-    <View
-        android:id="@+id/userProfileTop"
-        android:layout_width="0dp"
-        android:layout_height="300dp"
-        android:background="#EFEBE2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:id="@+id/userProfileUpTabCircle"
-        android:layout_width="0dp"
-        android:layout_height="36dp"
-        android:layout_marginTop="-18dp"
-        android:background="@drawable/circle_shape"
-        android:backgroundTint="@color/theme_bright"
-        android:scaleX="1.4"
-        app:layout_constraintEnd_toEndOf="@+id/userProfileTop"
-        app:layout_constraintStart_toStartOf="@+id/userProfileTop"
-        app:layout_constraintTop_toBottomOf="@+id/userProfileTop" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/userProfileImage"
         android:layout_width="160dp"
         android:layout_height="160dp"
 
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="35dp"
         android:adjustViewBounds="true"
         android:background="@color/theme_primary"
         android:scaleType="fitCenter"
         android:src="@drawable/demo_pfp"
-        app:layout_constraintStart_toStartOf="@id/userProfileTop"
-        app:layout_constraintTop_toTopOf="@id/userProfileTop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/profileRoundEdge" />
 
     <TextView
@@ -86,6 +65,32 @@
         app:layout_constraintBottom_toBottomOf="@+id/userProfileUsername"
         app:layout_constraintStart_toEndOf="@+id/userProfileUsername"
         app:layout_constraintTop_toTopOf="@+id/userProfileUsername" />
+
+    <TextView
+        android:id="@+id/userProfileDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/fredoka_bold"
+        android:maxLines="2"
+        android:text="@string/placeholder_desc"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/userProfileAboutTitle"
+        app:layout_constraintTop_toBottomOf="@+id/userProfileAboutTitle" />
+
+    <TextView
+        android:id="@+id/userProfileAboutTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:alpha="0.5"
+        android:fontFamily="@font/fredoka_bold"
+        android:text="@string/desc_name"
+        app:layout_constraintStart_toStartOf="@+id/userProfileUsername"
+        app:layout_constraintTop_toBottomOf="@+id/userProfileUsername" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
