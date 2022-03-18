@@ -23,7 +23,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.util.*
 import dagger.hilt.android.AndroidEntryPoint
 
 const val LOCATION_SELECT = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECT"
@@ -62,11 +61,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         mapFragment.getMapAsync(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        loadSelectionButton()
     }
 
     private fun loadSelectionButton(){
         if (intent.hasExtra(LOCATION_SELECT)) {
             val pos = intent.getParcelableExtra<LatLng>(LOCATION_SELECT)
+            mapSelection.active.value = true
             button.apply { this.isEnabled = false }
             if (pos != null){
                 // TODO add marker when ready
@@ -74,6 +76,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
             }
         } else {
             button.apply { this.hide() }
+            mapSelection.active.value = false
         }
     }
 
@@ -122,9 +125,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         return false
     }
 
-    private fun onMapClick(p0: LatLng) {
+    fun onMapClick(p0: LatLng) {
         // Add a marker if the map is used to select a location
-        if (intent.hasExtra(LOCATION_SELECT)) {
+        if (mapSelection.active.value!!) {
             setSelectionMarker(p0)
         }
     }
@@ -158,6 +161,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         map.setOnMarkerClickListener(this)
 
         setUserLocation()
+
+        map.setOnMapClickListener { onMapClick(it) }
     }
 
 }

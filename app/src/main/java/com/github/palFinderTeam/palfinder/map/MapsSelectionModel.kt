@@ -8,4 +8,8 @@ class MapsSelectionModel : ViewModel() {
     val targetMarker: MutableLiveData<Marker?> by lazy {
         MutableLiveData<Marker?>()
     }
+
+    val active: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>()
+    }
 }
