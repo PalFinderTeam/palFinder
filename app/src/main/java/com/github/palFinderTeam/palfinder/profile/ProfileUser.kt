@@ -14,7 +14,8 @@ data class ProfileUser(
     val name: String,
     val surname: String,
     val joinDate: Calendar,
-    val pfp: ImageInstance
+    val pfp: ImageInstance,
+    val description: String = ""
 ) : Serializable {
 
     companion object{

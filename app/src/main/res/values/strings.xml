@@ -60,6 +60,9 @@
     <string name="placeholder_name">someone</string>
     <string name="placeholder_username">\@username</string>
     <string name="placeholder_date">yyyy/mm/dd</string>
+    <string name="desc_name">— About me</string>
+    <string name="placeholder_desc">Hello, I am a placeholder description. I am long enough so that I break onto another line, hopefully, but if not then I will add some extra text.</string>
+    <string name="no_desc">No bio provided...</string>
 
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>

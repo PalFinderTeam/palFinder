@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     private companion object {
         private const val TAG = "MainActivity"
+        private const val PROFILE_DESC = "Hello this is the Cat, but you can call me Kitty. I like to lay around and do nothing. Also you can see that my profile picture looks cure but in real life I am a real biach. Enjoy!"
     }
 
     private lateinit var auth: FirebaseAuth
@@ -90,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         joinDate.set(2022, 2, 1, 14, 1, 0)
         val pfp = ImageInstance("icons/cat.png")
         val intent = Intent(this, ProfileActivity::class.java).apply {
-            putExtra(DUMMY_USER, ProfileUser("theCat", "Epic", "Cat", joinDate, pfp) as Serializable)
+            putExtra(DUMMY_USER, ProfileUser("theCat", "Epic", "Cat", joinDate, pfp, PROFILE_DESC) as Serializable)
         }
         startActivity(intent)
     }
