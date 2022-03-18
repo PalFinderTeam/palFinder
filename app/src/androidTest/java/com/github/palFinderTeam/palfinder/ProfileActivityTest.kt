@@ -1,7 +1,10 @@
 package com.github.palFinderTeam.palfinder
 
+import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.icu.util.Calendar
+import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -59,7 +62,7 @@ ProfileActivityTest {
         try{
             onView(ViewMatchers.withId(R.id.userProfileAboutTitle)).check(
                 ViewAssertions.matches(
-                    ViewMatchers.withText(ProfileActivity.NO_BIO_WARN)
+                    ViewMatchers.withText(getResourceString(R.string.no_desc))
                 )
             )
         }finally{
@@ -104,6 +107,12 @@ ProfileActivityTest {
         }finally{
             scenario.close()
         }
+    }
+
+
+    private fun getResourceString(id: Int): String? {
+        val targetContext: Context = InstrumentationRegistry.getTargetContext()
+        return targetContext.getResources().getString(id)
     }
 
 }
