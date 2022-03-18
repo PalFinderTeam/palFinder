@@ -1,11 +1,16 @@
 package com.github.palFinderTeam.palfinder
 
+import android.content.Context
+import android.content.res.Resources
 import android.os.Bundle
+import android.provider.Settings
+import android.provider.Settings.Global.getString
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import kotlinx.coroutines.launch
+import java.util.logging.Logger.global
 
 /**
  * When creating the profile page, the username (which is unique) will
@@ -16,7 +21,6 @@ class ProfileActivity : AppCompatActivity() {
 
     companion object{
         const val EMPTY_FIELD = ""
-        const val NO_BIO_WARN = "No bio provided..."
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +43,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun injectBio(bio: String) {
         if (bio == EMPTY_FIELD) {
-            findViewById<TextView>(R.id.userProfileAboutTitle).text = NO_BIO_WARN
+            findViewById<TextView>(R.id.userProfileAboutTitle).text = this.resources.getString(R.string.no_desc)
             findViewById<TextView>(R.id.userProfileDescription).text = EMPTY_FIELD
         } else {
             findViewById<TextView>(R.id.userProfileDescription).text = bio
