@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.di
 
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,11 +11,12 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class ProfileModule {
+abstract class ProfileModule {
 
     @Singleton
-    @Provides
-    fun provideFirebaseProfileService(): ProfileService {
-        return FirebaseProfileService
-    }
+    @Binds
+    abstract fun bindProfileService(
+        firebaseProfileService: FirebaseProfileService
+    ): ProfileService
+
 }
