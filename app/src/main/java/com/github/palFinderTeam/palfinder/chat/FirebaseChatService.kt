@@ -6,13 +6,13 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import javax.inject.Inject
 
-object FirebaseChatService : ChatService {
-    private const val CONVERSATION_COLL = "conversations"
-    private const val MSG_COLL = "messages"
+class FirebaseChatService @Inject constructor(
+    private val db: FirebaseFirestore
+) : ChatService {
 
     override fun getAllMessageFromChat(chatId: String): Flow<List<ChatMessage>> {
-        val db = FirebaseFirestore.getInstance()
         return callbackFlow {
             val listenerRegistration = db.collection(CONVERSATION_COLL)
                 .document(chatId)
@@ -40,8 +40,6 @@ object FirebaseChatService : ChatService {
     }
 
     override fun postMessage(chatId: String, message: ChatMessage) {
-        val db = FirebaseFirestore.getInstance()
-
         try {
             db.collection(CONVERSATION_COLL)
                 .document(chatId)
@@ -50,5 +48,10 @@ object FirebaseChatService : ChatService {
         } catch (e: Exception) {
 
         }
+    }
+
+    companion object {
+        private const val CONVERSATION_COLL = "conversations"
+        private const val MSG_COLL = "messages"
     }
 }
