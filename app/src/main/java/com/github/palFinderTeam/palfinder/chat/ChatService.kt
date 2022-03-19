@@ -16,6 +16,19 @@ interface ChatService {
      *
      * @param chatId id of the group, the same as the meetup id.
      * @param message message to post.
+     *
+     * @return The msgId or null if something wrong happened.
      */
-    fun postMessage(chatId: String, message: ChatMessage)
+    suspend fun postMessage(chatId: String, message: ChatMessage): String?
+
+    /**
+     * Edit a message inside a group.
+     *
+     * @param groupId Id of the group.
+     * @param msgId Id of the message to edit.
+     * @param newContent New content of the message.
+     *
+     * @return The msgId or null if something wrong happened.
+     */
+    suspend fun editMessage(groupId: String, msgId: String, newContent: String): String?
 }

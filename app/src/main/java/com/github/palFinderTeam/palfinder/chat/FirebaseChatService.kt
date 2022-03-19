@@ -6,6 +6,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FirebaseChatService @Inject constructor(
@@ -39,19 +40,37 @@ class FirebaseChatService @Inject constructor(
         }
     }
 
-    override fun postMessage(chatId: String, message: ChatMessage) {
-        try {
+    override suspend fun postMessage(chatId: String, message: ChatMessage): String? {
+        return try {
             db.collection(CONVERSATION_COLL)
                 .document(chatId)
                 .collection(MSG_COLL)
-                .add(message.toFirebaseDocument())
+                .add(message.toFirebaseDocument()).await().id
         } catch (e: Exception) {
+            null
+        }
+    }
 
+    override suspend fun editMessage(groupId: String, msgId: String, newContent: String): String? {
+        return try {
+            db.collection(CONVERSATION_COLL)
+                .document(groupId)
+                .collection(MSG_COLL)
+                .document(msgId)
+                .update(
+                    mapOf(
+                        "content" to newContent,
+                        "isEdited" to true
+                    )
+                ).await()
+            msgId
+        } catch (e: Exception) {
+            null
         }
     }
 
     companion object {
-        private const val CONVERSATION_COLL = "conversations"
-        private const val MSG_COLL = "messages"
+        const val CONVERSATION_COLL = "conversations"
+        const val MSG_COLL = "messages"
     }
 }

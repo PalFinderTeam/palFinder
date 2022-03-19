@@ -11,7 +11,7 @@ import android.icu.util.Calendar
  * @property sentAt Id of the sender
  * @property content The message itself.
  */
-data class ChatMessage(val sentAt: Calendar, val sentBy: String, val content: String) {
+data class ChatMessage(val sentAt: Calendar, val sentBy: String, val content: String, val isEdited: Boolean = false) {
     companion object {
         /**
          *  Tries to convert a firestore result in chat message.
@@ -21,9 +21,10 @@ data class ChatMessage(val sentAt: Calendar, val sentBy: String, val content: St
                 val sentAt = getDate("sentAt")!!
                 val sentBy = getString("sentBy")!!
                 val content = getString("content")!!
+                val isEdited = getBoolean("isEdited")!!
                 val sentAtCal = Calendar.getInstance().apply { time = sentAt }
 
-                ChatMessage(sentAtCal, sentBy, content)
+                ChatMessage(sentAtCal, sentBy, content, isEdited)
             } catch (e: Exception) {
                 Log.e("ChatMessage", "Error deserializing chat message", e)
                 null
@@ -38,7 +39,8 @@ data class ChatMessage(val sentAt: Calendar, val sentBy: String, val content: St
         return hashMapOf(
             "sentAt" to sentAt.time,
             "sentBy" to sentBy,
-            "content" to content
+            "content" to content,
+            "isEdited" to isEdited
         )
     }
 }

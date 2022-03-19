@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder.chat
 
+import com.github.palFinderTeam.palfinder.di.ChatModule
 import com.github.palFinderTeam.palfinder.di.MeetUpModule
 import dagger.Module
 import dagger.Provides
@@ -12,7 +13,7 @@ import javax.inject.Singleton
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [MeetUpModule::class]
+    replaces = [ChatModule::class]
 )
 /**
  * Provide a mock chat service for every UI tests.
@@ -28,7 +29,7 @@ object UIMockChatServiceModule {
     }
 
     class UIMockChatService : ChatService {
-        private val db = HashMap<String, List<ChatMessage>>()
+        private val db = HashMap<String, MutableList<ChatMessage>>()
 
         override fun getAllMessageFromChat(chatId: String): Flow<List<ChatMessage>> {
             return flow {
@@ -36,8 +37,20 @@ object UIMockChatServiceModule {
             }
         }
 
-        override fun postMessage(chatId: String, message: ChatMessage) {
-            db[chatId] = db[chatId]?.plus(message) ?: listOf(message)
+        override suspend fun editMessage(groupId: String, msgId: String, newContent: String): String? {
+            val msg = db[groupId]?.get(msgId.toInt())
+            return if (msg != null) {
+                db[groupId]!![msgId.toInt()] = msg.copy(content = newContent, isEdited = true)
+                msgId
+            } else {
+                null
+            }
+        }
+
+        override suspend fun postMessage(chatId: String, message: ChatMessage): String? {
+            db[chatId] = (db[chatId]?.plus(message) ?: mutableListOf(message)) as MutableList<ChatMessage>
+            return db[chatId]?.indexOf(message).toString()
+
         }
     }
 }

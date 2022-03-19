@@ -25,5 +25,6 @@ class ChatMessageTest {
         assertThat(firebaseDoc["sentAt"], `is`(Date(420)))
         assertThat(firebaseDoc["sentBy"], `is`(chatMsg.sentBy))
         assertThat(firebaseDoc["content"], `is`(chatMsg.content))
+        assertThat(firebaseDoc["isEdited"], `is`(chatMsg.isEdited))
     }
 }
