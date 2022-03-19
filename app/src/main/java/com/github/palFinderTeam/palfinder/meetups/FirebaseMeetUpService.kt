@@ -53,7 +53,7 @@ object FirebaseMeetUpService : MeetUpRepository {
         val db = FirebaseFirestore.getInstance()
 
         return try {
-            db.collection(MEETUP_COLL).document(meetUpId).update(field, value)
+            db.collection(MEETUP_COLL).document(meetUpId).update(field, value).await()
             meetUpId
         } catch (e: Exception) {
             null
