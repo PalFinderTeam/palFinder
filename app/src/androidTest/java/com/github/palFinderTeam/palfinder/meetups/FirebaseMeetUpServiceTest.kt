@@ -88,7 +88,7 @@ class FirebaseMeetUpServiceTest {
     }
 
     @Test
-    fun editingOneFiledEditInDb() = runTest {
+    fun editingOneFieldEditInDb() = runTest {
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
         id!!.let {
@@ -146,9 +146,5 @@ class FirebaseMeetUpServiceTest {
     @Test
     fun getMeetupAroundLocationWorksAsExpected() {
         // TODO later I don't want to do maths now
-    }
-
-    @After
-    fun cleanUp() {
     }
 }

@@ -81,6 +81,6 @@ class FirebaseProfileService @Inject constructor(
     }
 
     companion object {
-        private const val PROFILE_COLL = "users"
+        const val PROFILE_COLL = "users"
     }
 }
