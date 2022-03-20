@@ -1,7 +1,7 @@
 package com.github.palFinderTeam.palfinder.di
 
-import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
-import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.chat.ChatService
+import com.github.palFinderTeam.palfinder.chat.FirebaseChatService
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -11,12 +11,11 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class ProfileModule {
+abstract class ChatModule {
 
     @Singleton
     @Binds
-    abstract fun bindProfileService(
-        firebaseProfileService: FirebaseProfileService
-    ): ProfileService
-
+    abstract fun bindChatService(
+        firebaseChatService: FirebaseChatService
+    ): ChatService
 }

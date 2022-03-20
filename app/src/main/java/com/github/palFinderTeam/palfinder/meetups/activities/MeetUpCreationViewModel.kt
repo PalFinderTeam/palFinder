@@ -4,19 +4,14 @@ import android.icu.util.Calendar
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-
-import com.github.palFinderTeam.palfinder.utils.Location
-import com.google.android.gms.maps.model.LatLng
-
 import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
-
-import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -63,7 +58,7 @@ class MeetUpCreationViewModel @Inject constructor(
         _description.value = ""
         _tags.value = emptySet()
         _participantsId.value = emptyList()
-        _location.value = Location(0.0,0.0)
+        _location.value = Location(0.0, 0.0)
     }
 
     fun setStartDate(date: Calendar) {
@@ -202,14 +197,15 @@ class MeetUpCreationViewModel @Inject constructor(
         }
     }
 
-    fun getLatLng(): LatLng?{
-        return if (location.value != null){
+    fun getLatLng(): LatLng? {
+        return if (location.value != null) {
             LatLng(location.value!!.latitude, location.value!!.longitude)
         } else {
             null
         }
     }
-    fun setLatLng(p0: LatLng){
+
+    fun setLatLng(p0: LatLng) {
         _location.value = Location(p0.longitude, p0.latitude)
     }
 }

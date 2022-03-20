@@ -11,14 +11,13 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-object FirebaseProfileService : ProfileService {
-
-    private const val PROFILE_COLL = "users"
+class FirebaseProfileService @Inject constructor(
+    private val db: FirebaseFirestore
+) : ProfileService {
 
     override suspend fun fetchUserProfile(userId: String): ProfileUser? {
-        val db = FirebaseFirestore.getInstance()
-
         return try {
             db.collection(PROFILE_COLL)
                 .document(userId).get().await().toProfileUser()
@@ -54,8 +53,6 @@ object FirebaseProfileService : ProfileService {
         }
 
     override suspend fun editUserProfile(userId: String, field: String, value: Any): String? {
-        val db = FirebaseFirestore.getInstance()
-
         return try {
             db.collection(PROFILE_COLL).document(userId).update(field, value).await()
             userId
@@ -65,8 +62,6 @@ object FirebaseProfileService : ProfileService {
     }
 
     override suspend fun editUserProfile(userId: String, userProfile: ProfileUser): String? {
-        val db = FirebaseFirestore.getInstance()
-
         return try {
             db.collection(PROFILE_COLL).document(userId).update(userProfile.toFirestoreData()).await()
             userId
@@ -83,5 +78,9 @@ object FirebaseProfileService : ProfileService {
         } catch (e: Exception) {
             null
         }
+    }
+
+    companion object {
+        const val PROFILE_COLL = "users"
     }
 }
