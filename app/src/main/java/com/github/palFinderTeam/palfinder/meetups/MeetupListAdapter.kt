@@ -20,7 +20,7 @@ class MeetupListAdapter(private val dataSet: List<MeetUp>, private val onItemCli
         RecyclerView.ViewHolder(view), View.OnClickListener {
         //TODO - add some remaining fields to display
         val meetupTitle: TextView = view.findViewById(R.id.meetup_title)
-        val meetupDate: TextView = view.findViewById(R.id.date)
+        val meetupDate: TextView = view.findViewById(R.id.msg_text)
         val meetupDescription: TextView = view.findViewById(R.id.meetup_description)
         val meetupNumberParticipants: TextView = view.findViewById(R.id.number_participants)
 

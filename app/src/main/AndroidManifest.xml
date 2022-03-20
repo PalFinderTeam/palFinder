@@ -14,6 +14,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PalFinder">
+        <activity
+            android:name=".chat.ChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity_chat"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -23,19 +29,18 @@
             android:name=".map.MapsActivity"
             android:exported="true"
             android:label="@string/title_activity_maps"
-            android:parentActivityName=".MainActivity"/>
-
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".GreetingActivity"
             android:exported="false" />
         <activity
             android:name=".meetups.activities.MeetUpView"
             android:exported="false"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".meetups.activities.MeetUpCreation"
             android:exported="false"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ui.login.LoginActivity"
             android:exported="true">
@@ -46,16 +51,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".meetups.activities.MeetupListActivity" android:exported="true" android:parentActivityName=".MainActivity"/>
+            android:name=".meetups.activities.MeetupListActivity"
+            android:exported="true"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ProfileActivity"
-            android:parentActivityName=".MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"/>
-
-
+            android:exported="true" />
     </application>
 
 </manifest>

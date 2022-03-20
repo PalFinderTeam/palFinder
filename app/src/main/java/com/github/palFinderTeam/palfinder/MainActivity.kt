@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder
 
 import android.content.Intent
-import android.icu.util.Calendar
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -10,19 +9,16 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-
+import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
-import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import java.io.Serializable
 
 const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
 const val USER_ID = "com.github.palFinderTeam.palFinder.DUMMY_PROFILE_USER"
@@ -97,6 +93,12 @@ class MainActivity : AppCompatActivity() {
 
     fun accessMap(view: View?) {
         val intent = Intent(this, MapsActivity::class.java).apply {  }
+        startActivity(intent)
+    }
+
+    fun openChat(view: View?) {
+        val intent = Intent(this, ChatActivity::class.java).apply {
+        }
         startActivity(intent)
     }
 
