@@ -13,6 +13,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
+import com.github.palFinderTeam.palfinder.navbar.NavigationBar
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -63,6 +64,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         loadSelectionButton()
+
+        NavigationBar.setup(this, R.id.nav_bar, R.id.nav_bar_find)
     }
 
     private fun loadSelectionButton(){
