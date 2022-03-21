@@ -1,11 +1,14 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.PopupMenu
 import android.widget.SearchView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -18,6 +21,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
+import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
@@ -34,6 +38,7 @@ class MeetupListActivity : AppCompatActivity() {
     private val viewModel: MeetUpListViewModel by viewModels()
 
 
+    @SuppressLint("NotifyDataSetChanged")
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +49,16 @@ class MeetupListActivity : AppCompatActivity() {
         val searchField = findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
 
+
         viewModel.listOfMeetUp.observe(this) { meetups ->
-            adapter = MeetupListAdapter(meetups) { onListItemClick(it) }
+            val mutableMeetUp = meetups.toMutableList()
+            adapter = MeetupListAdapter(meetups, mutableMeetUp,
+                SearchedFilter(
+                    meetups, mutableMeetUp, ::filterTag
+                ) {
+                    adapter.notifyDataSetChanged()
+                })
+            { onListItemClick(it) }
             meetupList.adapter = adapter
             SearchedFilter.setupSearchField(searchField, adapter.filter)
         }
@@ -57,11 +70,15 @@ class MeetupListActivity : AppCompatActivity() {
         }
         viewModel.tags.observe(this) {
             tagsViewModel.refreshTags()
-            Log.i("Tag thingy",it.toString())
             filterByTag(it)
         }
 
     }
+
+    private fun filterTag(meetup : MeetUp): Boolean {
+        return meetup.tags.containsAll(viewModel.tags.value!!)
+    }
+
 
     fun filterByTag(tags: Set<Category>?) {
         if (::adapter.isInitialized) {
@@ -87,21 +104,48 @@ class MeetupListActivity : AppCompatActivity() {
         }
     }
 
-    fun sortByCap(view: View?) {
+    fun sortByCap() {
         if (::adapter.isInitialized) {
-            adapter.currentDataSet.clear()
-            viewModel.listOfMeetUp.value?.let { meetups -> adapter.currentDataSet.addAll(meetups.sortedBy { it.capacity }) }
-            adapter.notifyDataSetChanged()
+            val sorted = adapter.currentDataSet.sortedBy { it.capacity }
+            sort(sorted)
         }
     }
 
-    fun sortByName(view: View?) {
+    fun sortByName() {
         if (::adapter.isInitialized) {
-            adapter.currentDataSet.clear()
-            viewModel.listOfMeetUp.value?.let { meetups -> adapter.currentDataSet.addAll(meetups.sortedBy { it.name.lowercase() }) }
-            adapter.notifyDataSetChanged()
+            val sorted = adapter.currentDataSet.sortedBy { it.name.lowercase() }
+            sort(sorted)
         }
     }
+
+    fun sortByDist() {
+        if (::adapter.isInitialized) {
+            val sorted = adapter.currentDataSet.sortedBy { it.location.distanceInKm(Location(0.0, 0.0)) }
+            sort(sorted)
+        }
+    }
+
+    private fun sort(sorted: List<MeetUp>) {
+        adapter.currentDataSet.clear()
+        viewModel.listOfMeetUp.value?.let { meetups -> adapter.currentDataSet.addAll(sorted) }
+        adapter.notifyDataSetChanged()
+    }
+
+    fun showMenu(view: View?) {
+        val popupMenu = PopupMenu(this, view) //View will be an anchor for PopupMenu
+        popupMenu.inflate(R.menu.sort)
+        popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
+            item ->
+            when (item.itemId) {
+                R.id.menu_sort_name -> sortByName()
+                R.id.menu_sort_cap -> sortByCap()
+                else -> {}
+            }
+            false
+        })
+        popupMenu.show()
+    }
+
 
 
     private fun onListItemClick(position: Int) {
@@ -110,3 +154,5 @@ class MeetupListActivity : AppCompatActivity() {
         startActivity(intent)
     }
 }
+
+
