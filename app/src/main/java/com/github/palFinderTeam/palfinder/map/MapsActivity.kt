@@ -41,7 +41,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
 
     companion object {
         private const val USER_LOCATION_PERMISSION_REQUEST_CODE = 1
-        val utils = MapsUtils(meetUpRepository = FirebaseMeetUpService)
+        val utils = MapsUtils()
 
     }
 
@@ -62,7 +62,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        //utils.fetchMeetups()
+        utils.fetchMeetups()
         loadSelectionButton()
     }
 

@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.map
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
+import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.utils.Location
@@ -21,7 +22,7 @@ import kotlin.math.exp
 import kotlin.math.pow
 
 class MapsUtils constructor(
-    private val meetUpRepository: MeetUpRepository
+    private val meetUpRepository: MeetUpRepository = FirebaseMeetUpService
 ){
 
     private lateinit var map:GoogleMap
@@ -66,7 +67,7 @@ class MapsUtils constructor(
                 meetUp -> meetUps[meetUp.uuid] = meetUp
             }
 
-
+        refresh()
         }
     }
 
