@@ -9,15 +9,21 @@ import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.USER_ID
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
+import kotlinx.coroutines.launch
 
-class ChatMessageListAdapter(private val viewModel: ChatViewModel, private val dataSet: List<ChatMessage>, private val onItemClicked: (position: Int) -> Unit) :
+class ChatMessageListAdapter(
+    private val viewModel: ChatViewModel,
+    private val dataSet: List<ChatMessage>,
+    private val onItemClicked: (position: Int) -> Unit) :
     RecyclerView.Adapter<ChatMessageListAdapter.ViewHolder>(), Filterable {
+
     private val currentDataSet = dataSet.toMutableList()
 
     class ViewHolder(view: View, private val onItemClicked: (position: Int) -> Unit) :
@@ -52,16 +58,19 @@ class ChatMessageListAdapter(private val viewModel: ChatViewModel, private val d
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val prettyDate = PrettyDate()
-        holder.messageContent.text = currentDataSet[position].content
-        holder.messageDate.text = prettyDate.timeDiff(currentDataSet[position].sentAt)
-        holder.messageSenderName.text = currentDataSet[position].sentBy
+        val msg = currentDataSet[position]
+        holder.messageContent.text = msg.content
+        holder.messageDate.text = prettyDate.timeDiff(msg.sentAt)
+
         holder.messageSenderPic.setOnClickListener{
             val intent = Intent(it.context, ProfileActivity::class.java).apply {
-                putExtra(USER_ID, "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2")
+                putExtra(USER_ID, msg.sentBy)
             }
             startActivity(it.context, intent, null)
         }
-        //holder.messageContent.text = currentDataSet[position].content
+        viewModel.viewModelScope.launch {
+            viewModel.loadProfileData(msg.sentBy, holder.messageSenderPic, holder.messageSenderName)
+        }
     }
 
     override fun getItemCount(): Int = currentDataSet.size

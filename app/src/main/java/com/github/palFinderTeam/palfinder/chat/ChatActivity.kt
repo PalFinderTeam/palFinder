@@ -1,6 +1,5 @@
 package com.github.palFinderTeam.palfinder.chat
 
-import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -9,7 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
+import dagger.hilt.android.AndroidEntryPoint
 
+const val CHAT = "com.github.palFinderTeam.palFinder.meetup_view.CHAT"
+
+@AndroidEntryPoint
 class ChatActivity : AppCompatActivity() {
     private lateinit var chatList: RecyclerView
     lateinit var adapter: ChatMessageListAdapter
@@ -20,21 +23,18 @@ class ChatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
-
+        if (intent.hasExtra(CHAT)) {
+            val meetupId = intent.getStringExtra(CHAT)
+            viewModel.fetchMessages(meetupId!!)
+        }
         chatList = findViewById(R.id.chat_list)
         chatList.layoutManager = LinearLayoutManager(this)
 
         viewModel.listOfMessage.observe(this) { messages ->
-            adapter = ChatMessageListAdapter(messages) { onListItemClick(it) }
+            adapter = ChatMessageListAdapter(viewModel, messages) { onListItemClick(it) }
             chatList.adapter = adapter
-            chatList.scrollToPosition(messages.size-1)
+            chatList.scrollToPosition(messages.size - 1)
         }
-
-        viewModel.listOfMessage.value = mutableListOf(
-            ChatMessage(Calendar.getInstance(), "bob", "h\ne\nl\nl\no\n \nw\no\nr\nl\nd\n!", false),
-            ChatMessage(Calendar.getInstance(), "zac", "No", false),
-            ChatMessage(Calendar.getInstance(), "chrichri", "++", false)
-        )
 
         chatBox = findViewById(R.id.et_ChatMessageEdit)
     }

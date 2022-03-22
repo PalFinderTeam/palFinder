@@ -23,6 +23,14 @@
             android:layout_width="match_parent"
             android:layout_height="89dp" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:onClick="onChat"
+            app:srcCompat="@android:drawable/stat_notify_chat" />
+
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
