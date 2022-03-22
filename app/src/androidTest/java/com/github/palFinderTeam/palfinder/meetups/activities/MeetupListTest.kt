@@ -51,8 +51,8 @@ class MeetUpListTest {
     private lateinit var date3: Calendar
     private lateinit var date4: Calendar
     private lateinit var meetUpList: List<MeetUp>
-    private lateinit var user1: ProfileUser
-    private lateinit var user2: ProfileUser
+    private lateinit var user1: String
+    private lateinit var user2: String
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -75,13 +75,16 @@ class MeetUpListTest {
         date4 = Calendar.getInstance()
         date4.set(2022, 0, 1)
 
-        user1 = ProfileUser("User1", "Us", "er1", date1, ImageInstance("icons/demo_pfp.jpeg"))
-        user2 = ProfileUser("User2", "Us", "er2", date2, ImageInstance("icons/demo_pfp.jpeg"))
+        //user1 = ProfileUser("User1", "Us", "er1", date1, ImageInstance("icons/demo_pfp.jpeg"))
+        //user2 = ProfileUser("User2", "Us", "er2", date2, ImageInstance("icons/demo_pfp.jpeg"))
+
+        user1 = "user1Id"
+        user2 = "user2Id"
 
 
         meetUpList = listOf(
             MeetUp(
-                icon = "",
+                iconId = "",
                 name = "cuire des carottes",
                 description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre",
                 startDate = date1,
@@ -89,15 +92,15 @@ class MeetUpListTest {
                 location = Location(0.0, 0.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 45,
-                creator = user1,
+                creatorId = user1,
                 hasMaxCapacity = true,
-                participants = listOf(
+                participantsId = listOf(
                     user2
-                ).toMutableList(),
+                ),
                 uuid = "ce"
             ),
             MeetUp(
-                icon = "",
+                iconId = "",
                 name = "cuire des patates",
                 description = "nous aimerions bien nous atteler à la cuisson de patates au beurre",
                 startDate = date2,
@@ -105,15 +108,15 @@ class MeetUpListTest {
                 location = Location(0.0, 0.0),
                 tags = setOf(Category.WORKING_OUT, Category.DUMMY_TAG1),
                 capacity = 48,
-                creator = user1,
+                creatorId = user1,
                 hasMaxCapacity = true,
-                participants = listOf(
+                participantsId = listOf(
                     user2
-                ).toMutableList(),
+                ),
                 uuid = "ce"
             ),
             MeetUp(
-                icon = "",
+                iconId = "",
                 name = "Street workout",
                 description = "workout pepouse au pont chauderon",
                 startDate = date3,
@@ -121,15 +124,15 @@ class MeetUpListTest {
                 location = Location(0.0, 0.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 9,
-                creator = user2,
+                creatorId = user2,
                 hasMaxCapacity = true,
-                participants = listOf(
+                participantsId = listOf(
                     user1
-                ).toMutableList(),
+                ),
                 uuid = "ce"
             ),
             MeetUp(
-                icon = "",
+                iconId = "",
                 name = "Van Gogh Beaulieux",
                 description = "Expo sans tableau c'est bo",
                 startDate = date4,
@@ -137,15 +140,15 @@ class MeetUpListTest {
                 location = Location(0.0, 0.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 15,
-                creator = user1,
+                creatorId = user1,
                 hasMaxCapacity = true,
-                participants = listOf(
+                participantsId = listOf(
                     user1
-                ).toMutableList(),
+                ),
                 uuid = "ce"
             ),
             MeetUp(
-                icon = "",
+                iconId = "",
                 name = "Palexpo",
                 description = "popopo",
                 startDate = date4,
@@ -153,11 +156,11 @@ class MeetUpListTest {
                 location = Location(0.0, 0.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 13,
-                creator = user1,
+                creatorId = user1,
                 hasMaxCapacity = true,
-                participants = listOf(
+                participantsId = listOf(
                     user2
-                ).toMutableList(),
+                ),
                 uuid = "ce2"
             ),
         )

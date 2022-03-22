@@ -1,75 +1,147 @@
 package com.github.palFinderTeam.palfinder
 
+import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
+import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import java.io.Serializable
+import org.junit.*
+import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
+@HiltAndroidTest
+class ProfileActivityTest {
 
-@RunWith(AndroidJUnit4::class)
-class
-ProfileActivityTest {
-    lateinit var p : ProfileUser
-    lateinit var pImgHttps : ProfileUser
+    private lateinit var userLouca: ProfileUser
+    private lateinit var userCat: ProfileUser
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var profileService: ProfileService
 
     @Before
-    fun getProfile(){
-        p = ProfileUser("gerussi", "Louca", "Gerussi", Calendar.getInstance(), ImageInstance("icons/cat.png"))
-        pImgHttps = ProfileUser("gerussi", "Louca", "Gerussi", Calendar.getInstance(), ImageInstance("https://fail"))
+    fun getProfile() {
+        hiltRule.inject()
+
+        userLouca = ProfileUser(
+            "1234",
+            "gerussi",
+            "Louca",
+            "Gerussi",
+            Calendar.getInstance(),
+            ImageInstance("icons/cat.png")
+        )
+        userCat = ProfileUser(
+            "12345",
+            "gerussi",
+            "Louca",
+            "Gerussi",
+            Calendar.getInstance(),
+            ImageInstance("https://fail"),
+            "Hello world I am cat"
+        )
+    }
+
+    @After
+    fun cleanUp() {
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).clearDB()
     }
 
     @Test
-    fun fullNameIsCorrectlyDisplayed(){
+    fun fullNameIsCorrectlyDisplayed() = runTest {
+        val id = profileService.createProfile(userLouca)
         // Create intent with data to inject
-        val intent = Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
-            .apply{
-                putExtra(DUMMY_USER, p as Serializable)
-            }
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply {
+                    putExtra(USER_ID, id)
+                }
         // Launch activity
-        val scenario = ActivityScenario.launch<GreetingActivity>(intent)
-        try{
+        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
+        scenario.use {
             onView(ViewMatchers.withId(R.id.userProfileName)).check(
                 ViewAssertions.matches(
-                    ViewMatchers.withText(p.fullName())
+                    ViewMatchers.withText(userLouca.fullName())
                 )
             )
-        }finally{
-            scenario.close()
         }
     }
 
     @Test
-    fun httpLoadImageAndClearCache() = runTest{
-        val intent = Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
-            .apply{
-                putExtra(DUMMY_USER, pImgHttps as Serializable)
-            }
+    fun userHasNoBioDisplaysTitleDifferently() = runTest {
+        val id = profileService.createProfile(userLouca)
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, id) }
         // Launch activity
-        val scenario = ActivityScenario.launch<GreetingActivity>(intent)
-        try{
+        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
+        scenario.use {
+            onView(ViewMatchers.withId(R.id.userProfileAboutTitle)).check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText(getResourceString(R.string.no_desc))
+                )
+            )
+        }
+    }
+
+    @Test
+    fun userWithBioDisplaysShortBioEntirely() = runTest {
+        val id = profileService.createProfile(userCat)
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, id) }
+
+        // Launch activity
+        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
+        scenario.use {
+            onView(ViewMatchers.withId(R.id.userProfileDescription)).check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText(userCat.description)
+                )
+            )
+        }
+    }
+
+    @Test
+    fun httpLoadImageAndClearCache() = runTest {
+        val id = profileService.createProfile(userLouca)
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, id) }
+
+        // Launch activity
+        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
+        scenario.use {
             onView(ViewMatchers.withId(R.id.userProfileName)).check(
                 ViewAssertions.matches(
-                    ViewMatchers.withText(p.fullName())
+                    ViewMatchers.withText(userLouca.fullName())
                 )
             )
             // Check status of image after cache clear
-            pImgHttps.pfp.clearImageCache()
-            Assert.assertEquals(ImageInstance.NOT_LOADED, pImgHttps.pfp.imgStatus)
-        }finally{
-            scenario.close()
+            userCat.pfp.clearImageCache()
+            Assert.assertEquals(ImageInstance.NOT_LOADED, userCat.pfp.imgStatus)
         }
     }
 
+
+    private fun getResourceString(id: Int): String? {
+        val targetContext: Context = InstrumentationRegistry.getTargetContext()
+        return targetContext.getResources().getString(id)
+    }
+
 }
+
