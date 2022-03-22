@@ -17,6 +17,9 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
 import com.github.palFinderTeam.palfinder.utils.image.ImageFetcher
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
@@ -25,6 +28,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.Serializable
 
+@ExperimentalCoroutinesApi
+@HiltAndroidTest
+class ProfileActivityTest {
 
 @RunWith(AndroidJUnit4::class)
 class
@@ -60,12 +66,14 @@ ProfileActivityTest {
     }
 
     @Test
-    fun fullNameIsCorrectlyDisplayed(){
+    fun fullNameIsCorrectlyDisplayed() = runTest {
+        val id = profileService.createProfile(userLouca)
         // Create intent with data to inject
-        val intent = Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
-            .apply{
-                putExtra(DUMMY_USER, p as Serializable)
-            }
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply {
+                    putExtra(USER_ID, id)
+                }
         // Launch activity
         val scenario = ActivityScenario.launch<GreetingActivity>(intent)
         scenario.use {
@@ -78,9 +86,11 @@ ProfileActivityTest {
     }
 
     @Test
-    fun userHasNoBioDisplaysTitleDifferently(){
-        val intent = Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
-            .apply{ putExtra(DUMMY_USER, p as Serializable) }
+    fun userHasNoBioDisplaysTitleDifferently() = runTest {
+        val id = profileService.createProfile(userLouca)
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, id) }
         // Launch activity
         val scenario = ActivityScenario.launch<GreetingActivity>(intent)
         scenario.use {
@@ -108,11 +118,12 @@ ProfileActivityTest {
     }
 
     @Test
-    fun httpLoadImageAndClearCache() = runTest{
-        val intent = Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
-            .apply{
-                putExtra(DUMMY_USER, pImgHttps as Serializable)
-            }
+    fun httpLoadImageAndClearCache() = runTest {
+        val id = profileService.createProfile(userLouca)
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, id) }
+
         // Launch activity
         val scenario = ActivityScenario.launch<GreetingActivity>(intent)
         scenario.use {
@@ -133,3 +144,4 @@ ProfileActivityTest {
     }
 
 }
+

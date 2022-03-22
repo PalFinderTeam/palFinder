@@ -58,7 +58,7 @@ class MapsUtilsTest {
 
         meetup1 = MeetUp(
             "1",
-            ProfileUser("", "tempUser1", "tempUser1", date1, ImageInstance("icons/pfp_demo.jpg")),
+            "user1",
             "",
             "meetUp1Name",
             "meetUp1Description",
@@ -68,12 +68,12 @@ class MapsUtilsTest {
             emptySet(),
             false,
             2,
-            mutableListOf(ProfileUser("", "tempUser2", "tempUser2", date2, ImageInstance("icons/pfp_demo.jpg")))
+            listOf("user2")
         )
 
         meetup2 = MeetUp(
             "2",
-            ProfileUser("", "tempUser2", "tempUser2", date2, ImageInstance("icons/pfp_demo.jpg")),
+            "user2",
             "",
             "meetUp2Name",
             "meetUp2Description",
@@ -83,12 +83,12 @@ class MapsUtilsTest {
             emptySet(),
             false,
             2,
-            mutableListOf(ProfileUser("", "tempUser2", "tempUser2", date2, ImageInstance("icons/pfp_demo.jpg")))
+            listOf("user2")
         )
 
         meetup3 = MeetUp(
             "3",
-            ProfileUser("", "tempUser3", "user3", date2, ImageInstance("icons/pfp_demo.jpg")),
+            "user3",
             "",
             "meetUp3Name",
             "meetUp3Description",
@@ -98,12 +98,12 @@ class MapsUtilsTest {
             emptySet(),
             false,
             4,
-            mutableListOf(ProfileUser("", "tempUser2", "tempUser2", date2, ImageInstance("icons/pfp_demo.jpg")))
+            listOf("user2")
         )
 
         meetup4 = MeetUp(
             "4",
-            ProfileUser("", "tempUser4", "user4", date2, ImageInstance("icons/pfp_demo.jpg")),
+            "user4",
             "",
             "meetUp4Name",
             "meetUp4Description",
@@ -113,7 +113,7 @@ class MapsUtilsTest {
             emptySet(),
             false,
             1337,
-            mutableListOf(ProfileUser("", "tempUser2", "tempUser2", date2, ImageInstance("icons/pfp_demo.jpg")))
+            listOf("user2")
         )
     }
 

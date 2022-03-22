@@ -26,7 +26,7 @@ import com.google.firebase.ktx.Firebase
 import java.io.Serializable
 
 const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
-const val DUMMY_USER = "com.github.palFinderTeam.palFinder.DUMMY_PROFILE_USER"
+const val USER_ID = "com.github.palFinderTeam.palFinder.DUMMY_PROFILE_USER"
 
 class MainActivity : AppCompatActivity() {
 
@@ -77,22 +77,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun goToProfileLouca(view: View?) {
-        // Create a fake user for demo
-        val joinDate = Calendar.getInstance()
-        joinDate.set(2022, 2, 6, 14, 1, 0)
-        val pfp = ImageInstance("icons/demo_pfp.jpeg")
         val intent = Intent(this, ProfileActivity::class.java).apply {
-            putExtra(DUMMY_USER, ProfileUser("gerussi", "Louca", "Gerussi", joinDate, pfp) as Serializable)
+            putExtra(USER_ID, "VqcgAHtrm7hmPmSqfC5eGayy1jY2")
         }
         startActivity(intent)
     }
 
     fun goToProfileCat(view: View?) {
-        val joinDate = Calendar.getInstance()
-        joinDate.set(2022, 2, 1, 14, 1, 0)
-        val pfp = ImageInstance("icons/cat.png")
         val intent = Intent(this, ProfileActivity::class.java).apply {
-            putExtra(DUMMY_USER, ProfileUser("theCat", "Epic", "Cat", joinDate, pfp, PROFILE_DESC) as Serializable)
+            putExtra(USER_ID, "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2")
         }
         startActivity(intent)
     }
