@@ -11,10 +11,14 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.matcher.RootMatchers
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.platform.app.InstrumentationRegistry
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
@@ -187,10 +191,10 @@ class MeetUpListTest {
 
         val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
         scenario.use{
-            scenario.onActivity { it.sortByCap(null) }
+            scenario.onActivity { it.sortByCap() }
             onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
                 .check(matches(withText(meetUpList.sortedBy { it.capacity }[0].name)))
-            scenario.onActivity { it.sortByName(null) }
+            scenario.onActivity { it.sortByName() }
             onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
                 .check(matches(withText(meetUpList.sortedBy { it.name.lowercase() }[0].name)))
         }
@@ -209,6 +213,29 @@ class MeetUpListTest {
             scenario.onActivity { assertEquals(1, it.adapter.currentDataSet.size) }
             scenario.onActivity { it.filterByTag(setOf()) }
             scenario.onActivity { assertEquals(5, it.adapter.currentDataSet.size) }
+        }
+    }
+
+    @Test
+    fun sortButtonWorks() = runTest {
+        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+
+        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.sort_list)).perform(click())
+            onView(withText(R.string.list_sort_by_capacity))
+                .perform(click());
+            onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
+                .check(matches(withText(meetUpList.sortedBy { it.capacity }[0].name)))
+            onView(withId(R.id.sort_list)).perform(click())
+            onView(withText(R.string.list_sort_by_alphabetical_order)).perform(click())
+            onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
+                .check(matches(withText(meetUpList.sortedBy { it.name.lowercase() }[0].name)))
+            onView(withId(R.id.sort_list)).perform(click())
+            onView(withText(R.string.list_sort_by_location)).perform(click())
+            onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
+                .check(matches(withText(meetUpList.sortedBy { it.location.distanceInKm(Location(0.0, 0.0))}[0].name)))
         }
     }
 

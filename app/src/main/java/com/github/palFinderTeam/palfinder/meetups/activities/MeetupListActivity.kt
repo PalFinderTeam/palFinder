@@ -139,6 +139,7 @@ class MeetupListActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.menu_sort_name -> sortByName()
                 R.id.menu_sort_cap -> sortByCap()
+                R.id.menu_sort_loc -> sortByDist()
                 else -> {}
             }
             false

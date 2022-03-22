@@ -13,11 +13,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/meetup_list_recycler"
-        app:layout_constraintTop_toBottomOf="@id/sort_alph"
+        app:layout_constraintTop_toBottomOf="@id/sort_list"
         tools:layout_editor_absoluteX="205dp" />
 
     <Button
-        android:id="@+id/sort_alph"
+        android:id="@+id/sort_list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
@@ -44,7 +44,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/list_select_tag"
-        app:layout_constraintEnd_toStartOf="@+id/sort_alph"
+        app:layout_constraintEnd_toStartOf="@+id/sort_list"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
