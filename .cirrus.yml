@@ -5,6 +5,7 @@ check_android_task:
     TARGET: google_apis
     ARCH: x86
     CC_TEST_REPORTER_ID: ENCRYPTED[3a99cb0c75cb20d9de9d526573567f55129807df6ee2bbd27b77917b33eeedacfe6f14f40c9108471bf64bd676d153b9]
+    FIREBASE_TOKEN: ENCRYPTED[ad3a8cfccc5bd6aabdda5f1b5cd6679c61d28f7f1004d53aa4f41dd7685b670eea0f65c30bb213039cbe930d285b38d8]
   container:
     image: reactivecircus/android-emulator-$API_LEVEL:latest
     kvm: true
@@ -14,6 +15,8 @@ check_android_task:
     echo no | avdmanager create avd --force --name test --abi "$TARGET/$ARCH" --package "system-images;android-$API_LEVEL;$TARGET;$ARCH"
   start_emulator_background_script:
     $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -no-boot-anim -camera-back none
+  download_firebase_emulator_script: |
+    curl -Lo ./firebase_bin https://firebase.tools/bin/linux/latest
   build_script: |
     chmod +x gradlew
     ./gradlew assembleDebugAndroidTest
@@ -28,8 +31,9 @@ check_android_task:
     curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     chmod +x ./cc-test-reporter
     ./cc-test-reporter before-build
-  check_script:
-    ./gradlew check connectedCheck
+  check_script: |
+    chmod +x firebase_bin
+    ./firebase_bin emulators:exec --project palfinder-sdp './gradlew check connectedCheck'
   report_codeclimate_script: |
     export JACOCO_SOURCE_PATH=app/src/main/java/
     ./cc-test-reporter format-coverage ./app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml --input-type jacoco

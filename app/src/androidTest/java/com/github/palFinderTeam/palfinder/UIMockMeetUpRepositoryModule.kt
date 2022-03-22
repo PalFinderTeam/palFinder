@@ -14,10 +14,8 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Singleton
-import kotlin.system.measureTimeMillis
 
 @Module
 @TestInstallIn(
@@ -61,14 +59,14 @@ object UIMockMeetUpRepositoryModule {
                 db[meetUpId] = when(field) {
                     "name" -> oldVal.copy(name = value as String)
                     "capacity" -> oldVal.copy(capacity = value as Int)
-                    "creator" -> oldVal.copy(creator = value as ProfileUser)
+                    "creator" -> oldVal.copy(creatorId = value as String)
                     "description" -> oldVal.copy(description = value as String)
                     "startDate" -> oldVal.copy(startDate = value as Calendar)
                     "endDate" -> oldVal.copy(endDate = value as Calendar)
                     "hasMaxCapacity" -> oldVal.copy(hasMaxCapacity = value as Boolean)
-                    "icon" -> oldVal.copy(icon = value as String)
+                    "icon" -> oldVal.copy(iconId = value as String)
                     "location" -> oldVal.copy(location = value as Location)
-                    "participants" -> oldVal.copy(participants = value as MutableList<ProfileUser>)
+                    "participants" -> oldVal.copy(participantsId = value as List<String>)
                     "tags" -> oldVal.copy(tags = value as Set<Category>)
                     else -> oldVal
                 }
