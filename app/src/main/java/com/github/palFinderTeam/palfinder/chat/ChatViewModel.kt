@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
@@ -52,6 +53,19 @@ class ChatViewModel @Inject constructor(
         if (!profilesData.containsKey(userId)){
             viewModelScope.launch {
                 profileService.fetchProfileFlow(userId).collect {
+                    when(it) {
+                        is Response.Success -> {
+                            profilesData[userId] = it.data
+                            nameBox.text = it.data.username
+                            it.data.pfp.loadImageInto(pictureBox)
+                        }
+                        is Response.Loading -> {
+                            nameBox.text = nameBox.context.getString(R.string.placeholder_name)
+                        }
+                        is Response.Failure -> {
+                            nameBox.text = nameBox.context.getString(R.string.placeholder_name)
+                        }
+                    }
                     if (it is Response.Success){
                         profilesData[userId] = it.data
                         nameBox.text = it.data.username

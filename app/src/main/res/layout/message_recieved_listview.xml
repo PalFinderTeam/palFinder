@@ -8,28 +8,30 @@
     android:backgroundTintMode="add">
 
     <ImageView
-        android:id="@+id/msg_picture"
+        android:id="@+id/msg_send_picture"
         android:layout_width="32dp"
         android:layout_height="28dp"
-        app:layout_constraintEnd_toStartOf="@+id/constraintLayout"
+        app:layout_constraintEnd_toStartOf="@+id/msg_in_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/demo_pfp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+        android:id="@+id/msg_in_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#FFD3D3"
+        android:background="@drawable/in_coming_message"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/msg_picture"
+        app:layout_constraintStart_toEndOf="@+id/msg_send_picture"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/msg_sender_name"
+            android:id="@+id/msg_in_sender_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="2dp"
+            android:layout_marginEnd="16dp"
             android:fontFamily="@font/fredoka_normal"
             android:text="Name"
             android:textSize="14sp"
@@ -38,20 +40,22 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/msg_text"
+            android:id="@+id/msg_in_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
             android:fontFamily="@font/fredoka_normal"
             android:text="Error"
             android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@+id/msg_date"
+            app:layout_constraintEnd_toStartOf="@+id/msg_in_date"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/msg_sender_name" />
+            app:layout_constraintTop_toBottomOf="@+id/msg_in_sender_name" />
 
         <TextView
-            android:id="@+id/msg_date"
+            android:id="@+id/msg_in_date"
             android:layout_width="0dp"
             android:layout_height="19dp"
+            android:layout_marginEnd="16dp"
             android:fontFamily="@font/fredoka_normal"
             android:text="5min"
             app:layout_constraintBottom_toBottomOf="parent"

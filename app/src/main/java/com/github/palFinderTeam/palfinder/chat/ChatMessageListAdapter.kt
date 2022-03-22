@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder.chat
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +9,9 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat.startActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.ProfileActivity
@@ -16,6 +19,8 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.USER_ID
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 class ChatMessageListAdapter(
@@ -29,10 +34,12 @@ class ChatMessageListAdapter(
     class ViewHolder(view: View, private val onItemClicked: (position: Int) -> Unit) :
         RecyclerView.ViewHolder(view), View.OnClickListener {
 
-        val messageContent: TextView = view.findViewById(R.id.msg_text)
-        val messageDate: TextView = view.findViewById(R.id.msg_date)
-        val messageSenderName: TextView = view.findViewById(R.id.msg_sender_name)
-        val messageSenderPic: ImageView = view.findViewById(R.id.msg_picture)
+        val messageInLayout: ConstraintLayout = view.findViewById(R.id.msg_in_layout)
+
+        val messageInContent: TextView = view.findViewById(R.id.msg_in_text)
+        val messageInDate: TextView = view.findViewById(R.id.msg_in_date)
+        val messageInSenderName: TextView = view.findViewById(R.id.msg_in_sender_name)
+        val messageInSenderPic: ImageView = view.findViewById(R.id.msg_send_picture)
 
         init {
             view.setOnClickListener(this)
@@ -56,20 +63,27 @@ class ChatMessageListAdapter(
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val prettyDate = PrettyDate()
         val msg = currentDataSet[position]
-        holder.messageContent.text = msg.content
-        holder.messageDate.text = prettyDate.timeDiff(msg.sentAt)
+        val context = holder.messageInContent.context
 
-        holder.messageSenderPic.setOnClickListener{
+        if (msg.sentBy == Firebase.auth.currentUser?.uid){
+            holder.messageInLayout.background = context.getDrawable(R.drawable.out_going_message)
+            holder.messageInSenderPic.isVisible = false
+        }
+        holder.messageInContent.text = msg.content
+        holder.messageInDate.text = prettyDate.timeDiff(msg.sentAt)
+
+        holder.messageInSenderPic.setOnClickListener{
             val intent = Intent(it.context, ProfileActivity::class.java).apply {
                 putExtra(USER_ID, msg.sentBy)
             }
-            startActivity(it.context, intent, null)
+            ContextCompat.startActivity(it.context, intent, null)
         }
         viewModel.viewModelScope.launch {
-            viewModel.loadProfileData(msg.sentBy, holder.messageSenderPic, holder.messageSenderName)
+            viewModel.loadProfileData(msg.sentBy, holder.messageInSenderPic, holder.messageInSenderName)
         }
     }
 

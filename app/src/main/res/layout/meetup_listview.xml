@@ -14,23 +14,23 @@
         android:fontFamily="@font/fredoka_bold"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/msg_picture"
+        app:layout_constraintEnd_toStartOf="@+id/msg_send_picture"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.028" />
 
     <ImageView
-        android:id="@+id/msg_picture"
+        android:id="@+id/msg_send_picture"
         android:layout_width="32dp"
         android:layout_height="28dp"
         android:layout_marginTop="3dp"
-        app:layout_constraintEnd_toStartOf="@+id/msg_text"
+        app:layout_constraintEnd_toStartOf="@+id/msg_in_text"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/demo_pfp" />
 
     <TextView
-        android:id="@+id/msg_text"
+        android:id="@+id/msg_in_text"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -38,7 +38,7 @@
         android:fontFamily="@font/fredoka_normal"
         android:text="dans 5 jours"
         android:textSize="14sp"
-        app:layout_constraintStart_toEndOf="@+id/msg_picture"
+        app:layout_constraintStart_toEndOf="@+id/msg_send_picture"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -49,8 +49,8 @@
         android:layout_marginTop="20dp"
         android:fontFamily="@font/fredoka_normal"
         android:text="5 / 10"
-        app:layout_constraintStart_toEndOf="@+id/msg_picture"
-        app:layout_constraintTop_toBottomOf="@+id/msg_text" />
+        app:layout_constraintStart_toEndOf="@+id/msg_send_picture"
+        app:layout_constraintTop_toBottomOf="@+id/msg_in_text" />
 
     <TextView
         android:id="@+id/meetup_description"
@@ -60,12 +60,12 @@
         android:layout_marginTop="15dp"
         android:fontFamily="@font/fredoka_normal"
         android:text="il s'agit d'un wourkout de qualité sensé se dérouler sans ambages..."
-        app:layout_constraintEnd_toEndOf="@+id/msg_picture"
+        app:layout_constraintEnd_toEndOf="@+id/msg_send_picture"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/meetup_title" />
 
     <TextView
-        android:id="@+id/msg_date"
+        android:id="@+id/msg_in_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
