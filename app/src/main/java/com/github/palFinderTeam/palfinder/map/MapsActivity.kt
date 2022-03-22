@@ -11,11 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
+import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -41,7 +41,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
 
     companion object {
         private const val USER_LOCATION_PERMISSION_REQUEST_CODE = 1
-        val utils = MapsUtils()
+        val utils = MapsUtils(meetUpRepository = FirebaseMeetUpService)
 
     }
 
@@ -62,6 +62,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        //utils.fetchMeetups()
         loadSelectionButton()
     }
 
@@ -102,8 +103,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
             location -> if(location != null){
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                if(utils.getStartingCameraPosition() == null)map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, utils.BASE_ZOOM))
-                else map.moveCamera(CameraUpdateFactory.newLatLngZoom(utils.getStartingCameraPosition()!!, utils.BASE_ZOOM))
+                utils.setPositionZoom(currentLatLng, utils.getZoom())
             }
         }
     }
@@ -156,11 +156,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         utils.setMap(map)
-        utils.refresh()
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
 
         setUserLocation()
+
 
         map.setOnMapClickListener { onMapClick(it) }
     }
