@@ -2,10 +2,13 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto">
-<item
-    android:id="@+id/mybutton"
-    android:title=""
-    app:showAsAction="always"
-    android:icon="@drawable/sort_button"
-    />
+    <item
+        android:id="@+id/menu_sort_cap"
+        android:title="@string/list_sort_by_capacity" />
+    <item
+        android:id="@+id/menu_sort_name"
+        android:title="@string/list_sort_by_alphabetical_order" />
+    <item
+        android:id="@+id/menu_sort_loc"
+        android:title="@string/list_sort_by_location" />
 </menu>
