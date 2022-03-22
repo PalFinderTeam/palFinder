@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.os.Bundle
 import android.provider.Settings
 import android.provider.Settings.Global.getString
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope

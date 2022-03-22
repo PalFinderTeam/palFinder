@@ -1,12 +1,10 @@
 package com.github.palFinderTeam.palfinder.utils.image
 
 import android.graphics.Bitmap
-import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.ViewModel
 import com.github.palFinderTeam.palfinder.R
-import kotlinx.coroutines.*
-import java.io.File
+import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
 import java.io.Serializable
 import java.lang.Exception
 
@@ -45,6 +43,7 @@ data class ImageInstance(
                 view.setImageResource(android.R.color.background_dark)
                 view.alpha = 0.3f
 
+                EspressoIdlingResource.increment()
                 fetchFromDB()
 
                 imgStatus = CACHED
@@ -55,6 +54,7 @@ data class ImageInstance(
                 isCached = false
             } finally {
                 view.alpha = 1.0f
+                EspressoIdlingResource.decrement()
             }
         }
     }
