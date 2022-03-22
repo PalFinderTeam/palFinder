@@ -35,7 +35,7 @@ class MeetupListActivity : AppCompatActivity() {
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     private lateinit var tagsViewModel: TagsViewModel<Category>
 
-    private val viewModel: MeetUpListViewModel by viewModels()
+    val viewModel: MeetUpListViewModel by viewModels()
 
 
     @SuppressLint("NotifyDataSetChanged")
@@ -43,6 +43,7 @@ class MeetupListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
+
 
         meetupList = findViewById(R.id.meetup_list_recycler)
         meetupList.layoutManager = LinearLayoutManager(this)

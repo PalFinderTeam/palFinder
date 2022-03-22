@@ -15,6 +15,9 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.*
+import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -25,6 +28,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -217,6 +221,26 @@ class MeetUpListTest {
     }
 
     @Test
+    fun filterWorksAddTag() = runTest {
+        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+
+        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        scenario.use {
+            scenario.onActivity { it.viewModel.tagRepository.addTag(Category.CINEMA)}
+            scenario.onActivity { assert(it.adapter.currentDataSet.isEmpty()) }
+            scenario.onActivity { it.viewModel.tagRepository.removeTag(Category.CINEMA)}
+            scenario.onActivity { assertEquals(5, it.adapter.currentDataSet.size) }
+            scenario.onActivity { it.viewModel.tagRepository.removeTag(Category.CINEMA)}
+            scenario.onActivity { assertEquals(5, it.adapter.currentDataSet.size) }
+            scenario.onActivity { it.viewModel.tagRepository.addTag(Category.WORKING_OUT)}
+            scenario.onActivity { assertEquals(1, it.adapter.currentDataSet.size) }
+            scenario.onActivity { it.viewModel.tagRepository.addTag(Category.WORKING_OUT)}
+            scenario.onActivity { assertEquals(1, it.adapter.currentDataSet.size) }
+        }
+    }
+
+    @Test
     fun sortButtonWorks() = runTest {
         meetUpList.forEach { meetUpRepository.createMeetUp(it) }
         val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
@@ -237,6 +261,22 @@ class MeetUpListTest {
             onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
                 .check(matches(withText(meetUpList.sortedBy { it.location.distanceInKm(Location(0.0, 0.0))}[0].name)))
         }
+    }
+
+    @Test
+    fun clickItem() = runTest {
+        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+        init()
+        ActivityScenario.launch<MeetupListActivity>(intent)
+        onView(
+            RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
+                0,
+                R.id.meetup_title
+            )
+        ).perform(click())
+        intended(hasComponent(MeetUpView::class.java.name))
+        release()
     }
 
 }
