@@ -49,6 +49,7 @@ class FirebaseMeetUpService @Inject constructor(
 
     override suspend fun editMeetUp(meetUpId: String, field: String, value: Any): String? {
         return try {
+            db.collection(MEETUP_COLL).document(meetUpId)
             db.collection(MEETUP_COLL).document(meetUpId).update(field, value).await()
             meetUpId
         } catch (e: Exception) {
@@ -58,7 +59,7 @@ class FirebaseMeetUpService @Inject constructor(
 
     override suspend fun editMeetUp(meetUpId: String, meetUp: MeetUp): String? {
         return try {
-            db.collection(MEETUP_COLL).document(meetUpId).update(meetUp.toFirestoreData())
+            db.collection(MEETUP_COLL).document(meetUpId).update(meetUp.toFirestoreData()).await()
             meetUpId
         } catch (e: Exception) {
             null

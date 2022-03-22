@@ -147,4 +147,33 @@ class FirebaseMeetUpServiceTest {
     fun getMeetupAroundLocationWorksAsExpected() {
         // TODO later I don't want to do maths now
     }
+
+    @Test
+    fun getNonExistentMeetUpReturnsNull() = runTest {
+        val fetchedMeetup = firebaseMeetUpService.getMeetUpData("DuGrandNimporteQuoi")
+        assertThat(fetchedMeetup, nullValue())
+    }
+
+    @Test
+    fun createMeetUpWhileDbIsNotAccessibleReturnsNull() = runTest {
+        //db.disableNetwork().await()
+        val id = firebaseMeetUpService.createMeetUp(meetUp)
+        assertThat(id, nullValue())
+    }
+
+    @Test
+    fun editNonExistingMeetUpReturnsNull() = runTest {
+        val id = firebaseMeetUpService.editMeetUp("EncoreNimporteQuoi", meetUp)
+        assertThat(id, nullValue())
+    }
+
+    @Test
+    fun editNonExistingFieldReturnsNull() = runTest {
+        val id = firebaseMeetUpService.createMeetUp(meetUp)
+        assertThat(id, notNullValue())
+        id!!.let {
+            val idNull = firebaseMeetUpService.editMeetUp(it, "NotAField", "NotAValue")
+            assertThat(idNull, nullValue())
+        }
+    }
 }
