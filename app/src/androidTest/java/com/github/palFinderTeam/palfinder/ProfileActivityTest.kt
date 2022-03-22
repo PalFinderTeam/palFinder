@@ -2,55 +2,54 @@ package com.github.palFinderTeam.palfinder
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.icu.util.Calendar
 import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
+import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
-import com.github.palFinderTeam.palfinder.utils.image.ImageFetcher
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import java.io.Serializable
+import org.junit.*
+import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 @HiltAndroidTest
 class ProfileActivityTest {
 
-@RunWith(AndroidJUnit4::class)
-class
-ProfileActivityTest {
-    lateinit var p : ProfileUser
-    lateinit var pDesc : ProfileUser
-    lateinit var pImgHttps : ProfileUser
-    lateinit var imgFetch : ImageFetcher
+    private lateinit var userLouca: ProfileUser
+    private lateinit var userCat: ProfileUser
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var profileService: ProfileService
 
     @Before
-    fun registerIdlingResource() {
+    fun getProfile() {
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
-        imgFetch = object : ImageFetcher {
-            override suspend fun fetchImage(): Bitmap? {
-                return null
-            }
-        }
-        p = ProfileUser("gerussi", "Louca", "Gerussi", Calendar.getInstance(), ImageInstance("icons/cat.png"))
-        pDesc = ProfileUser("gerussi", "Louca", "Gerussi", Calendar.getInstance(), ImageInstance("icons/cat.png"), "Hello world I am cat")
-        pImgHttps = ProfileUser(
+        hiltRule.inject()
+
+        userLouca = ProfileUser(
+            "1234",
+            "gerussi",
+            "Louca",
+            "Gerussi",
+            Calendar.getInstance(),
+            ImageInstance("icons/cat.png")
+        )
+        userCat = ProfileUser(
+            "12345",
             "gerussi",
             "Louca",
             "Gerussi",
@@ -61,7 +60,8 @@ ProfileActivityTest {
     }
 
     @After
-    fun unregisterIdlingResource() {
+    fun cleanUp() {
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).clearDB()
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
     }
 
@@ -75,11 +75,11 @@ ProfileActivityTest {
                     putExtra(USER_ID, id)
                 }
         // Launch activity
-        val scenario = ActivityScenario.launch<GreetingActivity>(intent)
+        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
         scenario.use {
-            onView(withId(R.id.userProfileName)).check(
-                matches(
-                    withText(p.fullName())
+            onView(ViewMatchers.withId(R.id.userProfileName)).check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText(userLouca.fullName())
                 )
             )
         }
@@ -92,26 +92,29 @@ ProfileActivityTest {
             Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
                 .apply { putExtra(USER_ID, id) }
         // Launch activity
-        val scenario = ActivityScenario.launch<GreetingActivity>(intent)
+        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
         scenario.use {
-            onView(withId(R.id.userProfileAboutTitle)).check(
-                matches(
-                    withText(getResourceString(R.string.no_desc))
+            onView(ViewMatchers.withId(R.id.userProfileAboutTitle)).check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText(getResourceString(R.string.no_desc))
                 )
             )
         }
     }
 
     @Test
-    fun userWithBioDisplaysShortBioEntirely(){
-        val intent = Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
-            .apply{ putExtra(DUMMY_USER, pDesc as Serializable) }
+    fun userWithBioDisplaysShortBioEntirely() = runTest {
+        val id = profileService.createProfile(userCat)
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, id) }
+
         // Launch activity
-        val scenario = ActivityScenario.launch<GreetingActivity>(intent)
+        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
         scenario.use {
-            onView(withId(R.id.userProfileDescription)).check(
-                matches(
-                    withText("Hello world I am cat")
+            onView(ViewMatchers.withId(R.id.userProfileDescription)).check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText(userCat.description)
                 )
             )
         }
@@ -125,18 +128,19 @@ ProfileActivityTest {
                 .apply { putExtra(USER_ID, id) }
 
         // Launch activity
-        val scenario = ActivityScenario.launch<GreetingActivity>(intent)
+        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
         scenario.use {
-            onView(withId(R.id.userProfileName)).check(
-                matches(
-                    withText(p.fullName())
+            onView(ViewMatchers.withId(R.id.userProfileName)).check(
+                ViewAssertions.matches(
+                    ViewMatchers.withText(userLouca.fullName())
                 )
             )
             // Check status of image after cache clear
-            pImgHttps.pfp.clearImageCache()
-            Assert.assertEquals(ImageInstance.NOT_LOADED, pImgHttps.pfp.imgStatus)
+            userCat.pfp.clearImageCache()
+            Assert.assertEquals(ImageInstance.NOT_LOADED, userCat.pfp.imgStatus)
         }
     }
+
 
     private fun getResourceString(id: Int): String? {
         val targetContext: Context = InstrumentationRegistry.getTargetContext()
