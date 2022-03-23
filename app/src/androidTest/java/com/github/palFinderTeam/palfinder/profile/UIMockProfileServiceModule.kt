@@ -68,10 +68,7 @@ object UIMockProfileServiceModule {
         }
 
         override suspend fun createProfile(newUserProfile: ProfileUser): String? {
-            val key = counter.toString()
-            db[key] = newUserProfile.copy(uuid = key)
-            counter.inc()
-            return key
+            return syncCreateProfile(newUserProfile)
         }
 
         override fun fetchProfileFlow(userId: String): Flow<Response<ProfileUser>> {
@@ -83,6 +80,13 @@ object UIMockProfileServiceModule {
 
         fun clearDB() {
             db.clear()
+        }
+
+        fun syncCreateProfile(newUserProfile: ProfileUser): String? {
+            val key = counter.toString()
+            db[key] = newUserProfile.copy(uuid = key)
+            counter.inc()
+            return key
         }
     }
 }
