@@ -11,7 +11,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/nav_bar"
+        app:layout_constraintBottom_toTopOf="@+id/fc_navbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -26,18 +26,19 @@
         android:layout_alignParentBottom="true"
         android:clickable="true"
         android:onClick="onConfirm"
-        app:layout_constraintBottom_toBottomOf="@+id/map"
+        app:layout_constraintBottom_toBottomOf="@+id/fc_navbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/ic_dialog_map"
         tools:ignore="SpeakableTextPresentCheck" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/nav_bar"
-        android:layout_width="413dp"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fc_navbar"
+        android:name="com.github.palFinderTeam.palfinder.navbar.NavigationBarFragment"
+        android:layout_width="0dp"
         android:layout_height="65dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

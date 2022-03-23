@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
-import com.github.palFinderTeam.palfinder.navbar.NavigationBar
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
@@ -41,8 +40,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         auth = Firebase.auth
-
-        NavigationBar.setup(this, R.id.nav_bar, R.id.nav_bar_find)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
