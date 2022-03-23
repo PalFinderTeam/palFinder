@@ -51,14 +51,14 @@ class MeetUpView : AppCompatActivity() {
 
     fun onEdit(v: View) {
         val intent = Intent(this, MeetUpCreation::class.java).apply {
-            putExtra(MEETUP_EDIT, viewModel.meetUp.value?.uuid)
+            putExtra(MEETUP_EDIT, viewModel.getMeetupID())
         }
         startActivity(intent)
     }
 
     fun onChat(v: View) {
         val intent = Intent(this, ChatActivity::class.java).apply {
-            putExtra(CHAT, viewModel.meetUp.value?.uuid)
+            putExtra(CHAT, viewModel.getMeetupID())
         }
         startActivity(intent)
     }

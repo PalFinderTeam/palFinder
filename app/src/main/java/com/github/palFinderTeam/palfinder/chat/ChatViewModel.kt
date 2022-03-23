@@ -27,6 +27,11 @@ class ChatViewModel @Inject constructor(
 
     private lateinit var chatID: String
 
+    /**
+     * Send content to the connected Chat
+     *
+     * @param content message to send
+     */
     fun sendMessage(content: String){
         val user = Firebase.auth.currentUser
         if (user != null) {
@@ -39,7 +44,12 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun fetchMessages(chatID: String){
+    /**
+     * Update List of Message
+     *
+     * @param chatID meetup id of the chat
+     */
+    fun connectToChat(chatID: String){
         this.chatID = chatID
         listOfMessage.value = mutableListOf()
         viewModelScope.launch {
@@ -49,6 +59,13 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Load Profile data into the view
+     *
+     * @param userId  Id of the user to load
+     * @param pictureBox ImageView where to put the profile picture
+     * @param nameBox TextView where to put the user name
+     */
     suspend fun loadProfileData(userId: String, pictureBox: ImageView, nameBox: TextView){
         if (!profilesData.containsKey(userId)){
             viewModelScope.launch {
@@ -56,27 +73,22 @@ class ChatViewModel @Inject constructor(
                     when(it) {
                         is Response.Success -> {
                             profilesData[userId] = it.data
-                            nameBox.text = it.data.username
-                            it.data.pfp.loadImageInto(pictureBox)
+                            loadCachedUser(userId, pictureBox, nameBox)
                         }
-                        is Response.Loading -> {
+                        else -> {
                             nameBox.text = nameBox.context.getString(R.string.placeholder_name)
                         }
-                        is Response.Failure -> {
-                            nameBox.text = nameBox.context.getString(R.string.placeholder_name)
-                        }
-                    }
-                    if (it is Response.Success){
-                        profilesData[userId] = it.data
-                        nameBox.text = it.data.username
-                        it.data.pfp.loadImageInto(pictureBox)
                     }
                 }
             }
         }
         else{
-            nameBox.text = profilesData[userId]!!.username
-            profilesData[userId]!!.pfp.loadImageInto(pictureBox)
+            loadCachedUser(userId, pictureBox, nameBox)
         }
+    }
+
+    private suspend fun loadCachedUser(userId: String, pictureBox: ImageView, nameBox: TextView){
+        nameBox.text = profilesData[userId]!!.username
+        profilesData[userId]!!.pfp.loadImageInto(pictureBox)
     }
 }

@@ -25,7 +25,7 @@ class ChatActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chat)
         if (intent.hasExtra(CHAT)) {
             val meetupId = intent.getStringExtra(CHAT)
-            viewModel.fetchMessages(meetupId!!)
+            viewModel.connectToChat(meetupId!!)
         }
         chatList = findViewById(R.id.chat_list)
         chatList.layoutManager = LinearLayoutManager(this)

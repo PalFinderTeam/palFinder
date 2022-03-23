@@ -52,7 +52,7 @@ class ChatMessageListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, type: Int): ViewHolder {
-        //create a new view for each meetup
+        //create a new view for each message
         return ViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.message_recieved_listview, parent, false)
         ) {

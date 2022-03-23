@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
@@ -93,12 +92,6 @@ class MainActivity : AppCompatActivity() {
 
     fun accessMap(view: View?) {
         val intent = Intent(this, MapsActivity::class.java).apply {  }
-        startActivity(intent)
-    }
-
-    fun openChat(view: View?) {
-        val intent = Intent(this, ChatActivity::class.java).apply {
-        }
         startActivity(intent)
     }
 
