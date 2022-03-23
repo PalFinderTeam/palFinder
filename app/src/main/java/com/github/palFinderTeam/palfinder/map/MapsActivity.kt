@@ -62,7 +62,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        loadSelectionButton()
     }
 
     private fun loadSelectionButton(){
@@ -71,8 +70,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
             mapSelection.active.value = true
             button.apply { this.isEnabled = false }
             if (pos != null){
-                // TODO add marker when ready
-                //addSelectionMarker(pos)
+                setSelectionMarker(pos)
             }
         } else {
             button.apply { this.hide() }
@@ -125,7 +123,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         return false
     }
 
-    fun onMapClick(p0: LatLng) {
+    private fun onMapClick(p0: LatLng) {
         // Add a marker if the map is used to select a location
         if (mapSelection.active.value!!) {
             setSelectionMarker(p0)
@@ -163,6 +161,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         setUserLocation()
 
         map.setOnMapClickListener { onMapClick(it) }
+
+        loadSelectionButton()
+
     }
 
 }
