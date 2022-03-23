@@ -6,15 +6,15 @@ import androidx.lifecycle.asLiveData
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.FirebaseFirestore
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlin.collections.HashMap
 import kotlin.math.pow
 
@@ -22,11 +22,11 @@ class MapsActivityViewModel constructor(
     private val meetUpRepository: MeetUpRepository = FirebaseMeetUpService(FirebaseFirestore.getInstance())
 ): ViewModel() {
 
-    lateinit var meetUps: LiveData<List<MeetUp>>
+    lateinit var meetUps: List<MeetUp>
     private lateinit var map:GoogleMap
     private var markers = HashMap<String, Marker>()
     var mapReady = false
-    private var startingCameraPosition: LatLng = LatLng(0.0, 0.0)
+    private var startingCameraPosition: LatLng = LatLng(46.31, 6.38)
     private var startingZoom: Float = 15f
 
 
@@ -41,7 +41,7 @@ class MapsActivityViewModel constructor(
         mapReady = true
     }
 
-    fun updateFetcherLocation(){
+    fun updateFetcherLocation(location: LatLng = startingCameraPosition){
         if(false){//getZoom() < 7f){
             //TODO get only the joined meetup
 
@@ -51,7 +51,14 @@ class MapsActivityViewModel constructor(
             val radiusAtZoom0 = earthRadius/256
             val radius = radiusAtZoom0/2.0.pow(getZoom().toDouble())
 
-            meetUps = meetUpRepository.getAllMeetUps().asLiveData()
+            //meetUps = meetUpRepository.getAllMeetUps().asLiveData().value!!
+            val response = meetUpRepository.getMeetUpsAroundLocation(Location(location.longitude, location.latitude), radius).asLiveData().value
+            meetUps = if(response is Response.Success){
+                response.data
+            }else emptyList()
+
+            refresh()
+
         }
     }
 
@@ -75,7 +82,7 @@ class MapsActivityViewModel constructor(
 
         clearMarkers()
 
-        meetUps.value?.forEach{ meetUp ->
+        meetUps?.forEach{ meetUp ->
             val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
             val marker = map.addMarker(MarkerOptions().position(position).title(meetUp.uuid))
                 ?.let { markers[meetUp.uuid] = it }
@@ -131,7 +138,7 @@ class MapsActivityViewModel constructor(
         }
     }
 
-    fun setPositionZoom(position: LatLng, zoom: Float){
+    fun setPositionAndZoom(position: LatLng, zoom: Float){
         if(mapReady){
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoom))
         }else{

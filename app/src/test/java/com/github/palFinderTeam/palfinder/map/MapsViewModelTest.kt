@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.map
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.maps.GoogleMap
@@ -14,10 +15,10 @@ import org.mockito.Mockito
 import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
 
-class MapsUtilsTest {
+class MapsViewModelTest {
 
-
-    private val utils = MapsActivityViewModel()
+    //private val mockDatabase = mock(FirebaseMeetUpService::class.java)
+    private val viewModel = MapsActivityViewModel()
 
     private lateinit var meetup1: MeetUp
     private lateinit var meetup2: MeetUp
@@ -115,8 +116,8 @@ class MapsUtilsTest {
 
     @Test
     fun testSetMap(){
-        utils.setMap(mockMap)
-        Assert.assertEquals(true, utils.mapReady)
+        viewModel.setMap(mockMap)
+        Assert.assertEquals(true, viewModel.mapReady)
     }
 
     /**
@@ -214,10 +215,10 @@ class MapsUtilsTest {
 
     @Test
     fun testCameraStartingPosition(){
-        utils.mapReady = false
+        viewModel.mapReady = false
         val pos = LatLng(77.0, 52.0)
-        utils.setCameraPosition(pos)
-        Assert.assertEquals(pos, utils.getCameraPosition())
+        viewModel.setCameraPosition(pos)
+        Assert.assertEquals(pos, viewModel.getCameraPosition())
     }
 
 

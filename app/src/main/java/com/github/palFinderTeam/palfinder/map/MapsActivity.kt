@@ -28,7 +28,7 @@ const val LOCATION_SELECT = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SEL
 const val LOCATION_SELECTED = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECTED"
 
 @AndroidEntryPoint
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraMoveCanceledListener {
 
     private lateinit var binding: ActivityMapsBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -61,9 +61,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         viewModel.updateFetcherLocation()
-        viewModel.meetUps.observe(this) {
-            viewModel.refresh()
-        }
 
         loadSelectionButton()
 
@@ -106,7 +103,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
             location -> if(location != null){
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                viewModel.setPositionZoom(currentLatLng, viewModel.getZoom())
+                viewModel.setPositionAndZoom(currentLatLng, viewModel.getZoom())
             }
         }
     }
@@ -166,6 +163,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
 
 
         map.setOnMapClickListener { onMapClick(it) }
+    }
+
+    override fun onCameraMoveCanceled() {
+        viewModel.updateFetcherLocation(viewModel.getCameraPosition())
     }
 
 }
