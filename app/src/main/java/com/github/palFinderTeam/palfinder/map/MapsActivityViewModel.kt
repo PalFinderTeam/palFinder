@@ -1,32 +1,29 @@
 package com.github.palFinderTeam.palfinder.map
 
-import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.toList
 import javax.inject.Inject
 import kotlin.collections.HashMap
-import kotlin.math.exp
 import kotlin.math.pow
 
-class MapsUtils constructor(
-    private val meetUpRepository: MeetUpRepository = FirebaseMeetUpService
-){
+class MapsActivityViewModel constructor(
+    private val meetUpRepository: MeetUpRepository = FirebaseMeetUpService(FirebaseFirestore.getInstance())
+): ViewModel() {
 
+    lateinit var meetUps: LiveData<List<MeetUp>>
     private lateinit var map:GoogleMap
-    private var meetUps = HashMap<String, MeetUp>()
     private var markers = HashMap<String, Marker>()
     var mapReady = false
     private var startingCameraPosition: LatLng = LatLng(0.0, 0.0)
@@ -44,30 +41,17 @@ class MapsUtils constructor(
         mapReady = true
     }
 
-    /**
-     * get the Meetup in this utils memory corresponding to this id
-     * @param id: Unique identifier of the meetup
-     * @return the meetup corresponding to the id, null if non existent
-     */
-    fun getMeetup(id: String): MeetUp?{
-        return meetUps[id]
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun fetchMeetups(){
-        Log.d(null, "1")
-        if(getZoom() < 7f){
+    fun updateFetcherLocation(){
+        if(false){//getZoom() < 7f){
             //TODO get only the joined meetup
+
         }else{
             val earthRadius = 6371000
             // at zoom 0, the map is of size 256x256 pixels and for every zoom, the number of pixel is multiplied by 2
             val radiusAtZoom0 = earthRadius/256
             val radius = radiusAtZoom0/2.0.pow(getZoom().toDouble())
-            meetUpRepository.getAllMeetUps().asLiveData().value?.forEach{
-                meetUp -> meetUps[meetUp.uuid] = meetUp
-            }
 
-        refresh()
+            meetUps = meetUpRepository.getAllMeetUps().asLiveData()
         }
     }
 
@@ -80,15 +64,6 @@ class MapsUtils constructor(
         return markers[id]
     }
 
-    /**
-     * add a new meetup to the map meetup list, if the map is ready, refresh it
-     * @param meetUp: The meetup to add
-     */
-    fun addMeetupMarker(meetUp: MeetUp){
-        meetUps[meetUp.uuid] = meetUp
-
-        refresh()
-    }
 
     /**
      * refresh the map to remove Marker that are not in the meetup list and
@@ -98,34 +73,15 @@ class MapsUtils constructor(
     fun refresh(){
         if(!mapReady) return
 
-        markers.keys.minus(meetUps.keys).forEach{
-            markers[it]?.remove()
-            markers.remove(it)
-        }
-
-        meetUps.keys.minus(markers.keys).forEach {
-            val position = LatLng(meetUps[it]!!.location.latitude, meetUps[it]!!.location.longitude)
-            markers[it] = map.addMarker(MarkerOptions().position(position).title(it))!!
-
-        }
-    }
-
-    /**
-     * remove a marker from the map, but keep it in the meetup list
-     * @param id: uuid of the Marker to remove
-     */
-    fun removeMarker(id: String){
-        meetUps.remove(id)
-        refresh()
-    }
-
-    /**
-     * clear the map of all makers and the meetup lists
-     */
-    fun clearMap(){
         clearMarkers()
-        meetUps.clear()
+
+        meetUps.value?.forEach{ meetUp ->
+            val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
+            val marker = map.addMarker(MarkerOptions().position(position).title(meetUp.uuid))
+                ?.let { markers[meetUp.uuid] = it }
+        }
     }
+
 
     /**
      * clear the map of all markers

@@ -37,7 +37,7 @@ class MapsActivityTest {
     var coarseLocationPermissionRule: GrantPermissionRule =
         GrantPermissionRule.grant(android.Manifest.permission.ACCESS_COARSE_LOCATION)
 
-    private val utils = MapsActivity.utils
+    private val utils = MapsActivity.viewModel
 
 
     @Before

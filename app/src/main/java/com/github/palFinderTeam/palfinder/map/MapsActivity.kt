@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
-import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -38,17 +37,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
     private lateinit var button: FloatingActionButton
 
     private val mapSelection: MapsSelectionModel by viewModels()
+    val viewModel : MapsActivityViewModel by viewModels()
 
     companion object {
         private const val USER_LOCATION_PERMISSION_REQUEST_CODE = 1
-        val utils = MapsUtils()
 
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -62,8 +60,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        utils.fetchMeetups()
+        viewModel.updateFetcherLocation()
+        viewModel.meetUps.observe(this) {
+            viewModel.refresh()
+        }
+
         loadSelectionButton()
+
     }
 
     private fun loadSelectionButton(){
@@ -103,7 +106,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
             location -> if(location != null){
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                utils.setPositionZoom(currentLatLng, utils.getZoom())
+                viewModel.setPositionZoom(currentLatLng, viewModel.getZoom())
             }
         }
     }
@@ -114,10 +117,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
      * When a meetUp marker is clicked, open the marker description
      */
     override fun onMarkerClick(marker: Marker): Boolean {
-        val meetUp = utils.getMeetup(marker.title!!)
-        if(meetUp != null){
+        val id = marker.title
+        if(id != null){
             val intent = Intent(this, MeetUpView::class.java).apply {
-                putExtra(MEETUP_SHOWN, meetUp.uuid)
+                putExtra(MEETUP_SHOWN, id)
             }
             startActivity(intent)
             return true
@@ -155,7 +158,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
     
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        utils.setMap(map)
+        viewModel.setMap(map)
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
 
