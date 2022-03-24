@@ -15,4 +15,7 @@
     <color name="theme_darker">#191517</color>
     <color name="theme_highlight">#406045</color>
     <color name="theme_primary">#F3AC3E</color>
+
+    <color name="message_in_coming_color">#F2F2F2</color>
+    <color name="message_out_going_color">#D0EBF8</color>
 </resources>

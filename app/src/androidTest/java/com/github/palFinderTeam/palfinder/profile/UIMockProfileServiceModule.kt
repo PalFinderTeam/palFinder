@@ -68,21 +68,30 @@ object UIMockProfileServiceModule {
         }
 
         override suspend fun createProfile(newUserProfile: ProfileUser): String? {
-            val key = counter.toString()
-            db[key] = newUserProfile.copy(uuid = key)
-            counter.inc()
-            return key
+            return syncCreateProfile(newUserProfile)
         }
 
         override fun fetchProfileFlow(userId: String): Flow<Response<ProfileUser>> {
             return flow {
-                val profile = db[userId]!!
-                emit(Response.Success(profile))
+                if (db.containsKey(userId)) {
+                    val profile = db[userId]!!
+                    emit(Response.Success(profile))
+                }
+                else{
+                    emit(Response.Failure("Not Found"))
+                }
             }
         }
 
         fun clearDB() {
             db.clear()
+        }
+
+        fun syncCreateProfile(newUserProfile: ProfileUser): String? {
+            val key = counter.toString()
+            db[key] = newUserProfile.copy(uuid = key)
+            counter.inc()
+            return key
         }
     }
 }
