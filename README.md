@@ -1,6 +1,7 @@
 [![Build Status](https://api.cirrus-ci.com/github/PalFinderTeam/palFinder.svg)](https://cirrus-ci.com/github/PalFinderTeam/palFinder)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/0e8ea17fd683b9e3ff47/test_coverage)](https://codeclimate.com/github/PalFinderTeam/palFinder/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/0e8ea17fd683b9e3ff47/maintainability)](https://codeclimate.com/github/PalFinderTeam/palFinder/maintainability)
+[![jsp](https://img.shields.io/badge/code%20coverage-101%25-brightgreen)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
 # Link
 
