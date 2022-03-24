@@ -15,6 +15,7 @@ import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Singleton
 
 @Module
@@ -101,6 +102,13 @@ object UIMockMeetUpRepositoryModule {
         override fun getAllMeetUps(): Flow<List<MeetUp>> {
             return flow {
                 emit(db.values.toList())
+            }
+        }
+
+        @ExperimentalCoroutinesApi
+        override fun getAllMeetUpsResponse(): Flow<Response<List<MeetUp>>> {
+            return getAllMeetUps().map {
+                Response.Success(it)
             }
         }
 
