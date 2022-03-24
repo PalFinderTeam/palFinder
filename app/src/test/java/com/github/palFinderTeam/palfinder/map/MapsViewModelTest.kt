@@ -23,8 +23,6 @@ import org.mockito.Mockito.mock
 
 class MapsViewModelTest {
 
-    @Mock
-    private lateinit var mockContext: Context
 
     private val meetUpRepository = MockMeetUpRepository()
     private val viewModel = MapsActivityViewModel(meetUpRepository)
@@ -194,7 +192,7 @@ class MapsViewModelTest {
         Assert.assertEquals(pos, viewModel.getCameraPosition())
     }
 
-    @Test
+    /*@Test
     fun testCameraPosition(){
         var pos: LatLng = LatLng(54.0, 1.0)
         Mockito.`when`(viewModel.setCameraPosition(any(LatLng::class.java))).thenAnswer {
@@ -205,7 +203,7 @@ class MapsViewModelTest {
         viewModel.setMap(mockMap)
         viewModel.setCameraPosition(pos)
         Assert.assertEquals(pos, viewModel.getCameraPosition())
-    }
+    }*/
 
     @Test
     fun testZoomStartingPosition(){
@@ -215,7 +213,7 @@ class MapsViewModelTest {
         Assert.assertEquals(zoom, viewModel.getZoom())
     }
 
-
+    /*
     @Test
     fun testZoomPosition(){
         var zoom: Float = 15f
@@ -226,7 +224,16 @@ class MapsViewModelTest {
         viewModel.setMap(mockMap)
         viewModel.setZoom(zoom)
         Assert.assertEquals(zoom, viewModel.getCameraPosition())
+    }*/
+
+    @Test
+    fun testPositionZoomStartingPosition(){
+        viewModel.mapReady = false
+        val zoom = 18f
+        viewModel.setZoom(zoom)
+        val pos = LatLng(77.0, 52.0)
+        viewModel.setCameraPosition(pos)
+        Assert.assertEquals(pos, viewModel.getCameraPosition())
+        Assert.assertEquals(zoom, viewModel.getZoom())
     }
-
-
 }
