@@ -40,28 +40,37 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.miLogout) {
-            Log.i(TAG, "Logout")
-            //Logout the user
-            auth.signOut()
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("341371843047-6i3a92lfmcb6555vsj9sb02tnhmkh4c8.apps.googleusercontent.com") //somehow cannot access value through google-service values.xml
-                .requestEmail()
-                .build()
+        when(item.itemId) {
+            R.id.miLogout -> {
+                Log.i(TAG, "Logout")
+                //Logout the user
+                auth.signOut()
+                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken("341371843047-6i3a92lfmcb6555vsj9sb02tnhmkh4c8.apps.googleusercontent.com") //somehow cannot access value through google-service values.xml
+                    .requestEmail()
+                    .build()
 
-            val client = GoogleSignIn.getClient(this, gso)
-            client.signOut()
-            val logoutIntent = Intent(this, LoginActivity::class.java)
-            logoutIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(logoutIntent)
+                val client = GoogleSignIn.getClient(this, gso)
+                client.signOut()
+                val logoutIntent = Intent(this, LoginActivity::class.java)
+                logoutIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(logoutIntent)
+                return true
+            }
+            R.id.nav_bar_create -> {
+                val intent = Intent(this, MeetUpCreation::class.java)
+                startActivity(intent)
+                return true
+            }
+            else -> {
+                return super.onOptionsItemSelected(item)
+            }
         }
-
-        return super.onOptionsItemSelected(item)
-
     }
 
     fun openMeetupCreationPage(view: View?) {
@@ -94,5 +103,4 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, MapsActivity::class.java).apply {  }
         startActivity(intent)
     }
-
 }
