@@ -1,17 +1,28 @@
 package com.github.palFinderTeam.palfinder.map
 
+import android.app.Activity
+import android.app.Instrumentation
 import android.content.Intent
 import android.icu.util.Calendar
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
+import androidx.test.uiautomator.Until
+
+import com.github.palFinderTeam.palfinder.R
+
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
+
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
@@ -19,11 +30,14 @@ import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+
+import org.junit.Assert
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
+
 
 @HiltAndroidTest
 class MapsActivityTest {
@@ -48,18 +62,18 @@ class MapsActivityTest {
     lateinit var utils: MapsActivityViewModel
 
     @Before
-    fun init() {
+    fun init_() {
         hiltRule.inject()
         utils = MapsActivityViewModel(meetUpRepository)
     }
 
-    /*
+
+/*
     @Test
     fun testMarkerClick() = runTest() {
 
         val intent = Intent(ApplicationProvider.getApplicationContext(), MapsActivity::class.java)
         val scenario = ActivityScenario.launch<MapsActivity>(intent)
-
 
         val id = "id"
         val lat = 15.0
@@ -106,9 +120,36 @@ class MapsActivityTest {
             intended(IntentMatchers.hasExtra(MEETUP_SHOWN, id))
             Intents.release()
         }
-
-
     }*/
 
 
+
+
+    @Test
+    fun testSelectLocation(){
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MapsActivity::class.java)
+        val basePosition = LatLng(42.0, 42.0)
+        intent.apply {
+            putExtra(LOCATION_SELECT, basePosition)
+        }
+        val scenario = ActivityScenario.launch<MapsActivity>(intent)
+
+        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
+
+
+        scenario.use{
+            utils.setCameraPosition(basePosition)
+            val marker = device.findObject(
+                UiSelector().descriptionContains("Google Map")
+                    .childSelector(UiSelector().descriptionContains("Here"))
+            )
+
+            Assert.assertNotNull(marker)
+
+            onView(withId(R.id.bt_locationSelection)).perform(click())
+
+            Assert.assertEquals(Activity.RESULT_OK, scenario.result.resultCode)
+        }
+    }
 }
