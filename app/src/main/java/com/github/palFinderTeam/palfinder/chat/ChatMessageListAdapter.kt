@@ -23,6 +23,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
+
 class ChatMessageListAdapter(
     private val viewModel: ChatViewModel,
     private val dataSet: List<ChatMessage>,
@@ -54,7 +55,7 @@ class ChatMessageListAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, type: Int): ViewHolder {
         //create a new view for each message
         return ViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.message_recieved_listview, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.message_listview, parent, false)
         ) {
             val item = currentDataSet[it]
             val originalItemPos = dataSet.indexOf(item)
