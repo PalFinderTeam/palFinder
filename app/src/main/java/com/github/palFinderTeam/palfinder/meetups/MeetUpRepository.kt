@@ -56,4 +56,8 @@ interface MeetUpRepository {
      */
     @ExperimentalCoroutinesApi
     fun getAllMeetUps(): Flow<List<MeetUp>>
+
+
+    @ExperimentalCoroutinesApi
+    fun getAllMeetUpsResponse(): Flow<Response<List<MeetUp>>>
 }

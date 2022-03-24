@@ -16,7 +16,7 @@
         android:adjustViewBounds="true"
         android:background="@color/theme_primary"
         android:scaleType="fitCenter"
-        android:src="@drawable/demo_pfp"
+        android:src="@drawable/icon_user_female"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/profileRoundEdge" />

@@ -18,16 +18,6 @@
         app:layout_constraintTop_toBottomOf="@+id/accessImgLoader2" />
 
     <Button
-
-        android:id="@+id/mainGoToTagButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tags"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainGoButton" />
-
-    <Button
         android:id="@+id/mainGoButton3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,7 +36,17 @@
         android:text="Map"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainGoToTagButton" />
+        app:layout_constraintTop_toBottomOf="@+id/mainGoButton" />
+
+    <Button
+        android:id="@+id/mapGoButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="accessCreateProfile"
+        android:text="setup account"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mapGoButton" />
 
     <Button
         android:id="@+id/accessImgLoader"
@@ -67,6 +67,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/accessImgLoader" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fc_navbar"
+        android:name="com.github.palFinderTeam.palfinder.navbar.NavigationBarFragment"
+        android:layout_width="0dp"
+        android:layout_height="65dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
