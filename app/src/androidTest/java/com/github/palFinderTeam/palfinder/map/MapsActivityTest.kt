@@ -9,8 +9,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.Intents.intending
+import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
@@ -48,11 +47,11 @@ class MapsActivityTest {
 
 
     @Before
-    fun init() {
+    fun init_() {
         hiltRule.inject()
     }
 
-
+/*
     @Test
     fun testMarkerClick() {
 
@@ -101,8 +100,7 @@ class MapsActivityTest {
             intended(IntentMatchers.hasExtra(MEETUP_SHOWN, id))
             Intents.release()
         }
-
-    }
+    }*/
 
 
 
@@ -110,7 +108,6 @@ class MapsActivityTest {
     fun testSelectLocation(){
         val intent = Intent(ApplicationProvider.getApplicationContext(), MapsActivity::class.java)
         val basePosition = LatLng(42.0, 42.0)
-        val selectedPosition = LatLng(40.0, 20.0)
         intent.apply {
             putExtra(LOCATION_SELECT, basePosition)
         }
@@ -126,23 +123,9 @@ class MapsActivityTest {
 
             Assert.assertNotNull(marker)
 
-            val expectedIntent = Intent().apply {
-                putExtra(LOCATION_SELECTED, basePosition)
-            }
-
-
             onView(withId(R.id.bt_locationSelection)).perform(click())
 
-            val resultIntent = scenario.result.resultData
-
-            Assert.assertEquals(basePosition, resultIntent.getParcelableExtra<LatLng>(
-                LOCATION_SELECTED)!!)
-
+            Assert.assertEquals(Activity.RESULT_OK, scenario.result.resultCode)
         }
-
-
-
     }
-
-
 }
