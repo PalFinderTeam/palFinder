@@ -29,7 +29,7 @@ class MapsActivityViewModel @Inject constructor(
 ) {
 
     lateinit var meetUps: List<MeetUp>
-    private lateinit var map:GoogleMap
+    private lateinit var map: GoogleMap
     private var markers = HashMap<String, Marker>()
     var mapReady = false
     private var startingCameraPosition: LatLng = LatLng(46.31, 6.38)

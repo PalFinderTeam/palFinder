@@ -20,6 +20,7 @@ import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -40,6 +41,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
     private lateinit var map: GoogleMap
     private lateinit var button: FloatingActionButton
     private lateinit var navBar: View
+    private lateinit var mapView: View
 
     private val mapSelection: MapsSelectionModel by viewModels()
     val viewModel : MapsActivityViewModel by viewModels()
@@ -63,6 +65,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
 
+        mapView = mapFragment.requireView()
+        mapView.contentDescription = "MAP NOT READY"
         mapFragment.getMapAsync(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -72,7 +76,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
             viewModel.refresh()
         }
 
-        loadSelectionButton()
     }
 
     private fun loadSelectionButton(){
@@ -169,12 +172,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
 
+
         setUserLocation()
 
 
         map.setOnMapClickListener { onMapClick(it) }
 
+        mapView.contentDescription = "MAP READY"
         loadSelectionButton()
+
 
     }
 

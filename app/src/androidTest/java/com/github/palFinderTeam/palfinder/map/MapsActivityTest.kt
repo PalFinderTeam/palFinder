@@ -14,8 +14,10 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
+import androidx.test.uiautomator.Until
 
 import com.github.palFinderTeam.palfinder.R
 
@@ -132,9 +134,12 @@ class MapsActivityTest {
         }
         val scenario = ActivityScenario.launch<MapsActivity>(intent)
 
+        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
+
+
         scenario.use{
             utils.setCameraPosition(basePosition)
-            val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
             val marker = device.findObject(
                 UiSelector().descriptionContains("Google Map")
                     .childSelector(UiSelector().descriptionContains("Here"))
