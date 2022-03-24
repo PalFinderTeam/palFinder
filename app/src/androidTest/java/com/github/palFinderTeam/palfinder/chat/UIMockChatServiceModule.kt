@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder.chat
 
 import com.github.palFinderTeam.palfinder.di.ChatModule
-import com.github.palFinderTeam.palfinder.di.MeetUpModule
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -51,6 +50,10 @@ object UIMockChatServiceModule {
             db[chatId] = (db[chatId]?.plus(message) ?: mutableListOf(message)) as MutableList<ChatMessage>
             return db[chatId]?.indexOf(message).toString()
 
+        }
+
+        fun clear(){
+            db.clear()
         }
     }
 }

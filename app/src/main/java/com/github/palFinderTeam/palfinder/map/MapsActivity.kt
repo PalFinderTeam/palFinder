@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
+import androidx.core.view.isVisible
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
@@ -38,6 +39,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
     private lateinit var lastLocation: Location
     private lateinit var map: GoogleMap
     private lateinit var button: FloatingActionButton
+    private lateinit var navBar: View
 
     private val mapSelection: MapsSelectionModel by viewModels()
     val viewModel : MapsActivityViewModel by viewModels()
@@ -55,6 +57,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         button = findViewById(R.id.bt_locationSelection)
+        navBar = findViewById(R.id.fc_navbar)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -77,6 +80,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         if (intent.hasExtra(LOCATION_SELECT)) {
             val pos = intent.getParcelableExtra<LatLng>(LOCATION_SELECT)
             mapSelection.active.value = true
+            navBar.isVisible = false
+            navBar.isEnabled = false
             button.apply { this.isEnabled = false }
             if (pos != null){
                 // TODO add marker when ready

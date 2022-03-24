@@ -1,0 +1,93 @@
+package com.github.palFinderTeam.palfinder.chat
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.RecyclerView
+import com.github.palFinderTeam.palfinder.ProfileActivity
+import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.USER_ID
+import com.github.palFinderTeam.palfinder.utils.PrettyDate
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
+
+
+class ChatMessageListAdapter(
+    private val viewModel: ChatViewModel,
+    private val dataSet: List<ChatMessage>,
+    private val onItemClicked: (position: Int) -> Unit) :
+    RecyclerView.Adapter<ChatMessageListAdapter.ViewHolder>(), Filterable {
+
+    private val currentDataSet = dataSet.toMutableList()
+
+    class ViewHolder(view: View, private val onItemClicked: (position: Int) -> Unit) :
+        RecyclerView.ViewHolder(view), View.OnClickListener {
+
+        val messageInLayout: ConstraintLayout = view.findViewById(R.id.msg_in_layout)
+
+        val messageInContent: TextView = view.findViewById(R.id.msg_in_text)
+        val messageInDate: TextView = view.findViewById(R.id.msg_in_date)
+        val messageInSenderName: TextView = view.findViewById(R.id.msg_in_sender_name)
+        val messageInSenderPic: ImageView = view.findViewById(R.id.msg_send_picture)
+
+        init {
+            view.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View) {
+            val position = adapterPosition
+            onItemClicked(position)
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, type: Int): ViewHolder {
+        //create a new view for each message
+        return ViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.message_listview, parent, false)
+        ) {
+            val item = currentDataSet[it]
+            val originalItemPos = dataSet.indexOf(item)
+
+            onItemClicked(originalItemPos)
+        }
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val prettyDate = PrettyDate()
+        val msg = currentDataSet[position]
+        val context = holder.messageInContent.context
+
+        if (msg.sentBy == Firebase.auth.currentUser?.uid){
+            holder.messageInLayout.background = context.getDrawable(R.drawable.out_going_message)
+            holder.messageInSenderPic.isVisible = false
+        }
+        holder.messageInContent.text = msg.content
+        holder.messageInDate.text = prettyDate.timeDiff(msg.sentAt)
+
+        holder.messageInSenderPic.setOnClickListener{
+            val intent = Intent(it.context, ProfileActivity::class.java).apply {
+                putExtra(USER_ID, msg.sentBy)
+            }
+            ContextCompat.startActivity(it.context, intent, null)
+        }
+        viewModel.viewModelScope.launch {
+            viewModel.loadProfileData(msg.sentBy, holder.messageInSenderPic, holder.messageInSenderName)
+        }
+    }
+
+    override fun getItemCount(): Int = currentDataSet.size
+
+    override fun getFilter(): Filter = filter
+}

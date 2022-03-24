@@ -79,6 +79,7 @@ dependencies {
     implementation 'com.google.dagger:hilt-android:2.41'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     kapt 'com.google.dagger:hilt-compiler:2.41'
 
     testImplementation 'junit:junit:4.13.2'
@@ -86,6 +87,8 @@ dependencies {
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
     testImplementation 'org.mockito:mockito-core:4.4.0'
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
+
+    implementation 'androidx.test.espresso:espresso-idling-resource:3.4.0'
 
     androidTestImplementation 'androidx.test:core:1.4.0'
     androidTestImplementation 'androidx.test:core-ktx:1.4.0'
