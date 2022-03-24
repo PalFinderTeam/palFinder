@@ -7,11 +7,13 @@ import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
+import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -35,6 +37,7 @@ class ProfileActivityTest {
 
     @Before
     fun getProfile() {
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         hiltRule.inject()
 
         userLouca = ProfileUser(
@@ -59,6 +62,7 @@ class ProfileActivityTest {
     @After
     fun cleanUp() {
         (profileService as UIMockProfileServiceModule.UIMockProfileService).clearDB()
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
     }
 
     @Test
