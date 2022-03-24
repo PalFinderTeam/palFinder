@@ -30,8 +30,12 @@ class FirebaseProfileService @Inject constructor(
         return flow {
             emit(Response.Loading())
 
-            val profile = fetchUserProfile(userId)!!
-            emit(Response.Success(profile))
+            val profile = fetchUserProfile(userId)
+            if (profile != null) {
+                emit(Response.Success(profile))
+            } else {
+                emit(Response.Failure("Could not find user."))
+            }
 
         }.catch { error ->
             emit(Response.Failure(error.message.orEmpty()))
