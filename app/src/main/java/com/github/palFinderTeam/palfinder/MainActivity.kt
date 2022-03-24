@@ -62,11 +62,6 @@ class MainActivity : AppCompatActivity() {
                 startActivity(logoutIntent)
                 return true
             }
-            R.id.nav_bar_create -> {
-                val intent = Intent(this, MeetUpCreation::class.java)
-                startActivity(intent)
-                return true
-            }
             else -> {
                 return super.onOptionsItemSelected(item)
             }
