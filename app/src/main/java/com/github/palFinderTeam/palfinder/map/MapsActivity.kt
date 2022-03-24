@@ -45,6 +45,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
     companion object {
         private const val USER_LOCATION_PERMISSION_REQUEST_CODE = 1
 
+
     }
 
 
