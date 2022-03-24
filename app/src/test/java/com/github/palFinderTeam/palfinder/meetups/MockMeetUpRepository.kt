@@ -8,6 +8,7 @@ import com.github.palFinderTeam.palfinder.utils.Response
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class MockMeetUpRepository : MeetUpRepository {
     val db: HashMap<String, MeetUp> = hashMapOf()
@@ -72,6 +73,13 @@ class MockMeetUpRepository : MeetUpRepository {
     override fun getAllMeetUps(): Flow<List<MeetUp>> {
         return flow {
             emit(db.values.toList())
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    override fun getAllMeetUpsResponse(): Flow<Response<List<MeetUp>>> {
+        return getAllMeetUps().map {
+            Response.Success(it)
         }
     }
 
