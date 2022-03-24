@@ -12,6 +12,7 @@ import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.maps.model.LatLng
@@ -37,7 +38,8 @@ class MapsActivityTest {
     var coarseLocationPermissionRule: GrantPermissionRule =
         GrantPermissionRule.grant(android.Manifest.permission.ACCESS_COARSE_LOCATION)
 
-    private val utils = MapsActivity.viewModel
+    private val meetUpRepository = MockMeetUpRepository()
+    private val utils = MapsActivityViewModel(meetUpRepository)
 
 
     @Before
@@ -82,10 +84,11 @@ class MapsActivityTest {
 
 
         scenario.use {
-            utils.addMeetupMarker(meetup)
 
             Intents.init()
+            meetUpRepository.db.put(meetup.uuid, meetup)
             utils.setCameraPosition(LatLng(lat, long))
+            utils.updateFetcherLocation(LatLng(lat, long))
 
 
             val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
@@ -98,6 +101,7 @@ class MapsActivityTest {
             intended(IntentMatchers.hasExtra(MEETUP_SHOWN, id))
             Intents.release()
         }
+
 
     }
 

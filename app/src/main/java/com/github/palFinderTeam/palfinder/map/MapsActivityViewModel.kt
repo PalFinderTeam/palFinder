@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpListViewModel
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -14,13 +15,18 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 import kotlin.collections.HashMap
 import kotlin.math.pow
 
-class MapsActivityViewModel constructor(
-    private val meetUpRepository: MeetUpRepository = FirebaseMeetUpService(FirebaseFirestore.getInstance())
-): ViewModel() {
+@HiltViewModel
+class MapsActivityViewModel @Inject constructor(
+    meetUpRepository: MeetUpRepository
+) : MeetUpListViewModel(
+    meetUpRepository
+) {
 
     lateinit var meetUps: List<MeetUp>
     private lateinit var map:GoogleMap
@@ -28,7 +34,7 @@ class MapsActivityViewModel constructor(
     var mapReady = false
     private var startingCameraPosition: LatLng = LatLng(46.31, 6.38)
     private var startingZoom: Float = 15f
-
+    lateinit var FlowOfMeetUp: LiveData<Response<List<MeetUp>>>
 
 
 
@@ -41,26 +47,26 @@ class MapsActivityViewModel constructor(
         mapReady = true
     }
 
-    fun updateFetcherLocation(location: LatLng = startingCameraPosition){
+    fun updateFetcherLocation(location: LatLng?){
         if(false){//getZoom() < 7f){
             //TODO get only the joined meetup
 
-        }else{
-            val earthRadius = 6371000
+        } else{
+            val earthRadius = 6371000.0
             // at zoom 0, the map is of size 256x256 pixels and for every zoom, the number of pixel is multiplied by 2
             val radiusAtZoom0 = earthRadius/256
             val radius = radiusAtZoom0/2.0.pow(getZoom().toDouble())
 
-            //meetUps = meetUpRepository.getAllMeetUps().asLiveData().value!!
-            val response = meetUpRepository.getMeetUpsAroundLocation(Location(location.longitude, location.latitude), radius).asLiveData().value
-            meetUps = if(response is Response.Success){
-                response.data
-            }else emptyList()
-
+            /*if(meetUpRepository.getAllMeetUps().asLiveData().value != null) {
+                meetUps = meetUpRepository.getAllMeetUps().asLiveData().value!!
+            }else meetUps = emptyList()*/
+            FlowOfMeetUp = meetUpRepository.getMeetUpsAroundLocation(Location(location!!.longitude, location!!.latitude),
+                earthRadius).asLiveData()
             refresh()
 
         }
     }
+
 
     /**
      * get the Marker in this utils memory corresponding to this id
@@ -79,6 +85,11 @@ class MapsActivityViewModel constructor(
      */
     fun refresh(){
         if(!mapReady) return
+
+        val response = FlowOfMeetUp.value
+        meetUps = if(response is Response.Success){
+            response.data
+        }else emptyList()
 
         clearMarkers()
 
@@ -108,7 +119,7 @@ class MapsActivityViewModel constructor(
      * if the map is not ready, set the starting location to this position
      * @param position: new position of the camera
      */
-    fun setCameraPosition(position : LatLng){
+    fun setCameraPosition(position: LatLng){
         if(mapReady) {
             map.moveCamera(CameraUpdateFactory.newLatLng(position))
         }else startingCameraPosition = position
@@ -117,7 +128,7 @@ class MapsActivityViewModel constructor(
     /**
      * get the current camera position
      * if map not ready, return the starting camera position
-     * @return the camera position, can be null
+     * @return the camera position
      */
     fun getCameraPosition():LatLng{
         return if(mapReady) map.cameraPosition.target
@@ -125,11 +136,21 @@ class MapsActivityViewModel constructor(
     }
 
 
+    /**
+     * get the current zoom
+     * if map not ready, return the starting zoom
+     * @return the zoom
+     */
     fun getZoom(): Float{
         return if(mapReady) map.cameraPosition.zoom
         else startingZoom
     }
 
+    /**
+     * set the zoom
+     * if map not ready, set the starting zoom
+     * @param zoom: new zoom of the camera
+     */
     fun setZoom(zoom: Float){
         if(mapReady) {
             map.moveCamera(CameraUpdateFactory.zoomTo(zoom))
@@ -138,6 +159,12 @@ class MapsActivityViewModel constructor(
         }
     }
 
+    /**
+     * set the position and the zoom
+     * if the map is not ready, set both starting values
+     * @param position : the new camera position of the camera
+     * @param zoom : the new zoom of the camera
+     */
     fun setPositionAndZoom(position: LatLng, zoom: Float){
         if(mapReady){
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoom))

@@ -9,10 +9,13 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
+import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
+import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
@@ -60,7 +63,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        viewModel.updateFetcherLocation()
+        viewModel.updateFetcherLocation(viewModel.getCameraPosition())
+        viewModel.FlowOfMeetUp.observe(this) {
+            viewModel.refresh()
+        }
 
         loadSelectionButton()
 
