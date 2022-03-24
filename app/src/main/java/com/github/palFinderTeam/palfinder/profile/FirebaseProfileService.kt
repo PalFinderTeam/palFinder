@@ -27,29 +27,24 @@ class FirebaseProfileService @Inject constructor(
     }
 
     override fun fetchProfileFlow(userId: String): Flow<Response<ProfileUser>> {
-       return flow {
-           emit(Response.Loading())
+        return flow {
+            emit(Response.Loading())
 
-           val profile = fetchUserProfile(userId)
-           emit(Response.Success(profile!!))
-       }.catch { error ->
-           error.message?.let {
-               emit(Response.Failure(it))
-           }
-       }
+            val profile = fetchUserProfile(userId)!!
+            emit(Response.Success(profile))
+
+        }.catch { error ->
+            emit(Response.Failure(error.message.orEmpty()))
+        }
     }
 
-    override suspend fun fetchUsersProfile(userIds: List<String>): List<ProfileUser>? =
-        withContext(Dispatchers.IO) {
-            try {
-                userIds.map {
-                    async {
-                        fetchUserProfile(it)
-                    }
-                }.awaitAll().map { it!! }.toList()
-            } catch (e: Exception) {
-                null
-            }
+    override suspend fun fetchUsersProfile(userIds: List<String>): List<ProfileUser> =
+        withContext(Dispatchers.Main) {
+            userIds.map {
+                async {
+                    fetchUserProfile(it)
+                }
+            }.awaitAll().filterNotNull().toList()
         }
 
     override suspend fun editUserProfile(userId: String, field: String, value: Any): String? {
@@ -63,7 +58,8 @@ class FirebaseProfileService @Inject constructor(
 
     override suspend fun editUserProfile(userId: String, userProfile: ProfileUser): String? {
         return try {
-            db.collection(PROFILE_COLL).document(userId).update(userProfile.toFirestoreData()).await()
+            db.collection(PROFILE_COLL).document(userId).update(userProfile.toFirestoreData())
+                .await()
             userId
         } catch (e: Exception) {
             null
@@ -74,7 +70,9 @@ class FirebaseProfileService @Inject constructor(
         val db = FirebaseFirestore.getInstance()
 
         return try {
-            db.collection(PROFILE_COLL).add(newUserProfile.toFirestoreData()).await().id
+            db.collection(PROFILE_COLL).document(newUserProfile.uuid)
+                .set(newUserProfile.toFirestoreData()).await()
+            newUserProfile.uuid
         } catch (e: Exception) {
             null
         }

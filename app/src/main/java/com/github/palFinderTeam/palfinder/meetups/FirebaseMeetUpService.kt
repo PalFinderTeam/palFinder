@@ -49,7 +49,11 @@ class FirebaseMeetUpService @Inject constructor(
 
     override suspend fun editMeetUp(meetUpId: String, field: String, value: Any): String? {
         return try {
-            db.collection(MEETUP_COLL).document(meetUpId)
+            if (!db.collection(MEETUP_COLL).document(meetUpId).get()
+                    .await().data!!.contains(field)
+            ) {
+                return null
+            }
             db.collection(MEETUP_COLL).document(meetUpId).update(field, value).await()
             meetUpId
         } catch (e: Exception) {
@@ -97,9 +101,7 @@ class FirebaseMeetUpService @Inject constructor(
             emit(Success(meetUps))
 
         }.catch { error ->
-            error.message?.let {
-                emit(Failure(it))
-            }
+            emit(Failure(error.message.orEmpty()))
         }
     }
 
