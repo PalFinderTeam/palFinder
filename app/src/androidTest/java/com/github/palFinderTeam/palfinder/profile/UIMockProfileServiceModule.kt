@@ -73,8 +73,13 @@ object UIMockProfileServiceModule {
 
         override fun fetchProfileFlow(userId: String): Flow<Response<ProfileUser>> {
             return flow {
-                val profile = db[userId]!!
-                emit(Response.Success(profile))
+                if (db.containsKey(userId)) {
+                    val profile = db[userId]!!
+                    emit(Response.Success(profile))
+                }
+                else{
+                    emit(Response.Failure("Not Found"))
+                }
             }
         }
 

@@ -5,7 +5,10 @@ import android.icu.util.Calendar
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.activities.RecyclerViewMatcher
@@ -62,6 +65,7 @@ class ChatActivityTest {
         messages1 = listOf(ChatMessage(date1,user!!,"message 1", false),
                         ChatMessage(date2,user,"message 2", false))
 
+        (chatService as UIMockChatServiceModule.UIMockChatService).clear()
     }
 
     @Test
@@ -83,6 +87,24 @@ class ChatActivityTest {
                     R.id.msg_in_sender_name
                 ))
                 .check(matches(withText(profile.username)))
+        }
+    }
+
+    @Test
+    fun testSendMessage() = runTest {
+        val intent = Intent(getApplicationContext(), ChatActivity::class.java).apply {
+            putExtra(CHAT, chat1)
+        }
+
+        val scenario = ActivityScenario.launch<ChatActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.et_ChatMessageEdit)).perform(typeText("dummy 1234"))
+            onView(withId(R.id.bt_SendMessage)).perform(click())
+            onView(
+                RecyclerViewMatcher(R.id.chat_list).atPositionOnView(0,
+                    R.id.msg_in_text
+                ))
+                .check(matches(withText("dummy 1234")))
         }
     }
 }

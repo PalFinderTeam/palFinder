@@ -22,7 +22,7 @@ class ChatViewModel @Inject constructor(
     private val profileService: ProfileService
     ): ViewModel() {
 
-    val listOfMessage: MutableLiveData<List<ChatMessage>> = MutableLiveData()
+    val listOfMessage: MutableLiveData<MutableList<ChatMessage>> = MutableLiveData()
     val profilesData = HashMap<String, ProfileUser>()
 
     private lateinit var chatID: String
@@ -37,7 +37,8 @@ class ChatViewModel @Inject constructor(
         if (user != null) {
             val userID = user.uid
             val msg = ChatMessage(Calendar.getInstance(), userID, content, false)
-
+            listOfMessage.value!!.add(msg)
+            listOfMessage.postValue(listOfMessage.value)
             viewModelScope.launch {
                 chatService.postMessage(chatID, msg)
             }
@@ -54,7 +55,7 @@ class ChatViewModel @Inject constructor(
         listOfMessage.value = mutableListOf()
         viewModelScope.launch {
             chatService.getAllMessageFromChat(chatID).collect {
-                listOfMessage.postValue(it.sortedBy { it.sentAt.time })
+                listOfMessage.postValue(it.sortedBy { it.sentAt.time }.toMutableList())
             }
         }
     }

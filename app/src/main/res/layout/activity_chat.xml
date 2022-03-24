@@ -26,12 +26,12 @@
         android:gravity="start|top"
         android:inputType="textMultiLine"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/floatingActionButton2"
+        app:layout_constraintEnd_toStartOf="@+id/bt_SendMessage"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton2"
+        android:id="@+id/bt_SendMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
