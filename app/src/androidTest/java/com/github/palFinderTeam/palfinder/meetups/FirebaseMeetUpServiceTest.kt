@@ -13,7 +13,6 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.util.*
@@ -146,5 +145,34 @@ class FirebaseMeetUpServiceTest {
     @Test
     fun getMeetupAroundLocationWorksAsExpected() {
         // TODO later I don't want to do maths now
+    }
+
+    @Test
+    fun getNonExistentMeetUpReturnsNull() = runTest {
+        val fetchedMeetup = firebaseMeetUpService.getMeetUpData("DuGrandNimporteQuoi")
+        assertThat(fetchedMeetup, nullValue())
+    }
+
+//    @Test
+//    fun createMeetUpWhileDbIsNotAccessibleReturnsNull() = runTest {
+//        //db.disableNetwork().await()
+//        val id = firebaseMeetUpService.createMeetUp(meetUp)
+//        assertThat(id, nullValue())
+//    }
+
+    @Test
+    fun editNonExistingMeetUpReturnsNull() = runTest {
+        val id = firebaseMeetUpService.editMeetUp("EncoreNimporteQuoi", meetUp)
+        assertThat(id, nullValue())
+    }
+
+    @Test
+    fun editNonExistingFieldReturnsNull() = runTest {
+        val id = firebaseMeetUpService.createMeetUp(meetUp)
+        assertThat(id, notNullValue())
+        id!!.let {
+            val idNull = firebaseMeetUpService.editMeetUp(it, "NotAField", "NotAValue")
+            assertThat(idNull, nullValue())
+        }
     }
 }
