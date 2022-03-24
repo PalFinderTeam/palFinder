@@ -260,7 +260,6 @@ class MeetUpListTest {
     fun clickItem() = runTest {
         meetUpList.forEach { meetUpRepository.createMeetUp(it) }
         val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
-        init()
         ActivityScenario.launch<MeetupListActivity>(intent)
         onView(
             RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(

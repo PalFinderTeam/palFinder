@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import android.util.Log
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.closeSoftKeyboard
@@ -16,7 +17,9 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -36,6 +39,7 @@ import javax.inject.Inject
 class MeetupViewTest {
 
     private lateinit var meetup: MeetUp
+    private lateinit var user: ProfileUser
     private val eventName = "dummy1"
     private val eventDescription = "dummy2"
     private lateinit var date1: Calendar
@@ -50,6 +54,8 @@ class MeetupViewTest {
 
     @Inject
     lateinit var meetUpRepository: MeetUpRepository
+    @Inject
+    lateinit var profileRepository: ProfileService
 
     @Before
     fun setup() {
@@ -60,14 +66,23 @@ class MeetupViewTest {
         date2 = Calendar.getInstance()
         date2.set(2022, 2, 1, 1, 0, 0)
 
-        val user = "user"
 
         expectDate1 = format.format(date1)
         expectDate2 = format.format(date2)
 
+
+        user = ProfileUser(
+            "user",
+            "Michou",
+        "Jonas",
+            "Martin",
+            date1,
+            ImageInstance(""),
+            "Ne la laisse pas tomber"
+        )
         meetup = MeetUp(
             "dummy",
-            user,
+            "user",
             "",
             eventName,
             eventDescription,
@@ -77,13 +92,14 @@ class MeetupViewTest {
             emptySet(),
             true,
             2,
-            mutableListOf(user)
+            mutableListOf("user")
         )
     }
 
     @After
     fun cleanUp() {
         (meetUpRepository as UIMockMeetUpRepositoryModule.UIMockRepository).clearDB()
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).clearDB()
     }
 
     @Test
@@ -192,6 +208,10 @@ class MeetupViewTest {
 
     @Test
     fun profileFragmentCorrectlyDisplayed() = runTest {
+        val userid = profileRepository.createProfile(user)
+        assertThat(userid, notNullValue())
+        val id = meetUpRepository.createMeetUp(meetup)
+        assertThat(id, notNullValue())
         val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
         val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
         scenario.use {

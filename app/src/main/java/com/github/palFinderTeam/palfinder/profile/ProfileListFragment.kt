@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.profile
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,7 +37,6 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
         recyclerView = v.findViewById(R.id.profile_list_recycler) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
         val userList = usersId.map { id -> fetchProfile(id) }
-
         val adapter = ProfileAdapter(userList) { onListItemClick(it) }
         recyclerView.adapter = adapter
         val searchField = v.findViewById<SearchView>(R.id.profile_list_search)
