@@ -11,8 +11,9 @@ import java.lang.Exception
 /**
  * Download an image from a given URL and injects it into an
  * `ImageView`. This can be a Firebase storage image or a raw
- * HTTP(S) link
- * @param imgURL String image URL path
+ * HTTP(S) link.
+ * @param imgURL String image URL path If URL is empty, then
+ * return an empty image file.
  */
 data class ImageInstance(
     val imgURL : String, var imgFetch : ImageFetcher? = null
@@ -32,29 +33,34 @@ data class ImageInstance(
 
     /**
      * Loads the image asynchronously into the desired Image View
-     * @param view ImageView that needs to be change
+     * @param view ImageView that needs to be change.
      */
     suspend fun loadImageInto(view : ImageView){
         // Is image cached?
         if (isCached) {
             view.setImageBitmap(bitmapCache)
         } else {
-            try {
-                view.setImageResource(android.R.color.background_dark)
-                view.alpha = 0.3f
+            if(imgURL != "") {
+                try {
+                    view.setImageResource(android.R.color.background_dark)
+                    view.alpha = 0.3f
 
-                EspressoIdlingResource.increment()
-                fetchFromDB()
+                    EspressoIdlingResource.increment()
+                    fetchFromDB()
 
-                imgStatus = CACHED
-                view.setImageBitmap(bitmapCache)
-            } catch (e: Exception) {
+                    imgStatus = CACHED
+                    view.setImageBitmap(bitmapCache)
+                } catch (e: Exception) {
+                    view.setImageResource(R.drawable.not_found)
+                    imgStatus = FILE_NOT_FOUND
+                    isCached = false
+                } finally {
+                    view.alpha = 1.0f
+                    EspressoIdlingResource.decrement()
+                }
+            } else {
                 view.setImageResource(R.drawable.not_found)
                 imgStatus = FILE_NOT_FOUND
-                isCached = false
-            } finally {
-                view.alpha = 1.0f
-                EspressoIdlingResource.decrement()
             }
         }
     }
