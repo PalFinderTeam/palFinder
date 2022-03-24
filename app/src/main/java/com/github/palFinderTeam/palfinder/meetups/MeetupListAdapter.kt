@@ -12,15 +12,15 @@ import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 
 
-class MeetupListAdapter(private val dataSet: List<MeetUp>, private val onItemClicked: (position: Int) -> Unit) :
+class MeetupListAdapter(private val dataSet: List<MeetUp>, val currentDataSet: MutableList<MeetUp>,
+                        private var filter: SearchedFilter<MeetUp>,  private val onItemClicked: (position: Int) -> Unit) :
     RecyclerView.Adapter<MeetupListAdapter.ViewHolder>(), Filterable {
-    val currentDataSet = dataSet.toMutableList()
 
     class ViewHolder(view: View, private val onItemClicked: (position: Int) -> Unit) :
         RecyclerView.ViewHolder(view), View.OnClickListener {
         //TODO - add some remaining fields to display
         val meetupTitle: TextView = view.findViewById(R.id.meetup_title)
-        val meetupDate: TextView = view.findViewById(R.id.msg_in_text)
+        val meetupDate: TextView = view.findViewById(R.id.date)
         val meetupDescription: TextView = view.findViewById(R.id.meetup_description)
         val meetupNumberParticipants: TextView = view.findViewById(R.id.number_participants)
 
@@ -62,8 +62,8 @@ class MeetupListAdapter(private val dataSet: List<MeetUp>, private val onItemCli
 
     override fun getItemCount(): Int = currentDataSet.size
 
-    override fun getFilter(): Filter =
-        SearchedFilter(dataSet, currentDataSet, { notifyDataSetChanged() })
+    override fun getFilter(): Filter = filter
+
 }
 
 

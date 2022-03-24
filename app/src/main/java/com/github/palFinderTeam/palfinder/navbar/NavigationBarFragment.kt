@@ -27,7 +27,7 @@ class NavigationBarFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setup(R.id.nav_bar, -1)
+        setup(R.id.navbar, -1)
     }
 
     fun setup(id: Int, selected: Int){

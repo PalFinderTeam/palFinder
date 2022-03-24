@@ -18,7 +18,6 @@ import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.USER_ID
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
-import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
@@ -90,6 +89,5 @@ class ChatMessageListAdapter(
 
     override fun getItemCount(): Int = currentDataSet.size
 
-    override fun getFilter(): Filter =
-        SearchedFilter(dataSet, currentDataSet, { notifyDataSetChanged() })
+    override fun getFilter(): Filter = filter
 }

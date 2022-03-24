@@ -15,7 +15,7 @@
         tools:layout_editor_absoluteX="0dp">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/nav_bar"
+            android:id="@+id/navbar"
             android:layout_width="0dp"
             android:layout_height="65dp"
             android:layout_marginStart="32dp"

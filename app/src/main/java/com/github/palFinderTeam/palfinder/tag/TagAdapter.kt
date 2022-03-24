@@ -3,7 +3,6 @@ package com.github.palFinderTeam.palfinder.tag
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
@@ -51,7 +50,7 @@ class TagAdapter<T: Tag>(private val dataSet: List<T>) : RecyclerView.Adapter<Ta
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = currentDataSet.size
-    override fun getFilter() = SearchedFilter(dataSet, currentDataSet, { notifyDataSetChanged() })
+    override fun getFilter() = SearchedFilter(dataSet, currentDataSet,null) { notifyDataSetChanged() }
 
 
 }
