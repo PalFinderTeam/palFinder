@@ -135,7 +135,8 @@ class MapsActivityTest {
 
             val resultIntent = scenario.result.resultData
 
-            Assert.assertEquals(expectedIntent.extras, resultIntent.extras)
+            Assert.assertEquals(basePosition, resultIntent.getParcelableExtra<LatLng>(
+                LOCATION_SELECTED)!!)
 
         }
 
