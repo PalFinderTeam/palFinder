@@ -189,4 +189,25 @@ class MeetupViewTest {
             onView(withId(R.id.tv_ViewEventDescritpion)).check(matches(withText("Meetup description")))
         }
     }
+
+    @Test
+    fun profileFragmentCorrectlyDisplayed() = runTest {
+        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        scenario.use {
+            Intents.init()
+
+            onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
+            onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
+            closeSoftKeyboard()
+            onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
+
+            Intents.intended(IntentMatchers.hasComponent(MeetUpView::class.java.name))
+            Intents.release()
+
+            onView(withId(R.id.tv_ViewEventName)).check(matches(withText("Meetup name")))
+            onView(withId(R.id.tv_ViewEventDescritpion)).check(matches(withText("Meetup description")))
+            onView(withId(R.id.show_profile_list_button)).perform(click())
+        }
+    }
 }
