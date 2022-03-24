@@ -88,5 +88,14 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="createAccount">Create Account</string>
+
+    <!-- User settings -->
+    <string name="userSaveSettings">Save settings</string>
+    <string name="userSettingsPfpHint">(Tap your profile picture to change it)</string>
+    <string name="userSettingsSurname">Surname</string>
+    <string name="userSettingsName">Name</string>
+    <string name="userSettingsUsername">Username</string>
+    <string name="userSettingsBio">About you</string>
 
 </resources>

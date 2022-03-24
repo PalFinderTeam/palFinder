@@ -88,6 +88,8 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:4.4.0'
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
 
+    implementation 'androidx.test.espresso:espresso-idling-resource:3.4.0'
+
     androidTestImplementation 'androidx.test:core:1.4.0'
     androidTestImplementation 'androidx.test:core-ktx:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

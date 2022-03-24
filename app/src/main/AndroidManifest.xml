@@ -57,7 +57,13 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
-            android:exported="true" />
+            android:exported="true"/>
+
+        <activity
+            android:name=".user.settings.UserSettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
     </application>
 
 </manifest>
