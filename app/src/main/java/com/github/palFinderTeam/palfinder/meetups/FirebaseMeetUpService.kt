@@ -14,10 +14,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -123,6 +120,13 @@ class FirebaseMeetUpService @Inject constructor(
             awaitClose {
                 listenerRegistration.remove()
             }
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    override fun getAllMeetUpsResponse(): Flow<Response<List<MeetUp>>> {
+        return getAllMeetUps().map {
+            Success(it)
         }
     }
 
