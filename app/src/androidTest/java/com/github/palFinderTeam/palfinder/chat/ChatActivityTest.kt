@@ -100,11 +100,7 @@ class ChatActivityTest {
         scenario.use {
             onView(withId(R.id.et_ChatMessageEdit)).perform(typeText("dummy 1234"))
             onView(withId(R.id.bt_SendMessage)).perform(click())
-            onView(
-                RecyclerViewMatcher(R.id.chat_list).atPositionOnView(0,
-                    R.id.msg_in_text
-                ))
-                .check(matches(withText("dummy 1234")))
+            onView(withId(R.id.et_ChatMessageEdit)).check(matches(withText("")))
         }
     }
 }

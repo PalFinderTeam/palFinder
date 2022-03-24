@@ -37,8 +37,7 @@ class ChatViewModel @Inject constructor(
         if (user != null) {
             val userID = user.uid
             val msg = ChatMessage(Calendar.getInstance(), userID, content, false)
-            listOfMessage.value!!.add(msg)
-            listOfMessage.postValue(listOfMessage.value)
+
             viewModelScope.launch {
                 chatService.postMessage(chatID, msg)
             }
