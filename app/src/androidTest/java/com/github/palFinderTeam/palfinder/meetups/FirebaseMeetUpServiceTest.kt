@@ -224,6 +224,16 @@ class FirebaseMeetUpServiceTest {
             db.collection(MEETUP_COLL).document(it).delete().await()
         }
     }
+    @Test fun leaveMeetUpYouCreatedReturnsFailure() = runTest {
+        val id = firebaseMeetUpService.createMeetUp(meetUp)
+        assertThat(id, notNullValue())
+        id!!.let {
+            val result = firebaseMeetUpService.leaveMeetUp(it, "userId")
+            assertThat(result, instanceOf(Response.Failure::class.java))
+            // Make sure to clean for next tests
+            db.collection(MEETUP_COLL).document(it).delete().await()
+        }
+    }
 
     @Test
     fun joinNonExistingMeetUpReturnsFailure() = runTest {

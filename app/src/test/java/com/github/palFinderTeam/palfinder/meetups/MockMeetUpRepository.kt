@@ -97,6 +97,9 @@ class MockMeetUpRepository : MeetUpRepository {
             if (meetUp.isFull()) {
                 return Response.Failure("Cannot join, it is full.")
             }
+            if (meetUp.creatorId == userId) {
+                return Response.Failure("Cannot leave your own meetup.")
+            }
 
             db[meetUpId] = meetUp.copy(participantsId = meetUp.participantsId.plus(userId))
             Response.Success(Unit)

@@ -135,6 +135,9 @@ class FirebaseMeetUpService @Inject constructor(
             if (!meetUp.isParticipating(userId)) {
                 return Failure("Cannot leave a meetup which was not joined before")
             }
+            if (meetUp.creatorId == userId) {
+                return Failure("Cannot leave your own meetup.")
+            }
             db.collection(MEETUP_COLL).document(meetUpId)
                 .update("participants", FieldValue.arrayRemove(userId)).await()
             Success(Unit)
