@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.meetups
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
+import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_EDIT
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.Response.*
@@ -76,29 +77,50 @@ class FirebaseMeetUpService @Inject constructor(
         val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInM)
         val tasks = bounds.map {
             db.collection(MEETUP_COLL)
-                .orderBy(it.startHash)
+                .orderBy("geohash")
+                .startAt(it.startHash)
                 .endAt(it.endHash)
-                .get()
         }
 
-        return flow {
-            emit(Loading())
 
-            val allTasks: Task<List<QuerySnapshot>> = Tasks.whenAllSuccess(tasks)
+        return callbackFlow {
+            trySend(Loading())
 
-            val meetUps = allTasks.await().flatMap { snapshot ->
-                snapshot.documents.map { it.toMeetUp()!! }.filter {
-                    // Filter the last false positive
-                    val docLocation = it.location
-                    val distanceInM =
-                        docLocation.distanceInKm(location) * 1000 // TODO find better unit conversion
-                    distanceInM <= radiusInM
+            val result = mutableSetOf<MeetUp>()
+
+            val listeners = tasks.map {
+                it.addSnapshotListener { value, error ->
+                    if (error != null) {
+                        cancel(
+                            message = "Error fetching meetups",
+                            cause = error
+                        )
+                        return@addSnapshotListener
+                    }
+
+                    val map = value?.documents
+                        ?.mapNotNull { it.toMeetUp() }
+                        ?.filter {
+                            // Filter the last false positive
+                            val docLocation = it.location
+                            val distanceInM =
+                                docLocation.distanceInKm(location) * 1000 // TODO find better unit conversion
+                            distanceInM <= radiusInM
+                            true
+                        }
+                    if (map != null) {
+                        // Probably not thread safe but yolo
+                        result.addAll(map)
+                        trySend(Success(result.toList()))
+                    }
+                }
+
+            }
+            awaitClose {
+                listeners.forEach {
+                    it.remove()
                 }
             }
-            emit(Success(meetUps))
-
-        }.catch { error ->
-            emit(Failure(error.message.orEmpty()))
         }
     }
 
