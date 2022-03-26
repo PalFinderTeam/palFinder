@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups
 
+import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,7 +50,26 @@ interface MeetUpRepository {
      *
      * @param location Location around which to search.
      */
-    fun getMeetUpsAroundLocation(location: Location, radiusInM: Double): Flow<Response<List<MeetUp>>>
+    fun getMeetUpsAroundLocation(
+        location: Location,
+        radiusInM: Double
+    ): Flow<Response<List<MeetUp>>>
+
+    /**
+     * Try to join a meetup.
+     *
+     * @param meetUpId Id of the meetup to join.
+     * @param userId Id of user that joins.
+     */
+    suspend fun joinMeetUp(meetUpId: String, userId: String, now: Calendar): Response<Unit>
+
+    /**
+     * Try to leave a meetup.
+     *
+     * @param meetUpId Id of the meetup to leave.
+     * @param userId Id of user that leaves.
+     */
+    suspend fun leaveMeetUp(meetUpId: String, userId: String): Response<Unit>
 
     /**
      * Fetches every meetups from DB. It will be removed later but is useful for development.
