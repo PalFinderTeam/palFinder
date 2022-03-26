@@ -70,11 +70,11 @@ class FirebaseMeetUpService @Inject constructor(
 
     override fun getMeetUpsAroundLocation(
         location: Location,
-        radiusInM: Double
+        radiusInKm: Double
     ): Flow<Response<List<MeetUp>>> {
 
         val geoLocation = GeoLocation(location.latitude, location.longitude)
-        val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInM)
+        val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInKm*1000.0)
         val tasks = bounds.map {
             db.collection(MEETUP_COLL)
                 .orderBy("geohash")
@@ -91,6 +91,7 @@ class FirebaseMeetUpService @Inject constructor(
             val listeners = tasks.map {
                 it.addSnapshotListener { value, error ->
                     if (error != null) {
+                        trySend(Failure(error.message.orEmpty()))
                         cancel(
                             message = "Error fetching meetups",
                             cause = error
@@ -103,10 +104,9 @@ class FirebaseMeetUpService @Inject constructor(
                         ?.filter {
                             // Filter the last false positive
                             val docLocation = it.location
-                            val distanceInM =
-                                docLocation.distanceInKm(location) * 1000 // TODO find better unit conversion
-                            distanceInM <= radiusInM
-                            true
+                            val distanceInKm =
+                                docLocation.distanceInKm(location)
+                            distanceInKm <= radiusInKm
                         }
                     if (map != null) {
                         // Probably not thread safe but yolo

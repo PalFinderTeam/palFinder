@@ -48,8 +48,9 @@ interface MeetUpRepository {
      * It will use geoquery of firestore.
      *
      * @param location Location around which to search.
+     * @param radiusInKm Radius in Km of the search.
      */
-    fun getMeetUpsAroundLocation(location: Location, radiusInM: Double): Flow<Response<List<MeetUp>>>
+    fun getMeetUpsAroundLocation(location: Location, radiusInKm: Double): Flow<Response<List<MeetUp>>>
 
     /**
      * Fetches every meetups from DB. It will be removed later but is useful for development.

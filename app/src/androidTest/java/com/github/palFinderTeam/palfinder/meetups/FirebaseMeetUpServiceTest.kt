@@ -5,10 +5,13 @@ import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService.Companio
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.*
@@ -143,8 +146,32 @@ class FirebaseMeetUpServiceTest {
     }
 
     @Test
-    fun getMeetupAroundLocationWorksAsExpected() {
-        // TODO later I don't want to do maths now
+    fun getMeetupAroundLocationWorksAsExpected() = runTest {
+        val meetUp2 = meetUp.copy(location = Location(4.0,4.0)) // ~ 628km
+        val meetUp3 = meetUp.copy(location = Location(4.1, 4.0)) // ~ 636km
+        val id = firebaseMeetUpService.createMeetUp(meetUp)
+        val id2 = firebaseMeetUpService.createMeetUp(meetUp2)
+        val id3 = firebaseMeetUpService.createMeetUp(meetUp3)
+        assertThat(id, notNullValue())
+        assertThat(id2, notNullValue())
+        assertThat(id3, notNullValue())
+        if (id != null && id2 != null && id3 != null) {
+            val fetchedMeetupsFlow = firebaseMeetUpService.getMeetUpsAroundLocation(meetUp.location, 630.0)
+            // After debugging I know that this particular query produces 4 geoqueries
+            val fetchedMeetups = fetchedMeetupsFlow.take(5).toList()
+            assertThat(fetchedMeetups[0], instanceOf(Response.Loading::class.java))
+            fetchedMeetups.subList(1,fetchedMeetups.size-1).forEach {
+                assertThat(it, instanceOf(Response.Success::class.java))
+            }
+            val meetUps = fetchedMeetups.filterIsInstance<Response.Success<List<MeetUp>>>().map { it.data }.reduceRight { a, b -> a + b}
+            assertThat(meetUps, hasItems(meetUp2.copy(uuid = id2), meetUp.copy(uuid = id)))
+            assertThat(meetUps, not(hasItem(meetUp3.copy(uuid = id3))))
+            // Make sure to clean for next tests
+            db.collection(MEETUP_COLL).document(id).delete().await()
+            db.collection(MEETUP_COLL).document(id2).delete().await()
+            db.collection(MEETUP_COLL).document(id3).delete().await()
+        }
+
     }
 
     @Test
@@ -152,13 +179,6 @@ class FirebaseMeetUpServiceTest {
         val fetchedMeetup = firebaseMeetUpService.getMeetUpData("DuGrandNimporteQuoi")
         assertThat(fetchedMeetup, nullValue())
     }
-
-//    @Test
-//    fun createMeetUpWhileDbIsNotAccessibleReturnsNull() = runTest {
-//        //db.disableNetwork().await()
-//        val id = firebaseMeetUpService.createMeetUp(meetUp)
-//        assertThat(id, nullValue())
-//    }
 
     @Test
     fun editNonExistingMeetUpReturnsNull() = runTest {

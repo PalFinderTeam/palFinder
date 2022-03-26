@@ -4,7 +4,6 @@ import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.di.MeetUpModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
@@ -87,11 +86,11 @@ object UIMockMeetUpRepositoryModule {
 
         override fun getMeetUpsAroundLocation(
             location: Location,
-            radiusInM: Double
+            radiusInKm: Double
         ): Flow<Response<List<MeetUp>>> {
             return flow {
                 val meetUps = db.values.filter { meetUp ->
-                    meetUp.location.distanceInKm(location)*1000 <= radiusInM
+                    meetUp.location.distanceInKm(location) <= radiusInKm
                 }
 
                 emit(Response.Success(meetUps))
