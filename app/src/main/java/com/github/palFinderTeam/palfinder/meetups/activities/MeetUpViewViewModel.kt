@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class MeetUpViewViewModel @Inject constructor(
     private val meetUpRepository: MeetUpRepository
@@ -30,6 +31,10 @@ class MeetUpViewViewModel @Inject constructor(
             // TODO do something on error
             fetchedMeetUp?.let { _meetUp.value = it }
         }
+    }
+
+    fun getMeetupID(): String{
+        return meetUp.value!!.uuid
     }
 
     /**

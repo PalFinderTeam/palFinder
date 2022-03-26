@@ -12,73 +12,35 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/imageView"
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fc_meetup"
+            android:name="com.github.palFinderTeam.palfinder.meetups.fragments.MeetupViewFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:src="@tools:sample/avatars" />
-
-        <TextView
-            android:id="@+id/tv_ViewEventName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
-
-        <TextView
-            android:id="@+id/tv_ViewEventCreator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
-
-        <TextView
-            android:id="@+id/tv_ViewEventDescritpion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tv_StartLabel"
-                android:layout_width="109dp"
-                android:layout_height="wrap_content"
-                android:text="@string/meetup_view_meetup_start_at" />
-
-            <TextView
-                android:id="@+id/tv_ViewStartDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tv_EndDate_Label"
-                android:layout_width="108dp"
-                android:layout_height="wrap_content"
-                android:text="@string/meetup_view_meetup_end_at" />
-
-            <TextView
-                android:id="@+id/tv_ViewEndDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-        </LinearLayout>
+            android:layout_height="wrap_content" />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fc_tags"
             android:layout_width="match_parent"
             android:layout_height="89dp" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:onClick="onChat"
+            app:srcCompat="@android:drawable/stat_notify_chat" />
+
     </LinearLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fc_navbar2"
+        android:name="com.github.palFinderTeam.palfinder.navbar.NavigationBarFragment"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
@@ -87,11 +49,10 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:clickable="true"
         android:foregroundGravity="center_vertical|center"
         android:onClick="onEdit"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/fc_navbar2"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_menu_edit"
         tools:ignore="SpeakableTextPresentCheck" />

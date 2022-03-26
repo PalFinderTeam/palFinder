@@ -4,7 +4,6 @@ import android.icu.util.Calendar
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import kotlinx.coroutines.Dispatchers
@@ -12,9 +11,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert
-import org.hamcrest.CoreMatchers.*
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Before
@@ -40,8 +38,8 @@ class MeetUpViewViewModelTest {
     fun setup() {
         testStartDate = Mockito.mock(Calendar::class.java)
         testEndDate = Mockito.mock(Calendar::class.java)
-        Mockito.`when`(testStartDate.timeInMillis).thenReturn( 69)
-        Mockito.`when`(testEndDate.timeInMillis).thenReturn( 420)
+        Mockito.`when`(testStartDate.timeInMillis).thenReturn(69)
+        Mockito.`when`(testEndDate.timeInMillis).thenReturn(420)
         meetUpRepository = MockMeetUpRepository()
         meetUpRepository.clearDB()
         viewModel = MeetUpViewViewModel(meetUpRepository)
@@ -57,7 +55,7 @@ class MeetUpViewViewModelTest {
     fun `display infos from valid meetUp`() = runTest {
         val dummyMeetUp = MeetUp(
             "",
-            ProfileUser("username", "whatever", "surname", testStartDate),
+            "user",
             "icon",
             "name",
             "description",
@@ -72,9 +70,9 @@ class MeetUpViewViewModelTest {
 
         val id = meetUpRepository.createMeetUp(dummyMeetUp)
 
-        MatcherAssert.assertThat(id, CoreMatchers.notNullValue())
+        assertThat(id, notNullValue())
         viewModel.loadMeetUp(id!!)
 
-        assertThat(viewModel.meetUp.value, `is`(dummyMeetUp))
+        assertThat(viewModel.meetUp.value, `is`(dummyMeetUp.copy(uuid = id)))
     }
 }

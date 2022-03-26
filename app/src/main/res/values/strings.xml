@@ -7,6 +7,9 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+    <!-- Strings used for image loading -->
+    <string name="image_load_failed">Sorry, we could not load the image that you requested</string>
+
     <!-- Strings used for Map Activity-->
     <string name="title_activity_maps">MapsActivity</string>
 
@@ -37,9 +40,12 @@
     <string name="meetup_creation_meetup_tags_bt">Add Tags</string>
     <string name="meetup_creation_meetup_entries">Limit Entries</string>
     <string name="meetup_creation_meetup_done">Done</string>
+    <string name="meetup_creation_meetup_select_location">Select Location</string>
 
     <string name="list_sort_by_alphabetical_order">Sort by Alph.</string>
     <string name="list_sort_by_capacity">Sort by Cap.</string>
+    <string name="list_sort_by_location">Sort by Dist.</string>
+    <string name="list_sort_menu">Sort</string>
     <string name="meetup_creation_missing_name_desc">Please add an Event Name and an Event Description</string>
     <string name="meetup_creation_missing_name_desc_title">Missing Data</string>
 
@@ -56,6 +62,9 @@
     <string name="placeholder_name">someone</string>
     <string name="placeholder_username">\@username</string>
     <string name="placeholder_date">yyyy/mm/dd</string>
+    <string name="desc_name">— About me</string>
+    <string name="placeholder_desc">Hello, I am a placeholder description. I am long enough so that I break onto another line, hopefully, but if not then I will add some extra text.</string>
+    <string name="no_desc">No bio provided...</string>
 
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
@@ -68,5 +77,25 @@
     <string name="login_failed">"Login failed"</string>
     <string name="limit_people">limit people</string>
     <string name="DB_error_msg">Cannot contact database</string>
+
+    <string name="pretty_location_too_small">Here</string>
+    <string name="pretty_location_m">%1$s m away</string>
+    <string name="pretty_location_km">%1$s km away</string>
+
+    <string name="nav_bar_create">Create</string>
+    <string name="nav_bar_find">Find</string>
+    <string name="nav_bar_group">Groups</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="createAccount">Create Account</string>
+
+    <!-- User settings -->
+    <string name="userSaveSettings">Save settings</string>
+    <string name="userSettingsPfpHint">(Tap your profile picture to change it)</string>
+    <string name="userSettingsSurname">Surname</string>
+    <string name="userSettingsName">Name</string>
+    <string name="userSettingsUsername">Username</string>
+    <string name="userSettingsBio">About you</string>
 
 </resources>

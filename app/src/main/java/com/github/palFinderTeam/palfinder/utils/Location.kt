@@ -1,5 +1,8 @@
 package com.github.palFinderTeam.palfinder.utils
 
+import com.google.firebase.firestore.GeoPoint
+import android.content.Context
+import com.github.palFinderTeam.palfinder.R
 import java.io.Serializable
 import kotlin.math.*
 
@@ -14,6 +17,19 @@ private const val mToKm = 1/1000f
  * @param latitude
  */
 data class Location(val longitude: Double, val latitude: Double): Serializable{
+    companion object{
+        const val MIN_M_DISTANCE = 0.01
+        const val MIN_KM_DISTANCE = 1.0
+        const val KM_TO_M = 0.001
+
+        /**
+         * Conversion from GeoPoint (Firebase)
+         */
+        fun GeoPoint.toLocation(): Location {
+            return Location(longitude, latitude)
+        }
+    }
+
     fun distanceInKm(other: Location): Double{
         val phi1 = latitude * degToRad
         val phi2 = other.latitude * degToRad
@@ -27,5 +43,33 @@ data class Location(val longitude: Double, val latitude: Double): Serializable{
 
         val distance = earthRadius * c
         return distance * mToKm
+    }
+
+    /**
+     * Conversion to GeoPoint (Firebase)
+     */
+    fun toGeoPoint(): GeoPoint {
+        return GeoPoint(latitude, longitude)
+    }
+
+    override fun toString(): String{
+        return "${longitude},${latitude}"
+    }
+
+    fun prettyDistanceTo(context: Context, other: Location):String{
+        val dist = distanceInKm(other)
+        return when {
+            dist < MIN_M_DISTANCE -> {
+                context.getString(R.string.pretty_location_too_small)
+            }
+            dist < MIN_KM_DISTANCE -> {
+                val display = (dist * KM_TO_M).roundToInt().toString()
+                context.getString(R.string.pretty_location_m, display)
+            }
+            else -> {
+                val display = dist.roundToInt().toString()
+                context.getString(R.string.pretty_location_km, display)
+            }
+        }
     }
 }

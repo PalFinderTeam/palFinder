@@ -8,13 +8,16 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents.*
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -25,6 +28,7 @@ import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -39,8 +43,8 @@ class MeetUpListTest {
     private lateinit var date3: Calendar
     private lateinit var date4: Calendar
     private lateinit var meetUpList: List<MeetUp>
-    private lateinit var user1: ProfileUser
-    private lateinit var user2: ProfileUser
+    private lateinit var user1: String
+    private lateinit var user2: String
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -63,13 +67,16 @@ class MeetUpListTest {
         date4 = Calendar.getInstance()
         date4.set(2022, 0, 1)
 
-        user1 = ProfileUser("User1", "Us", "er1", date1)
-        user2 = ProfileUser("User2", "Us", "er2", date2)
+        //user1 = ProfileUser("User1", "Us", "er1", date1, ImageInstance("icons/demo_pfp.jpeg"))
+        //user2 = ProfileUser("User2", "Us", "er2", date2, ImageInstance("icons/demo_pfp.jpeg"))
+
+        user1 = "user1Id"
+        user2 = "user2Id"
 
 
         meetUpList = listOf(
             MeetUp(
-                icon = "",
+                iconId = "",
                 name = "cuire des carottes",
                 description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre",
                 startDate = date1,
@@ -77,31 +84,31 @@ class MeetUpListTest {
                 location = Location(0.0, 0.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 45,
-                creator = user1,
+                creatorId = user1,
                 hasMaxCapacity = true,
-                participants = listOf(
+                participantsId = listOf(
                     user2
-                ).toMutableList(),
+                ),
                 uuid = "ce"
             ),
             MeetUp(
-                icon = "",
+                iconId = "",
                 name = "cuire des patates",
                 description = "nous aimerions bien nous atteler à la cuisson de patates au beurre",
                 startDate = date2,
                 endDate = date1,
                 location = Location(0.0, 0.0),
-                tags = setOf(Category.DRINKING),
+                tags = setOf(Category.WORKING_OUT, Category.DUMMY_TAG1),
                 capacity = 48,
-                creator = user1,
+                creatorId = user1,
                 hasMaxCapacity = true,
-                participants = listOf(
+                participantsId = listOf(
                     user2
-                ).toMutableList(),
+                ),
                 uuid = "ce"
             ),
             MeetUp(
-                icon = "",
+                iconId = "",
                 name = "Street workout",
                 description = "workout pepouse au pont chauderon",
                 startDate = date3,
@@ -109,15 +116,15 @@ class MeetUpListTest {
                 location = Location(0.0, 0.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 9,
-                creator = user2,
+                creatorId = user2,
                 hasMaxCapacity = true,
-                participants = listOf(
+                participantsId = listOf(
                     user1
-                ).toMutableList(),
+                ),
                 uuid = "ce"
             ),
             MeetUp(
-                icon = "",
+                iconId = "",
                 name = "Van Gogh Beaulieux",
                 description = "Expo sans tableau c'est bo",
                 startDate = date4,
@@ -125,15 +132,15 @@ class MeetUpListTest {
                 location = Location(0.0, 0.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 15,
-                creator = user1,
+                creatorId = user1,
                 hasMaxCapacity = true,
-                participants = listOf(
+                participantsId = listOf(
                     user1
-                ).toMutableList(),
+                ),
                 uuid = "ce"
             ),
             MeetUp(
-                icon = "",
+                iconId = "",
                 name = "Palexpo",
                 description = "popopo",
                 startDate = date4,
@@ -141,11 +148,11 @@ class MeetUpListTest {
                 location = Location(0.0, 0.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 13,
-                creator = user1,
+                creatorId = user1,
                 hasMaxCapacity = true,
-                participants = listOf(
+                participantsId = listOf(
                     user2
-                ).toMutableList(),
+                ),
                 uuid = "ce2"
             ),
         )
@@ -183,17 +190,92 @@ class MeetUpListTest {
 
         val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
         scenario.use{
-            onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
-                .check(matches(withText(meetUpList[0].name)))
-            scenario.onActivity { it.sortByCap(null) }
+            scenario.onActivity { it.sortByCap() }
             onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
                 .check(matches(withText(meetUpList.sortedBy { it.capacity }[0].name)))
-            scenario.onActivity { it.sortByName(null) }
+            scenario.onActivity { it.sortByName() }
             onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
                 .check(matches(withText(meetUpList.sortedBy { it.name.lowercase() }[0].name)))
         }
     }
+
+    @Test
+    fun filterWorks() = runTest {
+        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+
+        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        scenario.use {
+            scenario.onActivity { it.filterByTag(setOf(Category.CINEMA)) }
+            scenario.onActivity { assert(it.adapter.currentDataSet.isEmpty()) }
+            scenario.onActivity { it.filterByTag(setOf(Category.WORKING_OUT, Category.DUMMY_TAG1)) }
+            scenario.onActivity { assertEquals(1, it.adapter.currentDataSet.size) }
+            scenario.onActivity { it.filterByTag(setOf()) }
+            scenario.onActivity { assertEquals(5, it.adapter.currentDataSet.size) }
+        }
+    }
+
+    @Test
+    fun filterWorksAddTag() = runTest {
+        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+
+        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        scenario.use {
+            scenario.onActivity { it.viewModel.tagRepository.addTag(Category.CINEMA)}
+            scenario.onActivity { assert(it.adapter.currentDataSet.isEmpty()) }
+            scenario.onActivity { it.viewModel.tagRepository.removeTag(Category.CINEMA)}
+            scenario.onActivity { assertEquals(5, it.adapter.currentDataSet.size) }
+            scenario.onActivity { it.viewModel.tagRepository.removeTag(Category.CINEMA)}
+            scenario.onActivity { assertEquals(5, it.adapter.currentDataSet.size) }
+            scenario.onActivity { it.viewModel.tagRepository.addTag(Category.WORKING_OUT)}
+            scenario.onActivity { assertEquals(1, it.adapter.currentDataSet.size) }
+            scenario.onActivity { it.viewModel.tagRepository.addTag(Category.WORKING_OUT)}
+            scenario.onActivity { assertEquals(1, it.adapter.currentDataSet.size) }
+        }
+    }
+
+    @Test
+    fun sortButtonWorks() = runTest {
+        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+
+        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.sort_list)).perform(click())
+            onView(withText(R.string.list_sort_by_capacity))
+                .perform(click());
+            onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
+                .check(matches(withText(meetUpList.sortedBy { it.capacity }[0].name)))
+            onView(withId(R.id.sort_list)).perform(click())
+            onView(withText(R.string.list_sort_by_alphabetical_order)).perform(click())
+            onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
+                .check(matches(withText(meetUpList.sortedBy { it.name.lowercase() }[0].name)))
+            onView(withId(R.id.sort_list)).perform(click())
+            onView(withText(R.string.list_sort_by_location)).perform(click())
+            onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
+                .check(matches(withText(meetUpList.sortedBy { it.location.distanceInKm(Location(0.0, 0.0))}[0].name)))
+        }
+    }
+
+    @Test
+    fun clickItem() = runTest {
+        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+        init()
+        ActivityScenario.launch<MeetupListActivity>(intent)
+        onView(
+            RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
+                0,
+                R.id.meetup_title
+            )
+        ).perform(click())
+        intended(hasComponent(MeetUpView::class.java.name))
+        release()
+    }
+
 }
+
 
 
 class RecyclerViewMatcher(private val recyclerViewId: Int) {

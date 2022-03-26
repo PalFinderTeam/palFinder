@@ -1,6 +1,7 @@
 [![Build Status](https://api.cirrus-ci.com/github/PalFinderTeam/palFinder.svg)](https://cirrus-ci.com/github/PalFinderTeam/palFinder)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/0e8ea17fd683b9e3ff47/test_coverage)](https://codeclimate.com/github/PalFinderTeam/palFinder/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/0e8ea17fd683b9e3ff47/maintainability)](https://codeclimate.com/github/PalFinderTeam/palFinder/maintainability)
+[![jsp](https://img.shields.io/badge/code%20coverage-101%25-brightgreen)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
 # Link
 
@@ -21,3 +22,12 @@ Scrum meeting days (as of sprint 2):
     
 Review cycle (sprint 2):
     Louca <-> Daniel <-> Zacharie <-> Christian <-> Antoine <-> Patrick <-> Louca
+    
+Review cycle (sprint 3):
+    Louca <-> Zacharie <-> Antoine <-> Daniel <-> Patrick <-> Christian <-> Louca
+    
+Review cycle (sprint 4):
+    Louca <-> Antoine <-> Christian <-> Daniel <-> Zacharie <-> Patrick <-> Louca
+
+Review cycle (sprint 5):
+    Louca <-> Daniel <-> Antoine <-> Patrick <-> Chrisitan <-> Zacharie <-> Louca

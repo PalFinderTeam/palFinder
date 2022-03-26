@@ -4,9 +4,9 @@ import android.icu.util.Calendar
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
@@ -82,7 +82,7 @@ class MeetUpCreationViewModelTest {
     fun `fetch and display infos from database`() = runTest {
         val dummyMeetUp = MeetUp(
             "",
-            ProfileUser("username", "whatever", "surname", testStartDate),
+            "username",
             "icon",
             "name",
             "description",
@@ -115,6 +115,7 @@ class MeetUpCreationViewModelTest {
         viewModel.setHasMaxCapacity(true)
         viewModel.setDescription("manger des bananes")
         viewModel.setName("Manger")
+        viewModel.setLatLng(LatLng(1.0,1.0))
         viewModel.sendMeetUp()
         assertThat(viewModel.sendSuccess.value, `is`(true))
         assertThat(viewModel.getMeetUpId(), notNullValue())

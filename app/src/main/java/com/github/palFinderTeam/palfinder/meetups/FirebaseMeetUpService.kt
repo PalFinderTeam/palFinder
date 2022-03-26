@@ -14,23 +14,20 @@ import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 
 /**
  * Object containing methods to query the database about MeetUps.
  */
-object FirebaseMeetUpService : MeetUpRepository {
+class FirebaseMeetUpService @Inject constructor(
+    private val db: FirebaseFirestore
+) : MeetUpRepository {
 
-    private const val MEETUP_COLL = "meetups"
 
     override suspend fun getMeetUpData(meetUpId: String): MeetUp? {
-        val db = FirebaseFirestore.getInstance()
-
         return try {
             db.collection(MEETUP_COLL)
                 .document(meetUpId).get().await().toMeetUp()
@@ -40,8 +37,6 @@ object FirebaseMeetUpService : MeetUpRepository {
     }
 
     override suspend fun createMeetUp(newMeetUp: MeetUp): String? {
-        val db = FirebaseFirestore.getInstance()
-
         return try {
             db.collection(MEETUP_COLL).add(newMeetUp.toFirestoreData()).await().id
         } catch (e: Exception) {
@@ -50,10 +45,13 @@ object FirebaseMeetUpService : MeetUpRepository {
     }
 
     override suspend fun editMeetUp(meetUpId: String, field: String, value: Any): String? {
-        val db = FirebaseFirestore.getInstance()
-
         return try {
-            db.collection(MEETUP_COLL).document(meetUpId).update(field, value)
+            if (!db.collection(MEETUP_COLL).document(meetUpId).get()
+                    .await().data!!.contains(field)
+            ) {
+                return null
+            }
+            db.collection(MEETUP_COLL).document(meetUpId).update(field, value).await()
             meetUpId
         } catch (e: Exception) {
             null
@@ -61,10 +59,8 @@ object FirebaseMeetUpService : MeetUpRepository {
     }
 
     override suspend fun editMeetUp(meetUpId: String, meetUp: MeetUp): String? {
-        val db = FirebaseFirestore.getInstance()
-
         return try {
-            db.collection(MEETUP_COLL).document(meetUpId).update(meetUp.toFirestoreData())
+            db.collection(MEETUP_COLL).document(meetUpId).update(meetUp.toFirestoreData()).await()
             meetUpId
         } catch (e: Exception) {
             null
@@ -75,8 +71,6 @@ object FirebaseMeetUpService : MeetUpRepository {
         location: Location,
         radiusInM: Double
     ): Flow<Response<List<MeetUp>>> {
-
-        val db = FirebaseFirestore.getInstance()
 
         val geoLocation = GeoLocation(location.latitude, location.longitude)
         val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInM)
@@ -104,15 +98,12 @@ object FirebaseMeetUpService : MeetUpRepository {
             emit(Success(meetUps))
 
         }.catch { error ->
-            error.message?.let {
-                emit(Failure(it))
-            }
+            emit(Failure(error.message.orEmpty()))
         }
     }
 
     @ExperimentalCoroutinesApi
     override fun getAllMeetUps(): Flow<List<MeetUp>> {
-        val db = FirebaseFirestore.getInstance()
         return callbackFlow {
             val listenerRegistration = db.collection(MEETUP_COLL)
                 .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
@@ -133,5 +124,16 @@ object FirebaseMeetUpService : MeetUpRepository {
                 listenerRegistration.remove()
             }
         }
+    }
+
+    @ExperimentalCoroutinesApi
+    override fun getAllMeetUpsResponse(): Flow<Response<List<MeetUp>>> {
+        return getAllMeetUps().map {
+            Success(it)
+        }
+    }
+
+    companion object {
+        const val MEETUP_COLL = "meetups"
     }
 }

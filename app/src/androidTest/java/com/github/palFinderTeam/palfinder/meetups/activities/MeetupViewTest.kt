@@ -16,7 +16,6 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -59,7 +58,7 @@ class MeetupViewTest {
         date2 = Calendar.getInstance()
         date2.set(2022, 2, 1, 1, 0, 0)
 
-        val user = ProfileUser("dummy1", "dummy2", "dummy", date1)
+        val user = "user"
 
         expectDate1 = format.format(date1)
         expectDate2 = format.format(date2)
@@ -87,7 +86,6 @@ class MeetupViewTest {
 
     @Test
     fun editExistingMeetupDisplayRightFields() = runTest {
-
         val id = meetUpRepository.createMeetUp(meetup)
         assertThat(id, notNullValue())
 
@@ -105,6 +103,34 @@ class MeetupViewTest {
             onView(withId(R.id.hasCapacityButton)).check(matches(isChecked()))
         }
     }
+
+/*
+    @Test
+    fun editExistingMeetupEditTheRightOneInDB() = runTest {
+
+        val id = meetUpRepository.createMeetUp(meetup)
+        assertThat(id, notNullValue())
+
+        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+            .apply {
+                putExtra(MEETUP_EDIT, id)
+            }
+        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        scenario.use {
+
+            Intents.init()
+
+            onView(withId(R.id.et_EventName)).perform(typeText("Manger des patates"))
+            closeSoftKeyboard()
+            onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
+
+            Intents.intended(IntentMatchers.hasComponent(MeetUpView::class.java.name))
+            Intents.release()
+
+            onView(withId(R.id.tv_ViewEventName)).check(matches(withText("dummy1Manger des patates")))
+        }
+    }
+*/
 
     @Test
     fun createMeetUpDisplayBlankInfo() = runTest {
