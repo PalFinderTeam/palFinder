@@ -2,13 +2,11 @@ package com.github.palFinderTeam.palfinder
 
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.di.MeetUpModule
-import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
-import com.google.firebase.firestore.FieldValue
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -17,7 +15,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.tasks.await
 import javax.inject.Singleton
 
 @Module
@@ -129,7 +126,8 @@ object UIMockMeetUpRepositoryModule {
 
         override suspend fun leaveMeetUp(meetUpId: String, userId: String): Response<Unit> {
             return try {
-                val meetUp = getMeetUpData(meetUpId) ?: return Response.Failure("Could not find meetup.")
+                val meetUp =
+                    getMeetUpData(meetUpId) ?: return Response.Failure("Could not find meetup.")
                 if (!meetUp.isParticipating(userId)) {
                     return Response.Failure("Cannot leave a meetup which was not joined before")
                 }

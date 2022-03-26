@@ -4,6 +4,7 @@ import android.icu.util.Calendar
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
+import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.Response.*
@@ -121,8 +122,17 @@ class FirebaseMeetUpService @Inject constructor(
                 return Failure("Cannot join, it is full.")
             }
 
-            db.collection(MEETUP_COLL).document(meetUpId)
-                .update("participants", FieldValue.arrayUnion(userId)).await()
+            val batch = db.batch()
+            batch.update(
+                db.collection(MEETUP_COLL).document(meetUpId),
+                "participants",
+                FieldValue.arrayUnion(userId)
+            )
+            batch.update(
+                db.collection(PROFILE_COLL).document(userId),
+                "joined_meetups", FieldValue.arrayUnion(meetUpId)
+            )
+            batch.commit().await()
             Success(Unit)
         } catch (e: Exception) {
             Failure(e.message.orEmpty())
@@ -138,8 +148,18 @@ class FirebaseMeetUpService @Inject constructor(
             if (meetUp.creatorId == userId) {
                 return Failure("Cannot leave your own meetup.")
             }
-            db.collection(MEETUP_COLL).document(meetUpId)
-                .update("participants", FieldValue.arrayRemove(userId)).await()
+
+            val batch = db.batch()
+            batch.update(
+                db.collection(MEETUP_COLL).document(meetUpId),
+                "participants",
+                FieldValue.arrayRemove(userId)
+            )
+            batch.update(
+                db.collection(PROFILE_COLL).document(userId),
+                "joined_meetups", FieldValue.arrayRemove(meetUpId)
+            )
+            batch.commit().await()
             Success(Unit)
         } catch (e: Exception) {
             Failure(e.message.orEmpty())
