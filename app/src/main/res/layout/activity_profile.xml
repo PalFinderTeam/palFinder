@@ -82,22 +82,23 @@
         app:layout_constraintTop_toBottomOf="@+id/userProfileAboutTitle" />
 
     <TextView
-        android:id="@+id/userProfileDescription2"
+        android:id="@+id/userProfileDescOverflow"
         android:layout_width="332dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="20dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="4dp"
         android:background="@drawable/grad_fade"
         android:fontFamily="@font/fredoka_bold"
         android:gravity="bottom"
         android:maxLines="2"
+        android:onClick="showFullDesc"
         android:orientation="horizontal"
-        android:text="Read more..."
-        android:textColor="@color/theme_primary"
+        android:text="Read more"
+        android:textColor="@color/theme_highlight"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/userProfileAboutTitle"
-        app:layout_constraintTop_toBottomOf="@+id/userProfileAboutTitle" />
+        app:layout_constraintTop_toTopOf="@+id/userProfileDescription" />
 
     <TextView
         android:id="@+id/userProfileAboutTitle"
