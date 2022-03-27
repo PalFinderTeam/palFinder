@@ -70,6 +70,7 @@ class ProfileActivity : AppCompatActivity() {
         if (bio == EMPTY_FIELD) {
             findViewById<TextView>(R.id.userProfileAboutTitle).text = this.resources.getString(R.string.no_desc)
             desc.text = EMPTY_FIELD
+            showFullDesc(null)
         } else {
             desc.text = bio
             desc.post {

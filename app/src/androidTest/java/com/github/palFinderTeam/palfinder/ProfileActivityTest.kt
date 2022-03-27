@@ -15,8 +15,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
@@ -37,6 +36,7 @@ class ProfileActivityTest {
     private lateinit var userLouca: ProfileUser
     private lateinit var userCat: ProfileUser
     private lateinit var userLongBio: ProfileUser
+    private lateinit var userNoBio: ProfileUser
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -74,6 +74,15 @@ class ProfileActivityTest {
             Calendar.getInstance(),
             ImageInstance(""),
             "Hello I am still a cat but now with a longer description. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam."
+        )
+        userNoBio = ProfileUser(
+            "123",
+            "no",
+            "No",
+            "Bio",
+            Calendar.getInstance(),
+            ImageInstance(""),
+            ""
         )
     }
 
@@ -134,6 +143,22 @@ class ProfileActivityTest {
                 matches(
                     withText(userCat.description)
                 )
+            )
+        }
+    }
+
+    @Test
+    fun noBioHasNoReadMore() = runTest {
+        val id = profileService.createProfile(userNoBio)
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, id) }
+
+        // Launch activity
+        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.userProfileDescOverflow)).check(matches(
+                withEffectiveVisibility(Visibility.GONE))
             )
         }
     }

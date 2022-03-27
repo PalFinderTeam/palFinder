@@ -97,5 +97,6 @@
     <string name="userSettingsName">Name</string>
     <string name="userSettingsUsername">Username</string>
     <string name="userSettingsBio">About you</string>
+    <string name="read_more">Read more</string>
 
 </resources>
