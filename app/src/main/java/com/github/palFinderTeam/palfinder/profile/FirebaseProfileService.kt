@@ -71,8 +71,6 @@ class FirebaseProfileService @Inject constructor(
     }
 
     override suspend fun createProfile(newUserProfile: ProfileUser): String? {
-        val db = FirebaseFirestore.getInstance()
-
         return try {
             db.collection(PROFILE_COLL).document(newUserProfile.uuid)
                 .set(newUserProfile.toFirestoreData()).await()
