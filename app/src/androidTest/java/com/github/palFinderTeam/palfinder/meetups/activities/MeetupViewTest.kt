@@ -29,6 +29,7 @@ import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
 
+
 @ExperimentalCoroutinesApi
 @HiltAndroidTest
 class MeetupViewTest {
@@ -186,4 +187,35 @@ class MeetupViewTest {
             onView(withId(R.id.tv_ViewEventDescritpion)).check(matches(withText("Meetup description")))
         }
     }
+
+    @Test
+    fun checkErrorWork() = runTest {
+        val id = meetUpRepository.createMeetUp(meetup)
+        assertThat(id, notNullValue())
+
+        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        scenario.use {
+            onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
+            onView(withText(R.string.meetup_creation_missing_name_desc_title)).check(matches(isDisplayed()));
+        }
+    }
+    // Library To test Picker Sucks
+    /*
+    @Test
+    fun checkPickers() = runTest {
+        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        scenario.use {
+            onView(withId(R.id.tv_StartDate)).perform(scrollTo(), click())
+
+            onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
+                PickerActions.setDate(2022, 2, 1),
+            )
+            onView(withClassName(Matchers.equalTo(TimePicker::class.java.name))).perform(
+                PickerActions.setTime(0, 0),
+            )
+            onView(withId(R.id.tv_StartDate)).check(matches(withText(expectDate1)))
+        }
+    }*/
 }
