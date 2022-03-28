@@ -37,7 +37,6 @@ class MeetUpView : AppCompatActivity() {
 
         val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
         viewModel.loadMeetUp(meetupId)
-
         val button = findViewById<Button>(R.id.show_profile_list_button)
         button.setOnClickListener { showProfileList() }
 

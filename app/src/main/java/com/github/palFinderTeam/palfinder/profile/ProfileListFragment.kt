@@ -22,7 +22,9 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ProfileListFragment(private val usersId: List<String>) : DialogFragment() {
     private val viewModel: ProfileViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
@@ -36,35 +38,13 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
         val v: View = inflater.inflate(R.layout.fragment_profile_list, container, false)
         recyclerView = v.findViewById(R.id.profile_list_recycler) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
-        val userList = usersId.map { id -> fetchProfile(id) }
+        val userList = viewModel.fetchUsersProfile(usersId)
         val adapter = ProfileAdapter(userList) { onListItemClick(it) }
         recyclerView.adapter = adapter
         val searchField = v.findViewById<SearchView>(R.id.profile_list_search)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
         SearchedFilter.setupSearchField(searchField, adapter.filter )
         return v
-    }
-
-    private fun fetchProfile(id: String): ProfileUser {
-        viewModel.fetchProfile(id)
-        var result: ProfileUser? = null
-
-        viewModel.profile.observe(this) {
-            when (it) {
-                is Response.Success -> result = it.data
-                is Response.Loading -> Toast.makeText(
-                    activity?.applicationContext ,
-                    "Fetching",
-                    Toast.LENGTH_LONG
-                ).show()
-                is Response.Failure -> Toast.makeText(
-                    activity?.applicationContext,
-                    it.errorMessage,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-        return result!!
     }
 
 

@@ -209,23 +209,28 @@ class MeetupViewTest {
     fun profileFragmentCorrectlyDisplayed() = runTest {
         val userid = profileRepository.createProfile(user)
         assertThat(userid, notNullValue())
-        val id = meetUpRepository.createMeetUp(meetup)
+        val newMeetup = MeetUp(
+            "dummy",
+            userid!!,
+            "",
+            eventName,
+            eventDescription,
+            date1,
+            date2,
+            Location(0.0, 0.0),
+            emptySet(),
+            true,
+            2,
+            mutableListOf(userid)
+        )
+        Log.d("chat", "chalut " + newMeetup.participantsId)
+        val id = meetUpRepository.createMeetUp(newMeetup)
         assertThat(id, notNullValue())
-        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
-        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
+            .apply{putExtra(MEETUP_SHOWN, id)}
+        val scenario = ActivityScenario.launch<MeetUpView>(intent)
         scenario.use {
-            Intents.init()
 
-            onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
-            onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
-            closeSoftKeyboard()
-            onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
-
-            Intents.intended(IntentMatchers.hasComponent(MeetUpView::class.java.name))
-            Intents.release()
-
-            onView(withId(R.id.tv_ViewEventName)).check(matches(withText("Meetup name")))
-            onView(withId(R.id.tv_ViewEventDescritpion)).check(matches(withText("Meetup description")))
             onView(withId(R.id.show_profile_list_button)).perform(click())
         }
     }

@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder
 
 import android.icu.util.Calendar
+import android.util.Log
 import com.github.palFinderTeam.palfinder.di.MeetUpModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
@@ -50,6 +51,7 @@ object UIMockMeetUpRepositoryModule {
             val key = counter.toString()
             db[key] = newMeetUp.copy(uuid = key)
             counter += 1
+            Log.d("chat","chalut " + db[key]!!.participantsId)
             return key
         }
 
