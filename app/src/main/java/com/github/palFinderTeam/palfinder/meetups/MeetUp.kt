@@ -158,7 +158,6 @@ data class MeetUp(
                 val tags = get("tags")!! as List<String>
                 val hasMaxCapacity = getBoolean("hasMaxCapacity")!!
                 val participantsId = get("participants")!! as List<String>
-
                 // Convert Date to calendar
                 val startDateCal = Calendar.getInstance()
                 val endDateCal = Calendar.getInstance()

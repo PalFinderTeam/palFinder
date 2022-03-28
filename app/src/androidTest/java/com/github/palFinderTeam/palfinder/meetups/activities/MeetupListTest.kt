@@ -261,6 +261,7 @@ class MeetUpListTest {
         meetUpList.forEach { meetUpRepository.createMeetUp(it) }
         val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
         ActivityScenario.launch<MeetupListActivity>(intent)
+        init()
         onView(
             RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
                 0,
