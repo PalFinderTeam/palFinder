@@ -4,7 +4,6 @@ import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.di.MeetUpModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
@@ -15,6 +14,7 @@ import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Singleton
 
 @Module
@@ -56,7 +56,7 @@ object UIMockMeetUpRepositoryModule {
         override suspend fun editMeetUp(meetUpId: String, field: String, value: Any): String? {
             if (db.containsKey(meetUpId)) {
                 val oldVal = db[meetUpId]!!
-                db[meetUpId] = when(field) {
+                db[meetUpId] = when (field) {
                     "name" -> oldVal.copy(name = value as String)
                     "capacity" -> oldVal.copy(capacity = value as Int)
                     "creator" -> oldVal.copy(creatorId = value as String)
@@ -90,10 +90,51 @@ object UIMockMeetUpRepositoryModule {
         ): Flow<Response<List<MeetUp>>> {
             return flow {
                 val meetUps = db.values.filter { meetUp ->
-                    meetUp.location.distanceInKm(location)*1000 <= radiusInM
+                    meetUp.location.distanceInKm(location) * 1000 <= radiusInM
                 }
 
                 emit(Response.Success(meetUps))
+            }
+        }
+
+        override suspend fun joinMeetUp(
+            meetUpId: String,
+            userId: String,
+            now: Calendar
+        ): Response<Unit> {
+            return if (db.containsKey(meetUpId)) {
+                val meetUp = db[meetUpId] ?: return Response.Failure("Could not find meetup")
+                if (meetUp.isParticipating(userId)) {
+                    return Response.Success(Unit)
+                }
+                if (!meetUp.canJoin(now)) {
+                    return Response.Failure("Cannot join meetup now.")
+                }
+                if (meetUp.isFull()) {
+                    return Response.Failure("Cannot join, it is full.")
+                }
+                if (meetUp.creatorId == userId) {
+                    return Response.Failure("Cannot leave your own meetup.")
+                }
+
+                db[meetUpId] = meetUp.copy(participantsId = meetUp.participantsId.plus(userId))
+                Response.Success(Unit)
+            } else {
+                Response.Failure("Could not join meetup")
+            }
+        }
+
+        override suspend fun leaveMeetUp(meetUpId: String, userId: String): Response<Unit> {
+            return try {
+                val meetUp =
+                    getMeetUpData(meetUpId) ?: return Response.Failure("Could not find meetup.")
+                if (!meetUp.isParticipating(userId)) {
+                    return Response.Failure("Cannot leave a meetup which was not joined before")
+                }
+                db[meetUpId] = meetUp.copy(participantsId = meetUp.participantsId.minus(userId))
+                Response.Success(Unit)
+            } catch (e: Exception) {
+                Response.Failure(e.message.orEmpty())
             }
         }
 
@@ -101,6 +142,13 @@ object UIMockMeetUpRepositoryModule {
         override fun getAllMeetUps(): Flow<List<MeetUp>> {
             return flow {
                 emit(db.values.toList())
+            }
+        }
+
+        @ExperimentalCoroutinesApi
+        override fun getAllMeetUpsResponse(): Flow<Response<List<MeetUp>>> {
+            return getAllMeetUps().map {
+                Response.Success(it)
             }
         }
 

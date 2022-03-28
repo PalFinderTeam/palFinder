@@ -8,6 +8,7 @@ import com.github.palFinderTeam.palfinder.utils.Response
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class MockMeetUpRepository : MeetUpRepository {
     val db: HashMap<String, MeetUp> = hashMapOf()
@@ -72,6 +73,51 @@ class MockMeetUpRepository : MeetUpRepository {
     override fun getAllMeetUps(): Flow<List<MeetUp>> {
         return flow {
             emit(db.values.toList())
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    override fun getAllMeetUpsResponse(): Flow<Response<List<MeetUp>>> {
+        return getAllMeetUps().map {
+            Response.Success(it)
+        }
+    }
+
+    override suspend fun joinMeetUp(
+        meetUpId: String,
+        userId: String,
+        now: Calendar
+    ): Response<Unit> {
+        return if (db.containsKey(meetUpId)) {
+            val meetUp = db[meetUpId] ?: return Response.Failure("Could not find meetup")
+            if (meetUp.isParticipating(userId)) {
+                return Response.Success(Unit)
+            }
+            // We ignore the date because it is tedious to mock
+            if (meetUp.isFull()) {
+                return Response.Failure("Cannot join, it is full.")
+            }
+            if (meetUp.creatorId == userId) {
+                return Response.Failure("Cannot leave your own meetup.")
+            }
+
+            db[meetUpId] = meetUp.copy(participantsId = meetUp.participantsId.plus(userId))
+            Response.Success(Unit)
+        } else {
+            Response.Failure("Could not join meetup")
+        }
+    }
+
+    override suspend fun leaveMeetUp(meetUpId: String, userId: String): Response<Unit> {
+        return try {
+            val meetUp = getMeetUpData(meetUpId) ?: return Response.Failure("Could not find meetup.")
+            if (!meetUp.isParticipating(userId)) {
+                return Response.Failure("Cannot leave a meetup which was not joined before")
+            }
+            db[meetUpId] = meetUp.copy(participantsId = meetUp.participantsId.minus(userId))
+            Response.Success(Unit)
+        } catch (e: Exception) {
+            Response.Failure(e.message.orEmpty())
         }
     }
 

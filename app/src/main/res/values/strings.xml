@@ -83,7 +83,21 @@
     <string name="pretty_location_too_small">Here</string>
     <string name="pretty_location_m">%1$s m away</string>
     <string name="pretty_location_km">%1$s km away</string>
+
+    <string name="nav_bar_create">Create</string>
+    <string name="nav_bar_find">Find</string>
+    <string name="nav_bar_group">Groups</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="createAccount">Create Account</string>
+
+    <!-- User settings -->
+    <string name="userSaveSettings">Save settings</string>
+    <string name="userSettingsPfpHint">(Tap your profile picture to change it)</string>
+    <string name="userSettingsSurname">Surname</string>
+    <string name="userSettingsName">Name</string>
+    <string name="userSettingsUsername">Username</string>
+    <string name="userSettingsBio">About you</string>
 
 </resources>

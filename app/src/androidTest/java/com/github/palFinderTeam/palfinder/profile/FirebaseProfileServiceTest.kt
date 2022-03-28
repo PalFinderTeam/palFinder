@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.profile
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.USERNAME_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
@@ -50,7 +51,7 @@ class FirebaseProfileServiceTest {
             ImageInstance("imageURL"),
             "Hi I'm Mike."
         )
-        profile2 = profile.copy(username = "Jordan")
+        profile2 = profile.copy(username = "Jordan", uuid = "whatever")
     }
 
     @Test
@@ -60,10 +61,36 @@ class FirebaseProfileServiceTest {
         id!!.let {
             val userInDb = db.collection(PROFILE_COLL).document(it).get().await().toProfileUser()
             assertThat(userInDb, notNullValue())
-            assertThat(userInDb, `is`(profile.copy(uuid = it)))
+            assertThat(userInDb, `is`(profile))
             // Make sure to clean for next tests
             db.collection(PROFILE_COLL).document(it).delete().await()
         }
+    }
+
+    @Test
+    fun fetchNonExistingUserReturnsNull() = runTest {
+        val nonExistingUser = firebaseProfileService.fetchUserProfile("Nani")
+        assertThat(nonExistingUser, nullValue())
+    }
+
+    @Test
+    fun fetchNonExistingUserFlowReturnsError() = runTest {
+        val nonExistingUserFlow = firebaseProfileService.fetchProfileFlow("WTF")
+        val nonExistingUser = nonExistingUserFlow.take(2).toList()
+        assertThat(nonExistingUser[0], instanceOf(Response.Loading::class.java))
+        assertThat(nonExistingUser[1], instanceOf(Response.Failure::class.java))
+    }
+
+    @Test
+    fun editNonExistingUserReturnsNull() = runTest {
+        val nonExistingId = firebaseProfileService.editUserProfile("HAHA", "dw", 4)
+        assertThat(nonExistingId, nullValue())
+    }
+
+    @Test
+    fun editNonExistingUserWithEntireNewProfileReturnsNull() = runTest {
+        val nonExistingId = firebaseProfileService.editUserProfile("HAHA", profile)
+        assertThat(nonExistingId, nullValue())
     }
 
     @Test
@@ -73,7 +100,7 @@ class FirebaseProfileServiceTest {
         id!!.let {
             val fetchedUser = firebaseProfileService.fetchUserProfile(it)
             assertThat(fetchedUser, notNullValue())
-            assertThat(fetchedUser, `is`(profile.copy(uuid = it)))
+            assertThat(fetchedUser, `is`(profile))
             // Make sure to clean for next tests
             db.collection(PROFILE_COLL).document(it).delete().await()
         }
@@ -88,7 +115,7 @@ class FirebaseProfileServiceTest {
         if (id1 != null && id2 != null) {
             val fetchedUser = firebaseProfileService.fetchUsersProfile(listOf(id1, id2))
             assertThat(fetchedUser, notNullValue())
-            assertThat(fetchedUser, hasItems(profile.copy(uuid = id1), profile2.copy(uuid = id2)))
+            assertThat(fetchedUser, hasItems(profile, profile2))
             // Make sure to clean for next tests
             db.collection(PROFILE_COLL).document(id1).delete().await()
             db.collection(PROFILE_COLL).document(id2).delete().await()
@@ -103,7 +130,7 @@ class FirebaseProfileServiceTest {
             val fetchedUserFlow = firebaseProfileService.fetchProfileFlow(it)
             val loading = fetchedUserFlow.take(2).toList()
             assertThat(loading[0], instanceOf(Response.Loading::class.java))
-            assertThat(loading[1], `is`(Response.Success(profile.copy(uuid = it))))
+            assertThat(loading[1], `is`(Response.Success(profile)))
 
             // Make sure to clean for next tests
             db.collection(PROFILE_COLL).document(it).delete().await()
@@ -123,7 +150,7 @@ class FirebaseProfileServiceTest {
             assertThat(sameId, `is`(id))
 
             val profileInDb = db.collection(PROFILE_COLL).document(it).get().await().toProfileUser()
-            assertThat(profileInDb, `is`(profile.copy(uuid = it, username = newUsername)))
+            assertThat(profileInDb, `is`(profile.copy(username = newUsername)))
             // Make sure to clean for next tests
             db.collection(PROFILE_COLL).document(it).delete().await()
         }
@@ -135,7 +162,7 @@ class FirebaseProfileServiceTest {
         assertThat(id, notNullValue())
         id!!.let {
             val newUsername = "Romain"
-            val sameId = firebaseProfileService.editUserProfile(it, "username", newUsername)
+            val sameId = firebaseProfileService.editUserProfile(it, USERNAME_KEY, newUsername)
             assertThat(sameId, notNullValue())
             assertThat(sameId, `is`(id))
 
@@ -144,5 +171,11 @@ class FirebaseProfileServiceTest {
             // Make sure to clean for next tests
             db.collection(FirebaseMeetUpService.MEETUP_COLL).document(it).delete().await()
         }
+    }
+
+    @Test
+    fun addNewProfileUseSameIdAsProfile() = runTest {
+        val id = firebaseProfileService.createProfile(profile)
+        assertThat(id, `is`(profile.uuid))
     }
 }

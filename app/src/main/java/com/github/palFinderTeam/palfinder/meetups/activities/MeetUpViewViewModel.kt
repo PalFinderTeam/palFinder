@@ -33,6 +33,10 @@ class MeetUpViewViewModel @Inject constructor(
         }
     }
 
+    fun getMeetupID(): String{
+        return meetUp.value!!.uuid
+    }
+
     /**
      * Describe how tags should be transferred from this viewModel to the tag viewModel.
      */

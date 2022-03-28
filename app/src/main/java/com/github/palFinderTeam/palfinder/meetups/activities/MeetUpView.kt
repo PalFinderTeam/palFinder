@@ -9,6 +9,8 @@ import android.widget.Button
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.chat.CHAT
+import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.profile.ProfileListFragment
 import com.github.palFinderTeam.palfinder.tag.Category
@@ -60,7 +62,14 @@ class MeetUpView : AppCompatActivity() {
 
     fun onEdit(v: View) {
         val intent = Intent(this, MeetUpCreation::class.java).apply {
-            putExtra(MEETUP_EDIT, viewModel.meetUp.value?.uuid)
+            putExtra(MEETUP_EDIT, viewModel.getMeetupID())
+        }
+        startActivity(intent)
+    }
+
+    fun onChat(v: View) {
+        val intent = Intent(this, ChatActivity::class.java).apply {
+            putExtra(CHAT, viewModel.getMeetupID())
         }
         startActivity(intent)
     }

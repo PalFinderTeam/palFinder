@@ -13,8 +13,8 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class MeetUpListViewModel @Inject constructor(
-    private val meetUpRepository: MeetUpRepository
+open class MeetUpListViewModel @Inject constructor(
+    val meetUpRepository: MeetUpRepository
 ) : ViewModel() {
     val listOfMeetUp: LiveData<List<MeetUp>> = meetUpRepository.getAllMeetUps().asLiveData()
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())

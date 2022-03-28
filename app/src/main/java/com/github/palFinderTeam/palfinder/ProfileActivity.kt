@@ -1,6 +1,9 @@
 package com.github.palFinderTeam.palfinder
 
 import android.os.Bundle
+import android.provider.Settings
+import android.provider.Settings.Global.getString
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
