@@ -86,11 +86,11 @@ object UIMockMeetUpRepositoryModule {
 
         override fun getMeetUpsAroundLocation(
             location: Location,
-            radiusInM: Double
+            radiusInKm: Double
         ): Flow<Response<List<MeetUp>>> {
             return flow {
                 val meetUps = db.values.filter { meetUp ->
-                    meetUp.location.distanceInKm(location) * 1000 <= radiusInM
+                    meetUp.location.distanceInKm(location) <= radiusInKm
                 }
 
                 emit(Response.Success(meetUps))
