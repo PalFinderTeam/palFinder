@@ -48,7 +48,7 @@ data class ProfileUser(
 
                 val joinDateCal = Calendar.getInstance().apply { time = joinDate }
                 val description = getString(DESCRIPTION_KEY).orEmpty()
-                val joinedMeetUp = (get(JOINED_MEETUPS_KEY) as List<String>).orEmpty()
+                val joinedMeetUp = (get(JOINED_MEETUPS_KEY) as? List<String>).orEmpty()
 
                 ProfileUser(uuid, username, name, surname, joinDateCal, ImageInstance(picture), description, joinedMeetUp)
             } catch (e: Exception) {

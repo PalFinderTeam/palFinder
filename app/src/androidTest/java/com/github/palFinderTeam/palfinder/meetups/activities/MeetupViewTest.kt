@@ -223,7 +223,6 @@ class MeetupViewTest {
             2,
             mutableListOf(userid)
         )
-        Log.d("chat", "chalut " + newMeetup.participantsId)
         val id = meetUpRepository.createMeetUp(newMeetup)
         assertThat(id, notNullValue())
         val intent = Intent(getApplicationContext(), MeetUpView::class.java)

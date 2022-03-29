@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.utils
 import android.widget.Filter
 import android.widget.SearchView
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.Tag
 import java.util.*
@@ -26,6 +27,8 @@ public class SearchedFilter<T>(
                         filter((item as Tag).tagName, filterPattern)
                     is MeetUp ->
                         filter((item as MeetUp).name, filterPattern) && filterTag!!((item as MeetUp))
+                    is ProfileUser ->
+                        filter((item as ProfileUser).username, filterPattern) || filter((item as ProfileUser).fullName(), filterPattern)
                     else -> break
                 }
                 if (isContained) {

@@ -36,17 +36,13 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
     ): View {
         //inflate layout with recycler view
         val v: View = inflater.inflate(R.layout.fragment_profile_list, container, false)
-        recyclerView = v.findViewById(R.id.profile_list_recycler) as RecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        val userList = viewModel.fetchUsersProfile(usersId)
-        val adapter = ProfileAdapter(userList) { onListItemClick(it) }
-        recyclerView.adapter = adapter
-        val searchField = v.findViewById<SearchView>(R.id.profile_list_search)
-        searchField.imeOptions = EditorInfo.IME_ACTION_DONE
-        SearchedFilter.setupSearchField(searchField, adapter.filter )
+        recyclerView = v.findViewById(R.id.profile_list_recycler)
+        viewModel.fetchUsersProfile(usersId)
+        viewModel.profilesList.observe(this) {
+            changeAdapter(it, v)
+        }
         return v
     }
-
 
     override fun onStart() {
         super.onStart()
@@ -60,5 +56,14 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
         val intent = Intent(activity?.applicationContext, ProfileActivity::class.java)
             .apply { putExtra(USER_ID, (recyclerView.adapter as ProfileAdapter<*>).currentDataSet[position].uuid) }
         startActivity(intent)
+    }
+
+    private fun changeAdapter(list : List<ProfileUser>, v: View) {
+        val adapter = ProfileAdapter(list) { onListItemClick(it) }
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.adapter = adapter
+        val searchField = v.findViewById<SearchView>(R.id.profile_list_search)
+        searchField.imeOptions = EditorInfo.IME_ACTION_DONE
+        SearchedFilter.setupSearchField(searchField, adapter.filter )
     }
 }
