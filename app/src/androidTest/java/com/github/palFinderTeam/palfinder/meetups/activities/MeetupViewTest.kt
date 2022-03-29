@@ -3,12 +3,15 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import android.widget.DatePicker
+import android.widget.TimePicker
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -23,6 +26,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -200,8 +204,7 @@ class MeetupViewTest {
             onView(withText(R.string.meetup_creation_missing_name_desc_title)).check(matches(isDisplayed()));
         }
     }
-    // Library To test Picker Sucks
-    /*
+
     @Test
     fun checkPickers() = runTest {
         val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
@@ -217,5 +220,5 @@ class MeetupViewTest {
             )
             onView(withId(R.id.tv_StartDate)).check(matches(withText(expectDate1)))
         }
-    }*/
+    }
 }
