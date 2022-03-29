@@ -48,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
         private const val REQ_ONE_TAP = 4  // Can be any integer unique to the Activity
         private const val REQUEST_CODE_GIS_SAVE_PASSWORD = 2 /* unique request id */
         private var showOneTapUI = true
-        val db = Firebase.firestore
+        var firestoreUsers = FirestoreUsers()
     }
 
     public override fun onStart() {
@@ -59,28 +59,6 @@ class LoginActivity : AppCompatActivity() {
             updateUI(currentUser)
         }
     }
-
- /* Previous google sign in version
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
-        auth = Firebase.auth
-        val signInButton = findViewById<SignInButton>(R.id.signInButton)
-
-
-        // Configure Google Sign In
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(GID) //somehow cannot access value through google-service values.xml
-            .requestEmail()
-            .build()
-
-        val client = GoogleSignIn.getClient(this, gso)
-        signInButton.setOnClickListener{
-            val signIntent = client.signInIntent
-            startActivityForResult(signIntent, RC_GOOGLE_SIGN_IN)
-        }
-    }
-    */
 
     // onCreate One Tap version
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,7 +87,7 @@ class LoginActivity : AppCompatActivity() {
             //no checks on password is made for now
             val password = findViewById<TextView>(R.id.password).text.toString()
             if (isValidEmail(email)) {
-                if (emailIsAvailability(email)) {
+                if (firestoreUsers.emailIsAvailable(email, TAG)) {
                     createAccount(email, password)
                 } else {
                     signIn(email, password, true)
@@ -136,25 +114,6 @@ class LoginActivity : AppCompatActivity() {
             val signIntent = client.signInIntent
             startActivityForResult(signIntent, RC_GOOGLE_SIGN_IN)
         }
-    }
-
-    //could be moved in db utils
-    private fun emailIsAvailability(email: String): Boolean {
-        var available: Boolean = true
-        db.collection("users")
-            .whereEqualTo("email", email)
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    Log.w(TAG, "Email already assigned")
-                    available = false
-                    break
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents: ", exception)
-            }.isComplete
-        return available
     }
 
     private fun isValidEmail(str: String): Boolean{
@@ -357,25 +316,6 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    /* previous onActivityResult
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_GOOGLE_SIGN_IN) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                val account = task.getResult(ApiException::class.java)!!
-                Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
-                firebaseAuthWithGoogle(account.idToken!!)
-            } catch (e: ApiException) {
-                // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e)
-            }
-        }
-    }*/
-
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
@@ -404,52 +344,12 @@ class LoginActivity : AppCompatActivity() {
             "join_date" to Date(),
             "picture" to user.photoUrl.toString()
         )
-        addNewUser(user, dbUser)
+        firestoreUsers.addNewUser(user, dbUser, TAG)
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
-
-    //could be moved into db utils
-    private fun addNewUser(user: FirebaseUser, dbUser: Cloneable) {
-        val docRef = db.collection("users").document(user.uid)
-        docRef.get()
-            .addOnSuccessListener { document ->
-                if (document.data != null) {
-                    Log.d(TAG, "DocumentSnapshot data: ${document.data}")
-                } else {
-                    Log.d(TAG, "No such document")
-                    db.collection("users")
-                        .document(user.uid).set(dbUser, SetOptions.merge())
-                        .addOnSuccessListener {
-                            Log.d(TAG, "DocumentSnapshot added with ID: ${user.uid}")
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w(TAG, "Error adding document", e)
-                        }
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.d(TAG, "get failed with ", exception)
-            }
-    }
-
     /*private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }*/
 }
 
-/*
-/**
- * Extension function to simplify setting an afterTextChanged action to EditText components.
- */
-fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
-    this.addTextChangedListener(object : TextWatcher {
-        override fun afterTextChanged(editable: Editable?) {
-            afterTextChanged.invoke(editable.toString())
-        }
-
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-    })
-}*/
