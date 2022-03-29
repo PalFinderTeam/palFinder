@@ -40,6 +40,7 @@ class FirebaseProfileServiceTest {
         firebaseProfileService = FirebaseProfileService(db)
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }
+        val date2 = Calendar.getInstance().apply { time = Date(1) }
 
         profile = ProfileUser(
             "dummy",
@@ -48,7 +49,8 @@ class FirebaseProfileServiceTest {
             "dan",
             date1,
             ImageInstance("imageURL"),
-            "Hi I'm Mike."
+            "Hi I'm Mike.",
+            date2
         )
         profile2 = profile.copy(username = "Jordan", uuid = "whatever")
     }

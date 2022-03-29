@@ -6,6 +6,8 @@ import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.DocumentSnapshot
 import java.io.Serializable
+import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * A class to hold the data for a user to be displayed on the profile activity
@@ -18,7 +20,8 @@ data class ProfileUser(
     val surname: String,
     val joinDate: Calendar,
     val pfp: ImageInstance,
-    val description: String = ""
+    val description: String = "",
+    val birthday: Calendar = Calendar.getInstance()
 ) : Serializable {
 
     companion object {
@@ -39,7 +42,16 @@ data class ProfileUser(
                 val joinDateCal = Calendar.getInstance().apply { time = joinDate }
                 val description = getString("description").orEmpty()
 
-                ProfileUser(uuid, username, name, surname, joinDateCal, ImageInstance(picture), description)
+                if (getDate("birthday") == null) {
+                    val birthday = getDate("birthday")
+                } else {
+                    val birthday = getDate("birthday")
+                }
+                val birthdayCal = Calendar.getInstance().apply {
+                    time = getDate("birthday") ?: Date(0)
+                }
+
+                ProfileUser(uuid, username, name, surname, joinDateCal, ImageInstance(picture), description, birthdayCal)
             } catch (e: Exception) {
                 Log.e("ProfileUser", "Error deserializing user", e)
                 null
@@ -57,7 +69,8 @@ data class ProfileUser(
             "username" to username,
             "join_date" to joinDate.time,
             "picture" to pfp.imgURL,
-            "description" to description
+            "description" to description,
+            "birthday" to birthday.time
         )
     }
 
