@@ -61,7 +61,7 @@ class MapsActivityViewModel @Inject constructor(
                 meetUps = meetUpRepository.getAllMeetUps().asLiveData().value!!
             }else meetUps = emptyList()*/
             //FlowOfMeetUp = meetUpRepository.getMeetUpsAroundLocation(Location(location!!.longitude, location!!.latitude),
-            //    earthRadius).asLiveData()
+            //    earthRadius/1000.0).asLiveData()
             FlowOfMeetUp = meetUpRepository.getAllMeetUpsResponse().asLiveData()
             refresh()
 

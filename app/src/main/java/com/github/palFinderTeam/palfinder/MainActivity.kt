@@ -14,7 +14,6 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
-import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -22,7 +21,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
-const val USER_ID = "com.github.palFinderTeam.palFinder.DUMMY_PROFILE_USER"
+const val USER_ID = "com.github.palFinderTeam.palFinder.USER_ID"
 
 class MainActivity : AppCompatActivity() {
 
