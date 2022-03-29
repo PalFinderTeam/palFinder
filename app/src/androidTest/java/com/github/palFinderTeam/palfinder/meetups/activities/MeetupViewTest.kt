@@ -213,12 +213,27 @@ class MeetupViewTest {
             onView(withId(R.id.tv_StartDate)).perform(scrollTo(), click())
 
             onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
-                PickerActions.setDate(2022, 2, 1),
+                PickerActions.setDate(2022, 3, 1),
             )
+            onView(withText("OK")).perform(click()) // Library is stupid and can't even press the f. button
             onView(withClassName(Matchers.equalTo(TimePicker::class.java.name))).perform(
                 PickerActions.setTime(0, 0),
             )
+            onView(withText("OK")).perform(click())
             onView(withId(R.id.tv_StartDate)).check(matches(withText(expectDate1)))
+
+
+            onView(withId(R.id.tv_EndDate)).perform(scrollTo(), click())
+
+            onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
+                PickerActions.setDate(2022, 3, 1),
+            )
+            onView(withText("OK")).perform(click()) // Library is stupid and can't even press the f. button
+            onView(withClassName(Matchers.equalTo(TimePicker::class.java.name))).perform(
+                PickerActions.setTime(1, 0),
+            )
+            onView(withText("OK")).perform(click())
+            onView(withId(R.id.tv_EndDate)).check(matches(withText(expectDate2)))
         }
     }
 }

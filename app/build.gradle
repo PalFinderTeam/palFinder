@@ -80,8 +80,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation('androidx.test.espresso:espresso-contrib:3.4.0',{
-        // protobuf-lite that firebase-config and Tink depends on.
+    androidTestImplementation ('androidx.test.espresso:espresso-contrib:3.4.0',{
         exclude group: 'com.google.protobuf',module: 'protobuf-javalite'
         exclude group: 'com.google.protobuf',module: 'protobuf-lite'
     })
