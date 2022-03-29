@@ -161,45 +161,57 @@ class LoginActivity : AppCompatActivity() {
 
         when (requestCode) {
             REQ_ONE_TAP -> {
-                try {
-                    val credential = oneTapClient.getSignInCredentialFromIntent(data)
-                    val idToken = credential.googleIdToken
-                    val username = credential.id
-                    val password = credential.password
-                    checkOneTapCredential(idToken, password, username)
-                } catch (e: ApiException) {
-                    oneTapException(e)
-                }
+                oneTapRequestHandler(data)
             }
             RC_GOOGLE_SIGN_IN -> {
-                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-                try {
-                    // Google Sign In was successful, authenticate with Firebase
-                    val account = task.getResult(ApiException::class.java)!!
-                    Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
-                    firebaseAuthWithGoogle(account.idToken!!)
-                } catch (e: ApiException) {
-                    // Google Sign In failed, update UI appropriately
-                    Log.w(TAG, "Google sign in failed", e)
-                }
+                googleSignInRequestHandler(data)
             }
             REQUEST_CODE_GIS_SAVE_PASSWORD -> {
-                Log.d(TAG, "in save password result")
-                if (resultCode == Activity.RESULT_OK) {
-                    /* password was saved */
-                    Toast.makeText(
-                        baseContext, "password saved",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else if (resultCode == Activity.RESULT_CANCELED) {
-                    /* password saving was cancelled */
-                    Toast.makeText(
-                        baseContext, "password not saved",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                updateUI(auth.currentUser)
+                emailPasswordRequestHandler(resultCode)
             }
+        }
+    }
+
+    private fun emailPasswordRequestHandler(resultCode: Int) {
+        Log.d(TAG, "in save password result")
+        if (resultCode == RESULT_OK) {
+            /* password was saved */
+            Toast.makeText(
+                baseContext, "password saved",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else if (resultCode == RESULT_CANCELED) {
+            /* password saving was cancelled */
+            Toast.makeText(
+                baseContext, "password not saved",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        updateUI(auth.currentUser)
+    }
+
+    private fun googleSignInRequestHandler(data: Intent?) {
+        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+        try {
+            // Google Sign In was successful, authenticate with Firebase
+            val account = task.getResult(ApiException::class.java)!!
+            Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
+            firebaseAuthWithGoogle(account.idToken!!)
+        } catch (e: ApiException) {
+            // Google Sign In failed, update UI appropriately
+            Log.w(TAG, "Google sign in failed", e)
+        }
+    }
+
+    private fun oneTapRequestHandler(data: Intent?) {
+        try {
+            val credential = oneTapClient.getSignInCredentialFromIntent(data)
+            val idToken = credential.googleIdToken
+            val username = credential.id
+            val password = credential.password
+            checkOneTapCredential(idToken, password, username)
+        } catch (e: ApiException) {
+            oneTapException(e)
         }
     }
 
