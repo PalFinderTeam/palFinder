@@ -18,6 +18,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
+import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
@@ -273,6 +274,34 @@ class MeetupViewTest {
             )
                 .perform(click())
         }
+
+    }
+
+    @Test
+    fun clickOnEditWorks() = runTest {
+        val id = meetUpRepository.createMeetUp(meetup)
+        assertThat(id, notNullValue())
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
+            .apply{putExtra(MEETUP_SHOWN, id)}
+        ActivityScenario.launch<MeetUpView>(intent)
+        init()
+        onView(withId(R.id.floatingActionButton)).perform(click())
+        intended(hasComponent(MeetUpCreation::class.java.name))
+        release()
+
+    }
+
+    @Test
+    fun clickOnChatWorks() = runTest {
+        val id = meetUpRepository.createMeetUp(meetup)
+        assertThat(id, notNullValue())
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
+            .apply{putExtra(MEETUP_SHOWN, id)}
+        ActivityScenario.launch<MeetUpView>(intent)
+        init()
+        onView(withId(R.id.floatingActionButton3)).perform(click())
+        intended(hasComponent(ChatActivity::class.java.name))
+        release()
 
     }
 }
