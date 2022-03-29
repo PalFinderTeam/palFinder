@@ -11,8 +11,11 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
+import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
@@ -229,8 +232,15 @@ class MeetupViewTest {
             .apply{putExtra(MEETUP_SHOWN, id)}
         val scenario = ActivityScenario.launch<MeetUpView>(intent)
         scenario.use {
-
             onView(withId(R.id.show_profile_list_button)).perform(click())
+            onView(RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(0, R.id.profile_name))
+                .check(matches(withText(user.username)))
+            onView(RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(0, R.id.fullName))
+                .check(matches(withText(user.fullName())))
+            onView(RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(0, R.id.profile_name))
+                .perform(click())
+            intended(hasComponent(ProfileActivity::class.java.name))
+            onView(withId(R.id.userProfileUsername)).check(matches(withText(user.username)))
         }
     }
 }
