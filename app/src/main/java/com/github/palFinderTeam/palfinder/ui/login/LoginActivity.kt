@@ -6,7 +6,7 @@ package com.github.palFinderTeam.palfinder.ui.login
 //import android.widget.Toast
 //import androidx.annotation.StringRes
 
-import android.app.Activity
+//import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Build
@@ -28,8 +28,8 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.ktx.firestore
+//import com.google.firebase.firestore.SetOptions
+//import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
 
@@ -94,10 +94,7 @@ class LoginActivity : AppCompatActivity() {
                 }
             } else {
                 //pop "email not valid"
-                Toast.makeText(
-                    baseContext, "Email not valid",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(baseContext, "Email not valid", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -176,16 +173,10 @@ class LoginActivity : AppCompatActivity() {
         Log.d(TAG, "in save password result")
         if (resultCode == RESULT_OK) {
             /* password was saved */
-            Toast.makeText(
-                baseContext, "password saved",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(baseContext, "password saved", Toast.LENGTH_SHORT).show()
         } else if (resultCode == RESULT_CANCELED) {
             /* password saving was cancelled */
-            Toast.makeText(
-                baseContext, "password not saved",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(baseContext, "password not saved", Toast.LENGTH_SHORT).show()
         }
         updateUI(auth.currentUser)
     }
@@ -257,10 +248,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun signInSignUpFailure(task: Task<AuthResult>, logText: String) {
         Log.w(TAG, logText, task.exception)
-        Toast.makeText(
-            baseContext, "Authentication failed.",
-            Toast.LENGTH_SHORT
-        ).show()
+        Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
         updateUI(null)
     }
 
