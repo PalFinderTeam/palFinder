@@ -17,6 +17,8 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
+import com.github.palFinderTeam.palfinder.chat.CHAT
+import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.utils.Location
@@ -203,6 +205,35 @@ class MeetupViewTest {
             onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
             onView(withText(R.string.meetup_creation_missing_name_desc_title)).check(matches(isDisplayed()));
         }
+    }
+
+    @Test
+    fun testEditButton(){ runTest {
+        val id = meetUpRepository.createMeetUp(meetup)
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, id)
+        }
+        Intents.init()
+        ActivityScenario.launch<MeetUpView>(intent)
+        onView(withId(R.id.bt_EditMeetup)).perform(click())
+        Intents.intended(IntentMatchers.hasComponent(MeetUpCreation::class.java.name))
+        Intents.intended(IntentMatchers.hasExtra(MEETUP_EDIT, id))
+        Intents.release()
+    }
+    }
+
+    @Test
+    fun testChatButton() = runTest {
+        val id = meetUpRepository.createMeetUp(meetup)
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, id)
+        }
+        Intents.init()
+        ActivityScenario.launch<MeetUpView>(intent)
+        onView(withId(R.id.bt_ChatMeetup)).perform(click())
+        Intents.intended(IntentMatchers.hasComponent(ChatActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasExtra(CHAT, id))
+        Intents.release()
     }
 
     @Test

@@ -6,26 +6,16 @@ import android.icu.util.Calendar
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.*
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import com.github.palFinderTeam.palfinder.MainActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
-import com.github.palFinderTeam.palfinder.chat.CHAT
-import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.tag.Category
@@ -283,33 +273,6 @@ class MeetUpListTest {
         intended(hasComponent(MeetUpView::class.java.name))
         release()
     }
-
-    @Test
-    fun testEditButton(){
-        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
-            putExtra(MEETUP_SHOWN, meetUpList[0].uuid)
-        }
-        init()
-        ActivityScenario.launch<MainActivity>(intent)
-        onView(withId(R.id.bt_EditMeetup)).perform(click())
-        intended(hasComponent(MeetUpCreation::class.java.name))
-        intended(hasExtra(MEETUP_EDIT, meetUpList[0].uuid))
-        release()
-    }
-
-    @Test
-    fun testChatButton(){
-        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
-            putExtra(MEETUP_SHOWN, meetUpList[0].uuid)
-        }
-        init()
-        ActivityScenario.launch<MainActivity>(intent)
-        onView(withId(R.id.bt_ChatMeetup)).perform(click())
-        intended(hasComponent(ChatActivity::class.java.name))
-        intended(hasExtra(CHAT, meetUpList[0].uuid))
-        release()
-    }
-
 }
 
 
