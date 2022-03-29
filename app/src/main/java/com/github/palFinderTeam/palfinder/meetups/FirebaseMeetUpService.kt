@@ -8,8 +8,6 @@ import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Compani
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.Response.*
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -17,7 +15,9 @@ import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -72,36 +72,57 @@ class FirebaseMeetUpService @Inject constructor(
 
     override fun getMeetUpsAroundLocation(
         location: Location,
-        radiusInM: Double
+        radiusInKm: Double
     ): Flow<Response<List<MeetUp>>> {
 
         val geoLocation = GeoLocation(location.latitude, location.longitude)
-        val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInM)
+        val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInKm * 1000.0)
         val tasks = bounds.map {
             db.collection(MEETUP_COLL)
-                .orderBy(it.startHash)
+                .orderBy("geohash")
+                .startAt(it.startHash)
                 .endAt(it.endHash)
-                .get()
         }
 
-        return flow {
-            emit(Loading())
 
-            val allTasks: Task<List<QuerySnapshot>> = Tasks.whenAllSuccess(tasks)
+        return callbackFlow {
+            trySend(Loading())
 
-            val meetUps = allTasks.await().flatMap { snapshot ->
-                snapshot.documents.map { it.toMeetUp()!! }.filter {
-                    // Filter the last false positive
-                    val docLocation = it.location
-                    val distanceInM =
-                        docLocation.distanceInKm(location) * 1000 // TODO find better unit conversion
-                    distanceInM <= radiusInM
+            val result = mutableSetOf<MeetUp>()
+
+            val listeners = tasks.map {
+                it.addSnapshotListener { value, error ->
+                    if (error != null) {
+                        trySend(Failure(error.message.orEmpty()))
+                        cancel(
+                            message = "Error fetching meetups",
+                            cause = error
+                        )
+                        return@addSnapshotListener
+                    }
+
+                    val map = value?.documents
+                        ?.mapNotNull { it.toMeetUp() }
+                        ?.filter {
+                            // Filter the last false positive
+                            val docLocation = it.location
+                            val distanceInKm =
+                                docLocation.distanceInKm(location)
+                            distanceInKm <= radiusInKm
+                        }
+                    if (map != null) {
+                        // Probably not thread safe but yolo
+                        result.addAll(map)
+                        trySend(Success(result.toList()))
+                    }
+                }
+
+            }
+            awaitClose {
+                listeners.forEach {
+                    it.remove()
                 }
             }
-            emit(Success(meetUps))
-
-        }.catch { error ->
-            emit(Failure(error.message.orEmpty()))
         }
     }
 

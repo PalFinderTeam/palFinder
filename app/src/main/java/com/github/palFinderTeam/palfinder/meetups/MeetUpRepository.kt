@@ -49,6 +49,7 @@ interface MeetUpRepository {
      * It will use geoquery of firestore.
      *
      * @param location Location around which to search.
+     * @param radiusInKm Radius in Km of the search.
      */
     fun getMeetUpsAroundLocation(
         location: Location,
