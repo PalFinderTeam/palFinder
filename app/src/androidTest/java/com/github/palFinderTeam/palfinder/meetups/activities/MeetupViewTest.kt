@@ -249,6 +249,7 @@ class MeetupViewTest {
             closeSoftKeyboard()
             onView(withId(R.id.addTagButton)).perform(scrollTo(), click())
             onView(withId(R.id.tag_selector_search)).perform(click(), typeText("working out"))
+            closeSoftKeyboard()
 
             onView(
                 RecyclerViewMatcher(R.id.tag_selector_recycler).atPositionOnView(
@@ -284,6 +285,7 @@ class MeetupViewTest {
             closeSoftKeyboard()
             onView(withId(R.id.addTagButton)).perform(scrollTo(), click())
             onView(withId(R.id.tag_selector_search)).perform(click(), typeText("working out"))
+            closeSoftKeyboard()
 
             onView(
                 RecyclerViewMatcher(R.id.tag_selector_recycler).atPositionOnView(
