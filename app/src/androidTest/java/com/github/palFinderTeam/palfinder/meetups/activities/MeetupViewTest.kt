@@ -3,7 +3,6 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
-import android.util.Log
 import android.view.View
 import android.widget.DatePicker
 import android.widget.TimePicker
@@ -22,7 +21,6 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
-import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.chat.CHAT
@@ -255,7 +253,7 @@ class MeetupViewTest {
     }
 
     @Test
-    fun UserClickableInFragment() = runTest {
+    fun userClickableInFragment() = runTest {
         val userid = profileRepository.createProfile(user)
         assertThat(userid, notNullValue())
         val newMeetup = MeetUp(
@@ -298,7 +296,7 @@ class MeetupViewTest {
             .apply{putExtra(MEETUP_SHOWN, id)}
         ActivityScenario.launch<MeetUpView>(intent)
         init()
-        onView(withId(R.id.floatingActionButton)).perform(click())
+        onView(withId(R.id.bt_EditMeetup)).perform(click())
         intended(hasComponent(MeetUpCreation::class.java.name))
         release()
 
@@ -312,7 +310,7 @@ class MeetupViewTest {
             .apply{putExtra(MEETUP_SHOWN, id)}
         ActivityScenario.launch<MeetUpView>(intent)
         init()
-        onView(withId(R.id.floatingActionButton3)).perform(click())
+        onView(withId(R.id.bt_ChatMeetup)).perform(click())
         intended(hasComponent(ChatActivity::class.java.name))
         release()
 
