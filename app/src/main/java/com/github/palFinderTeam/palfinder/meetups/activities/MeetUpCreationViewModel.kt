@@ -10,6 +10,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.isBefore
 import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,13 +19,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MeetUpCreationViewModel @Inject constructor(
-    private val meetUpRepository: MeetUpRepository,
-    private val calendar: Calendar
+    private val meetUpRepository: MeetUpRepository
 ) : ViewModel() {
     private var uuid: String? = null
 
-    private val _startDate: MutableLiveData<Calendar> = MutableLiveData(calendar)
-    private val _endDate: MutableLiveData<Calendar> = MutableLiveData(calendar)
+    private val _startDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
+    private val _endDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
     private val _capacity: MutableLiveData<Int> = MutableLiveData()
     private val _hasMaxCapacity: MutableLiveData<Boolean> = MutableLiveData()
     private val _name: MutableLiveData<String> = MutableLiveData()
@@ -118,7 +118,8 @@ class MeetUpCreationViewModel @Inject constructor(
      * Send every field as a MeetUp to DB.
      */
     fun sendMeetUp() {
-        val meetUp = MeetUp(
+
+        var meetUp = MeetUp(
             uuid.orEmpty(),
             // TODO Get ID
             "TODO GET YOU ID",
@@ -136,6 +137,12 @@ class MeetUpCreationViewModel @Inject constructor(
         )
         if (uuid == null) {
             // create new meetup
+            // Make sure the meetup start at least now when it is created
+            if (startDate.value!!.isBefore(Calendar.getInstance())) {
+                _startDate.value = Calendar.getInstance()
+                checkDateIntegrity()
+                meetUp = meetUp.copy(startDate = startDate.value!!, endDate = endDate.value!!)
+            }
             viewModelScope.launch {
                 uuid = meetUpRepository.createMeetUp(meetUp)
                 // Notify sending result
@@ -145,6 +152,7 @@ class MeetUpCreationViewModel @Inject constructor(
             // Edit existing one
             viewModelScope.launch {
                 meetUpRepository.editMeetUp(uuid!!, meetUp)
+                // Notify sending result
                 _sendSuccess.postValue(true)
             }
         }
