@@ -2,6 +2,13 @@ package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.di.ProfileModule
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.DESCRIPTION_KEY
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOINED_MEETUPS_KEY
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOIN_DATE_KEY
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.NAME_KEY
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.PICTURE_KEY
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.SURNAME_KEY
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.USERNAME_KEY
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import dagger.Module
@@ -48,11 +55,13 @@ object UIMockProfileServiceModule {
             if (db.containsKey(userId)) {
                 val oldVal = db[userId]!!
                 db[userId] = when (field) {
-                    "name" -> oldVal.copy(name = value as String)
-                    "surname" -> oldVal.copy(surname = value as String)
-                    "username" -> oldVal.copy(username = value as String)
-                    "join_date" -> oldVal.copy(joinDate = value as Calendar)
-                    "picture" -> oldVal.copy(pfp = ImageInstance(value as String))
+                    NAME_KEY -> oldVal.copy(name = value as String)
+                    SURNAME_KEY -> oldVal.copy(surname = value as String)
+                    USERNAME_KEY -> oldVal.copy(username = value as String)
+                    JOIN_DATE_KEY -> oldVal.copy(joinDate = value as Calendar)
+                    PICTURE_KEY -> oldVal.copy(pfp = ImageInstance(value as String))
+                    DESCRIPTION_KEY -> oldVal.copy(description = value as String)
+                    JOINED_MEETUPS_KEY -> oldVal.copy(joinedMeetUps = value as List<String>)
                     else -> oldVal
                 }
                 return userId

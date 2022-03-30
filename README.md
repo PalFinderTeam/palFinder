@@ -29,3 +29,5 @@ Review cycle (sprint 3):
 Review cycle (sprint 4):
     Louca <-> Antoine <-> Christian <-> Daniel <-> Zacharie <-> Patrick <-> Louca
 
+Review cycle (sprint 5):
+    Louca <-> Daniel <-> Antoine <-> Patrick <-> Chrisitan <-> Zacharie <-> Louca

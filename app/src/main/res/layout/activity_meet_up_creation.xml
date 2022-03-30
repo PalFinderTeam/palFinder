@@ -145,7 +145,6 @@
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fc_tags"
-                android:name="com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:layout="@layout/fragment_tags_display" />

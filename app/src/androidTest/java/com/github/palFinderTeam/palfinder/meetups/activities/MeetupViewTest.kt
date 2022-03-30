@@ -3,17 +3,22 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import android.util.Log
+import android.view.View
 import android.widget.DatePicker
 import android.widget.TimePicker
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
@@ -21,12 +26,19 @@ import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.google.android.material.chip.Chip
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.notNullValue
+import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.junit.After
@@ -41,6 +53,7 @@ import javax.inject.Inject
 class MeetupViewTest {
 
     private lateinit var meetup: MeetUp
+    private lateinit var user: ProfileUser
     private val eventName = "dummy1"
     private val eventDescription = "dummy2"
     private lateinit var date1: Calendar
@@ -55,6 +68,8 @@ class MeetupViewTest {
 
     @Inject
     lateinit var meetUpRepository: MeetUpRepository
+    @Inject
+    lateinit var profileRepository: ProfileService
 
     @Before
     fun setup() {
@@ -65,14 +80,23 @@ class MeetupViewTest {
         date2 = Calendar.getInstance()
         date2.set(2022, 2, 1, 1, 0, 0)
 
-        val user = "user"
 
         expectDate1 = format.format(date1)
         expectDate2 = format.format(date2)
 
+
+        user = ProfileUser(
+            "user",
+            "Michou",
+        "Jonas",
+            "Martin",
+            date1,
+            ImageInstance(""),
+            "Ne la laisse pas tomber"
+        )
         meetup = MeetUp(
             "dummy",
-            user,
+            "user",
             "",
             eventName,
             eventDescription,
@@ -82,13 +106,14 @@ class MeetupViewTest {
             emptySet(),
             true,
             2,
-            mutableListOf(user)
+            mutableListOf("user")
         )
     }
 
     @After
     fun cleanUp() {
         (meetUpRepository as UIMockMeetUpRepositoryModule.UIMockRepository).clearDB()
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).clearDB()
     }
 
     @Test
@@ -195,6 +220,106 @@ class MeetupViewTest {
     }
 
     @Test
+    fun profileFragmentCorrectlyDisplayed() = runTest {
+        val userid = profileRepository.createProfile(user)
+        assertThat(userid, notNullValue())
+        val id = meetUpRepository.createMeetUp(meetup)
+        assertThat(id, notNullValue())
+        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        scenario.use {
+            Intents.init()
+
+            onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
+            onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
+            closeSoftKeyboard()
+            onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
+
+            Intents.intended(IntentMatchers.hasComponent(MeetUpView::class.java.name))
+            Intents.release()
+
+            onView(withId(R.id.tv_ViewEventName)).check(matches(withText("Meetup name")))
+            onView(withId(R.id.tv_ViewEventDescritpion)).check(matches(withText("Meetup description")))
+            onView(withId(R.id.show_profile_list_button)).perform(click())
+        }
+    }
+
+    @Test
+    fun addTagAddToDb() = runTest {
+        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        scenario.use {
+            Intents.init()
+
+            onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
+            onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
+            closeSoftKeyboard()
+            onView(withId(R.id.addTagButton)).perform(scrollTo(), click())
+            onView(withId(R.id.tag_selector_search)).perform(click(), typeText("working out"))
+            closeSoftKeyboard()
+
+            onView(
+                RecyclerViewMatcher(R.id.tag_selector_recycler).atPositionOnView(
+                    0,
+                    R.id.chip
+                )
+            ).check(matches(withText("working out")))
+            onView(allOf(
+                withText("working out"),
+                withId(R.id.chip)
+            )).perform(click())
+            onView(withId(R.id.add_tag_button)).perform(click())
+            onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
+
+            Intents.intended(IntentMatchers.hasComponent(MeetUpView::class.java.name))
+            Intents.release()
+
+            onView(withId(R.id.tv_ViewEventName)).check(matches(withText("Meetup name")))
+            onView(withId(R.id.tv_ViewEventDescritpion)).check(matches(withText("Meetup description")))
+            onView(withId(R.id.tag_group)).check(matches(hasChildCount(1)))
+        }
+    }
+
+    @Test
+    fun addTagAndRemoveAddsNothing() = runTest {
+        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        scenario.use {
+            Intents.init()
+
+            onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
+            onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
+            closeSoftKeyboard()
+            onView(withId(R.id.addTagButton)).perform(scrollTo(), click())
+            onView(withId(R.id.tag_selector_search)).perform(click(), typeText("working out"))
+            closeSoftKeyboard()
+
+            onView(
+                RecyclerViewMatcher(R.id.tag_selector_recycler).atPositionOnView(
+                    0,
+                    R.id.chip
+                )
+            ).check(matches(withText("working out")))
+            onView(allOf(
+                withText("working out"),
+                withId(R.id.chip)
+            )).perform(click())
+            onView(withId(R.id.add_tag_button)).perform(click())
+
+
+            onView(withParent(withId(R.id.tag_group))).perform(ClickCloseIconAction())
+
+            onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
+
+            Intents.intended(IntentMatchers.hasComponent(MeetUpView::class.java.name))
+            Intents.release()
+
+            onView(withId(R.id.tv_ViewEventName)).check(matches(withText("Meetup name")))
+            onView(withId(R.id.tv_ViewEventDescritpion)).check(matches(withText("Meetup description")))
+            onView(withId(R.id.tag_group)).check(matches(hasChildCount(0)))
+        }
+    }
+    @Test
     fun checkErrorWork() = runTest {
         val id = meetUpRepository.createMeetUp(meetup)
         assertThat(id, notNullValue())
@@ -267,4 +392,22 @@ class MeetupViewTest {
             onView(withId(R.id.tv_EndDate)).check(matches(withText(expectDate2)))
         }
     }
+}
+
+class ClickCloseIconAction : ViewAction {
+
+    override fun getConstraints(): Matcher<View> {
+        return ViewMatchers.isAssignableFrom(Chip::class.java)
+    }
+
+    override fun getDescription(): String {
+        return "click drawable "
+    }
+
+    override fun perform(uiController: UiController, view: View) {
+        val chip = view as Chip//we matched
+        chip.performCloseIconClick()
+    }
+
+
 }

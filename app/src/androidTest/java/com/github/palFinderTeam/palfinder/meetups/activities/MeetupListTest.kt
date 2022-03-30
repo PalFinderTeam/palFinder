@@ -8,17 +8,17 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tag.TagSelectorFragment
 import com.github.palFinderTeam.palfinder.utils.Location
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -235,6 +235,7 @@ class MeetUpListTest {
         }
     }
 
+
     @Test
     fun sortButtonWorks() = runTest {
         meetUpList.forEach { meetUpRepository.createMeetUp(it) }
@@ -262,8 +263,8 @@ class MeetUpListTest {
     fun clickItem() = runTest {
         meetUpList.forEach { meetUpRepository.createMeetUp(it) }
         val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
-        init()
         ActivityScenario.launch<MeetupListActivity>(intent)
+        init()
         onView(
             RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
                 0,
