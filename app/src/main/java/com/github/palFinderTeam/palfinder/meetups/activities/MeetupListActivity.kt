@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.PopupMenu
@@ -27,6 +25,8 @@ import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import dagger.hilt.android.AndroidEntryPoint
 
+
+const val SHOW_JOINED_ONLY = "com.github.palFinderTeam.palFinder.meetup_list_view.SHOW_JOINED_ONLY"
 
 @AndroidEntryPoint
 class MeetupListActivity : AppCompatActivity() {
@@ -50,12 +50,13 @@ class MeetupListActivity : AppCompatActivity() {
         val searchField = findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
 
+        viewModel.showOnlyJoined = intent.getBooleanExtra(SHOW_JOINED_ONLY,false)
 
         viewModel.listOfMeetUp.observe(this) { meetups ->
-            val mutableMeetUp = meetups.toMutableList()
+            val mutableMeetUp = meetups.filter { filter(it) }.toMutableList()
             adapter = MeetupListAdapter(meetups, mutableMeetUp,
                 SearchedFilter(
-                    meetups, mutableMeetUp, ::filterTag
+                    meetups, mutableMeetUp, ::filter
                 ) {
                     adapter.notifyDataSetChanged()
                 })
@@ -71,38 +72,49 @@ class MeetupListActivity : AppCompatActivity() {
         }
         viewModel.tags.observe(this) {
             tagsViewModel.refreshTags()
-            filterByTag(it)
+            filter(it)
         }
-
     }
 
-    private fun filterTag(meetup : MeetUp): Boolean {
+    private fun filter(meetup : MeetUp): Boolean {
+        return if (viewModel.showOnlyJoined){
+            filterTags(meetup) && isParticipating(meetup)
+        } else{
+            filterTags(meetup)
+        }
+    }
+
+    private fun filterTags(meetup : MeetUp): Boolean {
         return meetup.tags.containsAll(viewModel.tags.value!!)
     }
 
+    private fun isParticipating(meetup : MeetUp): Boolean {
+        val user = viewModel.getUser()
+        return if (user != null){
+            meetup.isParticipating(user)
+        } else{
+            false
+        }
+    }
 
-    fun filterByTag(tags: Set<Category>?) {
+
+    fun filter(tags: Set<Category>?) {
         if (::adapter.isInitialized) {
             adapter.currentDataSet.clear()
-            viewModel.listOfMeetUp.value?.let { meetups -> performFilterByTag(meetups, adapter.currentDataSet, tags) }
+            viewModel.listOfMeetUp.value?.let { meetups -> performFilter(meetups, adapter.currentDataSet, tags) }
             adapter.notifyDataSetChanged()
         }
     }
 
-    private fun performFilterByTag(
+    private fun performFilter(
         meetups: List<MeetUp>,
         currentDataSet: MutableList<MeetUp>,
         tags: Set<Category>?
     ) {
-        if (tags!!.isEmpty()) {
-            currentDataSet.addAll(meetups)
-        } else {
-            for (meetup: MeetUp in meetups) {
-                if (meetup.tags.containsAll(tags)) {
-                    currentDataSet.add(meetup)
-                }
-            }
-        }
+        currentDataSet.addAll(meetups.filter {
+            (tags==null || it.tags.containsAll(tags)) &&
+            (!viewModel.showOnlyJoined || isParticipating(it))
+        })
     }
 
     fun sortByCap() {

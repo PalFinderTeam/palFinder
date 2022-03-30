@@ -1,31 +1,27 @@
 package com.github.palFinderTeam.palfinder.map
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpListViewModel
-import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
-import kotlin.collections.HashMap
 import kotlin.math.pow
 
 @HiltViewModel
 class MapsActivityViewModel @Inject constructor(
-    meetUpRepository: MeetUpRepository
+    meetUpRepository: MeetUpRepository,
+    profileService: ProfileService
 ) : MeetUpListViewModel(
-    meetUpRepository
+    meetUpRepository, profileService
 ) {
 
     lateinit var meetUps: List<MeetUp>

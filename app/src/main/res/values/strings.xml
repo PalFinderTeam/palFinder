@@ -90,6 +90,7 @@
 
     <string name="nav_bar_create">Create</string>
     <string name="nav_bar_find">Find</string>
+    <string name="nav_bar_list">List</string>
     <string name="nav_bar_group">Groups</string>
 
     <!-- TODO: Remove or change this placeholder text -->

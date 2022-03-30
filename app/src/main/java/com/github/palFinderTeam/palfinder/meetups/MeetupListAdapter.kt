@@ -13,7 +13,7 @@ import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 
 
 class MeetupListAdapter(private val dataSet: List<MeetUp>, val currentDataSet: MutableList<MeetUp>,
-                        private var filter: SearchedFilter<MeetUp>,  private val onItemClicked: (position: Int) -> Unit) :
+                        private var filter: SearchedFilter<MeetUp>, private val onItemClicked: (position: Int) -> Unit) :
     RecyclerView.Adapter<MeetupListAdapter.ViewHolder>(), Filterable {
 
     class ViewHolder(view: View, private val onItemClicked: (position: Int) -> Unit) :

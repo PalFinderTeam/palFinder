@@ -12,6 +12,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
+import com.github.palFinderTeam.palfinder.meetups.activities.SHOW_JOINED_ONLY
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 /**
@@ -37,7 +38,8 @@ class NavigationBarFragment : Fragment() {
             when(it.itemId){
                 R.id.nav_bar_create -> {startActivity(MeetUpCreation::class.java); true}
                 R.id.nav_bar_find -> {startActivity(MapsActivity::class.java); true}
-                R.id.nav_bar_groups -> {startActivity(MeetupListActivity::class.java); true}
+                R.id.nav_bar_list -> {startActivity(MeetupListActivity::class.java); true}
+                R.id.nav_bar_groups -> {startActivityGroup(); true}
                 else -> false
             }
         }
@@ -45,5 +47,11 @@ class NavigationBarFragment : Fragment() {
 
     private fun startActivity(cls: Class<out AppCompatActivity>){
         ContextCompat.startActivity(requireContext(), Intent(context, cls), null)
+    }
+    private fun startActivityGroup(){
+        val intent = Intent(context, MeetupListActivity::class.java).apply {
+            putExtra(SHOW_JOINED_ONLY,true)
+        }
+        ContextCompat.startActivity(requireContext(), intent, null)
     }
 }

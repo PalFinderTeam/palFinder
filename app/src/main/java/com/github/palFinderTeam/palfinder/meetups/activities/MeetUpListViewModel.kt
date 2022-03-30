@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,12 +15,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 open class MeetUpListViewModel @Inject constructor(
-    val meetUpRepository: MeetUpRepository
+    val meetUpRepository: MeetUpRepository,
+    val profileService: ProfileService
 ) : ViewModel() {
     val listOfMeetUp: LiveData<List<MeetUp>> = meetUpRepository.getAllMeetUps().asLiveData()
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
     val tags: LiveData<Set<Category>> = _tags
+    var showOnlyJoined = false
 
+    fun getUser(): String?{
+        return profileService.getLoggedInUserID()
+    }
 
     /**
      *  Provides the tagContainer with the necessary tags and allows it to edit them.
