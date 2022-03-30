@@ -14,11 +14,15 @@ import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
+import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
+import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
@@ -216,25 +220,96 @@ class MeetupViewTest {
     fun profileFragmentCorrectlyDisplayed() = runTest {
         val userid = profileRepository.createProfile(user)
         assertThat(userid, notNullValue())
+        val newMeetup = MeetUp(
+            "dummy",
+            userid!!,
+            "",
+            eventName,
+            eventDescription,
+            date1,
+            date2,
+            Location(0.0, 0.0),
+            emptySet(),
+            true,
+            2,
+            mutableListOf(userid)
+        )
+        val id = meetUpRepository.createMeetUp(newMeetup)
+        assertThat(id, notNullValue())
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
+            .apply{putExtra(MEETUP_SHOWN, id)}
+        val scenario = ActivityScenario.launch<MeetUpView>(intent)
+        scenario.use {
+            onView(withId(R.id.show_profile_list_button)).perform(click())
+            onView(RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(0, R.id.profile_name))
+                .check(matches(withText(user.username)))
+            onView(RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(0, R.id.fullName))
+                .check(matches(withText(user.fullName())))
+        }
+    }
+
+    @Test
+    fun UserClickableInFragment() = runTest {
+        val userid = profileRepository.createProfile(user)
+        assertThat(userid, notNullValue())
+        val newMeetup = MeetUp(
+            "dummy",
+            userid!!,
+            "",
+            eventName,
+            eventDescription,
+            date1,
+            date2,
+            Location(0.0, 0.0),
+            emptySet(),
+            true,
+            2,
+            mutableListOf(userid)
+        )
+        val id = meetUpRepository.createMeetUp(newMeetup)
+        assertThat(id, notNullValue())
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
+            .apply{putExtra(MEETUP_SHOWN, id)}
+        val scenario = ActivityScenario.launch<MeetUpView>(intent)
+        scenario.use {
+            onView(withId(R.id.show_profile_list_button)).perform(click())
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    0,
+                    R.id.profile_name
+                )
+            )
+                .perform(click())
+        }
+
+    }
+
+    @Test
+    fun clickOnEditWorks() = runTest {
         val id = meetUpRepository.createMeetUp(meetup)
         assertThat(id, notNullValue())
-        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
-        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
-        scenario.use {
-            Intents.init()
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
+            .apply{putExtra(MEETUP_SHOWN, id)}
+        ActivityScenario.launch<MeetUpView>(intent)
+        init()
+        onView(withId(R.id.floatingActionButton)).perform(click())
+        intended(hasComponent(MeetUpCreation::class.java.name))
+        release()
 
-            onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
-            onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
-            closeSoftKeyboard()
-            onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
+    }
 
-            Intents.intended(IntentMatchers.hasComponent(MeetUpView::class.java.name))
-            Intents.release()
+    @Test
+    fun clickOnChatWorks() = runTest {
+        val id = meetUpRepository.createMeetUp(meetup)
+        assertThat(id, notNullValue())
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
+            .apply{putExtra(MEETUP_SHOWN, id)}
+        ActivityScenario.launch<MeetUpView>(intent)
+        init()
+        onView(withId(R.id.floatingActionButton3)).perform(click())
+        intended(hasComponent(ChatActivity::class.java.name))
+        release()
 
-            onView(withId(R.id.tv_ViewEventName)).check(matches(withText("Meetup name")))
-            onView(withId(R.id.tv_ViewEventDescritpion)).check(matches(withText("Meetup description")))
-            onView(withId(R.id.show_profile_list_button)).perform(click())
-        }
     }
 
     @Test
