@@ -45,8 +45,17 @@ class MeetupViewFragment : Fragment() {
 
         setTextView(R.id.tv_ViewEventName,meetUp.name)
         setTextView(R.id.tv_ViewEventDescritpion,meetUp.description)
-        setTextView(R.id.tv_ViewEventCreator, //TODO FETCH USER
-        getString(R.string.meetup_view_creator, meetUp.creatorId))
+        model.getUsernameOf(meetUp.creatorId){
+            if (it != null){
+                setTextView(R.id.tv_ViewEventCreator,
+                    getString(R.string.meetup_view_creator, it))
+            }
+            else{
+                setTextView(R.id.tv_ViewEventCreator,
+                    getString(R.string.meetup_view_creator,
+                        getString(R.string.invalid_username)))
+            }
+        }
 
         setTextView(R.id.tv_ViewStartDate, startDate)
         setTextView(R.id.tv_ViewEndDate,endDate)
