@@ -5,8 +5,6 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -18,8 +16,6 @@ import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.USER_ID
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 
@@ -27,12 +23,12 @@ class ChatMessageListAdapter(
     private val viewModel: ChatViewModel,
     private val dataSet: List<ChatMessage>,
     private val onItemClicked: (position: Int) -> Unit) :
-    RecyclerView.Adapter<ChatMessageListAdapter.ViewHolder>(), Filterable {
+    RecyclerView.Adapter<ChatMessageListAdapter.ViewHolder>() {
 
     private val currentDataSet = dataSet.toMutableList()
 
     class ViewHolder(view: View, private val onItemClicked: (position: Int) -> Unit) :
-        RecyclerView.ViewHolder(view), View.OnClickListener {
+        RecyclerView.ViewHolder(view) {
 
         val messageInLayout: ConstraintLayout = view.findViewById(R.id.msg_in_layout)
 
@@ -40,15 +36,6 @@ class ChatMessageListAdapter(
         val messageInDate: TextView = view.findViewById(R.id.msg_in_date)
         val messageInSenderName: TextView = view.findViewById(R.id.msg_in_sender_name)
         val messageInSenderPic: ImageView = view.findViewById(R.id.msg_send_picture)
-
-        init {
-            view.setOnClickListener(this)
-        }
-
-        override fun onClick(v: View) {
-            val position = adapterPosition
-            onItemClicked(position)
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, type: Int): ViewHolder {
@@ -69,9 +56,13 @@ class ChatMessageListAdapter(
         val msg = currentDataSet[position]
         val context = holder.messageInContent.context
 
-        if (msg.sentBy == Firebase.auth.currentUser?.uid){
+        if (msg.sentBy == viewModel.profileService.getLoggedInUserID()){
             holder.messageInLayout.background = context.getDrawable(R.drawable.out_going_message)
             holder.messageInSenderPic.isVisible = false
+        }
+        else{
+            holder.messageInLayout.background = context.getDrawable(R.drawable.in_coming_message)
+            holder.messageInSenderPic.isVisible = true
         }
         holder.messageInContent.text = msg.content
         holder.messageInDate.text = prettyDate.timeDiff(msg.sentAt)
@@ -88,6 +79,4 @@ class ChatMessageListAdapter(
     }
 
     override fun getItemCount(): Int = currentDataSet.size
-
-    override fun getFilter(): Filter = filter
 }
