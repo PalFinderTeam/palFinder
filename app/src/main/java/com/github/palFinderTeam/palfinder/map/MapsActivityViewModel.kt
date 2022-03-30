@@ -28,45 +28,13 @@ class MapsActivityViewModel @Inject constructor(
     meetUpRepository
 ) {
 
-    lateinit var meetUps: List<MeetUp>
-    private lateinit var map: GoogleMap
+
+
     private var markers = HashMap<String, Marker>()
-    var mapReady = false
-    private var startingCameraPosition: LatLng = LatLng(46.31, 6.38)
-    private var startingZoom: Float = 15f
-    lateinit var FlowOfMeetUp: LiveData<Response<List<MeetUp>>>
 
 
 
-    /**
-     * set the map to which utils functions will be applied
-     * @param map: GoogleMap
-     */
-    fun setMap(map : GoogleMap){
-        this.map = map
-        mapReady = true
-    }
 
-    fun updateFetcherLocation(location: LatLng?){
-        if(false){//getZoom() < 7f){
-            //TODO get only the joined meetup
-
-        } else{
-            val earthRadius = 6371000.0
-            // at zoom 0, the map is of size 256x256 pixels and for every zoom, the number of pixel is multiplied by 2
-            val radiusAtZoom0 = earthRadius/256
-            val radius = radiusAtZoom0/2.0.pow(getZoom().toDouble())
-
-            /*if(meetUpRepository.getAllMeetUps().asLiveData().value != null) {
-                meetUps = meetUpRepository.getAllMeetUps().asLiveData().value!!
-            }else meetUps = emptyList()*/
-            //FlowOfMeetUp = meetUpRepository.getMeetUpsAroundLocation(Location(location!!.longitude, location!!.latitude),
-            //    earthRadius/1000.0).asLiveData()
-            FlowOfMeetUp = meetUpRepository.getAllMeetUpsResponse().asLiveData()
-            refresh()
-
-        }
-    }
 
 
     /**
@@ -84,19 +52,14 @@ class MapsActivityViewModel @Inject constructor(
      * add those of the meetup list that are not in the map
      * if the map is not ready, do nothing
      */
-    fun refresh(){
-        if(!mapReady) return
-
-        val response = FlowOfMeetUp.value
-        meetUps = if(response is Response.Success){
-            response.data
-        }else emptyList()
+    override fun refresh(){
+        super.refresh()
 
         clearMarkers()
 
-        meetUps?.forEach{ meetUp ->
+        meetupList?.forEach{ meetUp ->
             val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
-            val marker = map.addMarker(MarkerOptions().position(position).title(meetUp.uuid))
+            val marker = getMap().addMarker(MarkerOptions().position(position).title(meetUp.uuid))
                 ?.let { markers[meetUp.uuid] = it }
         }
     }
@@ -122,7 +85,7 @@ class MapsActivityViewModel @Inject constructor(
      */
     fun setCameraPosition(position: LatLng){
         if(mapReady) {
-            map.moveCamera(CameraUpdateFactory.newLatLng(position))
+            getMap().moveCamera(CameraUpdateFactory.newLatLng(position))
         }else startingCameraPosition = position
     }
 
@@ -132,20 +95,12 @@ class MapsActivityViewModel @Inject constructor(
      * @return the camera position
      */
     fun getCameraPosition():LatLng{
-        return if(mapReady) map.cameraPosition.target
+        return if(mapReady) getMap().cameraPosition.target
         else startingCameraPosition
     }
 
 
-    /**
-     * get the current zoom
-     * if map not ready, return the starting zoom
-     * @return the zoom
-     */
-    fun getZoom(): Float{
-        return if(mapReady) map.cameraPosition.zoom
-        else startingZoom
-    }
+
 
     /**
      * set the zoom
@@ -154,26 +109,12 @@ class MapsActivityViewModel @Inject constructor(
      */
     fun setZoom(zoom: Float){
         if(mapReady) {
-            map.moveCamera(CameraUpdateFactory.zoomTo(zoom))
+            getMap().moveCamera(CameraUpdateFactory.zoomTo(zoom))
         }else{
             startingZoom = zoom
         }
     }
 
-    /**
-     * set the position and the zoom
-     * if the map is not ready, set both starting values
-     * @param position : the new camera position of the camera
-     * @param zoom : the new zoom of the camera
-     */
-    fun setPositionAndZoom(position: LatLng, zoom: Float){
-        if(mapReady){
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoom))
-        }else{
-            startingCameraPosition = position
-            startingZoom = zoom
-        }
-    }
 
 
 }

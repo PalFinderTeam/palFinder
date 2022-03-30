@@ -11,10 +11,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.activities.MapListSuperActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -33,24 +36,15 @@ const val LOCATION_SELECT = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SEL
 const val LOCATION_SELECTED = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECTED"
 
 @AndroidEntryPoint
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraMoveCanceledListener {
+class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraMoveCanceledListener {
 
     private lateinit var binding: ActivityMapsBinding
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var lastLocation: Location
-    private lateinit var map: GoogleMap
     private lateinit var button: FloatingActionButton
     private lateinit var navBar: View
     private lateinit var mapView: View
 
     private val mapSelection: MapsSelectionModel by viewModels()
-    val viewModel : MapsActivityViewModel by viewModels()
 
-    companion object {
-        private const val USER_LOCATION_PERMISSION_REQUEST_CODE = 1
-
-
-    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,10 +63,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         mapView.contentDescription = "MAP NOT READY"
         mapFragment.getMapAsync(this)
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-        viewModel.updateFetcherLocation(viewModel.getCameraPosition())
-        viewModel.FlowOfMeetUp.observe(this) {
+        viewModel = ViewModelProvider(this)[MapsActivityViewModel::class.java]
+        viewModel.update((viewModel as MapsActivityViewModel).getCameraPosition())
+        viewModel.listOfMeetUpResponse.observe(this) {
             viewModel.refresh()
         }
 
@@ -91,33 +84,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         } else {
             button.apply { this.hide() }
             mapSelection.active.value = false
-        }
-    }
-
-
-    private fun setUserLocation(){
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ){
-            ActivityCompat.requestPermissions(this,
-                arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
-                USER_LOCATION_PERMISSION_REQUEST_CODE
-            )
-            return
-        }
-
-        map.isMyLocationEnabled = true
-        fusedLocationClient.lastLocation.addOnSuccessListener(this){
-            location -> if(location != null){
-                lastLocation = location
-                val currentLatLng = LatLng(location.latitude, location.longitude)
-                viewModel.setPositionAndZoom(currentLatLng, viewModel.getZoom())
-            }
         }
     }
 
@@ -173,7 +139,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         map.setOnMarkerClickListener(this)
 
 
-        setUserLocation()
+        super.setUserLocation()
 
 
         map.setOnMapClickListener { onMapClick(it) }
@@ -185,7 +151,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
     }
 
     override fun onCameraMoveCanceled() {
-        viewModel.updateFetcherLocation(viewModel.getCameraPosition())
+        viewModel.update((viewModel as MapsActivityViewModel).getCameraPosition())
     }
 
 }
