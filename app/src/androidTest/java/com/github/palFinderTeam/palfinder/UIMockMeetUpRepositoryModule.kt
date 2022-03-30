@@ -51,7 +51,6 @@ object UIMockMeetUpRepositoryModule {
             val key = counter.toString()
             db[key] = newMeetUp.copy(uuid = key)
             counter += 1
-            Log.d("chat","chalut " + db[key]!!.participantsId)
             return key
         }
 
