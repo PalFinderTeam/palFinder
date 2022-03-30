@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder.profile
 
+import android.util.Log
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.firebase.firestore.FirebaseFirestore
