@@ -34,6 +34,7 @@ class ImageFetcherHttp(var imgURL : String) : ImageFetcher {
 
             // NOTE: Can throw exception, deal with it in the activity
             val inputStream: InputStream = connection.inputStream
+            connection.disconnect()
             BufferedInputStream(inputStream)
         }
 
