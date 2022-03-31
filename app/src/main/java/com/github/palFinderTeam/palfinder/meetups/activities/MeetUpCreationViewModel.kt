@@ -23,6 +23,9 @@ class MeetUpCreationViewModel @Inject constructor(
 ) : ViewModel() {
     private var uuid: String? = null
 
+    private val _canEditStartDate = MutableLiveData(false)
+    private val _canEditEndDate = MutableLiveData(false)
+
     private val _startDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
     private val _endDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
     private val _capacity: MutableLiveData<Int> = MutableLiveData()
@@ -44,6 +47,9 @@ class MeetUpCreationViewModel @Inject constructor(
     val sendSuccess: LiveData<Boolean> = _sendSuccess
     val tags: LiveData<Set<Category>> = _tags
     val participantsId: LiveData<List<String>> = _participantsId
+
+    val canEditStartDate: LiveData<Boolean> = _canEditStartDate
+    val canEditEndDate: LiveData<Boolean> = _canEditEndDate
 
     val location: LiveData<Location> = _location
 
@@ -108,7 +114,12 @@ class MeetUpCreationViewModel @Inject constructor(
                 _tags.postValue(meetUp.tags)
                 _participantsId.postValue(meetUp.participantsId)
                 _location.postValue(meetUp.location)
+
+                _canEditStartDate.postValue(!meetUp.isStarted(Calendar.getInstance()))
+                _canEditEndDate.postValue(!meetUp.isFinished(Calendar.getInstance()))
             } else {
+                _canEditStartDate.postValue(true)
+                _canEditEndDate.postValue(true)
                 fillWithDefaultValues()
             }
         }
@@ -165,10 +176,23 @@ class MeetUpCreationViewModel @Inject constructor(
         if (startDate.value == null || endDate.value == null) {
             return
         }
+        val startDateVal = startDate.value!!
+        val endDateVal = endDate.value!!
+        // TODO This is super arbitrary
+        val maxStartDate = Calendar.getInstance().apply { add(Calendar.DATE, 7) }
+        val maxEndDate = Calendar.getInstance().apply { add(Calendar.DATE, 8) }
+        // Check that startDate is not too much in the future
+        if (!startDateVal.isBefore(maxStartDate)) {
+            _startDate.value = maxStartDate
+        }
+        // Check that endDate is not too much in the future
+        if (!endDateVal.isBefore(maxEndDate)) {
+            _endDate.value = maxEndDate
+        }
         // Check if at least defaultTimeDelta between start and end
-        if (!startDate.value!!.isDeltaBefore(endDate.value!!, defaultTimeDelta)) {
+        if (!startDateVal.isDeltaBefore(endDateVal, defaultTimeDelta)) {
             val newCalendar = Calendar.getInstance()
-            newCalendar.timeInMillis = startDate.value!!.timeInMillis
+            newCalendar.timeInMillis = startDateVal.timeInMillis
             newCalendar.add(Calendar.MILLISECOND, defaultTimeDelta)
             _endDate.value = newCalendar
         }

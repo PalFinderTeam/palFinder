@@ -49,6 +49,8 @@ class MeetUpCreation : AppCompatActivity() {
     private lateinit var limitEditText: EditText
     private lateinit var nameEditText: EditText
     private lateinit var descriptionEditText: EditText
+    private lateinit var startDateField: TextView
+    private lateinit var endDateField: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         registerActivityResult()
@@ -61,6 +63,9 @@ class MeetUpCreation : AppCompatActivity() {
         limitEditText = findViewById(R.id.et_Capacity)
         nameEditText = findViewById(R.id.et_EventName)
         descriptionEditText = findViewById(R.id.et_Description)
+        startDateField = findViewById(R.id.tv_StartDate)
+        endDateField= findViewById(R.id.tv_EndDate)
+
 
         bindUI()
 
@@ -142,6 +147,13 @@ class MeetUpCreation : AppCompatActivity() {
             }
         }
         limitEditText.isEnabled = hasLimitCheckBox.isChecked
+
+        viewModel.canEditStartDate.observe(this) {
+            startDateField.isClickable = it
+        }
+        viewModel.canEditEndDate.observe(this) {
+            endDateField.isClickable = it
+        }
     }
 
     private fun setCapacityField(isEditable: Boolean) {
