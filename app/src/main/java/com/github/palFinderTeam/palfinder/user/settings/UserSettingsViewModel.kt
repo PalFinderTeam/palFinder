@@ -49,7 +49,8 @@ class UserSettingsViewModel @Inject constructor(
         const val UPDATE_SUCCESS = 3
     }
 
-    private var _loggedUID: String = "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2" //TODO: TEMP VALUE, actual logged in ID to be fetched
+    //private var _loggedUID: String = "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2" //TODO: TEMP VALUE, actual logged in ID to be fetched
+    private var _loggedUID: String = "aaaaaaa"
 
     private val _username: MutableLiveData<String> = MutableLiveData()
     private val _name: MutableLiveData<String> = MutableLiveData()
@@ -87,11 +88,9 @@ class UserSettingsViewModel @Inject constructor(
      */
     fun loadUserInfo() {
         viewModelScope.launch {
-            val user = profileService.fetchUserProfile(_loggedUID)
-            if (user == null){
-                // Typically if the user profile was not found because it wasn't created yet
-                resetFieldsWithDefaults()
-            } else {
+            // Typically if the user profile was not found because it wasn't created yet
+            if (profileService.doesUserIDExist(_loggedUID)) {
+                val user = profileService.fetchUserProfile(_loggedUID)!!
                 _username.postValue(user.username)
                 _name.postValue(user.name)
                 _surname.postValue(user.surname)
@@ -99,6 +98,8 @@ class UserSettingsViewModel @Inject constructor(
                 _userBio.postValue(user.description)
                 _birthday.postValue(user.birthday)
                 _pfp.postValue(user.pfp.imgURL)
+            } else {
+                resetFieldsWithDefaults()
             }
         }
     }

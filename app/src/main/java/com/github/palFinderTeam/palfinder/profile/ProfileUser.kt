@@ -35,6 +35,7 @@ data class ProfileUser(
         const val PICTURE_KEY = "picture"
         const val JOIN_DATE_KEY = "join_date"
         const val DESCRIPTION_KEY = "description"
+        const val BIRTHDAY_KEY = "birthday"
         const val JOINED_MEETUPS_KEY = "joined_meetups"
 
         /**
@@ -54,9 +55,9 @@ data class ProfileUser(
                 val joinedMeetUp = (get(JOINED_MEETUPS_KEY) as? List<String>).orEmpty()
 
                 var birthdayCal: Calendar? = null
-                if (getDate("birthday") != null) {
+                if (getDate(BIRTHDAY_KEY) != null) {
                     birthdayCal = Calendar.getInstance().apply {
-                        time = getDate("birthday")
+                        time = getDate(BIRTHDAY_KEY)
                     }
                 }
 
@@ -81,7 +82,7 @@ data class ProfileUser(
             JOIN_DATE_KEY to joinDate.time,
             PICTURE_KEY to pfp.imgURL,
             DESCRIPTION_KEY to description,
-            "birthday" to birthday?.time,
+            BIRTHDAY_KEY to birthday?.time,
             JOINED_MEETUPS_KEY to joinedMeetUps
         )
     }
