@@ -23,8 +23,8 @@ class MeetUpCreationViewModel @Inject constructor(
 ) : ViewModel() {
     private var uuid: String? = null
 
-    private val _canEditStartDate = MutableLiveData(false)
-    private val _canEditEndDate = MutableLiveData(false)
+    private val _canEditStartDate = MutableLiveData(true)
+    private val _canEditEndDate = MutableLiveData(true)
 
     private val _startDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
     private val _endDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
