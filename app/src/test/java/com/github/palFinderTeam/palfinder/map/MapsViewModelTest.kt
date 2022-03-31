@@ -4,6 +4,7 @@ import android.content.Context
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.MockProfileService
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -25,7 +26,8 @@ class MapsViewModelTest {
 
 
     private val meetUpRepository = MockMeetUpRepository()
-    private val viewModel = MapsActivityViewModel(meetUpRepository)
+    private val profileService = MockProfileService()
+    private val viewModel = MapsActivityViewModel(meetUpRepository, profileService)
 
     private lateinit var meetup1: MeetUp
     private lateinit var meetup2: MeetUp
