@@ -26,6 +26,7 @@ import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -59,12 +60,12 @@ class MapsActivityTest {
         GrantPermissionRule.grant(android.Manifest.permission.ACCESS_COARSE_LOCATION)
 
 
-    lateinit var utils: MapsActivityViewModel
+    lateinit var utils: MapListViewModel
 
     @Before
     fun init_() {
         hiltRule.inject()
-        utils = MapsActivityViewModel(meetUpRepository)
+        utils = MapListViewModel(meetUpRepository)
     }
 
 
