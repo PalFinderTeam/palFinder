@@ -5,6 +5,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfil
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -75,8 +76,10 @@ class FirebaseProfileService @Inject constructor(
 
     override suspend fun createProfile(newUserProfile: ProfileUser): String? {
         return try {
-            db.collection(PROFILE_COLL).document(newUserProfile.uuid)
-                .set(newUserProfile.toFirestoreData()).await()
+            if (!db.collection(PROFILE_COLL).document(newUserProfile.uuid).get().await().exists()) {
+                db.collection(PROFILE_COLL).document(newUserProfile.uuid)
+                    .set(newUserProfile.toFirestoreData(), SetOptions.merge()).await()
+            }
             newUserProfile.uuid
         } catch (e: Exception) {
             null
