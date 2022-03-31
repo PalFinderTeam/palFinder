@@ -9,6 +9,12 @@ import kotlinx.coroutines.flow.flow
 class MockProfileService : ProfileService {
     val db: HashMap<String, ProfileUser> = hashMapOf()
     private var counter = 0
+    var loggedUserId:String? = null
+
+    fun setLoggedInUserID(value: String?){
+        loggedUserId = value
+    }
+    override fun getLoggedInUserID(): String? = loggedUserId
 
     override suspend fun fetchUserProfile(userId: String): ProfileUser? {
         return db[userId]
