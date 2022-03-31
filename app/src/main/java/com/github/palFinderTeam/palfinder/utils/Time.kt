@@ -50,6 +50,14 @@ fun Calendar.isDeltaBefore(other: Calendar, delta: Int): Boolean{
     return this.timeInMillis + delta <= other.timeInMillis
 }
 
+fun Calendar.toSimpleDate(): SimpleDate {
+    return SimpleDate(this.get(Calendar.YEAR), this.get(Calendar.MONTH), this.get(Calendar.DAY_OF_MONTH))
+}
+
+fun Calendar.toSimpleTime(): SimpleTime {
+    return SimpleTime(this.get(Calendar.HOUR_OF_DAY), this.get(Calendar.MINUTE))
+}
+
 /**
  * Ask the user a date with a UI
  *

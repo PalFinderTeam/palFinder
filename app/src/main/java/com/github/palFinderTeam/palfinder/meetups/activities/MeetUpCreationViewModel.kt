@@ -179,8 +179,8 @@ class MeetUpCreationViewModel @Inject constructor(
         val startDateVal = startDate.value!!
         val endDateVal = endDate.value!!
         // TODO This is super arbitrary
-        val maxStartDate = Calendar.getInstance().apply { add(Calendar.DATE, 7) }
-        val maxEndDate = Calendar.getInstance().apply { add(Calendar.DATE, 8) }
+        val maxStartDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 7) }
+        val maxEndDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 8) }
         // Check that startDate is not too much in the future
         if (!startDateVal.isBefore(maxStartDate)) {
             _startDate.value = maxStartDate
@@ -190,9 +190,9 @@ class MeetUpCreationViewModel @Inject constructor(
             _endDate.value = maxEndDate
         }
         // Check if at least defaultTimeDelta between start and end
-        if (!startDateVal.isDeltaBefore(endDateVal, defaultTimeDelta)) {
+        if (!startDate.value!!.isDeltaBefore(endDate.value!!, defaultTimeDelta)) {
             val newCalendar = Calendar.getInstance()
-            newCalendar.timeInMillis = startDateVal.timeInMillis
+            newCalendar.timeInMillis = startDate.value!!.timeInMillis
             newCalendar.add(Calendar.MILLISECOND, defaultTimeDelta)
             _endDate.value = newCalendar
         }
