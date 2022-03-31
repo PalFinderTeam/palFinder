@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
+import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -51,7 +53,8 @@ class MapListViewModel @Inject constructor(
      */
     fun setMap(map : GoogleMap){
         this.map = map
-        mapReady = true
+        this.mapReady = true
+        setPositionAndZoom(startingCameraPosition, startingZoom)
     }
     fun getMap(): GoogleMap {
         return map
@@ -62,19 +65,18 @@ class MapListViewModel @Inject constructor(
             //TODO get only the joined meetup
 
         } else{
-            val earthRadius = 6371000.0
+            val earthCirconference = 40000.0
             // at zoom 0, the map is of size 256x256 pixels and for every zoom, the number of pixel is multiplied by 2
-            val radiusAtZoom0 = earthRadius/256
+            val radiusAtZoom0 = earthCirconference/256
             val radius = radiusAtZoom0/2.0.pow(getZoom().toDouble())
 
-            /*if(meetUpRepository.getAllMeetUps().asLiveData().value != null) {
-                meetUps = meetUpRepository.getAllMeetUps().asLiveData().value!!
-            }else meetUps = emptyList()*/
-            /*listOfMeetUpResponse = meetUpRepository.getMeetUpsAroundLocation(Location(location!!.longitude, location!!.latitude),
-                earthRadius/1000.0).asLiveData()*/
-            listOfMeetUpResponse = meetUpRepository.getAllMeetUpsResponse().asLiveData()
+            listOfMeetUpResponse = if (location == null) meetUpRepository.getAllMeetUpsResponse()
+                .asLiveData() else
+                    meetUpRepository.getMeetUpsAroundLocation(
+                Location(location!!.longitude, location!!.latitude),
+                15000.0
+            ).asLiveData()
             refresh()
-
         }
     }
 
@@ -134,11 +136,14 @@ class MapListViewModel @Inject constructor(
      * if the map is not ready, do nothing
      */
     fun refresh() {
+        Log.d("list", mapReady.toString())
         if (!mapReady) return
         val response = listOfMeetUpResponse.value
+
         meetupList = if(response is Response.Success){
             response.data
         }else emptyList()
+        Log.d("list", response.toString())
         clearMarkers()
 
         meetupList?.forEach{ meetUp ->

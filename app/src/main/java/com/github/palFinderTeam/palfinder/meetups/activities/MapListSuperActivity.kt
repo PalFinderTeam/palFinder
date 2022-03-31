@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -47,11 +48,12 @@ open class MapListSuperActivity: AppCompatActivity() {
 
         map.isMyLocationEnabled = true
         fusedLocationClient.lastLocation.addOnSuccessListener(this){
-                location -> if(location != null){
-            lastLocation = location
-            val currentLatLng = LatLng(location.latitude, location.longitude)
-            viewModel.setPositionAndZoom(currentLatLng, viewModel.getZoom())
-        }
+                location ->
+            if(location != null){
+                lastLocation = location
+                val currentLatLng = LatLng(location.latitude, location.longitude)
+                viewModel.setPositionAndZoom(currentLatLng, viewModel.getZoom())
+            }
         }
     }
 }

@@ -280,7 +280,7 @@ class MeetupViewTest {
             onView(
                 RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
                     0,
-                    R.id.profile_name
+                    R.id.userPic
                 )
             )
                 .perform(click())

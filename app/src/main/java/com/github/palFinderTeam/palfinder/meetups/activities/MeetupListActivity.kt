@@ -40,7 +40,7 @@ class MeetupListActivity : MapListSuperActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-        viewModel.update(null)
+        viewModel.update(viewModel.getCameraPosition())
 
         meetupList = findViewById(R.id.meetup_list_recycler)
         meetupList.layoutManager = LinearLayoutManager(this)
@@ -49,16 +49,18 @@ class MeetupListActivity : MapListSuperActivity() {
 
 
         viewModel.listOfMeetUpResponse.observe(this) { it ->
-            val meetups = (it as Response.Success).data
-            adapter = MeetupListAdapter(meetups, meetups.toMutableList(),
-                SearchedFilter(
-                    meetups, meetups.toMutableList(), ::filterTag
-                ) {
-                    adapter.notifyDataSetChanged()
-                })
-            { onListItemClick(it) }
-            meetupList.adapter = adapter
-            SearchedFilter.setupSearchField(searchField, adapter.filter)
+            if (it is Response.Success) {
+                val meetups = it.data
+                adapter = MeetupListAdapter(meetups, meetups.toMutableList(),
+                    SearchedFilter(
+                        meetups, meetups.toMutableList(), ::filterTag
+                    ) {
+                        adapter.notifyDataSetChanged()
+                    })
+                { onListItemClick(it) }
+                meetupList.adapter = adapter
+                SearchedFilter.setupSearchField(searchField, adapter.filter)
+            }
         }
 
         tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)

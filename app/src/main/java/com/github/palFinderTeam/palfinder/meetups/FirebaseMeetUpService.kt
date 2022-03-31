@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.util.Log
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
@@ -76,6 +77,7 @@ class FirebaseMeetUpService @Inject constructor(
     ): Flow<Response<List<MeetUp>>> {
 
         val geoLocation = GeoLocation(location.latitude, location.longitude)
+        Log.d("location", geoLocation.toString())
         val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInKm * 1000.0)
         val tasks = bounds.map {
             db.collection(MEETUP_COLL)

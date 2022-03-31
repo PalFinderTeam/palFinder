@@ -1,29 +1,18 @@
 package com.github.palFinderTeam.palfinder.map
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.recyclerview.widget.RecyclerView
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
-import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListSuperActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
-import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -36,7 +25,7 @@ const val LOCATION_SELECT = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SEL
 const val LOCATION_SELECTED = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECTED"
 
 @AndroidEntryPoint
-class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraMoveCanceledListener {
+class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraMoveListener{
 
     private lateinit var binding: ActivityMapsBinding
     private lateinit var button: FloatingActionButton
@@ -44,6 +33,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
     private lateinit var mapView: View
 
     private val mapSelection: MapsSelectionModel by viewModels()
+
 
 
 
@@ -65,7 +55,10 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
 
         viewModel.update(viewModel.getCameraPosition())
         viewModel.listOfMeetUpResponse.observe(this) {
-            viewModel.refresh()
+            if (it is Response.Success) {
+                Log.d("latlong", it.data.toString())
+                viewModel.refresh()
+            }
         }
 
     }
@@ -134,10 +127,11 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         viewModel.setMap(map)
+        viewModel.mapReady = true
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
 
-
+        map.setOnCameraMoveListener(this)
         super.setUserLocation()
 
 
@@ -146,10 +140,11 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
         mapView.contentDescription = "MAP READY"
         loadSelectionButton()
 
+        viewModel.update(viewModel.getCameraPosition())
 
     }
 
-    override fun onCameraMoveCanceled() {
+    override fun onCameraMove() {
         viewModel.update(viewModel.getCameraPosition())
     }
 
