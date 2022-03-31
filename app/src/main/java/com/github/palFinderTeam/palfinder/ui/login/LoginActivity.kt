@@ -357,8 +357,16 @@ class LoginActivity : AppCompatActivity() {
             Log.w(TAG, "Not user")
             return
         }
-        val profileUser = ProfileUser(user.uid,"", "","", Calendar.getInstance(), ImageInstance(user.photoUrl.toString()))
+        val profileUser = ProfileUser(user.uid, "", "","", Calendar.getInstance(), ImageInstance(user.photoUrl.toString()))
 
+        /*
+        val dbUser = hashMapOf(
+            "name" to user.displayName,
+            "email" to user.email,
+            "join_date" to Date(),
+            "picture" to user.photoUrl.toString()
+        )
+         */
         firebaseProfileService.createProfile(profileUser)
         //firestoreUsers.addNewUser(user, dbUser, TAG)
         startActivity(Intent(this, MainActivity::class.java))
