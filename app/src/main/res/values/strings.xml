@@ -16,6 +16,8 @@
     <string name="tag_element_text">tag</string>
     <string name="add_tags">Add tags</string>
 
+    <string name="profile_element">name</string>
+
     <!-- Strings used for login activity-->
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
@@ -99,5 +101,6 @@
     <string name="userSettingsBio">About you</string>
     <string name="read_more">Read more</string>
     <string name="userSettingsBirthday">Birthday (Optional)</string>
+    <string name="working_out_tag">working out</string>
 
 </resources>

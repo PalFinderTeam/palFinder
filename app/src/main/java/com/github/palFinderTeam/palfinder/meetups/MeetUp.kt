@@ -4,7 +4,6 @@ import android.icu.util.Calendar
 import android.util.Log
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
@@ -80,37 +79,11 @@ data class MeetUp(
         return startDate.isBefore(now)
     }
 
-/*
-    */
-/**
-     *  Add [user] to the Event if [now] is a valid date to join
-     *  @param now: current date
-     *//*
-
-    fun join(now: Calendar, user: ProfileUser) {
-        if (canJoin(now) && !isParticipating(user)) {
-            participantsId.add(user)
-        }
-    }
-
-    */
-/**
-     *  Remove [user] from the event
-     *  if user is not in the event, does nothing
-     *//*
-
-    fun leave(user: ProfileUser) {
-        if (isParticipating(user)) {
-            participantsId.remove(user)
-        }
-    }
-*/
-
     /**
      *  @return if the user is taking part in the event
      */
-    fun isParticipating(user: ProfileUser): Boolean {
-        return participantsId.contains(user.uuid)
+    fun isParticipating(userId: String): Boolean {
+        return participantsId.contains(userId)
     }
 
     /**
@@ -158,15 +131,13 @@ data class MeetUp(
                 val tags = get("tags")!! as List<String>
                 val hasMaxCapacity = getBoolean("hasMaxCapacity")!!
                 val participantsId = get("participants")!! as List<String>
-
                 // Convert Date to calendar
                 val startDateCal = Calendar.getInstance()
                 val endDateCal = Calendar.getInstance()
                 startDateCal.time = startDate
                 endDateCal.time = endDate
-
                 return MeetUp(
-                    id,
+                    uuid,
                     creator,
                     iconId,
                     name,

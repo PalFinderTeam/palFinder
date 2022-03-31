@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.profile
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.USERNAME_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
@@ -163,7 +164,7 @@ class FirebaseProfileServiceTest {
         assertThat(id, notNullValue())
         id!!.let {
             val newUsername = "Romain"
-            val sameId = firebaseProfileService.editUserProfile(it, "username", newUsername)
+            val sameId = firebaseProfileService.editUserProfile(it, USERNAME_KEY, newUsername)
             assertThat(sameId, notNullValue())
             assertThat(sameId, `is`(id))
 
