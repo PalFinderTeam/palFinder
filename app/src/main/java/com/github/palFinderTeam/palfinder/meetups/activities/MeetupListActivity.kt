@@ -32,8 +32,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class MeetupListActivity : AppCompatActivity() {
     private lateinit var meetupList: RecyclerView
     lateinit var adapter: MeetupListAdapter
-    private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
-    private lateinit var tagsViewModel: TagsViewModel<Category>
+    lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
+    lateinit var tagsViewModel: TagsViewModel<Category>
 
     val viewModel: MeetUpListViewModel by viewModels()
 
@@ -155,6 +155,7 @@ class MeetupListActivity : AppCompatActivity() {
             .apply { putExtra(MEETUP_SHOWN, viewModel.listOfMeetUp.value?.get(position)?.uuid) }
         startActivity(intent)
     }
+
 }
 
 

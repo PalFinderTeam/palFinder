@@ -1,9 +1,8 @@
 package com.github.palFinderTeam.palfinder
 
 import android.os.Bundle
-import android.provider.Settings
-import android.provider.Settings.Global.getString
-import android.widget.ImageView
+import android.view.View
+import android.view.View.GONE
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -25,6 +24,7 @@ class ProfileActivity : AppCompatActivity() {
     private val viewModel: ProfileViewModel by viewModels()
     companion object{
         const val EMPTY_FIELD = ""
+        const val MAX_SHORT_BIO_DISPLAY_LINES = 2
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +44,12 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Injects all user info into the profile activity
+     * in the top part of the screen
+     *
+     * @param user: ProfileUser
+     */
     private fun injectUserInfo(user: ProfileUser) {
         findViewById<TextView>(R.id.userProfileName).text = user.fullName()
         findViewById<TextView>(R.id.userProfileUsername).text = user.atUsername()
@@ -54,15 +60,36 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-
+    /**
+     * Injects the bio by applying the Read More feature
+     *
+     * @param bio: String
+     */
     private fun injectBio(bio: String) {
+        val desc = findViewById<TextView>(R.id.userProfileDescription)
         if (bio == EMPTY_FIELD) {
             findViewById<TextView>(R.id.userProfileAboutTitle).text = this.resources.getString(R.string.no_desc)
-            findViewById<TextView>(R.id.userProfileDescription).text = EMPTY_FIELD
+            desc.text = EMPTY_FIELD
+            showFullDesc(null)
         } else {
-            findViewById<TextView>(R.id.userProfileDescription).text = bio
+            desc.text = bio
+            desc.post {
+                val lineCount: Int = desc.lineCount
+                if (lineCount < MAX_SHORT_BIO_DISPLAY_LINES) {
+                    showFullDesc(null)
+                }
+            }
         }
     }
 
+    /**
+     * Clicking on Read More will reveal the entire text
+     */
+    fun showFullDesc(view: View?) {
+        val overflow = findViewById<TextView>(R.id.userProfileDescOverflow)
+        overflow.visibility = GONE
+        val desc = findViewById<TextView>(R.id.userProfileDescription)
+        desc.maxLines = Integer.MAX_VALUE
+    }
 
 }
