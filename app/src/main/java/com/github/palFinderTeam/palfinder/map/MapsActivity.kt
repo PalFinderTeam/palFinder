@@ -63,8 +63,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
         mapView.contentDescription = "MAP NOT READY"
         mapFragment.getMapAsync(this)
 
-        viewModel = ViewModelProvider(this)[MapsActivityViewModel::class.java]
-        viewModel.update((viewModel as MapsActivityViewModel).getCameraPosition())
+        viewModel.update(viewModel.getCameraPosition())
         viewModel.listOfMeetUpResponse.observe(this) {
             viewModel.refresh()
         }
@@ -151,7 +150,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
     }
 
     override fun onCameraMoveCanceled() {
-        viewModel.update((viewModel as MapsActivityViewModel).getCameraPosition())
+        viewModel.update(viewModel.getCameraPosition())
     }
 
 }

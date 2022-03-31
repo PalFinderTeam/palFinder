@@ -40,7 +40,6 @@ class MeetupListActivity : MapListSuperActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-        viewModel = ViewModelProvider(this)[MeetUpListViewModel::class.java]
         viewModel.update(null)
 
         meetupList = findViewById(R.id.meetup_list_recycler)

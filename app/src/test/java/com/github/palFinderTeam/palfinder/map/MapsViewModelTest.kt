@@ -4,6 +4,7 @@ import android.content.Context
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TestRepository
 import com.github.palFinderTeam.palfinder.utils.Location
@@ -27,7 +28,7 @@ class MapsViewModelTest {
 
 
     private val meetUpRepository = MockMeetUpRepository()
-    private val viewModel = MapsActivityViewModel(meetUpRepository)
+    private val viewModel = MapListViewModel(meetUpRepository)
 
     private lateinit var meetup1: MeetUp
     private lateinit var meetup2: MeetUp

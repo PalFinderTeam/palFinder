@@ -7,8 +7,6 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.github.palFinderTeam.palfinder.map.MapsActivity
-import com.github.palFinderTeam.palfinder.map.MapsActivityViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
@@ -18,7 +16,7 @@ open class MapListSuperActivity: AppCompatActivity() {
     lateinit var map: GoogleMap
     private lateinit var lastLocation: Location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    lateinit var viewModel : MeetUpListViewModel
+    val viewModel : MapListViewModel by viewModels()
 
     companion object {
         private const val USER_LOCATION_PERMISSION_REQUEST_CODE = 1
