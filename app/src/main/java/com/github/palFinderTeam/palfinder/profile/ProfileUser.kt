@@ -21,7 +21,7 @@ data class ProfileUser(
     val joinDate: Calendar,
     val pfp: ImageInstance,
     val description: String = "",
-    val birthday: Calendar = Calendar.getInstance()
+    val birthday: Calendar? = null
 ) : Serializable {
 
     companion object {
@@ -42,13 +42,11 @@ data class ProfileUser(
                 val joinDateCal = Calendar.getInstance().apply { time = joinDate }
                 val description = getString("description").orEmpty()
 
-                if (getDate("birthday") == null) {
-                    val birthday = getDate("birthday")
-                } else {
-                    val birthday = getDate("birthday")
-                }
-                val birthdayCal = Calendar.getInstance().apply {
-                    time = getDate("birthday") ?: Date(0)
+                var birthdayCal: Calendar? = null
+                if (getDate("birthday") != null) {
+                    birthdayCal = Calendar.getInstance().apply {
+                        time = getDate("birthday")
+                    }
                 }
 
                 ProfileUser(uuid, username, name, surname, joinDateCal, ImageInstance(picture), description, birthdayCal)
@@ -62,7 +60,8 @@ data class ProfileUser(
     /**
      * @return a representation which is Firestore friendly of the UserProfile.
      */
-    fun toFirestoreData(): HashMap<String, Any> {
+    fun toFirestoreData(): HashMap<String, Any?> {
+        //if
         return hashMapOf(
             "name" to name,
             "surname" to surname,
@@ -70,7 +69,7 @@ data class ProfileUser(
             "join_date" to joinDate.time,
             "picture" to pfp.imgURL,
             "description" to description,
-            "birthday" to birthday.time
+            "birthday" to birthday?.time
         )
     }
 

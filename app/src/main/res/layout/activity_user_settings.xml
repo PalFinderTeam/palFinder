@@ -11,15 +11,15 @@
         android:id="@+id/SCROLLER_ID"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="vertical"
         android:layout_weight="1"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:scrollbars="vertical">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:scrollbars = "vertical"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:scrollbars="vertical">
 
 
             <com.google.android.material.textfield.TextInputLayout
@@ -28,27 +28,25 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:hint="@string/userSettingsBio"
                 app:counterEnabled="true"
                 app:counterMaxLength="180"
                 app:endIconMode="clear_text"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/SettingsBioText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minLines="4"
-                    android:gravity="top|left"
                     android:fontFamily="@font/fredoka_normal"
+                    android:gravity="top|left"
+                    android:minLines="4"
                     app:counterMaxLength="180" />
             </com.google.android.material.textfield.TextInputLayout>
-
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/SettingsUsernameLayout"
@@ -56,7 +54,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="22dp"
                 android:layout_marginEnd="16dp"
                 android:hint="@string/userSettingsUsername"
                 app:counterEnabled="true"
@@ -73,8 +71,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/fredoka_normal"
-                    app:counterMaxLength="32"
-                    android:singleLine="true"/>
+                    android:singleLine="true"
+                    app:counterMaxLength="32" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
@@ -98,6 +96,7 @@
                     android:layout_weight="0.5"
                     android:gravity="center"
                     android:hint="@string/userSettingsName"
+                    app:endIconMode="clear_text"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
@@ -108,8 +107,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/fredoka_normal"
-                        app:counterMaxLength="60"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        app:counterMaxLength="60" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -121,6 +120,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_weight="0.5"
                     android:gravity="center"
+                    app:endIconMode="clear_text"
                     android:hint="@string/userSettingsSurname"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -132,8 +132,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/fredoka_normal"
-                        app:counterMaxLength="60"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        app:counterMaxLength="60" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -141,9 +141,9 @@
 
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imageView2"
-                android:layout_width="140dp"
-                android:layout_height="140dp"
+                android:id="@+id/settingsPfp"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
                 android:layout_marginTop="32dp"
                 android:adjustViewBounds="true"
 
@@ -168,15 +168,16 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+                app:layout_constraintTop_toBottomOf="@+id/settingsPfp" />
 
             <Button
-                android:id="@+id/settingsConfirm"
+                android:id="@+id/SettingsSubmitButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
+                android:onClick="submitData"
                 android:text="@string/userSaveSettings"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -184,6 +185,62 @@
                 app:layout_constraintTop_toBottomOf="@+id/SettingsBioLayout"
                 app:layout_constraintVertical_bias="1.0" />
 
+
+            <LinearLayout
+                android:id="@+id/linearLayout4"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/SettingsBirthdayLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+
+                    android:layout_weight="1"
+                    android:gravity="center"
+
+                    android:hint="@string/userSettingsBirthday"
+                    app:helperText="Please note that you won't be able to join events that require a minimum age."
+                    app:helperTextEnabled="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
+                    app:startIconDrawable="@drawable/ic_baseline_cake_24">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/SettingsBirthdayText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:fontFamily="@font/fredoka_normal"
+                        android:onClick="openDatePickerFragment"
+                        android:singleLine="true"
+                        app:counterMaxLength="32" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageView
+                    android:id="@+id/SettingsDeleteBDay"
+                    android:layout_width="55dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:onClick="deletePickedBirthday"
+                    android:padding="10dp"
+                    app:srcCompat="@drawable/ic_baseline_cancel_24" />
+
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
