@@ -136,9 +136,8 @@ data class MeetUp(
                 val endDateCal = Calendar.getInstance()
                 startDateCal.time = startDate
                 endDateCal.time = endDate
-
                 return MeetUp(
-                    id,
+                    uuid,
                     creator,
                     iconId,
                     name,
