@@ -4,6 +4,9 @@ import android.content.Context
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tag.TestRepository
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -25,7 +28,7 @@ class MapsViewModelTest {
 
 
     private val meetUpRepository = MockMeetUpRepository()
-    private val viewModel = MapsActivityViewModel(meetUpRepository)
+    private val viewModel = MapListViewModel(meetUpRepository)
 
     private lateinit var meetup1: MeetUp
     private lateinit var meetup2: MeetUp
@@ -64,7 +67,6 @@ class MapsViewModelTest {
         }
 
         Mockito.`when`(mockMap.cameraPosition).thenReturn(mockMapCameraPosition)
-
         //val mockContext = mock(Context::class.java)
 
         //MapsInitializer.initialize(mock(Context::class.java))
@@ -145,7 +147,7 @@ class MapsViewModelTest {
         viewModel.setMap(mockMap)
         addToDB(meetup3)
         addToDB(meetup4)
-        viewModel.updateFetcherLocation(null)
+        viewModel.update(null)
         viewModel.clearMarkers()
         Assert.assertEquals(null, viewModel.getMarker(meetup3.uuid))
         Assert.assertEquals(null, viewModel.getMarker(meetup4.uuid))
@@ -159,7 +161,7 @@ class MapsViewModelTest {
 
         addToDB(meetup1)
         addToDB(meetup2)
-        viewModel.updateFetcherLocation(null)
+        viewModel.update(null)
         Assert.assertEquals(null, viewModel.getMarker(meetup1.uuid))
         Assert.assertEquals(null, viewModel.getMarker(meetup2.uuid))
 

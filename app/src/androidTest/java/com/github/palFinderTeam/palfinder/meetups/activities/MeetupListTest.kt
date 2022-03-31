@@ -274,7 +274,6 @@ class MeetUpListTest {
         intended(hasComponent(MeetUpView::class.java.name))
         release()
     }
-
 }
 
 

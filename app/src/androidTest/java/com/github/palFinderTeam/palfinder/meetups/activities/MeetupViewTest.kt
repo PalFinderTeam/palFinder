@@ -3,8 +3,9 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
-import android.util.Log
 import android.view.View
+import android.widget.DatePicker
+import android.widget.TimePicker
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.closeSoftKeyboard
@@ -13,15 +14,16 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
-import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
+import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
@@ -39,11 +41,13 @@ import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
+
 
 @ExperimentalCoroutinesApi
 @HiltAndroidTest
@@ -249,7 +253,7 @@ class MeetupViewTest {
     }
 
     @Test
-    fun UserClickableInFragment() = runTest {
+    fun userClickableInFragment() = runTest {
         val userid = profileRepository.createProfile(user)
         assertThat(userid, notNullValue())
         val newMeetup = MeetUp(
@@ -292,7 +296,7 @@ class MeetupViewTest {
             .apply{putExtra(MEETUP_SHOWN, id)}
         ActivityScenario.launch<MeetUpView>(intent)
         init()
-        onView(withId(R.id.floatingActionButton)).perform(click())
+        onView(withId(R.id.bt_EditMeetup)).perform(click())
         intended(hasComponent(MeetUpCreation::class.java.name))
         release()
 
@@ -306,7 +310,7 @@ class MeetupViewTest {
             .apply{putExtra(MEETUP_SHOWN, id)}
         ActivityScenario.launch<MeetUpView>(intent)
         init()
-        onView(withId(R.id.floatingActionButton3)).perform(click())
+        onView(withId(R.id.bt_ChatMeetup)).perform(click())
         intended(hasComponent(ChatActivity::class.java.name))
         release()
 
@@ -387,7 +391,79 @@ class MeetupViewTest {
             onView(withId(R.id.tag_group)).check(matches(hasChildCount(0)))
         }
     }
+    @Test
+    fun checkErrorWork() = runTest {
+        val id = meetUpRepository.createMeetUp(meetup)
+        assertThat(id, notNullValue())
 
+        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        scenario.use {
+            onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
+            onView(withText(R.string.meetup_creation_missing_name_desc_title)).check(matches(isDisplayed()));
+        }
+    }
+
+    @Test
+    fun testEditButton(){ runTest {
+        val id = meetUpRepository.createMeetUp(meetup)
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, id)
+        }
+        Intents.init()
+        ActivityScenario.launch<MeetUpView>(intent)
+        onView(withId(R.id.bt_EditMeetup)).perform(click())
+        Intents.intended(IntentMatchers.hasComponent(MeetUpCreation::class.java.name))
+        Intents.intended(IntentMatchers.hasExtra(MEETUP_EDIT, id))
+        Intents.release()
+    }
+    }
+
+    @Test
+    fun testChatButton() = runTest {
+        val id = meetUpRepository.createMeetUp(meetup)
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, id)
+        }
+        Intents.init()
+        ActivityScenario.launch<MeetUpView>(intent)
+        onView(withId(R.id.bt_ChatMeetup)).perform(click())
+        Intents.intended(IntentMatchers.hasComponent(ChatActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasExtra(CHAT, id))
+        Intents.release()
+    }
+
+    @Test
+    fun checkPickers() = runTest {
+        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        scenario.use {
+            onView(withId(R.id.tv_StartDate)).perform(scrollTo(), click())
+
+            onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
+                PickerActions.setDate(2022, 3, 1),
+            )
+            onView(withText("OK")).perform(click()) // Library is stupid and can't even press the f. button
+            onView(withClassName(Matchers.equalTo(TimePicker::class.java.name))).perform(
+                PickerActions.setTime(0, 0),
+            )
+            onView(withText("OK")).perform(click())
+            onView(withId(R.id.tv_StartDate)).check(matches(withText(expectDate1)))
+
+
+            onView(withId(R.id.tv_EndDate)).perform(scrollTo(), click())
+
+            onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
+                PickerActions.setDate(2022, 3, 1),
+            )
+            onView(withText("OK")).perform(click()) // Library is stupid and can't even press the f. button
+            onView(withClassName(Matchers.equalTo(TimePicker::class.java.name))).perform(
+                PickerActions.setTime(1, 0),
+            )
+            onView(withText("OK")).perform(click())
+            onView(withId(R.id.tv_EndDate)).check(matches(withText(expectDate2)))
+        }
+    }
 }
 
 class ClickCloseIconAction : ViewAction {
@@ -404,4 +480,6 @@ class ClickCloseIconAction : ViewAction {
         val chip = view as Chip//we matched
         chip.performCloseIconClick()
     }
+
+
 }

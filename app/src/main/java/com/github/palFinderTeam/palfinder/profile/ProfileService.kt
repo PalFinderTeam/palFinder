@@ -60,4 +60,9 @@ interface ProfileService {
      * @return a flow emitting Response regarding the state of the request.
      */
     fun fetchProfileFlow(userId: String): Flow<Response<ProfileUser>>
+
+    /**
+     * @return the userId of the logged in user or null if not
+     */
+    fun getLoggedInUserID(): String?
 }
