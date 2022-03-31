@@ -96,11 +96,16 @@ class LoginActivity : AppCompatActivity() {
             val email = findViewById<TextView>(R.id.email).text.toString()
             //no checks on password is made for now
             val password = findViewById<TextView>(R.id.password).text.toString()
-            if (isValidEmail(email)) {
-                if (firestoreUsers.emailIsAvailable(email, TAG)) {
-                    createAccount(email, password)
-                } else {
-                    signIn(email, password, true)
+            if(email == "" || password == ""){
+                Toast.makeText(baseContext, "Enter both fields please.", Toast.LENGTH_SHORT).show()
+            }
+            else if (isValidEmail(email)) {
+                firestoreUsers.emailIsAvailable(email, TAG) { it ->
+                    if (it) {
+                        createAccount(email, password)
+                    } else {
+                        signIn(email, password, true)
+                    }
                 }
             } else {
                 //pop "email not valid"

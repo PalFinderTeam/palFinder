@@ -1,31 +1,34 @@
 package com.github.palFinderTeam.palfinder.ui.login
 
 import android.util.Log
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 
 class FirestoreUsers {
 
     private val db = Firebase.firestore
 
-    fun emailIsAvailable(email: String, tag: String): Boolean {
+    fun emailIsAvailable(email: String, tag: String, myCallback: (Boolean) -> Unit){
         var available: Boolean = true
-        db.collection("users")
-            .whereEqualTo("email", email)
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    Log.w(tag, "Email already assigned")
-                    available = false
-                    break
+            db.collection("users")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        Log.w(tag, "Email already assigned")
+                        available = false
+                        break
+                    }
+                    myCallback(available)
                 }
-            }
-            .addOnFailureListener { exception ->
-                Log.w(tag, "Error getting documents: ", exception)
-            }.isComplete
-        return available
+                .addOnFailureListener { exception ->
+                    Log.w(tag, "Error getting documents: ", exception)
+                }
+
     }
 
     //add new user to the firestore users collection, replaced by ProfileUser
