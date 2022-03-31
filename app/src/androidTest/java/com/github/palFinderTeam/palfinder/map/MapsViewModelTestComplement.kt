@@ -5,6 +5,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -34,12 +35,12 @@ class MapsViewModelTestComplement {
         GrantPermissionRule.grant(android.Manifest.permission.ACCESS_COARSE_LOCATION)
 
 
-    private lateinit var viewModel: MapsActivityViewModel
+    private lateinit var viewModel: MapListViewModel
 
     @Before
     fun init_() {
         hiltRule.inject()
-        viewModel = MapsActivityViewModel(meetUpRepository)
+        viewModel = MapListViewModel(meetUpRepository)
     }
 
     @Test
