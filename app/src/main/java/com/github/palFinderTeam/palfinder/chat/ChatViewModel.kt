@@ -10,16 +10,14 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    private var chatService: ChatService,
-    private val profileService: ProfileService
+    var chatService: ChatService,
+    val profileService: ProfileService
     ): ViewModel() {
 
     val listOfMessage: MutableLiveData<MutableList<ChatMessage>> = MutableLiveData()
@@ -33,10 +31,9 @@ class ChatViewModel @Inject constructor(
      * @param content message to send
      */
     fun sendMessage(content: String){
-        val user = Firebase.auth.currentUser
+        val user = profileService.getLoggedInUserID()
         if (user != null) {
-            val userID = user.uid
-            val msg = ChatMessage(Calendar.getInstance(), userID, content, false)
+            val msg = ChatMessage(Calendar.getInstance(), user, content, false)
 
             viewModelScope.launch {
                 chatService.postMessage(chatID, msg)

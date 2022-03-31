@@ -39,6 +39,8 @@ object UIMockProfileServiceModule {
 
     class UIMockProfileService : ProfileService {
         val db: HashMap<String, ProfileUser> = hashMapOf()
+        var loggedUserId:String? = null
+
         private var counter = 0
 
         override suspend fun fetchUserProfile(userId: String): ProfileUser? {
@@ -99,8 +101,13 @@ object UIMockProfileServiceModule {
         fun syncCreateProfile(newUserProfile: ProfileUser): String? {
             val key = counter.toString()
             db[key] = newUserProfile.copy(uuid = key)
-            counter.inc()
+            counter++
             return key
+        }
+
+        override fun getLoggedInUserID(): String? = loggedUserId
+        fun setLoggedInUserID(value: String?){
+            loggedUserId = value
         }
     }
 }
