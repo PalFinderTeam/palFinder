@@ -9,6 +9,7 @@ package com.github.palFinderTeam.palfinder.ui.login
 //import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
+import android.icu.util.Calendar
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -17,6 +18,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.github.palFinderTeam.palfinder.MainActivity
 import com.github.palFinderTeam.palfinder.R
 import com.google.android.gms.auth.api.identity.*
@@ -28,9 +30,14 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
+import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.google.firebase.firestore.ktx.firestore
 //import com.google.firebase.firestore.SetOptions
 //import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 import java.util.*
 
 
@@ -49,6 +56,7 @@ class LoginActivity : AppCompatActivity() {
         private const val REQUEST_CODE_GIS_SAVE_PASSWORD = 2 /* unique request id */
         private var showOneTapUI = true
         var firestoreUsers = FirestoreUsers()
+        var firebaseProfileService = FirebaseProfileService(Firebase.firestore)
     }
 
     public override fun onStart() {
@@ -56,7 +64,9 @@ class LoginActivity : AppCompatActivity() {
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
         if(currentUser != null){
-            updateUI(currentUser)
+            lifecycleScope.launch {
+                updateUI(currentUser)
+            }
         }
     }
 
@@ -178,7 +188,9 @@ class LoginActivity : AppCompatActivity() {
             /* password saving was cancelled */
             Toast.makeText(baseContext, "password not saved", Toast.LENGTH_SHORT).show()
         }
-        updateUI(auth.currentUser)
+        lifecycleScope.launch {
+            updateUI(auth.currentUser)
+        }
     }
 
     private fun googleSignInRequestHandler(data: Intent?) {
@@ -237,7 +249,10 @@ class LoginActivity : AppCompatActivity() {
                     if(savePassword) {
                         savePassword(email,password)
                     }
-                    updateUI(auth.currentUser)
+                    lifecycleScope.launch {
+                        updateUI(auth.currentUser)
+                    }
+
                 } else {
                     // If sign in fails, display a message to the user.
                     signInSignUpFailure(task, "signInWithEmail:failure")
@@ -249,7 +264,9 @@ class LoginActivity : AppCompatActivity() {
     private fun signInSignUpFailure(task: Task<AuthResult>, logText: String) {
         Log.w(TAG, logText, task.exception)
         Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
-        updateUI(null)
+        lifecycleScope.launch {
+            updateUI(null)
+        }
     }
 
     private fun savePassword(email: String, password: String) {
@@ -324,7 +341,9 @@ class LoginActivity : AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
-                    updateUI(user)
+                    lifecycleScope.launch {
+                        updateUI(user)
+                    }
                 } else {
                     // If sign in fails, display a message to the user.
                     signInSignUpFailure(task, "signInWithCredential:failure")
@@ -332,19 +351,16 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun updateUI(user: FirebaseUser?) {
+    private suspend fun updateUI(user: FirebaseUser?) {
         //Navigate to Main Activity
         if(user == null){
             Log.w(TAG, "Not user")
             return
         }
-        val dbUser = hashMapOf(
-            "name" to user.displayName,
-            "email" to user.email,
-            "join_date" to Date(),
-            "picture" to user.photoUrl.toString()
-        )
-        firestoreUsers.addNewUser(user, dbUser, TAG)
+        val profileUser = ProfileUser(user.uid,"", "","", Calendar.getInstance(), ImageInstance(user.photoUrl.toString()))
+
+        firebaseProfileService.createProfile(profileUser)
+        //firestoreUsers.addNewUser(user, dbUser, TAG)
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }

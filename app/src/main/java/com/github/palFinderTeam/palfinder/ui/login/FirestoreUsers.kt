@@ -28,7 +28,8 @@ class FirestoreUsers {
         return available
     }
 
-    //add new user to the firestore users collection
+    //add new user to the firestore users collection, replaced by ProfileUser
+    /*
     fun addNewUser(user: FirebaseUser, dbUser: Cloneable, tag: String) {
         val docRef = db.collection("users").document(user.uid)
         docRef.get()
@@ -51,4 +52,6 @@ class FirestoreUsers {
                 Log.d(tag, "get failed with ", exception)
             }
     }
+    */
+
 }
