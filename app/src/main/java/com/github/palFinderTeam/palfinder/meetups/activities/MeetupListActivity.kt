@@ -40,7 +40,7 @@ class MeetupListActivity : MapListSuperActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-        viewModel.update(viewModel.getCameraPosition())
+        viewModel.update()
 
         meetupList = findViewById(R.id.meetup_list_recycler)
         meetupList.layoutManager = LinearLayoutManager(this)

@@ -17,10 +17,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 import kotlin.math.pow
 
 
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class MapListViewModel @Inject constructor(
     val meetUpRepository: MeetUpRepository
@@ -56,11 +58,8 @@ class MapListViewModel @Inject constructor(
         this.mapReady = true
         setPositionAndZoom(startingCameraPosition, startingZoom)
     }
-    fun getMap(): GoogleMap {
-        return map
-    }
 
-    fun update(location: LatLng?){
+    fun update(){
         if(false){//getZoom() < 7f){
             //TODO get only the joined meetup
 
@@ -69,14 +68,14 @@ class MapListViewModel @Inject constructor(
             // at zoom 0, the map is of size 256x256 pixels and for every zoom, the number of pixel is multiplied by 2
             val radiusAtZoom0 = earthCirconference/256
             val radius = radiusAtZoom0/2.0.pow(getZoom().toDouble())
+            /*listOfMeetUpResponse = meetUpRepository.getMeetUpsAroundLocation(
+                Location(
+                    getCameraPosition().longitude,
+                    getCameraPosition().latitude
+                ), 15.0
+            ).asLiveData()*/
+            listOfMeetUpResponse = meetUpRepository.getAllMeetUpsResponse().asLiveData()
 
-            listOfMeetUpResponse = if (location == null) meetUpRepository.getAllMeetUpsResponse()
-                .asLiveData() else
-                    meetUpRepository.getMeetUpsAroundLocation(
-                Location(location!!.longitude, location!!.latitude),
-                15000.0
-            ).asLiveData()
-            refresh()
         }
     }
 
@@ -100,7 +99,7 @@ class MapListViewModel @Inject constructor(
      */
     fun setCameraPosition(position: LatLng){
         if(mapReady) {
-            getMap().moveCamera(CameraUpdateFactory.newLatLng(position))
+            map.moveCamera(CameraUpdateFactory.newLatLng(position))
         }else startingCameraPosition = position
     }
 
@@ -110,7 +109,7 @@ class MapListViewModel @Inject constructor(
      * @return the camera position
      */
     fun getCameraPosition():LatLng{
-        return if(mapReady) getMap().cameraPosition.target
+        return if(mapReady) map.cameraPosition.target
         else startingCameraPosition
     }
 
@@ -124,7 +123,7 @@ class MapListViewModel @Inject constructor(
      */
     fun setZoom(zoom: Float){
         if(mapReady) {
-            getMap().moveCamera(CameraUpdateFactory.zoomTo(zoom))
+            map.moveCamera(CameraUpdateFactory.zoomTo(zoom))
         }else{
             startingZoom = zoom
         }
@@ -136,19 +135,17 @@ class MapListViewModel @Inject constructor(
      * if the map is not ready, do nothing
      */
     fun refresh() {
-        Log.d("list", mapReady.toString())
         if (!mapReady) return
         val response = listOfMeetUpResponse.value
 
         meetupList = if(response is Response.Success){
             response.data
         }else emptyList()
-        Log.d("list", response.toString())
         clearMarkers()
 
         meetupList?.forEach{ meetUp ->
             val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
-            val marker = getMap().addMarker(MarkerOptions().position(position).title(meetUp.uuid))
+            val marker = map.addMarker(MarkerOptions().position(position).title(meetUp.uuid))
                 ?.let { markers[meetUp.uuid] = it }
         }
     }
@@ -161,7 +158,7 @@ class MapListViewModel @Inject constructor(
      */
     fun setPositionAndZoom(position: LatLng, zoom: Float){
         if(mapReady){
-            getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoom))
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoom))
         }else{
             startingCameraPosition = position
             startingZoom = zoom
@@ -174,7 +171,7 @@ class MapListViewModel @Inject constructor(
      * @return the zoom
      */
     fun getZoom(): Float{
-        return if(mapReady) getMap().cameraPosition.zoom
+        return if(mapReady) map.cameraPosition.zoom
         else startingZoom
     }
     /**

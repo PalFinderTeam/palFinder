@@ -44,6 +44,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
         setContentView(binding.root)
         button = findViewById(R.id.bt_locationSelection)
         navBar = findViewById(R.id.fc_navbar)
+        viewModel.update()
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -53,7 +54,6 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
         mapView.contentDescription = "MAP NOT READY"
         mapFragment.getMapAsync(this)
 
-        viewModel.update(viewModel.getCameraPosition())
         viewModel.listOfMeetUpResponse.observe(this) {
             if (it is Response.Success) {
                 Log.d("latlong", it.data.toString())
@@ -140,12 +140,11 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
         mapView.contentDescription = "MAP READY"
         loadSelectionButton()
 
-        viewModel.update(viewModel.getCameraPosition())
 
     }
 
     override fun onCameraMove() {
-        viewModel.update(viewModel.getCameraPosition())
+        viewModel.update()
     }
 
 }
