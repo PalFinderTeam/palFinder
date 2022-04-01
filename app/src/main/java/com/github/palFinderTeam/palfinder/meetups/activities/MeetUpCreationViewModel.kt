@@ -48,6 +48,20 @@ class MeetUpCreationViewModel @Inject constructor(
     val tags: LiveData<Set<Category>> = _tags
     val participantsId: LiveData<List<String>> = _participantsId
 
+    val maxStartDate: Calendar
+        get() {
+            val maxDate = Calendar.getInstance()
+            maxDate.add(Calendar.DAY_OF_MONTH, 7)
+            return maxDate
+        }
+
+    val maxEndDate: Calendar
+        get() {
+            val maxDate = startDate.value ?: Calendar.getInstance()
+            maxDate.add(Calendar.DAY_OF_MONTH, 2)
+            return maxDate
+        }
+
     val canEditStartDate: LiveData<Boolean> = _canEditStartDate
     val canEditEndDate: LiveData<Boolean> = _canEditEndDate
 
@@ -178,9 +192,6 @@ class MeetUpCreationViewModel @Inject constructor(
         }
         val startDateVal = startDate.value!!
         val endDateVal = endDate.value!!
-        // TODO This is super arbitrary
-        val maxStartDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 7) }
-        val maxEndDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 8) }
         // Check that startDate is not too much in the future
         if (!startDateVal.isBefore(maxStartDate)) {
             _startDate.value = maxStartDate

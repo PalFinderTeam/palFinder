@@ -5,8 +5,10 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
+import android.widget.CalendarView
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
@@ -172,7 +174,9 @@ class MeetUpCreation : AppCompatActivity() {
         askTime(
             supportFragmentManager,
             viewModel.startDate.value?.toSimpleDate(),
-            viewModel.startDate.value?.toSimpleTime()
+            viewModel.startDate.value?.toSimpleTime(),
+            Calendar.getInstance(),
+            viewModel.maxStartDate
         ).thenAccept {
             viewModel.setStartDate(it)
         }
@@ -182,7 +186,9 @@ class MeetUpCreation : AppCompatActivity() {
         askTime(
             supportFragmentManager,
             viewModel.endDate.value?.toSimpleDate(),
-            viewModel.endDate.value?.toSimpleTime()
+            viewModel.endDate.value?.toSimpleTime(),
+            Calendar.getInstance(),
+            viewModel.maxEndDate
         ).thenAccept {
             viewModel.setEndDate(it)
         }
