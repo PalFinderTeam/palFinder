@@ -6,9 +6,10 @@ package com.github.palFinderTeam.palfinder.ui.login
 //import android.widget.Toast
 //import androidx.annotation.StringRes
 
-import android.app.Activity
+//import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
+import android.icu.util.Calendar
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -17,6 +18,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.github.palFinderTeam.palfinder.MainActivity
 import com.github.palFinderTeam.palfinder.R
 import com.google.android.gms.auth.api.identity.*
@@ -28,11 +30,18 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.SetOptions
+import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.ktx.firestore
+//import com.google.firebase.firestore.SetOptions
+//import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 import java.util.*
 
+const val CREATE_ACCOUNT_PROFILE = "com.github.palFinderTeam.palFinder.CREATE_ACCOUNT_PROFILE"
 
 class LoginActivity : AppCompatActivity() {
 
@@ -48,7 +57,8 @@ class LoginActivity : AppCompatActivity() {
         private const val REQ_ONE_TAP = 4  // Can be any integer unique to the Activity
         private const val REQUEST_CODE_GIS_SAVE_PASSWORD = 2 /* unique request id */
         private var showOneTapUI = true
-        val db = Firebase.firestore
+        var firestoreUsers = FirestoreUsers()
+        var firebaseProfileService = FirebaseProfileService(Firebase.firestore)
     }
 
     public override fun onStart() {
@@ -56,31 +66,11 @@ class LoginActivity : AppCompatActivity() {
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
         if(currentUser != null){
-            updateUI(currentUser)
+            lifecycleScope.launch {
+                updateUI(currentUser)
+            }
         }
     }
-
- /* Previous google sign in version
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
-        auth = Firebase.auth
-        val signInButton = findViewById<SignInButton>(R.id.signInButton)
-
-
-        // Configure Google Sign In
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(GID) //somehow cannot access value through google-service values.xml
-            .requestEmail()
-            .build()
-
-        val client = GoogleSignIn.getClient(this, gso)
-        signInButton.setOnClickListener{
-            val signIntent = client.signInIntent
-            startActivityForResult(signIntent, RC_GOOGLE_SIGN_IN)
-        }
-    }
-    */
 
     // onCreate One Tap version
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,18 +98,20 @@ class LoginActivity : AppCompatActivity() {
             val email = findViewById<TextView>(R.id.email).text.toString()
             //no checks on password is made for now
             val password = findViewById<TextView>(R.id.password).text.toString()
-            if (isValidEmail(email)) {
-                if (emailIsAvailability(email)) {
-                    createAccount(email, password)
-                } else {
-                    signIn(email, password, true)
+            if(email == "" || password == ""){
+                Toast.makeText(baseContext, "Enter both fields please.", Toast.LENGTH_SHORT).show()
+            }
+            else if (isValidEmail(email)) {
+                firestoreUsers.emailIsAvailable(email, TAG) { it ->
+                    if (it) {
+                        createAccount(email, password)
+                    } else {
+                        signIn(email, password, true)
+                    }
                 }
             } else {
                 //pop "email not valid"
-                Toast.makeText(
-                    baseContext, "Email not valid",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(baseContext, "Email not valid", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -136,25 +128,6 @@ class LoginActivity : AppCompatActivity() {
             val signIntent = client.signInIntent
             startActivityForResult(signIntent, RC_GOOGLE_SIGN_IN)
         }
-    }
-
-    //could be moved in db utils
-    private fun emailIsAvailability(email: String): Boolean {
-        var available: Boolean = true
-        db.collection("users")
-            .whereEqualTo("email", email)
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    Log.w(TAG, "Email already assigned")
-                    available = false
-                    break
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents: ", exception)
-            }.isComplete
-        return available
     }
 
     private fun isValidEmail(str: String): Boolean{
@@ -179,21 +152,7 @@ class LoginActivity : AppCompatActivity() {
         .build()
 
     private fun displayOneTap(){
-        oneTapClient.beginSignIn(signInRequest)
-            .addOnSuccessListener(this) { result ->
-                try {
-                    startIntentSenderForResult(
-                        result.pendingIntent.intentSender, REQ_ONE_TAP,
-                        null, 0, 0, 0, null)
-                } catch (e: IntentSender.SendIntentException) {
-                    Log.e(TAG, "Couldn't start One Tap UI: ${e.localizedMessage}")
-                }
-            }
-            .addOnFailureListener(this) { e ->
-                // No saved credentials found. Launch the One Tap sign-up flow, or
-                // do nothing and continue presenting the signed-out UI.
-                Log.d(TAG, e.localizedMessage)
-            }
+
     }
 
 
@@ -202,45 +161,53 @@ class LoginActivity : AppCompatActivity() {
 
         when (requestCode) {
             REQ_ONE_TAP -> {
-                try {
-                    val credential = oneTapClient.getSignInCredentialFromIntent(data)
-                    val idToken = credential.googleIdToken
-                    val username = credential.id
-                    val password = credential.password
-                    checkOneTapCredential(idToken, password, username)
-                } catch (e: ApiException) {
-                    oneTapException(e)
-                }
+                oneTapRequestHandler(data)
             }
             RC_GOOGLE_SIGN_IN -> {
-                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-                try {
-                    // Google Sign In was successful, authenticate with Firebase
-                    val account = task.getResult(ApiException::class.java)!!
-                    Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
-                    firebaseAuthWithGoogle(account.idToken!!)
-                } catch (e: ApiException) {
-                    // Google Sign In failed, update UI appropriately
-                    Log.w(TAG, "Google sign in failed", e)
-                }
+                googleSignInRequestHandler(data)
             }
             REQUEST_CODE_GIS_SAVE_PASSWORD -> {
-                Log.d(TAG, "in save password result")
-                if (resultCode == Activity.RESULT_OK) {
-                    /* password was saved */
-                    Toast.makeText(
-                        baseContext, "password saved",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else if (resultCode == Activity.RESULT_CANCELED) {
-                    /* password saving was cancelled */
-                    Toast.makeText(
-                        baseContext, "password not saved",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                updateUI(auth.currentUser)
+                emailPasswordRequestHandler(resultCode)
             }
+        }
+    }
+
+    private fun emailPasswordRequestHandler(resultCode: Int) {
+        Log.d(TAG, "in save password result")
+        if (resultCode == RESULT_OK) {
+            /* password was saved */
+            Toast.makeText(baseContext, "password saved", Toast.LENGTH_SHORT).show()
+        } else if (resultCode == RESULT_CANCELED) {
+            /* password saving was cancelled */
+            Toast.makeText(baseContext, "password not saved", Toast.LENGTH_SHORT).show()
+        }
+        lifecycleScope.launch {
+            updateUI(auth.currentUser)
+        }
+    }
+
+    private fun googleSignInRequestHandler(data: Intent?) {
+        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+        try {
+            // Google Sign In was successful, authenticate with Firebase
+            val account = task.getResult(ApiException::class.java)!!
+            Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
+            firebaseAuthWithGoogle(account.idToken!!)
+        } catch (e: ApiException) {
+            // Google Sign In failed, update UI appropriately
+            Log.w(TAG, "Google sign in failed", e)
+        }
+    }
+
+    private fun oneTapRequestHandler(data: Intent?) {
+        try {
+            val credential = oneTapClient.getSignInCredentialFromIntent(data)
+            val idToken = credential.googleIdToken
+            val username = credential.id
+            val password = credential.password
+            checkOneTapCredential(idToken, password, username)
+        } catch (e: ApiException) {
+            oneTapException(e)
         }
     }
 
@@ -275,7 +242,10 @@ class LoginActivity : AppCompatActivity() {
                     if(savePassword) {
                         savePassword(email,password)
                     }
-                    updateUI(auth.currentUser)
+                    lifecycleScope.launch {
+                        updateUI(auth.currentUser)
+                    }
+
                 } else {
                     // If sign in fails, display a message to the user.
                     signInSignUpFailure(task, "signInWithEmail:failure")
@@ -286,11 +256,10 @@ class LoginActivity : AppCompatActivity() {
 
     private fun signInSignUpFailure(task: Task<AuthResult>, logText: String) {
         Log.w(TAG, logText, task.exception)
-        Toast.makeText(
-            baseContext, "Authentication failed.",
-            Toast.LENGTH_SHORT
-        ).show()
-        updateUI(null)
+        Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            updateUI(null)
+        }
     }
 
     private fun savePassword(email: String, password: String) {
@@ -357,25 +326,6 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    /* previous onActivityResult
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_GOOGLE_SIGN_IN) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                val account = task.getResult(ApiException::class.java)!!
-                Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
-                firebaseAuthWithGoogle(account.idToken!!)
-            } catch (e: ApiException) {
-                // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e)
-            }
-        }
-    }*/
-
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
@@ -384,7 +334,9 @@ class LoginActivity : AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
-                    updateUI(user)
+                    lifecycleScope.launch {
+                        updateUI(user)
+                    }
                 } else {
                     // If sign in fails, display a message to the user.
                     signInSignUpFailure(task, "signInWithCredential:failure")
@@ -392,64 +344,39 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun updateUI(user: FirebaseUser?) {
+    private suspend fun updateUI(user: FirebaseUser?) {
         //Navigate to Main Activity
-        if(user == null){
+        if (user == null) {
             Log.w(TAG, "Not user")
             return
         }
-        val dbUser = hashMapOf(
-            "name" to user.displayName,
-            "email" to user.email,
-            "join_date" to Date(),
-            "picture" to user.photoUrl.toString()
-        )
-        addNewUser(user, dbUser)
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
-    }
 
-    //could be moved into db utils
-    private fun addNewUser(user: FirebaseUser, dbUser: Cloneable) {
-        val docRef = db.collection("users").document(user.uid)
-        docRef.get()
-            .addOnSuccessListener { document ->
-                if (document.data != null) {
-                    Log.d(TAG, "DocumentSnapshot data: ${document.data}")
-                } else {
-                    Log.d(TAG, "No such document")
-                    db.collection("users")
-                        .document(user.uid).set(dbUser, SetOptions.merge())
-                        .addOnSuccessListener {
-                            Log.d(TAG, "DocumentSnapshot added with ID: ${user.uid}")
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w(TAG, "Error adding document", e)
-                        }
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.d(TAG, "get failed with ", exception)
-            }
-    }
+        if (firebaseProfileService.doesUserIDExist(user.uid)) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        } else {
+            val profileUser = ProfileUser(
+                user.uid,
+                "",
+                "",
+                "",
+                Calendar.getInstance(),
+                ImageInstance(user.photoUrl.toString())
+            )
 
+            //firestoreUsers.addNewUser(user, dbUser, TAG)
+
+            val intent = Intent(this, UserSettingsActivity::class.java).apply {
+                putExtra(CREATE_ACCOUNT_PROFILE, profileUser)
+            }
+            startActivity(intent)
+            finish()
+        }
+
+
+    }
     /*private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }*/
 }
 
-/*
-/**
- * Extension function to simplify setting an afterTextChanged action to EditText components.
- */
-fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
-    this.addTextChangedListener(object : TextWatcher {
-        override fun afterTextChanged(editable: Editable?) {
-            afterTextChanged.invoke(editable.toString())
-        }
-
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-    })
-}*/

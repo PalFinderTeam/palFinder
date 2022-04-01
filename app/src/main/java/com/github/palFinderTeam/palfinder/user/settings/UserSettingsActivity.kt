@@ -1,9 +1,11 @@
 package com.github.palFinderTeam.palfinder.user.settings
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -14,6 +16,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.USER_ID
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.ui.login.CREATE_ACCOUNT_PROFILE
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import com.github.palFinderTeam.palfinder.utils.askDate
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
@@ -36,16 +42,28 @@ class UserSettingsActivity : AppCompatActivity() {
 
     private var dateFormat = SimpleDateFormat()
 
-    // private lateinit var pfpImageInstance : ImageInstance
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_settings)
-
         dateFormat = SimpleDateFormat("d/M/y")
 
+        // Force user id
+        if (intent.hasExtra(USER_ID)) {
+            viewModel.loggedUID = intent.getStringExtra(USER_ID).toString()
+        }
+
+        // If user come here because they to create an account, the login page
+        // might have already have some data, use it to prefill fields
+        var preProfile: ProfileUser? = null
+        if (intent.hasExtra(CREATE_ACCOUNT_PROFILE)) {
+            preProfile = intent.getSerializableExtra(CREATE_ACCOUNT_PROFILE) as ProfileUser
+            Log.d("Profile", preProfile.toString())
+            viewModel.loggedUID = preProfile.uuid
+            findViewById<Button>(R.id.SettingsSubmitButton).text = getString(R.string.userSettingsButtonCreate)
+        }
+
         // Init
-        viewModel.loadUserInfo()
+        viewModel.loadUserInfo(preProfile)
         initiateFieldRefs()
         bindFieldsToData()
         initiateSuccessIndicator()
@@ -146,6 +164,14 @@ class UserSettingsActivity : AppCompatActivity() {
             // Show success message
             if (status == UserSettingsViewModel.UPDATE_ERROR) {
                 displayToastMsg("An error occurred while trying to save. Please try again")
+            }
+
+            // Show create account success + redirect
+            // Go to main activity
+            if (status == UserSettingsViewModel.CREATE_SUCCESS) {
+                displayToastMsg("Account created! Welcome to PalFinder :)")
+                val intent = Intent(this, MeetupListActivity::class.java)
+                startActivity(intent)
             }
         }
     }

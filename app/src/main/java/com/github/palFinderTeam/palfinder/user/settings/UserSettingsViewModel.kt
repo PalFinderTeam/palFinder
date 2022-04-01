@@ -1,11 +1,13 @@
 package com.github.palFinderTeam.palfinder.user.settings
 
+import android.content.Intent
 import android.icu.util.Calendar
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
@@ -39,18 +41,19 @@ class UserSettingsViewModel @Inject constructor(
         const val MSG_FIELD_TOO_LONG = "Your %s exceeds the max %d characters allowed (has %d)"
         const val MSG_FIELD_TOO_SHORT = "Your %s is too short (or cannot be empty)!"
         const val MSG_USERNAME_BAD = "Username \"%s\" is invalid (can contain letters/numbers/. or _)"
-        const val MSG_FIELD_BIRTHDAY = "Your birthday was %s"
-        const val MSG_FIELD_ERRORS = "Check fields again, there is on or more errors"
 
         // Values for updates that indicate the status of the update process
         const val UPDATE_IDLE = 0
         const val UPDATE_RUNNING = 1
         const val UPDATE_ERROR = 2
         const val UPDATE_SUCCESS = 3
+        const val CREATE_SUCCESS = 4
     }
 
     //private var _loggedUID: String = "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2" //TODO: TEMP VALUE, actual logged in ID to be fetched
-    private var _loggedUID: String = "aaaaaaa"
+    var loggedUID: String = "aaaaaaa"
+
+    private var _isNewUser: Boolean = false
 
     private val _username: MutableLiveData<String> = MutableLiveData()
     private val _name: MutableLiveData<String> = MutableLiveData()
@@ -74,34 +77,58 @@ class UserSettingsViewModel @Inject constructor(
     /**
      * Reset all fields to default values
      */
-    fun resetFieldsWithDefaults() {
+    private fun resetFieldsWithDefaults() {
         _username.value = ""
         _name.value = ""
         _surname.value = ""
         _birthday.value = null
         _userBio.value = ""
-        _pfp.value = "icons/cat.png" //TODO: TEMP VALUE until image upload works (everyone turns into a cat for now)
+        _pfp.value = "" //TODO: TEMP VALUE until image upload works (everyone turns into a cat for now)
+    }
+
+    /**
+     * Set all fields with values of the ProfileUse
+     *
+     * @param user ProfileUser to use the data from
+     */
+    private fun setFieldsWithUserValues(user: ProfileUser) {
+        _username.postValue(user.username)
+        _name.postValue(user.name)
+        _surname.postValue(user.surname)
+        _username.postValue(user.username)
+        _userBio.postValue(user.description)
+        _birthday.postValue(user.birthday)
+        _pfp.postValue(user.pfp.imgURL)
     }
 
     /**
      * Load user data into fields asynchronously
+     *
+     * If a UserProfile is passed, that means it's because
+     * the user wants to create an account, some info will be
+     * taken from their Google account
+     *
+     * @param preFillUser if wants to transfer pre-fill data
      */
-    fun loadUserInfo() {
-        viewModelScope.launch {
-            // Typically if the user profile was not found because it wasn't created yet
-            if (profileService.doesUserIDExist(_loggedUID)) {
-                val user = profileService.fetchUserProfile(_loggedUID)!!
-                _username.postValue(user.username)
-                _name.postValue(user.name)
-                _surname.postValue(user.surname)
-                _username.postValue(user.username)
-                _userBio.postValue(user.description)
-                _birthday.postValue(user.birthday)
-                _pfp.postValue(user.pfp.imgURL)
-            } else {
-                resetFieldsWithDefaults()
+    fun loadUserInfo(preFillUser: ProfileUser?) {
+        // Add prefill text, that means user creates an account
+        if (preFillUser != null) {
+            _isNewUser = true
+            setFieldsWithUserValues(preFillUser)
+        } else {
+            viewModelScope.launch {
+                // User exists in DB
+                if (profileService.doesUserIDExist(loggedUID)) {
+                    val user = profileService.fetchUserProfile(loggedUID)!!
+                    setFieldsWithUserValues(user)
+                } else {
+                    // No intent and user not found, reset everything
+                    _isNewUser = true
+                    resetFieldsWithDefaults()
+                }
             }
         }
+
     }
 
     /**
@@ -167,28 +194,47 @@ class UserSettingsViewModel @Inject constructor(
     fun saveValuesIntoDatabase() {
         viewModelScope.launch {
             _updateStatus.postValue(UPDATE_RUNNING)
-            val oldUser = profileService.fetchUserProfile(_loggedUID)
+            if (_isNewUser) {
+                val newUser = ProfileUser(
+                    uuid = loggedUID,
+                    username = username.value!!,
+                    name = name.value!!,
+                    surname = surname.value!!,
+                    joinDate = Calendar.getInstance(),
+                    pfp = ImageInstance(pfp.value!!),
+                    description = userBio.value!!,
+                    birthday = birthday.value
+                )
 
-            // If new user then create a new join date
-            val joinDate = oldUser?.joinDate ?: Calendar.getInstance()
-
-            val newUser = ProfileUser(
-                uuid = _loggedUID,
-                username = username.value!!,
-                name = name.value!!,
-                surname = surname.value!!,
-                joinDate = joinDate,
-                pfp = ImageInstance(pfp.value!!),
-                description = userBio.value!!,
-                birthday = birthday.value
-            )
-
-            // Notify result
-            if (profileService.editUserProfile(_loggedUID, newUser) != null){
-                _updateStatus.postValue(UPDATE_SUCCESS)
+                // Notify result
+                if (profileService.createProfile(newUser) != null) {
+                    _updateStatus.postValue(CREATE_SUCCESS)
+                } else {
+                    _updateStatus.postValue(UPDATE_ERROR)
+                }
             } else {
-                _updateStatus.postValue(UPDATE_ERROR)
+                val oldUser = profileService.fetchUserProfile(loggedUID)
+
+                // If user not found for some reason, fall back to adding new join date
+                val joinDate = oldUser?.joinDate ?: Calendar.getInstance()
+                val newUser = ProfileUser(
+                    uuid = loggedUID,
+                    username = username.value!!,
+                    name = name.value!!,
+                    surname = surname.value!!,
+                    joinDate = joinDate,
+                    pfp = ImageInstance(pfp.value!!),
+                    description = userBio.value!!,
+                    birthday = birthday.value
+                )
+                // Notify result
+                if (profileService.editUserProfile(loggedUID, newUser) != null) {
+                    _updateStatus.postValue(UPDATE_SUCCESS)
+                } else {
+                    _updateStatus.postValue(UPDATE_ERROR)
+                }
             }
+
         }
     }
 

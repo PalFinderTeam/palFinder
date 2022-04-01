@@ -100,6 +100,13 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun editCatAccount(view: View?) {
+        val intent = Intent(this, UserSettingsActivity::class.java).apply {
+            putExtra(USER_ID, "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2")
+        }
+        startActivity(intent)
+    }
+
     fun accessCreateProfile(view: View?) {
         val intent = Intent(this, UserSettingsActivity::class.java).apply {  }
         startActivity(intent)
