@@ -32,6 +32,7 @@ import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.ktx.firestore
 //import com.google.firebase.firestore.SetOptions
@@ -40,6 +41,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import java.util.*
 
+const val CREATE_ACCOUNT_PROFILE = "com.github.palFinderTeam.palFinder.CREATE_ACCOUNT_PROFILE"
 
 class LoginActivity : AppCompatActivity() {
 
@@ -150,21 +152,7 @@ class LoginActivity : AppCompatActivity() {
         .build()
 
     private fun displayOneTap(){
-        oneTapClient.beginSignIn(signInRequest)
-            .addOnSuccessListener(this) { result ->
-                try {
-                    startIntentSenderForResult(
-                        result.pendingIntent.intentSender, REQ_ONE_TAP,
-                        null, 0, 0, 0, null)
-                } catch (e: IntentSender.SendIntentException) {
-                    Log.e(TAG, "Couldn't start One Tap UI: ${e.localizedMessage}")
-                }
-            }
-            .addOnFailureListener(this) { e ->
-                // No saved credentials found. Launch the One Tap sign-up flow, or
-                // do nothing and continue presenting the signed-out UI.
-                Log.d(TAG, e.localizedMessage)
-            }
+
     }
 
 
@@ -362,21 +350,21 @@ class LoginActivity : AppCompatActivity() {
             Log.w(TAG, "Not user")
             return
         }
+
+        if(firebaseProfileService.doesUserIDExist(user.uid)){
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
+
         val profileUser = ProfileUser(user.uid, "", "","", Calendar.getInstance(), ImageInstance(user.photoUrl.toString()))
 
-        /*
-        val dbUser = hashMapOf(
-            "name" to user.displayName,
-            "email" to user.email,
-            "join_date" to Date(),
-            "picture" to user.photoUrl.toString()
-        )
-         */
-        firebaseProfileService.createProfile(profileUser)
         //firestoreUsers.addNewUser(user, dbUser, TAG)
-        startActivity(Intent(this, MainActivity::class.java))
+
+        val intent = Intent(this, UserSettingsActivity::class.java).apply {
+            putExtra(CREATE_ACCOUNT_PROFILE, profileUser)
+        }
+        startActivity(intent)
         finish()
-    }
     /*private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }*/
