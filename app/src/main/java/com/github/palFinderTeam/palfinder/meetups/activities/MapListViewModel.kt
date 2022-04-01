@@ -1,10 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.*
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.tag.Category
@@ -18,6 +14,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -27,7 +24,8 @@ import kotlin.math.pow
 class MapListViewModel @Inject constructor(
     val meetUpRepository: MeetUpRepository
 ) : ViewModel() {
-    lateinit var listOfMeetUpResponse: LiveData<Response<List<MeetUp>>>
+    private val _listOfMeetUpResponse: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
+    val listOfMeetUpResponse: LiveData<Response<List<MeetUp>>> = _listOfMeetUpResponse
     lateinit var meetupList: List<MeetUp>
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
     val tags: LiveData<Set<Category>> = _tags
@@ -64,18 +62,20 @@ class MapListViewModel @Inject constructor(
             //TODO get only the joined meetup
 
         } else{
-            val earthCirconference = 40000.0
+            val earthCircumference = 40000.0
             // at zoom 0, the map is of size 256x256 pixels and for every zoom, the number of pixel is multiplied by 2
-            val radiusAtZoom0 = earthCirconference/256
+            val radiusAtZoom0 = earthCircumference/256
             val radius = radiusAtZoom0/2.0.pow(getZoom().toDouble())
-            /*listOfMeetUpResponse = meetUpRepository.getMeetUpsAroundLocation(
-                Location(
-                    getCameraPosition().longitude,
-                    getCameraPosition().latitude
-                ), 15.0
-            ).asLiveData()*/
-            listOfMeetUpResponse = meetUpRepository.getAllMeetUpsResponse().asLiveData()
-
+            viewModelScope.launch {
+                meetUpRepository.getMeetUpsAroundLocation(
+                    Location(
+                        getCameraPosition().longitude,
+                        getCameraPosition().latitude
+                    ), 145.0
+                ).collect {
+                    _listOfMeetUpResponse.postValue(it)
+                }
+            }
         }
     }
 
