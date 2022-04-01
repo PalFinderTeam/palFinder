@@ -2,9 +2,11 @@ package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
 import android.util.Log
+import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.ktx.getField
 import java.io.Serializable
 
 /**
@@ -18,11 +20,19 @@ data class ProfileUser(
     val surname: String,
     val joinDate: Calendar,
     val pfp: ImageInstance,
-    val description: String = ""
+    val description: String = "",
+    val joinedMeetUps: List<String> = emptyList()
 ) : Serializable {
 
     companion object {
         const val JOIN_FORMAT = "Joined %s"
+        const val USERNAME_KEY = "username"
+        const val NAME_KEY = "name"
+        const val SURNAME_KEY = "surname"
+        const val PICTURE_KEY = "picture"
+        const val JOIN_DATE_KEY = "join_date"
+        const val DESCRIPTION_KEY = "description"
+        const val JOINED_MEETUPS_KEY = "joined_meetups"
 
         /**
          * Provide a way to convert a Firestore query result, in a ProfileUser.
@@ -30,16 +40,17 @@ data class ProfileUser(
         fun DocumentSnapshot.toProfileUser(): ProfileUser? {
             return try {
                 val uuid = id
-                val username = getString("username")!!
-                val name = getString("name")!!
-                val surname = getString("surname")!!
-                val picture = getString("picture")!!
-                val joinDate = getDate("join_date")!!
+                val username = getString(USERNAME_KEY)!!
+                val name = getString(NAME_KEY)!!
+                val surname = getString(SURNAME_KEY)!!
+                val picture = getString(PICTURE_KEY)!!
+                val joinDate = getDate(JOIN_DATE_KEY)!!
 
                 val joinDateCal = Calendar.getInstance().apply { time = joinDate }
-                val description = getString("description").orEmpty()
+                val description = getString(DESCRIPTION_KEY).orEmpty()
+                val joinedMeetUp = (get(JOINED_MEETUPS_KEY) as? List<String>).orEmpty()
 
-                ProfileUser(uuid, username, name, surname, joinDateCal, ImageInstance(picture), description)
+                ProfileUser(uuid, username, name, surname, joinDateCal, ImageInstance(picture), description, joinedMeetUp)
             } catch (e: Exception) {
                 Log.e("ProfileUser", "Error deserializing user", e)
                 null
@@ -52,12 +63,13 @@ data class ProfileUser(
      */
     fun toFirestoreData(): HashMap<String, Any> {
         return hashMapOf(
-            "name" to name,
-            "surname" to surname,
-            "username" to username,
-            "join_date" to joinDate.time,
-            "picture" to pfp.imgURL,
-            "description" to description
+            NAME_KEY to name,
+            SURNAME_KEY to surname,
+            USERNAME_KEY to username,
+            JOIN_DATE_KEY to joinDate.time,
+            PICTURE_KEY to pfp.imgURL,
+            DESCRIPTION_KEY to description,
+            JOINED_MEETUPS_KEY to joinedMeetUps
         )
     }
 

@@ -30,7 +30,7 @@ interface TagsRepository<T: Tag> {
 /**
  * Simple implementation if the tags should be readonly.
  */
-class NonEditableTags<T: Tag>(override val tags: Set<T>, override val allTags: Set<T>) : TagsRepository<T> {
+/*class NonEditableTags<T: Tag>(override val tags: Set<T>, override val allTags: Set<T>) : TagsRepository<T> {
     override val isEditable = false
 
     override fun removeTag(tag: T): Boolean {
@@ -42,12 +42,12 @@ class NonEditableTags<T: Tag>(override val tags: Set<T>, override val allTags: S
         // Immutable, cannot add
         return false
     }
-}
+}*/
 
 /**
  * Simple implementation if the tags should be editable.
  */
-class EditableTags<T: Tag>(private val _tags: MutableSet<T>, override val allTags: Set<T>) : TagsRepository<T> {
+/*class EditableTags<T: Tag>(private val _tags: MutableSet<T>, override val allTags: Set<T>) : TagsRepository<T> {
     override val isEditable = true
     override val tags: Set<T> = _tags
 
@@ -58,4 +58,4 @@ class EditableTags<T: Tag>(private val _tags: MutableSet<T>, override val allTag
     override fun addTag(tag: T): Boolean {
         return _tags.add(tag)
     }
-}
+}*/

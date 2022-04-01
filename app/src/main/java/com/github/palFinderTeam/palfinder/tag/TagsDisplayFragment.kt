@@ -96,3 +96,4 @@ class TagsDisplayFragment<T: Tag>() : Fragment() {
         }
     }
 }
+

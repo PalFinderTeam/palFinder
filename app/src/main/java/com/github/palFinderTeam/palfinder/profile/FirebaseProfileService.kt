@@ -1,8 +1,11 @@
 package com.github.palFinderTeam.palfinder.profile
 
+import android.util.Log
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -71,8 +74,6 @@ class FirebaseProfileService @Inject constructor(
     }
 
     override suspend fun createProfile(newUserProfile: ProfileUser): String? {
-        val db = FirebaseFirestore.getInstance()
-
         return try {
             db.collection(PROFILE_COLL).document(newUserProfile.uuid)
                 .set(newUserProfile.toFirestoreData()).await()
@@ -81,6 +82,8 @@ class FirebaseProfileService @Inject constructor(
             null
         }
     }
+
+    override fun getLoggedInUserID(): String? = Firebase.auth.currentUser?.uid
 
     companion object {
         const val PROFILE_COLL = "users"

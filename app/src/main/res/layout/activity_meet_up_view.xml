@@ -23,8 +23,14 @@
             android:layout_width="match_parent"
             android:layout_height="89dp" />
 
+        <Button
+            android:id="@+id/show_profile_list_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="show profiles" />
+      
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButton3"
+            android:id="@+id/bt_ChatMeetup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
@@ -43,7 +49,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/bt_EditMeetup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

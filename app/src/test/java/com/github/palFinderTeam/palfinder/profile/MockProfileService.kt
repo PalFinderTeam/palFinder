@@ -9,6 +9,12 @@ import kotlinx.coroutines.flow.flow
 class MockProfileService : ProfileService {
     val db: HashMap<String, ProfileUser> = hashMapOf()
     private var counter = 0
+    var loggedUserId:String? = null
+
+    fun setLoggedInUserID(value: String?){
+        loggedUserId = value
+    }
+    override fun getLoggedInUserID(): String? = loggedUserId
 
     override suspend fun fetchUserProfile(userId: String): ProfileUser? {
         return db[userId]
@@ -22,11 +28,13 @@ class MockProfileService : ProfileService {
         if (db.containsKey(userId)) {
             val oldVal = db[userId]!!
             db[userId] = when (field) {
-                "name" -> oldVal.copy(name = value as String)
-                "surname" -> oldVal.copy(surname = value as String)
-                "username" -> oldVal.copy(username = value as String)
-                "join_date" -> oldVal.copy(joinDate = value as Calendar)
-                "picture" -> oldVal.copy(pfp = ImageInstance(value as String))
+                ProfileUser.NAME_KEY -> oldVal.copy(name = value as String)
+                ProfileUser.SURNAME_KEY -> oldVal.copy(surname = value as String)
+                ProfileUser.USERNAME_KEY -> oldVal.copy(username = value as String)
+                ProfileUser.JOIN_DATE_KEY -> oldVal.copy(joinDate = value as Calendar)
+                ProfileUser.PICTURE_KEY -> oldVal.copy(pfp = ImageInstance(value as String))
+                ProfileUser.DESCRIPTION_KEY -> oldVal.copy(description = value as String)
+                ProfileUser.JOINED_MEETUPS_KEY -> oldVal.copy(joinedMeetUps = value as List<String>)
                 else -> oldVal
             }
             return userId
