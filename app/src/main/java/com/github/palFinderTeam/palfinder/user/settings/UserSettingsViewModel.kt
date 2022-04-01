@@ -32,8 +32,8 @@ class UserSettingsViewModel @Inject constructor(
         // Define each field's allowed MIN/MAX length
         val FIELDS_LENGTH: Map<String, Pair<Int, Int>> = hashMapOf(
             FIELD_USERNAME to Pair(1,32),
-            FIELD_NAME to Pair(1,64),
-            FIELD_SURNAME to Pair(0,64),
+            FIELD_NAME to Pair(1,32),
+            FIELD_SURNAME to Pair(0,32),
             FIELD_BIO to Pair(0,180)
         )
 
@@ -77,7 +77,7 @@ class UserSettingsViewModel @Inject constructor(
     /**
      * Reset all fields to default values
      */
-    private fun resetFieldsWithDefaults() {
+    fun resetFieldsWithDefaults() {
         _username.value = ""
         _name.value = ""
         _surname.value = ""
@@ -110,7 +110,7 @@ class UserSettingsViewModel @Inject constructor(
      *
      * @param preFillUser if wants to transfer pre-fill data
      */
-    fun loadUserInfo(preFillUser: ProfileUser?) {
+    fun loadUserInfo(preFillUser: ProfileUser? = null) {
         // Add prefill text, that means user creates an account
         if (preFillUser != null) {
             _isNewUser = true
@@ -147,7 +147,6 @@ class UserSettingsViewModel @Inject constructor(
     }
 
     fun setBirthday(birthday: Calendar?) {
-        Log.d("Datebd", birthday?.time.toString())
         _birthday.value = birthday
     }
 
@@ -167,7 +166,7 @@ class UserSettingsViewModel @Inject constructor(
      * if no error EMPTY_STRING is returned
      */
     private fun checkField(fieldName: String, fieldValue: String) : String{
-        // Anything that was not defined with constraints are
+        // Anything that was not defined with constraints are accepted
         if (!FIELDS_LENGTH.containsKey(fieldName)) return ""
 
         FIELDS_LENGTH[fieldName].let {
@@ -188,8 +187,6 @@ class UserSettingsViewModel @Inject constructor(
 
     /**
      * Save all user values into database
-     *
-     * @return a message to display
      */
     fun saveValuesIntoDatabase() {
         viewModelScope.launch {
