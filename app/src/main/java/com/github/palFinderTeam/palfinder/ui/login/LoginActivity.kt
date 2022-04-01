@@ -346,17 +346,24 @@ class LoginActivity : AppCompatActivity() {
 
     private suspend fun updateUI(user: FirebaseUser?) {
         //Navigate to Main Activity
-        if(user == null){
+        if (user == null) {
             Log.w(TAG, "Not user")
             return
         }
 
-        if(firebaseProfileService.doesUserIDExist(user.uid)){
+        if (firebaseProfileService.doesUserIDExist(user.uid)) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
 
-        val profileUser = ProfileUser(user.uid, "", "","", Calendar.getInstance(), ImageInstance(user.photoUrl.toString()))
+        val profileUser = ProfileUser(
+            user.uid,
+            "",
+            "",
+            "",
+            Calendar.getInstance(),
+            ImageInstance(user.photoUrl.toString())
+        )
 
         //firestoreUsers.addNewUser(user, dbUser, TAG)
 
@@ -365,6 +372,7 @@ class LoginActivity : AppCompatActivity() {
         }
         startActivity(intent)
         finish()
+    }
     /*private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }*/

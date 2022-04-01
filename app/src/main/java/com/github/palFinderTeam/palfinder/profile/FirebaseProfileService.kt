@@ -5,7 +5,6 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfil
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -26,6 +25,7 @@ class FirebaseProfileService @Inject constructor(
             db.collection(PROFILE_COLL)
                 .document(userId).get().await().toProfileUser()
         } catch (e: Exception) {
+            Log.d("db user", "failed safely")
             null
         }
     }
@@ -76,10 +76,8 @@ class FirebaseProfileService @Inject constructor(
 
     override suspend fun createProfile(newUserProfile: ProfileUser): String? {
         return try {
-            if (!db.collection(PROFILE_COLL).document(newUserProfile.uuid).get().await().exists()) {
-                db.collection(PROFILE_COLL).document(newUserProfile.uuid)
-                    .set(newUserProfile.toFirestoreData(), SetOptions.merge()).await()
-            }
+            db.collection(PROFILE_COLL).document(newUserProfile.uuid)
+                .set(newUserProfile.toFirestoreData()).await()
             newUserProfile.uuid
         } catch (e: Exception) {
             null
@@ -87,6 +85,10 @@ class FirebaseProfileService @Inject constructor(
     }
 
     override fun getLoggedInUserID(): String? = Firebase.auth.currentUser?.uid
+
+    override suspend fun doesUserIDExist(userId: String): Boolean {
+        return db.collection(PROFILE_COLL).document(userId).get().await().exists()
+    }
 
     companion object {
         const val PROFILE_COLL = "users"
