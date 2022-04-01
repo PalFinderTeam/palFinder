@@ -18,11 +18,11 @@ class UserSettingsActivityTest {
         // Launch activity
         val scenario = ActivityScenario.launch<ProfileActivity>(intent)
         scenario.use {
-            Espresso.onView(ViewMatchers.withId(R.id.SettingsSubmitButton)).check(
-                ViewAssertions.matches(
-                    ViewMatchers.withText("Save settings")
-                )
-            )
+//            Espresso.onView(ViewMatchers.withId(R.id.SettingsBDayHint)).check(
+//                ViewAssertions.matches(
+//                    ViewMatchers.withText()
+//                )
+//            )
         }
     }
 }
