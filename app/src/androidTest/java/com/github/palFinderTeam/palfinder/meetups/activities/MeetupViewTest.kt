@@ -449,7 +449,7 @@ class MeetupViewTest {
             onView(withId(R.id.tv_StartDate)).perform(scrollTo(), click())
 
             onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
-                PickerActions.setDate(date1.get(Calendar.YEAR), date1.get(Calendar.MONTH), date1.get(Calendar.DAY_OF_MONTH)),
+                PickerActions.setDate(date1.get(Calendar.YEAR), date1.get(Calendar.MONTH)+1, date1.get(Calendar.DAY_OF_MONTH)),
             )
             onView(withText("OK")).perform(click()) // Library is stupid and can't even press the f. button
             onView(withClassName(Matchers.equalTo(TimePicker::class.java.name))).perform(
@@ -462,7 +462,7 @@ class MeetupViewTest {
             onView(withId(R.id.tv_EndDate)).perform(scrollTo(), click())
 
             onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
-                PickerActions.setDate(date2.get(Calendar.YEAR), date2.get(Calendar.MONTH), date2.get(Calendar.DAY_OF_MONTH)),
+                PickerActions.setDate(date2.get(Calendar.YEAR), date2.get(Calendar.MONTH) + 1, date2.get(Calendar.DAY_OF_MONTH)),
             )
             onView(withText("OK")).perform(click()) // Library is stupid and can't even press the f. button
             onView(withClassName(Matchers.equalTo(TimePicker::class.java.name))).perform(

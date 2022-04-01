@@ -57,7 +57,10 @@ class MeetUpCreationViewModel @Inject constructor(
 
     val maxEndDate: Calendar
         get() {
-            val maxDate = startDate.value ?: Calendar.getInstance()
+            val maxDate = Calendar.getInstance()
+            _startDate.value?.let {
+                maxDate.time = it.time
+            }
             maxDate.add(Calendar.DAY_OF_MONTH, 2)
             return maxDate
         }
@@ -192,11 +195,11 @@ class MeetUpCreationViewModel @Inject constructor(
         }
         val startDateVal = startDate.value!!
         val endDateVal = endDate.value!!
-        // Check that startDate is not too much in the future
-        if (!startDateVal.isBefore(maxStartDate)) {
-            _startDate.value = maxStartDate
-        }
-        // Check that endDate is not too much in the future
+//        // Check that startDate is not too much in the future
+//        if (!startDateVal.isBefore(maxStartDate)) {
+//            _startDate.value = maxStartDate
+//        }
+//        // Check that endDate is not too much in the future
         if (!endDateVal.isBefore(maxEndDate)) {
             _endDate.value = maxEndDate
         }

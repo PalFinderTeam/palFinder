@@ -187,7 +187,7 @@ class MeetUpCreation : AppCompatActivity() {
             supportFragmentManager,
             viewModel.endDate.value?.toSimpleDate(),
             viewModel.endDate.value?.toSimpleTime(),
-            Calendar.getInstance(),
+            viewModel.startDate.value,
             viewModel.maxEndDate
         ).thenAccept {
             viewModel.setEndDate(it)
