@@ -9,8 +9,11 @@ import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
-import org.hamcrest.CoreMatchers.*
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Before
@@ -18,6 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import org.mockito.MockedStatic
 import org.mockito.Mockito
 
 @ExperimentalCoroutinesApi
@@ -37,14 +41,18 @@ class MeetUpCreationViewModelTest {
 
         testStartDate = Mockito.mock(Calendar::class.java)
         testEndDate = Mockito.mock(Calendar::class.java)
-        Mockito.`when`(testStartDate.timeInMillis).thenReturn( 69)
-        Mockito.`when`(testEndDate.timeInMillis).thenReturn( 420)
-//        Mockito.`when`(testStartDate.isDeltaBefore(Mockito.any(), defaultTimeDelta)).thenReturn(true)
-//        Mockito.`when`(testEndDate.isDeltaBefore(Mockito.any(), defaultTimeDelta)).thenReturn(false)
+        try {
+            val cal: MockedStatic<Calendar> = Mockito.mockStatic(Calendar::class.java)
+            cal.`when`<Calendar> { Calendar.getInstance() }.thenReturn(testStartDate)
+        } catch (e: Exception) {
+
+        }
+        Mockito.`when`(testStartDate.timeInMillis).thenReturn(69)
+        Mockito.`when`(testEndDate.timeInMillis).thenReturn(420)
 
         meetUpRepository = MockMeetUpRepository()
         meetUpRepository.clearDB()
-        viewModel = MeetUpCreationViewModel(meetUpRepository, testStartDate)
+        viewModel = MeetUpCreationViewModel(meetUpRepository)
         Dispatchers.setMain(UnconfinedTestDispatcher())
     }
 
@@ -115,7 +123,7 @@ class MeetUpCreationViewModelTest {
         viewModel.setHasMaxCapacity(true)
         viewModel.setDescription("manger des bananes")
         viewModel.setName("Manger")
-        viewModel.setLatLng(LatLng(1.0,1.0))
+        viewModel.setLatLng(LatLng(1.0, 1.0))
         viewModel.sendMeetUp()
         assertThat(viewModel.sendSuccess.value, `is`(true))
         assertThat(viewModel.getMeetUpId(), notNullValue())
