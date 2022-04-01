@@ -11,18 +11,18 @@ import com.github.palFinderTeam.palfinder.R
 import org.junit.Test
 
 class UserSettingsActivityTest {
-    @Test
-    fun fullNameIsCorrectlyDisplayed() {
-        // Create intent with data to inject
-        val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
-        // Launch activity
-        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
-        scenario.use {
+//    @Test
+//    fun fullNameIsCorrectlyDisplayed() {
+//        // Create intent with data to inject
+//        val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
+//        // Launch activity
+//        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
+//        scenario.use {
 //            Espresso.onView(ViewMatchers.withId(R.id.SettingsBDayHint)).check(
 //                ViewAssertions.matches(
 //                    ViewMatchers.withText()
 //                )
 //            )
-        }
-    }
+//        }
+//    }
 }
