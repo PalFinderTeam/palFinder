@@ -147,7 +147,7 @@ class MapsViewModelTest {
         viewModel.setMap(mockMap)
         addToDB(meetup3)
         addToDB(meetup4)
-        viewModel.update(null)
+        viewModel.update()
         viewModel.clearMarkers()
         Assert.assertEquals(null, viewModel.getMarker(meetup3.uuid))
         Assert.assertEquals(null, viewModel.getMarker(meetup4.uuid))
@@ -161,7 +161,7 @@ class MapsViewModelTest {
 
         addToDB(meetup1)
         addToDB(meetup2)
-        viewModel.update(null)
+        viewModel.update()
         Assert.assertEquals(null, viewModel.getMarker(meetup1.uuid))
         Assert.assertEquals(null, viewModel.getMarker(meetup2.uuid))
 
