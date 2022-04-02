@@ -136,7 +136,7 @@ class UserSettingsActivityTest {
 
         ActivityScenario.launch<UserSettingsActivity>(intent)
         Intents.init()
-        onView(withId(R.id.SettingsSubmitButton)).perform(click())
+        onView(withId(R.id.SettingsSubmitButton)).perform(ViewActions.scrollTo(), click())
         Intents.intended(IntentMatchers.hasComponent(MeetupListActivity::class.java.name))
         Intents.release()
     }
@@ -147,7 +147,7 @@ class UserSettingsActivityTest {
         val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
 
         scenario.use {
-            onView(withId(R.id.SettingsDeleteBDay)).perform(click())
+            onView(withId(R.id.SettingsDeleteBDay)).perform(ViewActions.scrollTo(), click())
             // Check if a field is still empty => stayed on same page
             onView(withId(R.id.SettingsUsernameText)).check(matches(withText("")))
         }
