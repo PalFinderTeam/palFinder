@@ -168,7 +168,7 @@ class UserSettingsViewModelTest {
     fun `check all fields name fails too long`() {
         user = ProfileUser(
             "1",
-            "cattalio-le-callico",
+            "cattalio_le_callico",
             "tacooooooooooooooooooooooooooooooooooooooooooo", // Fails too long
             "maco",
             joinDate,
