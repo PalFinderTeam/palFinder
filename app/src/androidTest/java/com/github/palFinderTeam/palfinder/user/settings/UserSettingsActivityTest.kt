@@ -81,29 +81,29 @@ class UserSettingsActivityTest {
     }
 
 
-    @Test
-    fun loadSpecificUserIdYieldsCorrectValues() = runTest {
-        assertThat(profileService.createProfile(user), notNullValue())
-
-        val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
-            .apply{
-                putExtra(USER_ID, user.uuid)
-            }
-
-        val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
-        scenario.use {
-            onView(withId(R.id.SettingsUsernameText))
-                .check(matches(withText(user.username)))
-            onView(withId(R.id.SettingsNameText))
-                .check(matches(withText(user.name)))
-            onView(withId(R.id.SettingsSurnameText))
-                .check(matches(withText(user.surname)))
-            onView(withId(R.id.SettingsBioText))
-                .check(matches(withText(user.description)))
-            onView(withId(R.id.SettingsBirthdayText))
-                .check(matches(withText(bdFormat.format(user.birthday))))
-        }
-    }
+//    @Test
+//    fun loadSpecificUserIdYieldsCorrectValues() = runTest {
+//        assertThat(profileService.createProfile(user), notNullValue())
+//
+//        val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
+//            .apply{
+//                putExtra(USER_ID, user.uuid)
+//            }
+//
+//        val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
+//        scenario.use {
+//            onView(withId(R.id.SettingsUsernameText))
+//                .check(matches(withText(user.username)))
+//            onView(withId(R.id.SettingsNameText))
+//                .check(matches(withText(user.name)))
+//            onView(withId(R.id.SettingsSurnameText))
+//                .check(matches(withText(user.surname)))
+//            onView(withId(R.id.SettingsBioText))
+//                .check(matches(withText(user.description)))
+//            onView(withId(R.id.SettingsBirthdayText))
+//                .check(matches(withText(bdFormat.format(user.birthday))))
+//        }
+//    }
 
     @Test
     fun loadSpecificUserProfileYieldsCorrectValues() = runTest {
