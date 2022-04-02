@@ -80,6 +80,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
 
+    implementation 'com.github.dhaval2404:imagepicker:2.1'
+
     androidTestImplementation ('androidx.test.espresso:espresso-contrib:3.4.0',{
         exclude group: 'com.google.protobuf',module: 'protobuf-javalite'
         exclude group: 'com.google.protobuf',module: 'protobuf-lite'

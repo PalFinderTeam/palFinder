@@ -7,14 +7,16 @@ import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.view.View
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.TextView
+import android.widget.*
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.lifecycleScope
+import com.github.dhaval2404.imagepicker.ImagePicker
+import com.github.dhaval2404.imagepicker.util.IntentUtils
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
@@ -26,9 +28,11 @@ import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.askTime
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
 const val defaultTimeDelta = 1000 * 60 * 60
@@ -49,6 +53,8 @@ class MeetUpCreation : AppCompatActivity() {
     private lateinit var limitEditText: EditText
     private lateinit var nameEditText: EditText
     private lateinit var descriptionEditText: EditText
+    private lateinit var changeIconButton: Button
+    private lateinit var icon: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         registerActivityResult()
@@ -61,6 +67,8 @@ class MeetUpCreation : AppCompatActivity() {
         limitEditText = findViewById(R.id.et_Capacity)
         nameEditText = findViewById(R.id.et_EventName)
         descriptionEditText = findViewById(R.id.et_Description)
+        changeIconButton = findViewById(R.id.bt_SelectIcon)
+        icon = findViewById(R.id.iv_Icon)
 
         bindUI()
 
@@ -90,15 +98,16 @@ class MeetUpCreation : AppCompatActivity() {
         registerActivityResult()
     }
 
-    private fun registerActivityResult(){
-        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                if (data != null) {
-                    onLocationSelected(data.getParcelableExtra(LOCATION_SELECTED)!!)
+    private fun registerActivityResult() {
+        resultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val data: Intent? = result.data
+                    if (data != null) {
+                        onLocationSelected(data.getParcelableExtra(LOCATION_SELECTED)!!)
+                    }
                 }
             }
-        }
     }
 
     private fun bindUI() {
@@ -142,6 +151,20 @@ class MeetUpCreation : AppCompatActivity() {
             }
         }
         limitEditText.isEnabled = hasLimitCheckBox.isChecked
+        changeIconButton.setOnClickListener {
+            pickProfileImage()
+        }
+        icon.setOnClickListener {
+            showImage()
+        }
+        viewModel.iconUri.observeOnce(this) {
+            icon.setImageURI(it)
+        }
+        viewModel.iconUrl.observeOnce(this) {
+            lifecycleScope.launch {
+                ImageInstance(it).loadImageInto(icon)
+            }
+        }
     }
 
     private fun setCapacityField(isEditable: Boolean) {
@@ -206,6 +229,12 @@ class MeetUpCreation : AppCompatActivity() {
         viewModel.sendMeetUp()
     }
 
+    private fun showImage() {
+        viewModel.iconUri.value?.let {
+            startActivity(IntentUtils.getUriViewIntent(this, it))
+        }
+    }
+
     /**
      * Show [message] with [title] in an alert box
      */
@@ -218,14 +247,44 @@ class MeetUpCreation : AppCompatActivity() {
         dlgAlert.create().show()
     }
 
-    fun onSelectLocation(v: View){
+    fun onSelectLocation(v: View) {
         val intent = Intent(this, MapsActivity::class.java).apply {
-            putExtra(LOCATION_SELECT, LatLng(0.0,0.0))
+            putExtra(LOCATION_SELECT, LatLng(0.0, 0.0))
         }
         resultLauncher.launch(intent)
     }
 
-    private fun onLocationSelected(p0: LatLng){
+    private fun onLocationSelected(p0: LatLng) {
         viewModel.setLatLng(p0)
     }
+
+    private fun pickProfileImage() {
+        ImagePicker.with(this)
+            .cropSquare()
+            .maxResultSize(512, 512)
+            .createIntent {
+                startForProfileImageResult.launch(it)
+            }
+    }
+
+    private val startForProfileImageResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val resultCode = result.resultCode
+            val data = result.data
+
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    //Image Uri will not be null for RESULT_OK
+                    val fileUri = data?.data!!
+                    viewModel.setIcon(fileUri)
+                    icon.setImageURI(fileUri)
+                }
+                ImagePicker.RESULT_ERROR -> {
+                    Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    Toast.makeText(this, "Task Cancelled", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 }

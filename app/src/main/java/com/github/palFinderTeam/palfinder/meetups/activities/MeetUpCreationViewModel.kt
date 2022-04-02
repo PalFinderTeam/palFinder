@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.icu.util.Calendar
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MeetUpCreationViewModel @Inject constructor(
     private val meetUpRepository: MeetUpRepository,
-    private val calendar: Calendar
+    private val calendar: Calendar,
+    private val imageUploader: ImageUploader
 ) : ViewModel() {
     private var uuid: String? = null
 
@@ -32,6 +35,8 @@ class MeetUpCreationViewModel @Inject constructor(
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData()
     private val _participantsId: MutableLiveData<List<String>> = MutableLiveData(emptyList())
     private val _location: MutableLiveData<Location> = MutableLiveData()
+    private val _iconUri: MutableLiveData<Uri> = MutableLiveData()
+    private val _iconUrl: MutableLiveData<String> = MutableLiveData()
 
     private val _sendSuccess: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -44,6 +49,8 @@ class MeetUpCreationViewModel @Inject constructor(
     val sendSuccess: LiveData<Boolean> = _sendSuccess
     val tags: LiveData<Set<Category>> = _tags
     val participantsId: LiveData<List<String>> = _participantsId
+    val iconUri: LiveData<Uri> = _iconUri
+    val iconUrl: LiveData<String> = _iconUrl
 
     val location: LiveData<Location> = _location
 
@@ -89,6 +96,10 @@ class MeetUpCreationViewModel @Inject constructor(
 
     fun getMeetUpId() = uuid
 
+    fun setIcon(iconUri: Uri) {
+        _iconUri.value = iconUri
+    }
+
     /**
      * Load asynchronously a meetUp and update liveData on success.
      *
@@ -108,6 +119,9 @@ class MeetUpCreationViewModel @Inject constructor(
                 _tags.postValue(meetUp.tags)
                 _participantsId.postValue(meetUp.participantsId)
                 _location.postValue(meetUp.location)
+                meetUp.iconId?.let {
+                    _iconUrl.postValue(it)
+                }
             } else {
                 fillWithDefaultValues()
             }
@@ -118,32 +132,32 @@ class MeetUpCreationViewModel @Inject constructor(
      * Send every field as a MeetUp to DB.
      */
     fun sendMeetUp() {
-        val meetUp = MeetUp(
-            uuid.orEmpty(),
-            // TODO Get ID
-            "TODO GET YOU ID",
-            // TODO Put real icon
-            "icons/cat.png",
-            name.value!!,
-            description.value!!,
-            startDate.value!!,
-            endDate.value!!,
-            location.value!!,
-            tags.value.orEmpty(),
-            hasMaxCapacity.value!!,
-            capacity.value!!,
-            participantsId.value!!
-        )
-        if (uuid == null) {
-            // create new meetup
-            viewModelScope.launch {
+        viewModelScope.launch {
+            val iconPath = iconUri.value?.let {
+                imageUploader.uploadImage(it)
+            }
+            val meetUp = MeetUp(
+                uuid.orEmpty(),
+                // TODO Get ID
+                "TODO GET YOU ID",
+                iconPath,
+                name.value!!,
+                description.value!!,
+                startDate.value!!,
+                endDate.value!!,
+                location.value!!,
+                tags.value.orEmpty(),
+                hasMaxCapacity.value!!,
+                capacity.value!!,
+                participantsId.value!!
+            )
+            if (uuid == null) {
+                // create new meetup
                 uuid = meetUpRepository.createMeetUp(meetUp)
                 // Notify sending result
                 _sendSuccess.postValue(uuid != null)
-            }
-        } else {
-            // Edit existing one
-            viewModelScope.launch {
+            } else {
+                // Edit existing one
                 meetUpRepository.editMeetUp(uuid!!, meetUp)
                 _sendSuccess.postValue(true)
             }
