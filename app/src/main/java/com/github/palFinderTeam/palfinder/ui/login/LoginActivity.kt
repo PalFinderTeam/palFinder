@@ -103,8 +103,8 @@ class LoginActivity : AppCompatActivity() {
             else if (isValidEmail(email)) {
                 createAccount(email, password)
             } else {
-            //pop "email not valid"
-              Toast.makeText(baseContext, "Email not valid", Toast.LENGTH_SHORT).show()
+                //pop "email not valid"
+                Toast.makeText(baseContext, "Email not valid", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -262,15 +262,15 @@ class LoginActivity : AppCompatActivity() {
         Identity.getCredentialSavingClient(this).savePassword(savePasswordRequest)
             .addOnSuccessListener { result ->
                 try {
-                startIntentSenderForResult(
-                    result.pendingIntent.intentSender,
-                    REQUEST_CODE_GIS_SAVE_PASSWORD,  /* fillInIntent= */
-                    null,  /* flagsMask= */
-                    0,  /* flagsValue= */
-                    0,  /* extraFlags= */
-                    0,  /* options= */
-                    null
-                )}catch (e: IntentSender.SendIntentException) {
+                    startIntentSenderForResult(
+                        result.pendingIntent.intentSender,
+                        REQUEST_CODE_GIS_SAVE_PASSWORD,  /* fillInIntent= */
+                        null,  /* flagsMask= */
+                        0,  /* flagsValue= */
+                        0,  /* extraFlags= */
+                        0,  /* options= */
+                        null
+                    )}catch (e: IntentSender.SendIntentException) {
                     Log.e(TAG, "Couldn't save password: ${e.localizedMessage}")
                 }
             }
@@ -343,30 +343,31 @@ class LoginActivity : AppCompatActivity() {
             Log.w(TAG, "Not user")
             return
         }
-        
+
         if (firebaseProfileService.doesUserIDExist(user.uid)) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
+        } else {
+
+            val profileUser = ProfileUser(
+                user.uid,
+                "",
+                "",
+                "",
+                Calendar.getInstance(),
+                ImageInstance(user.photoUrl.toString())
+            )
+
+            //firestoreUsers.addNewUser(user, dbUser, TAG)
+
+            val intent = Intent(this, UserSettingsActivity::class.java).apply {
+                putExtra(CREATE_ACCOUNT_PROFILE, profileUser)
+            }
+            startActivity(intent)
+            finish()
+        }
         }
 
-        val profileUser = ProfileUser(
-            user.uid,
-            "",
-            "",
-            "",
-            Calendar.getInstance(),
-            ImageInstance(user.photoUrl.toString())
-        )
-
-        //firestoreUsers.addNewUser(user, dbUser, TAG)
-
-        val intent = Intent(this, UserSettingsActivity::class.java).apply {
-            putExtra(CREATE_ACCOUNT_PROFILE, profileUser)
-        }
-        startActivity(intent)
-        finish()
-
-    }
     /*private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }*/

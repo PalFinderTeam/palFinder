@@ -52,7 +52,7 @@ class UserSettingsActivity : AppCompatActivity() {
             viewModel.loggedUID = intent.getStringExtra(USER_ID).toString()
         }
 
-        // If user come here because they to create an account, the login page
+        // If user comes here because they to create an account, the login page
         // might have already have some data, use it to prefill fields
         var preProfile: ProfileUser? = null
         if (intent.hasExtra(CREATE_ACCOUNT_PROFILE)) {
@@ -86,6 +86,14 @@ class UserSettingsActivity : AppCompatActivity() {
      * Setup for Bindings between fields in view and view model
      */
     private fun bindFieldsToData() {
+        forwardBind()
+        backwardsBind()
+    }
+
+    /**
+     * Bind fields to view model
+     */
+    private fun forwardBind() {
         // Fields change bind to view model (to trigger checks/saves)
         usernameField.doAfterTextChanged { text ->
             viewModel.setUsername(text.toString())
@@ -99,11 +107,12 @@ class UserSettingsActivity : AppCompatActivity() {
         bioField.doAfterTextChanged { text ->
             viewModel.setBio(text.toString())
         }
-        // We don't have an observer for the text changing because
+        // NOTE: We don't have an observer for the text changing because
         // it is triggered directly with other functions such as
         // openDatePickerFragment() or deletePickedBirthday()
+    }
 
-
+    private fun backwardsBind() {
         // View model changes bind to fields
         viewModel.username.observeOnce(this) {
             usernameField.setText(it)

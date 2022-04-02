@@ -50,8 +50,8 @@ class UserSettingsViewModel @Inject constructor(
         const val CREATE_SUCCESS = 4
     }
 
-    //private var _loggedUID: String = "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2" //TODO: TEMP VALUE, actual logged in ID to be fetched
-    var loggedUID: String = "aaaaaaa"
+    var loggedUID: String = "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2" //TODO: TEMP VALUE, actual logged in ID to be fetched
+    //var loggedUID: String = "aaaaaaa"
 
     private lateinit var _joinDate: Calendar
 
