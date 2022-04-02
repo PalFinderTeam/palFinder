@@ -25,6 +25,7 @@ class FirebaseProfileService @Inject constructor(
             db.collection(PROFILE_COLL)
                 .document(userId).get().await().toProfileUser()
         } catch (e: Exception) {
+            Log.d("db user", "failed safely")
             null
         }
     }
