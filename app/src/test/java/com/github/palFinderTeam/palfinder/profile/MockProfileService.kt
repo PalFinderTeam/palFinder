@@ -16,6 +16,10 @@ class MockProfileService : ProfileService {
     }
     override fun getLoggedInUserID(): String? = loggedUserId
 
+    override suspend fun doesUserIDExist(userId: String): Boolean {
+        return db.containsKey(userId)
+    }
+
     override suspend fun fetchUserProfile(userId: String): ProfileUser? {
         return db[userId]
     }

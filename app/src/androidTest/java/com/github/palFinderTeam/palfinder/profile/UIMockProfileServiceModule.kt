@@ -106,6 +106,11 @@ object UIMockProfileServiceModule {
         }
 
         override fun getLoggedInUserID(): String? = loggedUserId
+
+        override suspend fun doesUserIDExist(userId: String): Boolean {
+            return db.containsKey(userId)
+        }
+
         fun setLoggedInUserID(value: String?){
             loggedUserId = value
         }
