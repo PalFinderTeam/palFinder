@@ -45,7 +45,7 @@ class UserSettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_settings)
-        dateFormat = SimpleDateFormat("d/M/y")
+        dateFormat = SimpleDateFormat(getString(R.string.userSettingsBdayPattern))
 
         // Force user id
         if (intent.hasExtra(USER_ID)) {
@@ -57,7 +57,6 @@ class UserSettingsActivity : AppCompatActivity() {
         var preProfile: ProfileUser? = null
         if (intent.hasExtra(CREATE_ACCOUNT_PROFILE)) {
             preProfile = intent.getSerializableExtra(CREATE_ACCOUNT_PROFILE) as ProfileUser
-            Log.d("Profile", preProfile.toString())
             viewModel.loggedUID = preProfile.uuid
             findViewById<Button>(R.id.SettingsSubmitButton).text = getString(R.string.userSettingsButtonCreate)
         }
@@ -167,18 +166,18 @@ class UserSettingsActivity : AppCompatActivity() {
 
             // Show success message
             if (status == UserSettingsViewModel.UPDATE_SUCCESS) {
-                displayToastMsg("Changes successfully saved!")
+                displayToastMsg(getString(R.string.userSettingsSaveSuccess))
             }
 
             // Show success message
             if (status == UserSettingsViewModel.UPDATE_ERROR) {
-                displayToastMsg("An error occurred while trying to save. Please try again")
+                displayToastMsg(getString(R.string.userSettingsSaveFail))
             }
 
             // Show create account success + redirect
             // Go to main activity
             if (status == UserSettingsViewModel.CREATE_SUCCESS) {
-                displayToastMsg("Account created! Welcome to PalFinder :)")
+                displayToastMsg(getString(R.string.userSettingsSaveCreate))
                 val intent = Intent(this, MeetupListActivity::class.java)
                 startActivity(intent)
             }
