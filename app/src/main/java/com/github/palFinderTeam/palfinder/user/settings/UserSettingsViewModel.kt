@@ -53,6 +53,8 @@ class UserSettingsViewModel @Inject constructor(
     //private var _loggedUID: String = "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2" //TODO: TEMP VALUE, actual logged in ID to be fetched
     var loggedUID: String = "aaaaaaa"
 
+    private lateinit var _joinDate: Calendar
+
     private var _isNewUser: Boolean = false
 
     private val _username: MutableLiveData<String> = MutableLiveData()
@@ -114,6 +116,7 @@ class UserSettingsViewModel @Inject constructor(
         // Add prefill text, that means user creates an account
         if (preFillUser != null) {
             _isNewUser = true
+            _joinDate = preFillUser.joinDate
             setFieldsWithUserValues(preFillUser)
         } else {
             viewModelScope.launch {
@@ -197,7 +200,7 @@ class UserSettingsViewModel @Inject constructor(
                     username = username.value!!,
                     name = name.value!!,
                     surname = surname.value!!,
-                    joinDate = Calendar.getInstance(),
+                    joinDate = _joinDate,
                     pfp = ImageInstance(pfp.value!!),
                     description = userBio.value!!,
                     birthday = birthday.value
