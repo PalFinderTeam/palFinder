@@ -5,8 +5,10 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
+import android.widget.CalendarView
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
@@ -22,10 +24,8 @@ import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
+import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
-import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
-import com.github.palFinderTeam.palfinder.utils.askTime
-import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,6 +49,8 @@ class MeetUpCreation : AppCompatActivity() {
     private lateinit var limitEditText: EditText
     private lateinit var nameEditText: EditText
     private lateinit var descriptionEditText: EditText
+    private lateinit var startDateField: TextView
+    private lateinit var endDateField: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         registerActivityResult()
@@ -61,6 +63,9 @@ class MeetUpCreation : AppCompatActivity() {
         limitEditText = findViewById(R.id.et_Capacity)
         nameEditText = findViewById(R.id.et_EventName)
         descriptionEditText = findViewById(R.id.et_Description)
+        startDateField = findViewById(R.id.tv_StartDate)
+        endDateField = findViewById(R.id.tv_EndDate)
+
 
         bindUI()
 
@@ -90,15 +95,16 @@ class MeetUpCreation : AppCompatActivity() {
         registerActivityResult()
     }
 
-    private fun registerActivityResult(){
-        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                if (data != null) {
-                    onLocationSelected(data.getParcelableExtra(LOCATION_SELECTED)!!)
+    private fun registerActivityResult() {
+        resultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val data: Intent? = result.data
+                    if (data != null) {
+                        onLocationSelected(data.getParcelableExtra(LOCATION_SELECTED)!!)
+                    }
                 }
             }
-        }
     }
 
     private fun bindUI() {
@@ -142,6 +148,13 @@ class MeetUpCreation : AppCompatActivity() {
             }
         }
         limitEditText.isEnabled = hasLimitCheckBox.isChecked
+
+        viewModel.canEditStartDate.observe(this) {
+            startDateField.isClickable = it
+        }
+        viewModel.canEditEndDate.observe(this) {
+            endDateField.isClickable = it
+        }
     }
 
     private fun setCapacityField(isEditable: Boolean) {
@@ -158,13 +171,25 @@ class MeetUpCreation : AppCompatActivity() {
     }
 
     fun onStartTimeSelectButton(v: View) {
-        askTime(supportFragmentManager).thenAccept {
+        askTime(
+            supportFragmentManager,
+            viewModel.startDate.value?.toSimpleDate(),
+            viewModel.startDate.value?.toSimpleTime(),
+            Calendar.getInstance(),
+            viewModel.maxStartDate
+        ).thenAccept {
             viewModel.setStartDate(it)
         }
     }
 
     fun onEndTimeSelectButton(v: View) {
-        askTime(supportFragmentManager).thenAccept {
+        askTime(
+            supportFragmentManager,
+            viewModel.endDate.value?.toSimpleDate(),
+            viewModel.endDate.value?.toSimpleTime(),
+            viewModel.startDate.value,
+            viewModel.maxEndDate
+        ).thenAccept {
             viewModel.setEndDate(it)
         }
     }
@@ -218,14 +243,14 @@ class MeetUpCreation : AppCompatActivity() {
         dlgAlert.create().show()
     }
 
-    fun onSelectLocation(v: View){
+    fun onSelectLocation(v: View) {
         val intent = Intent(this, MapsActivity::class.java).apply {
-            putExtra(LOCATION_SELECT, LatLng(0.0,0.0))
+            putExtra(LOCATION_SELECT, LatLng(0.0, 0.0))
         }
         resultLauncher.launch(intent)
     }
 
-    private fun onLocationSelected(p0: LatLng){
+    private fun onLocationSelected(p0: LatLng) {
         viewModel.setLatLng(p0)
     }
 }

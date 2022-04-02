@@ -25,6 +25,7 @@ class FirebaseProfileService @Inject constructor(
             db.collection(PROFILE_COLL)
                 .document(userId).get().await().toProfileUser()
         } catch (e: Exception) {
+            Log.d("db user", "failed safely")
             null
         }
     }
@@ -84,6 +85,10 @@ class FirebaseProfileService @Inject constructor(
     }
 
     override fun getLoggedInUserID(): String? = Firebase.auth.currentUser?.uid
+
+    override suspend fun doesUserIDExist(userId: String): Boolean {
+        return db.collection(PROFILE_COLL).document(userId).get().await().exists()
+    }
 
     companion object {
         const val PROFILE_COLL = "users"
