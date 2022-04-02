@@ -39,7 +39,6 @@ const val defaultTimeDelta = 1000 * 60 * 60
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 @AndroidEntryPoint
 class MeetUpCreation : AppCompatActivity() {
-    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
     private val viewModel: MeetUpCreationViewModel by viewModels()
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
@@ -58,7 +57,6 @@ class MeetUpCreation : AppCompatActivity() {
     private lateinit var endDateField: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        registerActivityResult()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_creation)
 
@@ -97,20 +95,6 @@ class MeetUpCreation : AppCompatActivity() {
         viewModel.tags.observe(this) {
             tagsViewModel.refreshTags()
         }
-
-        registerActivityResult()
-    }
-
-    private fun registerActivityResult() {
-        resultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    val data: Intent? = result.data
-                    if (data != null) {
-                        onLocationSelected(data.getParcelableExtra(LOCATION_SELECTED)!!)
-                    }
-                }
-            }
     }
 
     private fun bindUI() {
@@ -276,6 +260,16 @@ class MeetUpCreation : AppCompatActivity() {
         resultLauncher.launch(intent)
     }
 
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                if (data != null) {
+                    onLocationSelected(data.getParcelableExtra(LOCATION_SELECTED)!!)
+                }
+            }
+        }
+
     private fun onLocationSelected(p0: LatLng) {
         viewModel.setLatLng(p0)
     }
@@ -303,9 +297,6 @@ class MeetUpCreation : AppCompatActivity() {
                 }
                 ImagePicker.RESULT_ERROR -> {
                     Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-                    Toast.makeText(this, "Task Cancelled", Toast.LENGTH_SHORT).show()
                 }
             }
         }
