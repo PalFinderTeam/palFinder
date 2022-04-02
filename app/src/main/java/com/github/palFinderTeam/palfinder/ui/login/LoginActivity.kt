@@ -57,7 +57,6 @@ class LoginActivity : AppCompatActivity() {
         private const val REQ_ONE_TAP = 4  // Can be any integer unique to the Activity
         private const val REQUEST_CODE_GIS_SAVE_PASSWORD = 2 /* unique request id */
         private var showOneTapUI = true
-        var firestoreUsers = FirestoreUsers()
         var firebaseProfileService = FirebaseProfileService(Firebase.firestore)
     }
 
@@ -102,16 +101,10 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(baseContext, "Enter both fields please.", Toast.LENGTH_SHORT).show()
             }
             else if (isValidEmail(email)) {
-                firestoreUsers.emailIsAvailable(email, TAG) { it ->
-                    if (it) {
-                        createAccount(email, password)
-                    } else {
-                        signIn(email, password, true)
-                    }
-                }
+                createAccount(email, password)
             } else {
-                //pop "email not valid"
-                Toast.makeText(baseContext, "Email not valid", Toast.LENGTH_SHORT).show()
+            //pop "email not valid"
+            Toast.makeText(baseContext, "Email not valid", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -212,24 +205,24 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun createAccount(email: String, password: String) {
-        // [START create_user_with_email]
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "createUserWithEmail:success")
-                    savePassword(email,password)
-                } else {
-                    // If user already in database, sign in
-                    if(task.exception is FirebaseAuthUserCollisionException){
+                when {
+                    task.isSuccessful -> {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "createUserWithEmail:success")
+                        savePassword(email,password)
+                    }
+                    task.exception is FirebaseAuthUserCollisionException -> {
+                        //if user exist already, go to sign in
                         signIn(email, password, true)
-                    } else {
+                    }
+                    else -> {
                         //if creation fails, display error message
                         signInSignUpFailure(task, "createUserWithEmail:failure")
                     }
                 }
             }
-        // [END create_user_with_email]
     }
 
     private fun signIn(email: String, password: String, savePassword: Boolean) {
