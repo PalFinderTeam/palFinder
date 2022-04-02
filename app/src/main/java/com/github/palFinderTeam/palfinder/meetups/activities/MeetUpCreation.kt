@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
 import android.widget.*
@@ -24,10 +25,8 @@ import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
+import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
-import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
-import com.github.palFinderTeam.palfinder.utils.askTime
-import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
@@ -55,6 +54,8 @@ class MeetUpCreation : AppCompatActivity() {
     private lateinit var descriptionEditText: EditText
     private lateinit var changeIconButton: Button
     private lateinit var icon: ImageView
+    private lateinit var startDateField: TextView
+    private lateinit var endDateField: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         registerActivityResult()
@@ -69,6 +70,8 @@ class MeetUpCreation : AppCompatActivity() {
         descriptionEditText = findViewById(R.id.et_Description)
         changeIconButton = findViewById(R.id.bt_SelectIcon)
         icon = findViewById(R.id.iv_Icon)
+        startDateField = findViewById(R.id.tv_StartDate)
+        endDateField = findViewById(R.id.tv_EndDate)
 
         bindUI()
 
@@ -165,6 +168,13 @@ class MeetUpCreation : AppCompatActivity() {
                 ImageInstance(it).loadImageInto(icon)
             }
         }
+
+        viewModel.canEditStartDate.observe(this) {
+            startDateField.isClickable = it
+        }
+        viewModel.canEditEndDate.observe(this) {
+            endDateField.isClickable = it
+        }
     }
 
     private fun setCapacityField(isEditable: Boolean) {
@@ -181,13 +191,25 @@ class MeetUpCreation : AppCompatActivity() {
     }
 
     fun onStartTimeSelectButton(v: View) {
-        askTime(supportFragmentManager).thenAccept {
+        askTime(
+            supportFragmentManager,
+            viewModel.startDate.value?.toSimpleDate(),
+            viewModel.startDate.value?.toSimpleTime(),
+            Calendar.getInstance(),
+            viewModel.maxStartDate
+        ).thenAccept {
             viewModel.setStartDate(it)
         }
     }
 
     fun onEndTimeSelectButton(v: View) {
-        askTime(supportFragmentManager).thenAccept {
+        askTime(
+            supportFragmentManager,
+            viewModel.endDate.value?.toSimpleDate(),
+            viewModel.endDate.value?.toSimpleTime(),
+            viewModel.startDate.value,
+            viewModel.maxEndDate
+        ).thenAccept {
             viewModel.setEndDate(it)
         }
     }
