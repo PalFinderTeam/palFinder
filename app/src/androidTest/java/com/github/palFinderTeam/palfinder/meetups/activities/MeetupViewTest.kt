@@ -242,6 +242,7 @@ class MeetupViewTest {
     @Test
     fun profileFragmentCorrectlyDisplayed() = runTest {
         val userid = profileRepository.createProfile(user)
+
         assertThat(userid, notNullValue())
         val newMeetup = MeetUp(
             "dummy",
@@ -271,8 +272,7 @@ class MeetupViewTest {
         }
     }
 
-    // TODO - Fix this f***** test
-    /*
+
     @Test
     fun userClickableInFragment() = runTest {
         val userid = profileRepository.createProfile(user)
@@ -307,7 +307,7 @@ class MeetupViewTest {
                 .perform(click())
         }
 
-    }*/
+    }
 
     @Test
     fun addTagAddToDb() = runTest {
