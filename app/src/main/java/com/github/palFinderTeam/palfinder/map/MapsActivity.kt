@@ -1,9 +1,15 @@
 package com.github.palFinderTeam.palfinder.map
 
 import android.content.Intent
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
+import android.widget.SearchView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import com.github.palFinderTeam.palfinder.R
@@ -12,6 +18,7 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListSuperActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -20,12 +27,13 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.IOException
 
 const val LOCATION_SELECT = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECT"
 const val LOCATION_SELECTED = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECTED"
 
 @AndroidEntryPoint
-class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraMoveListener{
+class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraMoveListener, SearchView.OnQueryTextListener{
 
     private lateinit var binding: ActivityMapsBinding
     private lateinit var button: FloatingActionButton
@@ -60,6 +68,11 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
                 viewModel.refresh()
             }
         }
+
+        val searchLocation = findViewById<SearchView>(R.id.search_on_map)
+        searchLocation.imeOptions = EditorInfo.IME_ACTION_DONE
+        searchLocation.setOnQueryTextListener(this)
+
 
     }
 
@@ -147,6 +160,37 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
         viewModel.update()
     }
 
+    override fun onQueryTextSubmit(p0: String?): Boolean {
+        var location = p0
+        var addressList: List<Address>? = null
+
+        if (location == null || location == "") {
+            Toast.makeText(applicationContext,"provide location",Toast.LENGTH_SHORT).show()
+        }
+        else{
+            val geoCoder = Geocoder(this)
+            try {
+                addressList = geoCoder.getFromLocationName(location, 1)
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            if (addressList!!.isEmpty()) {
+                Toast.makeText(applicationContext,"location not found",Toast.LENGTH_SHORT).show()
+            } else {
+                val address = addressList[0]
+                val latLng = LatLng(address.latitude, address.longitude)
+                viewModel.setCameraPosition(latLng)
+                map.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+                viewModel.update()
+            }
+        }
+        return false
+    }
+
+    override fun onQueryTextChange(p0: String?): Boolean {
+        return false
+    }
 
 
 }
