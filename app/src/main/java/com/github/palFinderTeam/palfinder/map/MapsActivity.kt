@@ -64,7 +64,6 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
 
         viewModel.listOfMeetUpResponse.observe(this) {
             if (it is Response.Success) {
-                Log.d("latlong", it.data.toString())
                 viewModel.refresh()
             }
         }

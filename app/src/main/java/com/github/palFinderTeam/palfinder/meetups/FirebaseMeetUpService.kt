@@ -77,7 +77,6 @@ class FirebaseMeetUpService @Inject constructor(
     ): Flow<Response<List<MeetUp>>> {
 
         val geoLocation = GeoLocation(location.latitude, location.longitude)
-        Log.d("location", geoLocation.toString())
         val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInKm * 1000.0)
         val tasks = bounds.map {
             db.collection(MEETUP_COLL)
