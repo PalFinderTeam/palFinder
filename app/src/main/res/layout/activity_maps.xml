@@ -41,11 +41,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <SearchView
-        android:id="@+id/search_on_map"
+    <fragment android:id="@+id/autocomplete_fragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="searchLocation"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

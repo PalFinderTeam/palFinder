@@ -23,6 +23,9 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="title_activity_meetup_creation">meetup_creation</string>
 
+    //TODO - api in plain text, find a way to replace this
+    <string name="api_key">AIzaSyCqvI5RdJvJPvyHrFsAqLRYDp6r4v2VP6Y</string>
+
 
     <!-- Strings used for meetup creation -->
     <string name="meetup_creation_meetup_name">Event Name</string>
