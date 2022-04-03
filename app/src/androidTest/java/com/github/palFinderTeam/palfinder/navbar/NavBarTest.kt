@@ -84,18 +84,6 @@ class NavBarTest {
     }
 
     @Test
-    fun testListButton(){
-        val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
-        init()
-        ActivityScenario.launch<MainActivity>(intent)
-        Espresso.onView(
-            ViewMatchers.withId(R.id.nav_bar_list)
-        ).perform(ViewActions.click())
-        Intents.intended(IntentMatchers.hasComponent(MeetupListActivity::class.java.name))
-        release()
-    }
-
-    @Test
     fun testGroupButton(){
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         init()
