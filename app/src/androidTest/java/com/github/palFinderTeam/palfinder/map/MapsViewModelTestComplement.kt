@@ -1,9 +1,14 @@
 package com.github.palFinderTeam.palfinder.map
 
 import android.content.Intent
+import android.util.Log
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.Until
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -42,13 +47,15 @@ class MapsViewModelTestComplement {
         hiltRule.inject()
         viewModel = MapListViewModel(meetUpRepository)
     }
-
+    
     @Test
     fun testSetZoom(){
         val intent = Intent(ApplicationProvider.getApplicationContext(), MapsActivity::class.java)
+
         val scenario = ActivityScenario.launch<MapsActivity>(intent)
         var zoom: Float = 15f
         scenario.use{
+
             viewModel.setZoom(zoom)
             Assert.assertEquals(zoom, viewModel.getZoom())
         }

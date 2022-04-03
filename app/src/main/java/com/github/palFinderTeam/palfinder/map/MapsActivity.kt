@@ -4,10 +4,8 @@ import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -16,6 +14,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListSuperActivity
+import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -41,8 +40,6 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
     private lateinit var mapView: View
 
     private val mapSelection: MapsSelectionModel by viewModels()
-
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -138,7 +135,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
     
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        viewModel.setMap(map)
+        viewModel.setGmap(map)
         viewModel.mapReady = true
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)

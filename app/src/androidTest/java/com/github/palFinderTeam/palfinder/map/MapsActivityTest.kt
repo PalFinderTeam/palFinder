@@ -138,7 +138,6 @@ class MapsActivityTest {
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
 
-
         scenario.use{
             utils.setCameraPosition(basePosition)
             val marker = device.findObject(
