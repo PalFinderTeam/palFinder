@@ -33,7 +33,7 @@ class MapListViewModel @Inject constructor(
     var startingZoom: Float = 15f
 
 
-    private lateinit var map: GoogleMap
+    lateinit var map: GoogleMap
     var mapReady = false
     private var markers = HashMap<String, Marker>()
 
@@ -51,7 +51,7 @@ class MapListViewModel @Inject constructor(
      * set the map to which utils functions will be applied
      * @param map: GoogleMap
      */
-    fun setMap(map : GoogleMap){
+    fun setGmap(map : GoogleMap){
         this.map = map
         this.mapReady = true
         setPositionAndZoom(startingCameraPosition, startingZoom)
@@ -76,6 +76,7 @@ class MapListViewModel @Inject constructor(
                     _listOfMeetUpResponse.postValue(it)
                 }
             }
+
         }
     }
 
@@ -143,7 +144,7 @@ class MapListViewModel @Inject constructor(
         }else emptyList()
         clearMarkers()
 
-        meetupList?.forEach{ meetUp ->
+        meetupList.forEach{ meetUp ->
             val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
             val marker = map.addMarker(MarkerOptions().position(position).title(meetUp.uuid))
                 ?.let { markers[meetUp.uuid] = it }
