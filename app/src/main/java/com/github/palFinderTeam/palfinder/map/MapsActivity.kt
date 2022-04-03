@@ -147,4 +147,6 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
         viewModel.update()
     }
 
+
+
 }

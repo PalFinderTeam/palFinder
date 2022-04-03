@@ -1,8 +1,10 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
@@ -12,6 +14,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
+
 
 open class MapListSuperActivity: AppCompatActivity() {
     lateinit var map: GoogleMap
@@ -28,6 +31,7 @@ open class MapListSuperActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        viewModel.update()
     }
 
     fun setUserLocation(){
@@ -46,13 +50,16 @@ open class MapListSuperActivity: AppCompatActivity() {
             return
         }
 
-        map.isMyLocationEnabled = true
+        if (::map.isInitialized) {
+            map.isMyLocationEnabled = true
+        }
         fusedLocationClient.lastLocation.addOnSuccessListener(this){
                 location ->
             if(location != null){
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
                 viewModel.setPositionAndZoom(currentLatLng, viewModel.getZoom())
+                viewModel.update()
             }
         }
     }

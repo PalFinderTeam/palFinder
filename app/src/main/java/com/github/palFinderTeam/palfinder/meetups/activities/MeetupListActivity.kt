@@ -40,13 +40,13 @@ class MeetupListActivity : MapListSuperActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-        viewModel.update()
+
 
         meetupList = findViewById(R.id.meetup_list_recycler)
         meetupList.layoutManager = LinearLayoutManager(this)
         val searchField = findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
-
+        super.setUserLocation()
 
         viewModel.listOfMeetUpResponse.observe(this) { it ->
             if (it is Response.Success) {
