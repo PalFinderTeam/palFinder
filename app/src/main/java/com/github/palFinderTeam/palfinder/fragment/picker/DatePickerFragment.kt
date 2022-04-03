@@ -2,13 +2,13 @@ package com.github.palFinderTeam.palfinder.fragment.picker
 
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.icu.util.Calendar
 import android.os.Build
 import android.os.Bundle
 import android.widget.DatePicker
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import com.github.palFinderTeam.palfinder.utils.SimpleDate
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -17,19 +17,28 @@ import java.util.concurrent.CompletableFuture
  */
 // Based on Android Official Documentation
 @RequiresApi(Build.VERSION_CODES.N)
-class DatePickerFragment(private val date: SimpleDate? = null) : DialogFragment(), DatePickerDialog.OnDateSetListener {
+class DatePickerFragment(
+    private val date: SimpleDate? = null,
+    private val minDate: Calendar? = null,
+    private val maxDate: Calendar? = null
+) : DialogFragment(), DatePickerDialog.OnDateSetListener {
     val value: CompletableFuture<SimpleDate> = CompletableFuture()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return if (date == null) {
-            val c = Calendar.getInstance()
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
+        val c = Calendar.getInstance()
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val day = c.get(Calendar.DAY_OF_MONTH)
 
-            DatePickerDialog(requireContext(), this, year, month, day)
-        } else{
-            DatePickerDialog(requireContext(), this, date.year, date.month, date.day)
+        return DatePickerDialog(
+            requireContext(),
+            this,
+            date?.year ?: year,
+            date?.month ?: month,
+            date?.day ?: day
+        ).also { dialog ->
+            minDate?.let { dialog.datePicker.minDate = it.timeInMillis }
+            maxDate?.let { dialog.datePicker.maxDate = it.timeInMillis }
         }
     }
 

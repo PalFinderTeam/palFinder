@@ -11,6 +11,7 @@ import android.widget.SearchView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
@@ -19,23 +20,19 @@ import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
-import com.github.palFinderTeam.palfinder.utils.Location
-import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
-import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
+import com.github.palFinderTeam.palfinder.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 
 const val SHOW_JOINED_ONLY = "com.github.palFinderTeam.palFinder.meetup_list_view.SHOW_JOINED_ONLY"
 
 @AndroidEntryPoint
-class MeetupListActivity : AppCompatActivity() {
+class MeetupListActivity : MapListSuperActivity() {
     private lateinit var meetupList: RecyclerView
     lateinit var adapter: MeetupListAdapter
     lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     lateinit var tagsViewModel: TagsViewModel<Category>
 
-    val viewModel: MeetUpListViewModel by viewModels()
 
 
     @SuppressLint("NotifyDataSetChanged")
@@ -43,7 +40,7 @@ class MeetupListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-
+        viewModel.update(null)
 
         meetupList = findViewById(R.id.meetup_list_recycler)
         meetupList.layoutManager = LinearLayoutManager(this)
@@ -52,11 +49,11 @@ class MeetupListActivity : AppCompatActivity() {
 
         viewModel.showOnlyJoined = intent.getBooleanExtra(SHOW_JOINED_ONLY,false)
 
-        viewModel.listOfMeetUp.observe(this) { meetups ->
-            val mutableMeetUp = meetups.filter { filter(it) }.toMutableList()
-            adapter = MeetupListAdapter(meetups, mutableMeetUp,
+        viewModel.listOfMeetUpResponse.observe(this) { it ->
+            val meetups = (it as Response.Success).data.filter { filter(it) }
+            adapter = MeetupListAdapter(meetups, meetups.toMutableList(),
                 SearchedFilter(
-                    meetups, mutableMeetUp, ::filter
+                    meetups, meetups.toMutableList(), ::filter
                 ) {
                     adapter.notifyDataSetChanged()
                 })
@@ -101,7 +98,7 @@ class MeetupListActivity : AppCompatActivity() {
     fun filter(tags: Set<Category>?) {
         if (::adapter.isInitialized) {
             adapter.currentDataSet.clear()
-            viewModel.listOfMeetUp.value?.let { meetups -> performFilter(meetups, adapter.currentDataSet, tags) }
+            viewModel.listOfMeetUpResponse.value?.let { meetups -> performFilter((meetups as Response.Success).data, adapter.currentDataSet, tags) }
             adapter.notifyDataSetChanged()
         }
     }
@@ -140,7 +137,7 @@ class MeetupListActivity : AppCompatActivity() {
 
     private fun sort(sorted: List<MeetUp>) {
         adapter.currentDataSet.clear()
-        viewModel.listOfMeetUp.value?.let { meetups -> adapter.currentDataSet.addAll(sorted) }
+        viewModel.listOfMeetUpResponse.value?.let { it -> adapter.currentDataSet.addAll(sorted) }
         adapter.notifyDataSetChanged()
     }
 
@@ -164,7 +161,7 @@ class MeetupListActivity : AppCompatActivity() {
 
     private fun onListItemClick(position: Int) {
         val intent = Intent(this, MeetUpView::class.java)
-            .apply { putExtra(MEETUP_SHOWN, viewModel.listOfMeetUp.value?.get(position)?.uuid) }
+            .apply { putExtra(MEETUP_SHOWN, (viewModel.listOfMeetUpResponse.value as Response.Success).data[position].uuid) }
         startActivity(intent)
     }
 

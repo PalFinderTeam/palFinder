@@ -11,6 +11,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.isBefore
 import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,8 +26,11 @@ class MeetUpCreationViewModel @Inject constructor(
 ) : ViewModel() {
     private var uuid: String? = null
 
-    private val _startDate: MutableLiveData<Calendar> = MutableLiveData(calendar)
-    private val _endDate: MutableLiveData<Calendar> = MutableLiveData(calendar)
+    private val _canEditStartDate = MutableLiveData(true)
+    private val _canEditEndDate = MutableLiveData(true)
+
+    private val _startDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
+    private val _endDate: MutableLiveData<Calendar> = MutableLiveData(Calendar.getInstance())
     private val _capacity: MutableLiveData<Int> = MutableLiveData()
     private val _hasMaxCapacity: MutableLiveData<Boolean> = MutableLiveData()
     private val _name: MutableLiveData<String> = MutableLiveData()
@@ -46,6 +50,26 @@ class MeetUpCreationViewModel @Inject constructor(
     val sendSuccess: LiveData<Boolean> = _sendSuccess
     val tags: LiveData<Set<Category>> = _tags
     val participantsId: LiveData<List<String>> = _participantsId
+
+    val maxStartDate: Calendar
+        get() {
+            val maxDate = Calendar.getInstance()
+            maxDate.add(Calendar.DAY_OF_MONTH, 7)
+            return maxDate
+        }
+
+    val maxEndDate: Calendar
+        get() {
+            val maxDate = Calendar.getInstance()
+            _startDate.value?.let {
+                maxDate.time = it.time
+            }
+            maxDate.add(Calendar.DAY_OF_MONTH, 2)
+            return maxDate
+        }
+
+    val canEditStartDate: LiveData<Boolean> = _canEditStartDate
+    val canEditEndDate: LiveData<Boolean> = _canEditEndDate
 
     val location: LiveData<Location> = _location
 
@@ -110,7 +134,12 @@ class MeetUpCreationViewModel @Inject constructor(
                 _tags.postValue(meetUp.tags)
                 _participantsId.postValue(meetUp.participantsId)
                 _location.postValue(meetUp.location)
+
+                _canEditStartDate.postValue(!meetUp.isStarted(Calendar.getInstance()))
+                _canEditEndDate.postValue(!meetUp.isFinished(Calendar.getInstance()))
             } else {
+                _canEditStartDate.postValue(true)
+                _canEditEndDate.postValue(true)
                 fillWithDefaultValues()
             }
         }
@@ -120,6 +149,7 @@ class MeetUpCreationViewModel @Inject constructor(
      * Send every field as a MeetUp to DB.
      */
     fun sendMeetUp() {
+        var meetUp = MeetUp(
         val owner = profileService.getLoggedInUserID()!!
         val meetUp = MeetUp(
             uuid.orEmpty(),
@@ -138,6 +168,12 @@ class MeetUpCreationViewModel @Inject constructor(
         )
         if (uuid == null) {
             // create new meetup
+            // Make sure the meetup start at least now when it is created
+            if (startDate.value!!.isBefore(Calendar.getInstance())) {
+                _startDate.value = Calendar.getInstance()
+                checkDateIntegrity()
+                meetUp = meetUp.copy(startDate = startDate.value!!, endDate = endDate.value!!)
+            }
             viewModelScope.launch {
                 uuid = meetUpRepository.createMeetUp(meetUp)
                 // Notify sending result
@@ -147,6 +183,7 @@ class MeetUpCreationViewModel @Inject constructor(
             // Edit existing one
             viewModelScope.launch {
                 meetUpRepository.editMeetUp(uuid!!, meetUp)
+                // Notify sending result
                 _sendSuccess.postValue(true)
             }
         }
@@ -158,6 +195,16 @@ class MeetUpCreationViewModel @Inject constructor(
     private fun checkDateIntegrity() {
         if (startDate.value == null || endDate.value == null) {
             return
+        }
+        val startDateVal = startDate.value!!
+        val endDateVal = endDate.value!!
+//        // Check that startDate is not too much in the future
+//        if (!startDateVal.isBefore(maxStartDate)) {
+//            _startDate.value = maxStartDate
+//        }
+//        // Check that endDate is not too much in the future
+        if (!endDateVal.isBefore(maxEndDate)) {
+            _endDate.value = maxEndDate
         }
         // Check if at least defaultTimeDelta between start and end
         if (!startDate.value!!.isDeltaBefore(endDate.value!!, defaultTimeDelta)) {
