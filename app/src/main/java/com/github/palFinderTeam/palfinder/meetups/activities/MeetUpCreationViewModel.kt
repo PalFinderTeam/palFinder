@@ -149,9 +149,8 @@ class MeetUpCreationViewModel @Inject constructor(
      * Send every field as a MeetUp to DB.
      */
     fun sendMeetUp() {
-        var meetUp = MeetUp(
         val owner = profileService.getLoggedInUserID()!!
-        val meetUp = MeetUp(
+        var meetUp = MeetUp(
             uuid.orEmpty(),
             owner,
             // TODO Put real icon

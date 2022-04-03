@@ -27,21 +27,10 @@ class TimePickerFragment(private val time: SimpleTime? = null) : DialogFragment(
             val hour = c.get(Calendar.HOUR_OF_DAY)
             val minute = c.get(Calendar.MINUTE)
 
-            TimePickerDialog(activity,
-                this,
-                hour,
-                minute,
-                DateFormat.is24HourFormat(activity)
-            )
+            TimePickerDialog(activity, this, hour, minute, DateFormat.is24HourFormat(activity))
         }
         else{
-            TimePickerDialog(
-                activity,
-                this,
-                time.hour,
-                time.minute,
-                DateFormat.is24HourFormat(activity)
-            )
+            TimePickerDialog(activity, this, time.hour, time.minute, DateFormat.is24HourFormat(activity))
         }
     }
 

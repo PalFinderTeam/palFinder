@@ -15,9 +15,7 @@ import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
-import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -56,7 +54,7 @@ class MapsActivityTest {
     @Before
     fun init_() {
         hiltRule.inject()
-        utils = MapListViewModel(meetUpRepository)
+        utils = MapListViewModel(meetUpRepository, profileService)
     }
 
 

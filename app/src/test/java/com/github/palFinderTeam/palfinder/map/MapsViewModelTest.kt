@@ -1,16 +1,11 @@
 package com.github.palFinderTeam.palfinder.map
 
-import android.content.Context
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
-import com.github.palFinderTeam.palfinder.profile.MockProfileService
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
-import com.github.palFinderTeam.palfinder.tag.Category
-import com.github.palFinderTeam.palfinder.tag.TestRepository
+import com.github.palFinderTeam.palfinder.profile.MockProfileService
 import com.github.palFinderTeam.palfinder.utils.Location
-import com.google.android.gms.maps.CameraUpdate
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -19,7 +14,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
@@ -30,7 +24,7 @@ class MapsViewModelTest {
 
     private val meetUpRepository = MockMeetUpRepository()
     private val profileService = MockProfileService()
-    private val viewModel = MapListViewModel(meetUpRepository)
+    private val viewModel = MapListViewModel(meetUpRepository, profileService)
 
     private lateinit var meetup1: MeetUp
     private lateinit var meetup2: MeetUp
