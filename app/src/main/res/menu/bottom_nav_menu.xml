@@ -12,10 +12,6 @@
         android:icon="@android:drawable/ic_menu_mylocation"
         android:title="@string/nav_bar_find" />
     <item
-        android:id="@+id/nav_bar_list"
-        android:icon="@android:drawable/ic_menu_sort_by_size"
-        android:title="@string/nav_bar_list" />
-    <item
         android:id="@+id/nav_bar_groups"
         android:icon="@android:drawable/sym_action_chat"
         android:title="@string/nav_bar_group" />

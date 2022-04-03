@@ -38,7 +38,6 @@ class NavigationBarFragment : Fragment() {
             when(it.itemId){
                 R.id.nav_bar_create -> {startActivity(MeetUpCreation::class.java); true}
                 R.id.nav_bar_find -> {startActivity(MapsActivity::class.java); true}
-                R.id.nav_bar_list -> {startActivity(MeetupListActivity::class.java); true}
                 R.id.nav_bar_groups -> {startActivityGroup(); true}
                 else -> false
             }
