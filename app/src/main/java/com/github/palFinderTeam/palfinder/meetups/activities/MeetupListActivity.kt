@@ -46,7 +46,6 @@ class MeetupListActivity : MapListSuperActivity() {
         meetupList.layoutManager = LinearLayoutManager(this)
         val searchField = findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
-        super.setUserLocation()
 
         viewModel.listOfMeetUpResponse.observe(this) { it ->
             if (it is Response.Success) {

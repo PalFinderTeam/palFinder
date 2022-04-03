@@ -81,7 +81,7 @@ class MeetUpListTest {
                 description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre",
                 startDate = date1,
                 endDate = date2,
-                location = Location(0.0, 0.0),
+                location = Location(-122.0, 37.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 45,
                 creatorId = user1,
@@ -97,7 +97,7 @@ class MeetUpListTest {
                 description = "nous aimerions bien nous atteler à la cuisson de patates au beurre",
                 startDate = date2,
                 endDate = date1,
-                location = Location(0.0, 0.0),
+                location = Location(-122.0, 37.0),
                 tags = setOf(Category.WORKING_OUT, Category.DUMMY_TAG1),
                 capacity = 48,
                 creatorId = user1,
@@ -113,7 +113,7 @@ class MeetUpListTest {
                 description = "workout pepouse au pont chauderon",
                 startDate = date3,
                 endDate = date1,
-                location = Location(0.0, 0.0),
+                location = Location(-122.0, 37.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 9,
                 creatorId = user2,
@@ -129,7 +129,7 @@ class MeetUpListTest {
                 description = "Expo sans tableau c'est bo",
                 startDate = date4,
                 endDate = date1,
-                location = Location(0.0, 0.0),
+                location = Location(-122.0, 37.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 15,
                 creatorId = user1,
@@ -145,7 +145,7 @@ class MeetUpListTest {
                 description = "popopo",
                 startDate = date4,
                 endDate = date2,
-                location = Location(0.0, 0.0),
+                location = Location(-122.0, 37.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 13,
                 creatorId = user1,
@@ -255,7 +255,7 @@ class MeetUpListTest {
             onView(withId(R.id.sort_list)).perform(click())
             onView(withText(R.string.list_sort_by_location)).perform(click())
             onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
-                .check(matches(withText(meetUpList.sortedBy { it.location.distanceInKm(Location(0.0, 0.0))}[0].name)))
+                .check(matches(withText(meetUpList.sortedBy { it.location.distanceInKm(Location(122.0, 37.0))}[0].name)))
         }
     }
 

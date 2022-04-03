@@ -32,7 +32,7 @@ open class MapListSuperActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        viewModel.update()
+        setUserLocation()
     }
 
     fun setUserLocation(){

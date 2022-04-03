@@ -71,7 +71,7 @@ class MapListViewModel @Inject constructor(
                     Location(
                         getCameraPosition().longitude,
                         getCameraPosition().latitude
-                    ), 145.0
+                    ), 1450.0
                 ).collect {
                     _listOfMeetUpResponse.postValue(it)
                 }
