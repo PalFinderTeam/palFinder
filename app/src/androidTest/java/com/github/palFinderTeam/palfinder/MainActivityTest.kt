@@ -132,5 +132,4 @@ class MainActivityTest {
         intended(hasComponent(UserSettingsActivity::class.java.name))
         release()
     }
-
 }

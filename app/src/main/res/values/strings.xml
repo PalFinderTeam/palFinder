@@ -98,13 +98,23 @@
     <string name="createAccount">Create Account</string>
 
     <!-- User settings -->
-    <string name="userSaveSettings">Save settings</string>
-    <string name="userSettingsPfpHint">(Tap your profile picture to change it)</string>
+    <string name="userSettingsButtonSave">Save settings</string>
+    <string name="userSettingsButtonCreate">Create account!</string>
+    <string name="userSettingsPfpHint">Tap your profile picture to change it</string>
     <string name="userSettingsSurname">Surname</string>
     <string name="userSettingsName">Name</string>
     <string name="userSettingsUsername">Username</string>
     <string name="userSettingsBio">About you</string>
     <string name="read_more">Read more</string>
+    <string name="userSettingsBirthday">Birthday (Optional)</string>
     <string name="working_out_tag">working out</string>
+    <string name="SettingsBdayHint">Please note that you won\'t be able to join events that require a minimum age.</string>
+    <string name="userSettings">Read more</string>
+
+    <string name="userSettingsBdayPattern">d/M/y</string>
+    <string name="userSettingsSaveSuccess">Changes successfully saved!</string>
+    <string name="userSettingsSaveFail">An error occurred while trying to save. Please try again</string>
+    <string name="userSettingsSaveCreate">Account created! Welcome to PalFinder :)</string>
+
 
 </resources>
