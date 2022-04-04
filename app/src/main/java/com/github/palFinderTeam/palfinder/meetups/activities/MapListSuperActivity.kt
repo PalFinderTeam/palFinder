@@ -63,6 +63,7 @@ open class MapListSuperActivity: AppCompatActivity() {
                 viewModel.update()
             }
         }
+        viewModel.update()
     }
 
 }
