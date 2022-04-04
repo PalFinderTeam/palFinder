@@ -4,10 +4,11 @@ import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
 import android.icu.util.Calendar
+import android.view.KeyEvent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -150,6 +151,29 @@ class MapsActivityTest {
             onView(withId(R.id.bt_locationSelection)).perform(click())
 
             Assert.assertEquals(Activity.RESULT_OK, scenario.result.resultCode)
+        }
+    }
+
+    @Test
+    fun canSearchOnMap() {
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MapsActivity::class.java)
+        val basePosition = LatLng(42.0, 42.0)
+        intent.apply {
+            putExtra(LOCATION_SELECT, basePosition)
+        }
+        val scenario = ActivityScenario.launch<MapsActivity>(intent)
+
+        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
+
+        scenario.use{
+            utils.setCameraPosition(basePosition)
+            val marker = device.findObject(
+                UiSelector().descriptionContains("Google Map")
+                    .childSelector(UiSelector().descriptionContains("Here"))
+            )
+            onView(withId(R.id.search_on_map)).perform(click(), typeText("Delhi"), pressKey(KeyEvent.KEYCODE_ENTER))
+            Assert.assertEquals(utils.getCameraPosition(), LatLng(28.7040592,77.10249019999999))
         }
     }
 }

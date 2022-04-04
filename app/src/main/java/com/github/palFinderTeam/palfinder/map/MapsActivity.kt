@@ -4,6 +4,7 @@ import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.SearchView
@@ -14,10 +15,8 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListSuperActivity
-import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.utils.Response
-import com.google.android.gms.common.api.Status
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -25,15 +24,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.model.TypeFilter
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOException
-import java.util.*
 
 
 const val LOCATION_SELECT = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECT"
@@ -166,25 +159,25 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
     }
 
     override fun onQueryTextSubmit(p0: String?): Boolean {
-        var location = p0
         var addressList: List<Address>? = null
 
-        if (location == null || location == "") {
-            Toast.makeText(applicationContext,"provide location",Toast.LENGTH_SHORT).show()
+        if (p0 == null || p0 == "") {
+            Toast.makeText(applicationContext,getString(R.string.search_no_location),Toast.LENGTH_SHORT).show()
         }
         else{
             val geoCoder = Geocoder(this)
             try {
-                addressList = geoCoder.getFromLocationName(location, 1)
+                addressList = geoCoder.getFromLocationName(p0, 1)
 
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-            if (addressList!!.isEmpty()) {
-                Toast.makeText(applicationContext,"location not found",Toast.LENGTH_SHORT).show()
+            if (addressList == null || addressList.isEmpty()) {
+                Toast.makeText(applicationContext,getString(R.string.search_location_not_found),Toast.LENGTH_SHORT).show()
             } else {
                 val address = addressList[0]
                 val latLng = LatLng(address.latitude, address.longitude)
+                Log.d("latlong", latLng.toString())
                 viewModel.setCameraPosition(latLng)
                 map.animateCamera(CameraUpdateFactory.newLatLng(latLng))
                 viewModel.update()
