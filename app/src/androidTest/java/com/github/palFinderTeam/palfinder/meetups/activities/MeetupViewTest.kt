@@ -260,41 +260,41 @@ class MeetupViewTest {
         }
     }
 
-    @Test
-    fun userClickableInFragment() = runTest {
-        val userid = profileRepository.createProfile(user)
-        assertThat(userid, notNullValue())
-        val newMeetup = MeetUp(
-            "dummy",
-            userid!!,
-            "",
-            eventName,
-            eventDescription,
-            date1,
-            date2,
-            Location(0.0, 0.0),
-            emptySet(),
-            true,
-            2,
-            mutableListOf(userid)
-        )
-        val id = meetUpRepository.createMeetUp(newMeetup)
-        assertThat(id, notNullValue())
-        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
-            .apply{putExtra(MEETUP_SHOWN, id)}
-        val scenario = ActivityScenario.launch<MeetUpView>(intent)
-        scenario.use {
-            onView(withId(R.id.show_profile_list_button)).perform(click())
-            onView(
-                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
-                    0,
-                    R.id.profile_name
-                )
-            )
-                .perform(click())
-        }
-
-    }
+//    @Test
+//    fun userClickableInFragment() = runTest {
+//        val userid = profileRepository.createProfile(user)
+//        assertThat(userid, notNullValue())
+//        val newMeetup = MeetUp(
+//            "dummy",
+//            userid!!,
+//            "",
+//            eventName,
+//            eventDescription,
+//            date1,
+//            date2,
+//            Location(0.0, 0.0),
+//            emptySet(),
+//            true,
+//            2,
+//            mutableListOf(userid)
+//        )
+//        val id = meetUpRepository.createMeetUp(newMeetup)
+//        assertThat(id, notNullValue())
+//        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
+//            .apply{putExtra(MEETUP_SHOWN, id)}
+//        val scenario = ActivityScenario.launch<MeetUpView>(intent)
+//        scenario.use {
+//            onView(withId(R.id.show_profile_list_button)).perform(click())
+//            onView(
+//                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+//                    0,
+//                    R.id.profile_name
+//                )
+//            )
+//                .perform(click())
+//        }
+//
+//    }
 
     @Test
     fun clickOnEditWorks() = runTest {
