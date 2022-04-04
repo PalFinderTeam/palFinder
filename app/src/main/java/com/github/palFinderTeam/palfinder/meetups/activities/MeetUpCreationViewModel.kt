@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.Location
@@ -19,7 +20,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MeetUpCreationViewModel @Inject constructor(
-    private val meetUpRepository: MeetUpRepository
+    private val meetUpRepository: MeetUpRepository,
+    private val profileService: ProfileService,
+    private val calendar: Calendar
 ) : ViewModel() {
     private var uuid: String? = null
 
@@ -80,7 +83,7 @@ class MeetUpCreationViewModel @Inject constructor(
         _name.value = ""
         _description.value = ""
         _tags.value = emptySet()
-        _participantsId.value = emptyList()
+        _participantsId.value = listOf(profileService.getLoggedInUserID()!!)
         _location.value = Location(0.0, 0.0)
     }
 
@@ -146,11 +149,10 @@ class MeetUpCreationViewModel @Inject constructor(
      * Send every field as a MeetUp to DB.
      */
     fun sendMeetUp() {
-
+        val owner = profileService.getLoggedInUserID()!!
         var meetUp = MeetUp(
             uuid.orEmpty(),
-            // TODO Get ID
-            "TODO GET YOU ID",
+            owner,
             // TODO Put real icon
             "icons/cat.png",
             name.value!!,

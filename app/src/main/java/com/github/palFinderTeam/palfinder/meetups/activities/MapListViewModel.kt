@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.Response
@@ -21,7 +22,8 @@ import kotlin.math.pow
 
 @HiltViewModel
 class MapListViewModel @Inject constructor(
-    val meetUpRepository: MeetUpRepository
+    val meetUpRepository: MeetUpRepository,
+    val profileService: ProfileService
 ) : ViewModel() {
     lateinit var listOfMeetUpResponse: LiveData<Response<List<MeetUp>>>
     lateinit var meetupList: List<MeetUp>
@@ -29,6 +31,7 @@ class MapListViewModel @Inject constructor(
     val tags: LiveData<Set<Category>> = _tags
     var startingCameraPosition: LatLng = LatLng(46.31, 6.38)
     var startingZoom: Float = 15f
+    var showOnlyJoined: Boolean = false
 
 
     private lateinit var map: GoogleMap
@@ -201,5 +204,12 @@ class MapListViewModel @Inject constructor(
                 true
             }
         }
+    }
+
+    /**
+     * Return the currently logged in user id
+     */
+    fun getUser():String?{
+        return profileService.getLoggedInUserID()
     }
 }
