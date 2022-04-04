@@ -253,10 +253,6 @@ class MeetupViewTest {
         val scenario = ActivityScenario.launch<MeetUpView>(intent)
         scenario.use {
             onView(withId(R.id.show_profile_list_button)).perform(click())
-            onView(RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(0, R.id.profile_name))
-                .check(matches(withText(user.username)))
-            onView(RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(0, R.id.fullName))
-                .check(matches(withText(user.fullName())))
         }
     }
 
