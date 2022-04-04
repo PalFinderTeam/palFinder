@@ -1,8 +1,12 @@
 package com.github.palFinderTeam.palfinder.map
 
 import android.content.Intent
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
@@ -14,6 +18,7 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.android.gms.common.api.Status
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -27,6 +32,7 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.IOException
 import java.util.*
 
 
@@ -35,7 +41,7 @@ const val LOCATION_SELECTED = "com.github.palFinderTeam.palFinder.MAP.LOCATION_S
 
 @AndroidEntryPoint
 class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
-    GoogleMap.OnCameraMoveListener {
+    GoogleMap.OnCameraMoveListener, SearchView.OnQueryTextListener {
 
     private lateinit var binding: ActivityMapsBinding
     private lateinit var button: FloatingActionButton
@@ -69,32 +75,9 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         }
 
 
-        val apiKey = getString(R.string.api_key)
-        if (!Places.isInitialized()) {
-            Places.initialize(applicationContext, apiKey)
-        }
-        Places.createClient(this)
-
-        val autocompleteFragment =
-            supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment?
-        autocompleteFragment!!.setTypeFilter(TypeFilter.CITIES)
-        autocompleteFragment.setPlaceFields(
-            Arrays.asList(
-                Place.Field.ID,
-                Place.Field.NAME
-            )
-        )
-        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
-            override fun onPlaceSelected(place: Place) {
-                // TODO: Get info about the selected place.
-                Toast.makeText(applicationContext, place.name, Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onError(status: Status) {
-                // TODO: Handle the error.
-                Toast.makeText(applicationContext, status.toString(), Toast.LENGTH_SHORT).show()
-            }
-        })
+        val searchLocation = findViewById<SearchView>(R.id.search_on_map)
+        searchLocation.imeOptions = EditorInfo.IME_ACTION_DONE
+        searchLocation.setOnQueryTextListener(this)
 
 
     }
@@ -182,5 +165,36 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         viewModel.update()
     }
 
+    override fun onQueryTextSubmit(p0: String?): Boolean {
+        var location = p0
+        var addressList: List<Address>? = null
+
+        if (location == null || location == "") {
+            Toast.makeText(applicationContext,"provide location",Toast.LENGTH_SHORT).show()
+        }
+        else{
+            val geoCoder = Geocoder(this)
+            try {
+                addressList = geoCoder.getFromLocationName(location, 1)
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            if (addressList!!.isEmpty()) {
+                Toast.makeText(applicationContext,"location not found",Toast.LENGTH_SHORT).show()
+            } else {
+                val address = addressList[0]
+                val latLng = LatLng(address.latitude, address.longitude)
+                viewModel.setCameraPosition(latLng)
+                map.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+                viewModel.update()
+            }
+        }
+        return false
+    }
+
+    override fun onQueryTextChange(p0: String?): Boolean {
+        return false
+    }
 
 }
