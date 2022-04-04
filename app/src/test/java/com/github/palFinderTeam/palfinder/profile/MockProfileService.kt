@@ -16,6 +16,10 @@ class MockProfileService : ProfileService {
     }
     override fun getLoggedInUserID(): String? = loggedUserId
 
+    override suspend fun doesUserIDExist(userId: String): Boolean {
+        return db.containsKey(userId)
+    }
+
     override suspend fun fetchUserProfile(userId: String): ProfileUser? {
         return db[userId]
     }
@@ -52,7 +56,7 @@ class MockProfileService : ProfileService {
     }
 
     override suspend fun createProfile(newUserProfile: ProfileUser): String? {
-        val key = counter.toString()
+        val key = newUserProfile.uuid
         db[key] = newUserProfile.copy(uuid = key)
         counter.inc()
         return key
