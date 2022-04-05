@@ -213,7 +213,7 @@ class MeetUpListTest {
         scenario.use {
             scenario.onActivity { it.viewModel.setCameraPosition(LatLng(37.0, -122.0));
                 it.viewModel.update()}
-            scenario.onActivity { it.filterByTag(setOf(Category.CINEMA)) }
+            scenario.onActivity { it.filter(setOf(Category.CINEMA)) }
             scenario.onActivity { assert(it.adapter.currentDataSet.isEmpty()) }
             scenario.onActivity { it.filter(setOf(Category.WORKING_OUT, Category.DUMMY_TAG1)) }
             scenario.onActivity { assertEquals(1, it.adapter.currentDataSet.size) }
