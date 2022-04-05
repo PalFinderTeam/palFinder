@@ -16,6 +16,7 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.init
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -328,6 +329,7 @@ class MeetupViewTest {
             .apply{putExtra(MEETUP_SHOWN, id)}
         val scenario = ActivityScenario.launch<MeetUpView>(intent)
         scenario.use {
+            init()
             onView(withId(R.id.show_profile_list_button)).perform(click())
             onView(
                 RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
