@@ -3,18 +3,16 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.profile.ProfileListFragment
 import com.github.palFinderTeam.palfinder.tag.Category
-import com.github.palFinderTeam.palfinder.tag.TagSelectorFragment
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
@@ -41,7 +39,8 @@ class MeetUpView : AppCompatActivity() {
         button.setOnClickListener { showProfileList() }
 
         viewModel.meetUp.observe(this) { meetUp ->
-            fillFields(meetUp)
+            fillFields()
+            handleButton()
         }
 
         tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
@@ -51,25 +50,55 @@ class MeetUpView : AppCompatActivity() {
         }
     }
 
+    private fun handleButton(){
+        val hasJoined = viewModel.hasJoin()
+        val isCreator = viewModel.isCreator()
+        findViewById<View>(R.id.bt_ChatMeetup).apply {
+            this.isEnabled = hasJoined
+            this.isVisible = hasJoined
+            this.isClickable = hasJoined
+        }
+        findViewById<View>(R.id.bt_EditMeetup).apply {
+            this.isEnabled = isCreator
+            this.isVisible = isCreator
+            this.isClickable = isCreator
+        }
+        findViewById<Button>(R.id.bt_JoinMeetup).apply {
+            this.isEnabled = !isCreator
+            this.isClickable = !isCreator
+            this.text = if (hasJoined) getString(R.string.meetup_view_leave) else getString(R.string.meetup_view_join)
+        }
+    }
+
     private fun showProfileList() {
         ProfileListFragment(viewModel.meetUp.value?.participantsId!!).show(supportFragmentManager, "profile list")
     }
 
-    private fun fillFields(meetup: MeetUp) {
+    private fun fillFields() {
         tagsViewModel.refreshTags()
     }
 
     fun onEdit(v: View) {
-        val intent = Intent(this, MeetUpCreation::class.java).apply {
-            putExtra(MEETUP_EDIT, viewModel.getMeetupID())
+        if (viewModel.isCreator()) {
+            val intent = Intent(this, MeetUpCreation::class.java).apply {
+                putExtra(MEETUP_EDIT, viewModel.getMeetupID())
+            }
+            startActivity(intent)
         }
-        startActivity(intent)
     }
 
     fun onChat(v: View) {
-        val intent = Intent(this, ChatActivity::class.java).apply {
-            putExtra(CHAT, viewModel.getMeetupID())
+        if (viewModel.hasJoin()) {
+            val intent = Intent(this, ChatActivity::class.java).apply {
+                putExtra(CHAT, viewModel.getMeetupID())
+            }
+            startActivity(intent)
         }
-        startActivity(intent)
     }
+
+    fun onJoinOrLeave(v: View){
+        viewModel.joinOrLeave(this)
+    }
+
+
 }

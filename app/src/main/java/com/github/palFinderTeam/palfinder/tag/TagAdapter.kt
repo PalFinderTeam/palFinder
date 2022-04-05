@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import com.google.android.material.chip.Chip
-import java.util.*
 
 class TagAdapter<T: Tag>(private val dataSet: List<T>) : RecyclerView.Adapter<TagAdapter.ViewHolder>(), Filterable {
     private val currentDataSet = dataSet.toMutableList()

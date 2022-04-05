@@ -8,6 +8,8 @@ import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.getField
 import java.io.Serializable
+import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * A class to hold the data for a user to be displayed on the profile activity
@@ -21,6 +23,7 @@ data class ProfileUser(
     val joinDate: Calendar,
     val pfp: ImageInstance,
     val description: String = "",
+    val birthday: Calendar? = null,
     val joinedMeetUps: List<String> = emptyList()
 ) : Serializable {
 
@@ -32,6 +35,7 @@ data class ProfileUser(
         const val PICTURE_KEY = "picture"
         const val JOIN_DATE_KEY = "join_date"
         const val DESCRIPTION_KEY = "description"
+        const val BIRTHDAY_KEY = "birthday"
         const val JOINED_MEETUPS_KEY = "joined_meetups"
 
         /**
@@ -50,7 +54,15 @@ data class ProfileUser(
                 val description = getString(DESCRIPTION_KEY).orEmpty()
                 val joinedMeetUp = (get(JOINED_MEETUPS_KEY) as? List<String>).orEmpty()
 
-                ProfileUser(uuid, username, name, surname, joinDateCal, ImageInstance(picture), description, joinedMeetUp)
+                var birthdayCal: Calendar? = null
+                if (getDate(BIRTHDAY_KEY) != null) {
+                    birthdayCal = Calendar.getInstance().apply {
+                        time = getDate(BIRTHDAY_KEY)
+                    }
+                }
+
+                ProfileUser(uuid, username, name, surname, joinDateCal, ImageInstance(picture), description, birthdayCal, joinedMeetUp)
+
             } catch (e: Exception) {
                 Log.e("ProfileUser", "Error deserializing user", e)
                 null
@@ -61,7 +73,8 @@ data class ProfileUser(
     /**
      * @return a representation which is Firestore friendly of the UserProfile.
      */
-    fun toFirestoreData(): HashMap<String, Any> {
+    fun toFirestoreData(): HashMap<String, Any?> {
+        //if
         return hashMapOf(
             NAME_KEY to name,
             SURNAME_KEY to surname,
@@ -69,6 +82,7 @@ data class ProfileUser(
             JOIN_DATE_KEY to joinDate.time,
             PICTURE_KEY to pfp.imgURL,
             DESCRIPTION_KEY to description,
+            BIRTHDAY_KEY to birthday?.time,
             JOINED_MEETUPS_KEY to joinedMeetUps
         )
     }
