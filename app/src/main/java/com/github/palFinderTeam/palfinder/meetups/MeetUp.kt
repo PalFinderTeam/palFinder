@@ -49,6 +49,13 @@ data class MeetUp(
     }
 
     /**
+     * @return the number of participants currently in the meetup
+     */
+    fun numberOfParticipants() : Int {
+        return participantsId.size
+    }
+
+    /**
      * @return if the event has reach its participant limit
      */
     fun isFull(): Boolean {
