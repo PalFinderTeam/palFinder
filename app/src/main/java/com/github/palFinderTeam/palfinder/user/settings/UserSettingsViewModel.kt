@@ -216,17 +216,17 @@ class UserSettingsViewModel @Inject constructor(
                     _pfp.value = newPath!!
                 }
             }
+            val newUser = ProfileUser(
+                uuid = loggedUID,
+                username = username.value!!,
+                name = name.value!!,
+                surname = surname.value!!,
+                joinDate = _joinDate,
+                pfp = ImageInstance(pfp.value!!),
+                description = userBio.value!!,
+                birthday = birthday.value
+            )
             if (_isNewUser) {
-                val newUser = ProfileUser(
-                    uuid = loggedUID,
-                    username = username.value!!,
-                    name = name.value!!,
-                    surname = surname.value!!,
-                    joinDate = _joinDate,
-                    pfp = ImageInstance(pfp.value!!),
-                    description = userBio.value!!,
-                    birthday = birthday.value
-                )
 
                 // Notify result
                 if (profileService.createProfile(newUser) != null) {
@@ -239,18 +239,8 @@ class UserSettingsViewModel @Inject constructor(
 
                 // If user not found for some reason, fall back to adding new join date
                 val joinDate = oldUser?.joinDate ?: Calendar.getInstance()
-                val newUser = ProfileUser(
-                    uuid = loggedUID,
-                    username = username.value!!,
-                    name = name.value!!,
-                    surname = surname.value!!,
-                    joinDate = joinDate,
-                    pfp = ImageInstance(pfp.value!!),
-                    description = userBio.value!!,
-                    birthday = birthday.value
-                )
                 // Notify result
-                if (profileService.editUserProfile(loggedUID, newUser) != null) {
+                if (profileService.editUserProfile(loggedUID, newUser.copy(joinDate = joinDate)) != null) {
                     _updateStatus.postValue(UPDATE_SUCCESS)
                 } else {
                     _updateStatus.postValue(UPDATE_ERROR)
