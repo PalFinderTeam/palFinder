@@ -213,7 +213,7 @@ class UserSettingsViewModel @Inject constructor(
                         imageUploader.removeImage(url)
                     }
                     // We choose the new image only if not null
-                    _pfp.value = newPath
+                    _pfp.value = newPath!!
                 }
             }
             if (_isNewUser) {
