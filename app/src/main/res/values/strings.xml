@@ -81,8 +81,8 @@
     <string name="DB_error_msg">Cannot contact database</string>
 
     <string name="pretty_location_too_small">Here</string>
-    <string name="pretty_location_m">%1$s m away</string>
-    <string name="pretty_location_km">%1$s km away</string>
+    <string name="pretty_location_m">%1$s m</string>
+    <string name="pretty_location_km">%1$s km</string>
 
     <string name="nav_bar_create">Create</string>
     <string name="nav_bar_find">Find</string>

@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,27 +8,24 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
-import com.squareup.okhttp.Dispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import java.text.Format
 
 
 class MeetupListAdapter(private val dataSet: List<MeetUp>, val currentDataSet: MutableList<MeetUp>,
-                        private var filter: SearchedFilter<MeetUp>,  private val onItemClicked: (position: Int) -> Unit) :
+                        private var filter: SearchedFilter<MeetUp>, private var currentLocation: Location,
+                        private val onItemClicked: (position: Int) -> Unit) :
     RecyclerView.Adapter<MeetupListAdapter.ViewHolder>(), Filterable {
 
     companion object {
-        const val PARTICIPANTS_COUNT: String = "%d / %d"
+        const val PARTICIPANTS_RATIO: String = "%d / %d"
     }
 
     class ViewHolder(view: View, private val onItemClicked: (position: Int) -> Unit) :
@@ -39,6 +37,8 @@ class MeetupListAdapter(private val dataSet: List<MeetUp>, val currentDataSet: M
         val meetupNumberParticipants: TextView = view.findViewById(R.id.meetup_participant)
         val meetupDistance: TextView = view.findViewById(R.id.meetup_dist)
         val meetupImage: ImageView = view.findViewById(R.id.meetup_pic)
+
+        val parContext: Context = view.context
 
         init {
             view.setOnClickListener(this)
@@ -72,9 +72,14 @@ class MeetupListAdapter(private val dataSet: List<MeetUp>, val currentDataSet: M
         meetupDate.text = prettyDate.timeDiff(currentDataSet[position].startDate)
         val meetupDescription = holder.meetupDescription
         meetupDescription.text = currentDataSet[position].description
+
+        val meetupDistance = holder.meetupDistance
+        meetupDistance.text =
+            currentDataSet[position].location.prettyDistanceTo(holder.parContext, currentLocation)
+
         val meetupNumberParticipants = holder.meetupNumberParticipants
         meetupNumberParticipants.text = String.format(
-            PARTICIPANTS_COUNT,
+            PARTICIPANTS_RATIO,
             currentDataSet[position].numberOfParticipants(),
             currentDataSet[position].capacity
         )
