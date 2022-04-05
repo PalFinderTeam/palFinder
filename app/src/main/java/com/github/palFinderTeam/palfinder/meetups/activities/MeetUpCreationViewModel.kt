@@ -164,8 +164,13 @@ class MeetUpCreationViewModel @Inject constructor(
      */
     fun sendMeetUp() {
         viewModelScope.launch {
-            val iconPath = iconUri.value?.let {
-                imageUploader.uploadImage(it)
+            val iconPath = iconUri.value?.let { uri ->
+                val id = imageUploader.uploadImage(uri)
+                // Also remove the previous icon from DB to avoid garbage.
+                iconUrl.value?.let { url ->
+                    imageUploader.removeImage(url)
+                }
+                id
             }
             val owner = profileService.getLoggedInUserID()!!
             var meetUp = MeetUp(

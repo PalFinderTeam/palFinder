@@ -1,20 +1,24 @@
 package com.github.palFinderTeam.palfinder.user.settings
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.USER_ID
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
@@ -23,6 +27,7 @@ import com.github.palFinderTeam.palfinder.ui.login.CREATE_ACCOUNT_PROFILE
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import com.github.palFinderTeam.palfinder.utils.askDate
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.github.palFinderTeam.palfinder.utils.image.pickProfileImage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -30,13 +35,13 @@ import kotlinx.coroutines.launch
 @SuppressLint("SimpleDateFormat")
 class UserSettingsActivity : AppCompatActivity() {
 
-    val viewModel : UserSettingsViewModel by viewModels()
+    val viewModel: UserSettingsViewModel by viewModels()
 
-    private lateinit var usernameField : EditText
-    private lateinit var nameField : EditText
-    private lateinit var surnameField : EditText
-    private lateinit var bioField : EditText
-    private lateinit var birthdayField : EditText
+    private lateinit var usernameField: EditText
+    private lateinit var nameField: EditText
+    private lateinit var surnameField: EditText
+    private lateinit var bioField: EditText
+    private lateinit var birthdayField: EditText
     private lateinit var imageField: ImageView
     private lateinit var removeBirthdayButton: ImageView
 
@@ -58,7 +63,8 @@ class UserSettingsActivity : AppCompatActivity() {
         if (intent.hasExtra(CREATE_ACCOUNT_PROFILE)) {
             preProfile = intent.getSerializableExtra(CREATE_ACCOUNT_PROFILE) as ProfileUser
             viewModel.loggedUID = preProfile.uuid
-            findViewById<Button>(R.id.SettingsSubmitButton).text = getString(R.string.userSettingsButtonCreate)
+            findViewById<Button>(R.id.SettingsSubmitButton).text =
+                getString(R.string.userSettingsButtonCreate)
         }
 
         // Init
@@ -106,6 +112,9 @@ class UserSettingsActivity : AppCompatActivity() {
         bioField.doAfterTextChanged { text ->
             viewModel.setBio(text.toString())
         }
+        imageField.setOnClickListener {
+            pickProfileImage(this, onResultFromIntent::launch)
+        }
         // NOTE: We don't have an observer for the text changing because
         // it is triggered directly with other functions such as
         // openDatePickerFragment() or deletePickedBirthday()
@@ -126,7 +135,7 @@ class UserSettingsActivity : AppCompatActivity() {
             bioField.setText(it)
         }
         viewModel.pfp.observeOnce(this) {
-            lifecycleScope.launch{
+            lifecycleScope.launch {
                 ImageInstance(it).loadImageInto(imageField)
             }
         }
@@ -158,7 +167,7 @@ class UserSettingsActivity : AppCompatActivity() {
     private fun initiateSuccessIndicator() {
         viewModel.updateStatus.observe(this) { status ->
             // Set availability status
-            if (status == UserSettingsViewModel.UPDATE_RUNNING)  {
+            if (status == UserSettingsViewModel.UPDATE_RUNNING) {
                 toggleFieldAvailability(false)
             } else {
                 toggleFieldAvailability(true)
@@ -190,7 +199,7 @@ class UserSettingsActivity : AppCompatActivity() {
      *
      * @param msg Message to display
      */
-    private fun displayToastMsg(msg: String){
+    private fun displayToastMsg(msg: String) {
         if (msg != UserSettingsViewModel.MSG_NO_MSG) {
             Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
         }
@@ -199,7 +208,7 @@ class UserSettingsActivity : AppCompatActivity() {
     /**
      * Called when the save button is clicked
      */
-    fun submitData(view: View?){
+    fun submitData(view: View?) {
         val respMsg = viewModel.checkAllFields()
         if (respMsg == UserSettingsViewModel.MSG_NO_MSG) {
             viewModel.saveValuesIntoDatabase()
@@ -238,10 +247,27 @@ class UserSettingsActivity : AppCompatActivity() {
      * field, if it hasn't been cleared yet
      */
     fun deletePickedBirthday(view: View?) {
-        if(viewModel.birthday.value != null) {
+        if (viewModel.birthday.value != null) {
             viewModel.setBirthday(null)
             updateBDayField(null)
         }
     }
 
+    // Repeated code from MeetupCreation, but can't extract it, it will throw an illegal state exception.
+    private val onResultFromIntent =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val resultCode = result.resultCode
+            val data = result.data
+
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    val fileUri = data?.data!!
+                    viewModel.setPfp(fileUri)
+                    imageField.setImageURI(fileUri)
+                }
+                ImagePicker.RESULT_ERROR -> {
+                    Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 }

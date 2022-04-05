@@ -10,14 +10,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.github.dhaval2404.imagepicker.ImagePicker
-import com.github.dhaval2404.imagepicker.util.IntentUtils
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
@@ -28,6 +26,7 @@ import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.github.palFinderTeam.palfinder.utils.image.pickProfileImage
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,24 +61,8 @@ class MeetUpCreation : AppCompatActivity() {
 
         dateFormat = SimpleDateFormat(getString(R.string.date_long_format))
 
-        hasLimitCheckBox = findViewById(R.id.hasCapacityButton)
-        limitEditText = findViewById(R.id.et_Capacity)
-        nameEditText = findViewById(R.id.et_EventName)
-        descriptionEditText = findViewById(R.id.et_Description)
-        changeIconButton = findViewById(R.id.bt_SelectIcon)
-        icon = findViewById(R.id.iv_Icon)
-        startDateField = findViewById(R.id.tv_StartDate)
-        endDateField = findViewById(R.id.tv_EndDate)
-
+        initiateFieldRefs()
         bindUI()
-
-        // Create tag fragment
-        tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
-        tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
-
-        if (savedInstanceState == null) {
-            addTagsToFragmentManager(supportFragmentManager, R.id.fc_tags)
-        }
 
         // Load meetup or start from scratch
         if (intent.hasExtra(MEETUP_EDIT)) {
@@ -91,39 +74,44 @@ class MeetUpCreation : AppCompatActivity() {
             viewModel.fillWithDefaultValues()
         }
 
+        // Create tag fragment
+        tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
+        tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
+
+        if (savedInstanceState == null) {
+            addTagsToFragmentManager(supportFragmentManager, R.id.fc_tags)
+        }
         // Make sure tags are refreshed once when fetching from DB
         viewModel.tags.observe(this) {
             tagsViewModel.refreshTags()
         }
     }
 
-    private fun bindUI() {
-        viewModel.startDate.observe(this) { newDate ->
-            setTextView(R.id.tv_StartDate, dateFormat.format(newDate))
-        }
-        viewModel.endDate.observe(this) { newDate ->
-            setTextView(R.id.tv_EndDate, dateFormat.format(newDate))
-        }
+    private fun initiateFieldRefs() {
+        hasLimitCheckBox = findViewById(R.id.hasCapacityButton)
+        limitEditText = findViewById(R.id.et_Capacity)
+        nameEditText = findViewById(R.id.et_EventName)
+        descriptionEditText = findViewById(R.id.et_Description)
+        changeIconButton = findViewById(R.id.bt_SelectIcon)
+        icon = findViewById(R.id.iv_Icon)
+        startDateField = findViewById(R.id.tv_StartDate)
+        endDateField = findViewById(R.id.tv_EndDate)
+    }
 
-        viewModel.name.observeOnce(this) {
-            setTextView(R.id.et_EventName, it)
-        }
+    private fun bindUI() {
+        forwardBind()
+        backwardBind()
+    }
+
+    // Bind fields to viewModel
+    private fun forwardBind() {
         nameEditText.doAfterTextChanged { text ->
             viewModel.setName(text.toString())
-        }
-        viewModel.description.observeOnce(this) {
-            setTextView(R.id.et_Description, it)
         }
         descriptionEditText.doAfterTextChanged { text ->
             viewModel.setDescription(text.toString())
         }
-        viewModel.hasMaxCapacity.observeOnce(this) { hasMaxCapacity ->
-            hasLimitCheckBox.isChecked = hasMaxCapacity
-            limitEditText.isEnabled = hasMaxCapacity
-        }
-        viewModel.capacity.observeOnce(this) {
-            setTextView(R.id.et_Capacity, it.toString())
-        }
+
         hasLimitCheckBox.setOnCheckedChangeListener { _, isChecked ->
             setCapacityField(isChecked)
             viewModel.setHasMaxCapacity(isChecked)
@@ -138,14 +126,40 @@ class MeetUpCreation : AppCompatActivity() {
             }
         }
         limitEditText.isEnabled = hasLimitCheckBox.isChecked
+
         changeIconButton.setOnClickListener {
-            pickProfileImage()
+            pickProfileImage(
+                this,
+                registerForImagePickerResult::launch
+            )
         }
         icon.setOnClickListener {
-            showImage()
+            pickProfileImage(this, registerForImagePickerResult::launch)
         }
-        viewModel.iconUri.observeOnce(this) {
-            icon.setImageURI(it)
+    }
+
+    // Observe viewModel for changes
+    private fun backwardBind() {
+        viewModel.description.observeOnce(this) {
+            setTextView(R.id.et_Description, it)
+        }
+        viewModel.startDate.observe(this) { newDate ->
+            setTextView(R.id.tv_StartDate, dateFormat.format(newDate))
+        }
+        viewModel.endDate.observe(this) { newDate ->
+            setTextView(R.id.tv_EndDate, dateFormat.format(newDate))
+        }
+
+        // Observe once when fetching existing meetup to avoid infinite loop
+        viewModel.name.observeOnce(this) {
+            setTextView(R.id.et_EventName, it)
+        }
+        viewModel.hasMaxCapacity.observeOnce(this) { hasMaxCapacity ->
+            hasLimitCheckBox.isChecked = hasMaxCapacity
+            limitEditText.isEnabled = hasMaxCapacity
+        }
+        viewModel.capacity.observeOnce(this) {
+            setTextView(R.id.et_Capacity, it.toString())
         }
         viewModel.iconUrl.observeOnce(this) {
             lifecycleScope.launch {
@@ -214,7 +228,6 @@ class MeetUpCreation : AppCompatActivity() {
     }
 
     fun onDone(v: View) {
-
         // Check field validity
         val name = nameEditText.text.toString()
         val description = descriptionEditText.text.toString()
@@ -235,12 +248,6 @@ class MeetUpCreation : AppCompatActivity() {
         viewModel.sendMeetUp()
     }
 
-    private fun showImage() {
-        viewModel.iconUri.value?.let {
-            startActivity(IntentUtils.getUriViewIntent(this, it))
-        }
-    }
-
     /**
      * Show [message] with [title] in an alert box
      */
@@ -257,10 +264,10 @@ class MeetUpCreation : AppCompatActivity() {
         val intent = Intent(this, MapsActivity::class.java).apply {
             putExtra(LOCATION_SELECT, LatLng(0.0, 0.0))
         }
-        resultLauncher.launch(intent)
+        registerForLocationResult.launch(intent)
     }
 
-    private val resultLauncher =
+    private val registerForLocationResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
@@ -274,16 +281,8 @@ class MeetUpCreation : AppCompatActivity() {
         viewModel.setLatLng(p0)
     }
 
-    private fun pickProfileImage() {
-        ImagePicker.with(this)
-            .cropSquare()
-            .maxResultSize(512, 512)
-            .createIntent {
-                startForProfileImageResult.launch(it)
-            }
-    }
-
-    private val startForProfileImageResult =
+    // Runs when image picker returns result
+    private val registerForImagePickerResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             val resultCode = result.resultCode
             val data = result.data
