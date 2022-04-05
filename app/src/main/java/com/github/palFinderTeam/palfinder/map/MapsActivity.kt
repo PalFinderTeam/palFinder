@@ -177,7 +177,6 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
             } else {
                 val address = addressList[0]
                 val latLng = LatLng(address.latitude, address.longitude)
-                Log.d("latlong", latLng.toString())
                 viewModel.setCameraPosition(latLng)
                 map.animateCamera(CameraUpdateFactory.newLatLng(latLng))
                 viewModel.update()

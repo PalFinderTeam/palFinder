@@ -2,17 +2,15 @@ package com.github.palFinderTeam.palfinder.map
 
 import android.app.Activity
 import android.content.Intent
-import android.icu.util.Calendar
 import android.view.KeyEvent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents.*
-import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.RootMatchers.withDecorView
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.By
@@ -24,13 +22,17 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.internal.ContextUtils.getActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.not
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 
 @HiltAndroidTest
@@ -161,9 +163,14 @@ class MapsActivityTest {
         device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
 
         scenario.use{
-            utils.setCameraPosition(basePosition)
-            onView(withId(R.id.search_on_map)).perform(click(), typeText("Delhi")).perform( pressKey(KeyEvent.KEYCODE_ENTER))
-            Espresso.closeSoftKeyboard()
+            onView(withId(R.id.search_on_map)).perform(click(), typeText("Delhi")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
+            scenario.onActivity {
+                Assert.assertEquals(29, it.viewModel.getCameraPosition().latitude.roundToInt());
+                Assert.assertEquals(77, it.viewModel.getCameraPosition().longitude.roundToInt());
+            }
+            onView(withId(R.id.search_on_map)).perform(click()).perform(pressKey(KeyEvent.KEYCODE_ENTER))
+            onView(withId(R.id.search_on_map)).perform(click(), typeText("invalid_location")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
+
         }
     }
 }
