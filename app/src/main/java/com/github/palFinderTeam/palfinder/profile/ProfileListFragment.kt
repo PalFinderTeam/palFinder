@@ -2,14 +2,12 @@ package com.github.palFinderTeam.palfinder.profile
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.SearchView
-import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,9 +16,6 @@ import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.ProfileViewModel
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.USER_ID
-import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
-import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import dagger.hilt.android.AndroidEntryPoint
 
