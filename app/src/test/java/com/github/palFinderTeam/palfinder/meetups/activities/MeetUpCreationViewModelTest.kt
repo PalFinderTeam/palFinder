@@ -4,8 +4,11 @@ import android.icu.util.Calendar
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.MockProfileService
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,8 +36,10 @@ class MeetUpCreationViewModelTest {
 
     private lateinit var viewModel: MeetUpCreationViewModel
     private lateinit var meetUpRepository: MockMeetUpRepository
+    private lateinit var profileService: MockProfileService
     private lateinit var testStartDate: Calendar
     private lateinit var testEndDate: Calendar
+    private lateinit var user: ProfileUser
 
     @Before
     fun setup() {
@@ -52,17 +57,31 @@ class MeetUpCreationViewModelTest {
 
         meetUpRepository = MockMeetUpRepository()
         meetUpRepository.clearDB()
-        viewModel = MeetUpCreationViewModel(meetUpRepository)
+
+        profileService = MockProfileService()
+        user = ProfileUser(
+                "user2",
+                "Michou",
+                "Jonas",
+                "Martin",
+                testStartDate,
+                ImageInstance(""),
+                "Ne la laisse pas tomber"
+            )
+
+        viewModel = MeetUpCreationViewModel(meetUpRepository, profileService, testStartDate)
         Dispatchers.setMain(UnconfinedTestDispatcher())
     }
 
     @After
     fun cleanUp() {
         meetUpRepository.clearDB()
+        profileService.db.clear()
     }
 
     @Test
-    fun `fill with default values exposes those values`() {
+    fun `fill with default values exposes those values`() = runTest {
+        profileService.setLoggedInUserID(profileService.createProfile(user))
         viewModel.fillWithDefaultValues()
         assertThat(viewModel.capacity.value, `is`(1))
         assertThat(viewModel.description.value, `is`(""))
@@ -71,7 +90,8 @@ class MeetUpCreationViewModelTest {
     }
 
     @Test
-    fun `setters do work and get exposed`() {
+    fun `setters do work and get exposed`() = runTest {
+        profileService.setLoggedInUserID(profileService.createProfile(user))
 //        viewModel.setStartDate(testStartDate)
 //        viewModel.setEndDate(testEndDate)
         viewModel.setCapacity(4)
@@ -88,6 +108,7 @@ class MeetUpCreationViewModelTest {
 
     @Test
     fun `fetch and display infos from database`() = runTest {
+        profileService.setLoggedInUserID(profileService.createProfile(user))
         val dummyMeetUp = MeetUp(
             "",
             "username",
@@ -119,6 +140,7 @@ class MeetUpCreationViewModelTest {
 
     @Test
     fun `create new meetup insert in DB`() = runTest {
+        profileService.setLoggedInUserID(profileService.createProfile(user))
         viewModel.setCapacity(4)
         viewModel.setHasMaxCapacity(true)
         viewModel.setDescription("manger des bananes")
