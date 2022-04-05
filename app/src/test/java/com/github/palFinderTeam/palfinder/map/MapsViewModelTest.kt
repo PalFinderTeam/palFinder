@@ -24,7 +24,7 @@ class MapsViewModelTest {
 
     private val meetUpRepository = MockMeetUpRepository()
     private val profileService = MockProfileService()
-    private val viewModel = MapListViewModel(meetUpRepository, profileService)
+    private var viewModel = MapListViewModel(meetUpRepository, profileService)
 
     private lateinit var meetup1: MeetUp
     private lateinit var meetup2: MeetUp
@@ -55,9 +55,6 @@ class MapsViewModelTest {
     @Before
     fun init() {
 
-        viewModel = mock(MapListViewModel::class.java,
-            Mockito.withSettings().useConstructor(meetUpRepository)
-                .defaultAnswer(Mockito.CALLS_REAL_METHODS))
 
 
 
