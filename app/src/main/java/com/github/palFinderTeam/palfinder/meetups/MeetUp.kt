@@ -82,7 +82,7 @@ data class MeetUp(
     /**
      *  @return if the user is taking part in the event
      */
-    fun isParticipating(userId: String): Boolean {
+    fun isParticipating(userId: String?): Boolean {
         return participantsId.contains(userId)
     }
 

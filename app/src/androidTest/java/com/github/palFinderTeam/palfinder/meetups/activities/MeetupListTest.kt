@@ -8,17 +8,17 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.tag.Category
-import com.github.palFinderTeam.palfinder.tag.TagSelectorFragment
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -215,9 +215,9 @@ class MeetUpListTest {
                 it.viewModel.update()}
             scenario.onActivity { it.filterByTag(setOf(Category.CINEMA)) }
             scenario.onActivity { assert(it.adapter.currentDataSet.isEmpty()) }
-            scenario.onActivity { it.filterByTag(setOf(Category.WORKING_OUT, Category.DUMMY_TAG1)) }
+            scenario.onActivity { it.filter(setOf(Category.WORKING_OUT, Category.DUMMY_TAG1)) }
             scenario.onActivity { assertEquals(1, it.adapter.currentDataSet.size) }
-            scenario.onActivity { it.filterByTag(setOf()) }
+            scenario.onActivity { it.filter(setOf()) }
             scenario.onActivity { assertEquals(5, it.adapter.currentDataSet.size) }
         }
     }
