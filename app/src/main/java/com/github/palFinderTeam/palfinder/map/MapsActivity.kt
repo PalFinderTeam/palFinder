@@ -30,6 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 const val LOCATION_SELECT = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECT"
 const val LOCATION_SELECTED = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECTED"
+const val CONTEXT = "com.github.palFinderTeam.palFinder.MAP.CONTEXT"
 
 @AndroidEntryPoint
 class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraMoveCanceledListener {
@@ -38,13 +39,23 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
     private lateinit var button: FloatingActionButton
     private lateinit var navBar: View
     private lateinit var mapView: View
+    private lateinit var context: mapContext
 
     private val mapSelection: MapsSelectionModel by viewModels()
 
-
+    companion object{
+        enum class mapContext{
+            MARKER,
+            SELECT_LOCATION,
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        context = if(intent.hasExtra(CONTEXT)){
+            intent.getParcelableExtra(CONTEXT)!!
+        }else mapContext.MARKER
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -59,27 +70,34 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
         mapView.contentDescription = "MAP NOT READY"
         mapFragment.getMapAsync(this)
 
-        viewModel.update(viewModel.getCameraPosition())
-        viewModel.listOfMeetUpResponse.observe(this) {
-            viewModel.refresh()
+        when(context) {
+            mapContext.MARKER -> {
+                viewModel.listOfMeetUpResponse.observe(this) {
+                    viewModel.refresh()
+                }
+                button.apply { this.hide() }
+                mapSelection.active.value = false
+            }
+            mapContext.SELECT_LOCATION -> {
+
+            }
         }
+
+
 
     }
 
     private fun loadSelectionButton(){
-        if (intent.hasExtra(LOCATION_SELECT)) {
-            val pos = intent.getParcelableExtra<LatLng>(LOCATION_SELECT)
-            mapSelection.active.value = true
-            navBar.isVisible = false
-            navBar.isEnabled = false
-            button.apply { this.isEnabled = false }
-            if (pos != null){
-                setSelectionMarker(pos)
-            }
-        } else {
-            button.apply { this.hide() }
-            mapSelection.active.value = false
+
+        val pos = intent.getParcelableExtra<LatLng>(LOCATION_SELECT)
+        mapSelection.active.value = true
+        navBar.isVisible = false
+        navBar.isEnabled = false
+        button.apply { this.isEnabled = false }
+        if (pos != null){
+            setSelectionMarker(pos)
         }
+
     }
 
 
@@ -101,9 +119,8 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
 
     private fun onMapClick(p0: LatLng) {
         // Add a marker if the map is used to select a location
-        if (mapSelection.active.value!!) {
-            setSelectionMarker(p0)
-        }
+        setSelectionMarker(p0)
+
     }
 
     /**
@@ -131,16 +148,22 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
         map = googleMap
         viewModel.setMap(map)
         map.uiSettings.isZoomControlsEnabled = true
-        map.setOnMarkerClickListener(this)
+
+        when(context){
+            mapContext.MARKER -> {
+                map.setOnMarkerClickListener(this)
+            }
+            mapContext.SELECT_LOCATION -> {
+                map.setOnMapClickListener { onMapClick(it) }
+                loadSelectionButton()
+            }
+
+        }
 
 
         super.setUserLocation()
 
-
-        map.setOnMapClickListener { onMapClick(it) }
-
         mapView.contentDescription = "MAP READY"
-        loadSelectionButton()
 
 
     }

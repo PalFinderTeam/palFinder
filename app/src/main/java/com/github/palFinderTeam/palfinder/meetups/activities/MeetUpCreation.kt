@@ -18,6 +18,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.map.CONTEXT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
 import com.github.palFinderTeam.palfinder.map.MapsActivity
@@ -245,6 +246,7 @@ class MeetUpCreation : AppCompatActivity() {
 
     fun onSelectLocation(v: View) {
         val intent = Intent(this, MapsActivity::class.java).apply {
+            putExtra(CONTEXT,MapsActivity.Companion.mapContext.SELECT_LOCATION)
             putExtra(LOCATION_SELECT, LatLng(0.0, 0.0))
         }
         resultLauncher.launch(intent)
