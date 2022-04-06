@@ -1,14 +1,12 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.*
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
+import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -16,16 +14,20 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.pow
 
 
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class MapListViewModel @Inject constructor(
     val meetUpRepository: MeetUpRepository,
     val profileService: ProfileService
 ) : ViewModel() {
-    lateinit var listOfMeetUpResponse: LiveData<Response<List<MeetUp>>>
+    private val _listOfMeetUpResponse: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
+    val listOfMeetUpResponse: LiveData<Response<List<MeetUp>>> = _listOfMeetUpResponse
     lateinit var meetupList: List<MeetUp>
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
     val tags: LiveData<Set<Category>> = _tags
@@ -34,7 +36,7 @@ class MapListViewModel @Inject constructor(
     var showOnlyJoined: Boolean = false
 
 
-    private lateinit var map: GoogleMap
+    lateinit var map: GoogleMap
     var mapReady = false
     private var markers = HashMap<String, Marker>()
 
@@ -52,31 +54,31 @@ class MapListViewModel @Inject constructor(
      * set the map to which utils functions will be applied
      * @param map: GoogleMap
      */
-    fun setMap(map : GoogleMap){
+    fun setGmap(map : GoogleMap){
         this.map = map
-        mapReady = true
-    }
-    fun getMap(): GoogleMap {
-        return map
+        this.mapReady = true
+        setPositionAndZoom(startingCameraPosition, startingZoom)
     }
 
-    fun update(location: LatLng?){
+    fun update(){
         if(false){//getZoom() < 7f){
             //TODO get only the joined meetup
 
         } else{
-            val earthRadius = 6371000.0
+            val earthCircumference = 40000.0
             // at zoom 0, the map is of size 256x256 pixels and for every zoom, the number of pixel is multiplied by 2
-            val radiusAtZoom0 = earthRadius/256
+            val radiusAtZoom0 = earthCircumference/256
             val radius = radiusAtZoom0/2.0.pow(getZoom().toDouble())
-
-            /*if(meetUpRepository.getAllMeetUps().asLiveData().value != null) {
-                meetUps = meetUpRepository.getAllMeetUps().asLiveData().value!!
-            }else meetUps = emptyList()*/
-            /*listOfMeetUpResponse = meetUpRepository.getMeetUpsAroundLocation(Location(location!!.longitude, location!!.latitude),
-                earthRadius/1000.0).asLiveData()*/
-            listOfMeetUpResponse = meetUpRepository.getAllMeetUpsResponse().asLiveData()
-            refresh()
+            viewModelScope.launch {
+                meetUpRepository.getMeetUpsAroundLocation(
+                    Location(
+                        getCameraPosition().longitude,
+                        getCameraPosition().latitude
+                    ), 1450.0
+                ).collect {
+                    _listOfMeetUpResponse.postValue(it)
+                }
+            }
 
         }
     }
@@ -101,7 +103,7 @@ class MapListViewModel @Inject constructor(
      */
     fun setCameraPosition(position: LatLng){
         if(mapReady) {
-            getMap().moveCamera(CameraUpdateFactory.newLatLng(position))
+            map.moveCamera(CameraUpdateFactory.newLatLng(position))
         }else startingCameraPosition = position
     }
 
@@ -111,7 +113,7 @@ class MapListViewModel @Inject constructor(
      * @return the camera position
      */
     fun getCameraPosition():LatLng{
-        return if(mapReady) getMap().cameraPosition.target
+        return if(mapReady) map.cameraPosition.target
         else startingCameraPosition
     }
 
@@ -125,7 +127,7 @@ class MapListViewModel @Inject constructor(
      */
     fun setZoom(zoom: Float){
         if(mapReady) {
-            getMap().moveCamera(CameraUpdateFactory.zoomTo(zoom))
+            map.moveCamera(CameraUpdateFactory.zoomTo(zoom))
         }else{
             startingZoom = zoom
         }
@@ -139,14 +141,15 @@ class MapListViewModel @Inject constructor(
     fun refresh() {
         if (!mapReady) return
         val response = listOfMeetUpResponse.value
+
         meetupList = if(response is Response.Success){
             response.data
         }else emptyList()
         clearMarkers()
 
-        meetupList?.forEach{ meetUp ->
+        meetupList.forEach{ meetUp ->
             val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
-            val marker = getMap().addMarker(MarkerOptions().position(position).title(meetUp.uuid))
+            val marker = map.addMarker(MarkerOptions().position(position).title(meetUp.uuid))
                 ?.let { markers[meetUp.uuid] = it }
         }
     }
@@ -159,7 +162,7 @@ class MapListViewModel @Inject constructor(
      */
     fun setPositionAndZoom(position: LatLng, zoom: Float){
         if(mapReady){
-            getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoom))
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoom))
         }else{
             startingCameraPosition = position
             startingZoom = zoom
@@ -172,7 +175,7 @@ class MapListViewModel @Inject constructor(
      * @return the zoom
      */
     fun getZoom(): Float{
-        return if(mapReady) getMap().cameraPosition.zoom
+        return if(mapReady) map.cameraPosition.zoom
         else startingZoom
     }
     /**

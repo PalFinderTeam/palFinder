@@ -53,7 +53,7 @@ interface MeetUpRepository {
      */
     fun getMeetUpsAroundLocation(
         location: Location,
-        radiusInM: Double
+        radiusInKm: Double
     ): Flow<Response<List<MeetUp>>>
 
     /**
