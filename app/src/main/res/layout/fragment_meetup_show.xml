@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/meetup_show_fragment">
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fc_meetup"
+            android:name="com.github.palFinderTeam.palfinder.meetups.fragments.MeetupViewFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fc_tags"
+            android:layout_width="match_parent"
+            android:layout_height="89dp" />
+
+        <Button
+            android:id="@+id/show_profile_list_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="show profiles" />
+
+        <Button
+            android:id="@+id/bt_JoinMeetup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onJoinOrLeave"
+            android:text="@string/meetup_view_join" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/bt_ChatMeetup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:onClick="onChat"
+            app:srcCompat="@android:drawable/stat_notify_chat" />
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/bt_EditMeetup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="8dp"
+        android:clickable="true"
+        android:foregroundGravity="center_vertical|center"
+        android:onClick="onEdit"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_edit"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

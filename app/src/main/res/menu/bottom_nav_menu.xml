@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/nav_bar_create"
+        android:id="@+id/meetup_creation_fragment"
         android:icon="@android:drawable/ic_menu_edit"
         android:title="@string/nav_bar_create" />
     <item
-        android:id="@+id/nav_bar_find"
-        android:enabled="true"
+        android:id="@+id/map_fragment"
         android:icon="@android:drawable/ic_menu_mylocation"
         android:title="@string/nav_bar_find" />
     <item
-        android:id="@+id/nav_bar_groups"
+        android:id="@+id/meetupListFragment"
         android:icon="@android:drawable/sym_action_chat"
         android:title="@string/nav_bar_group" />
 </menu>

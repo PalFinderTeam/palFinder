@@ -65,7 +65,7 @@ class NavBarTest {
         init()
         ActivityScenario.launch<MainActivity>(intent)
         Espresso.onView(
-            ViewMatchers.withId(R.id.nav_bar_create)
+            ViewMatchers.withId(R.id.meetup_creation_fragment)
         ).perform(ViewActions.click())
         Intents.intended(IntentMatchers.hasComponent(MeetUpCreation::class.java.name))
         release()
@@ -77,7 +77,7 @@ class NavBarTest {
         init()
         ActivityScenario.launch<MainActivity>(intent)
         Espresso.onView(
-            ViewMatchers.withId(R.id.nav_bar_find)
+            ViewMatchers.withId(R.id.map_fragment)
         ).perform(ViewActions.click())
         Intents.intended(IntentMatchers.hasComponent(MapsActivity::class.java.name))
         release()
@@ -89,7 +89,7 @@ class NavBarTest {
         init()
         ActivityScenario.launch<MainActivity>(intent)
         Espresso.onView(
-            ViewMatchers.withId(R.id.nav_bar_groups)
+            ViewMatchers.withId(R.id.meetupListFragment)
         ).perform(ViewActions.click())
         Intents.intended(IntentMatchers.hasComponent(MeetupListActivity::class.java.name))
         Intents.intended(IntentMatchers.hasExtra(SHOW_JOINED_ONLY, true))

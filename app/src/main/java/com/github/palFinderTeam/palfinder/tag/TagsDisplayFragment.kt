@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.github.palFinderTeam.palfinder.R
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -19,10 +19,18 @@ import com.google.android.material.chip.ChipGroup
  * Fragment that display a set of tag as chips. If the set is editable, it also provides visual ways
  * to modify it.
  */
-class TagsDisplayFragment<T: Tag>() : Fragment() {
+class TagsDisplayFragment<T : Tag>() : Fragment() {
 
     // Grab the viewModel from the parent activity/fragment.
-    private val viewModel: TagsViewModel<T> by activityViewModels()
+    private val viewModel: TagsViewModel<T> by viewModels(
+        ownerProducer = {
+            try {
+                requireParentFragment()
+            } catch (e: IllegalStateException) {
+                requireActivity()
+            }
+        }
+    )
     private lateinit var tagGroup: ChipGroup
     private lateinit var plusButton: Button
 
@@ -91,7 +99,7 @@ class TagsDisplayFragment<T: Tag>() : Fragment() {
             // Only show tags that are not already added
             val tagsOptions = allTags.toSet().minus(currentTags)
 
-            TagSelectorFragment(tagsOptions.toList()) { tag -> viewModel.addTag(tag)}
+            TagSelectorFragment(tagsOptions.toList()) { tag -> viewModel.addTag(tag) }
                 .show(fm, "Tag selector")
         }
     }

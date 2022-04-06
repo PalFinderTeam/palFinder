@@ -37,9 +37,9 @@ class NavigationBarFragment : Fragment() {
         nav.selectedItemId = selected
         nav.setOnItemSelectedListener {
             when(it.itemId){
-                R.id.nav_bar_create -> {startActivity(MeetUpCreation::class.java); true}
-                R.id.nav_bar_find -> {startActivity(MapsActivity::class.java); true}
-                R.id.nav_bar_groups -> {startActivityGroup(); true}
+                R.id.meetup_creation_fragment -> {startActivity(MeetUpCreation::class.java); true}
+                R.id.map_fragment-> {startActivity(MapsActivity::class.java); true}
+                R.id.meetupListFragment -> {startActivityGroup(); true}
                 else -> false
             }
         }

@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.github.palFinderTeam.palfinder.activities.MainNavActivity
 import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
@@ -109,6 +110,11 @@ class MainActivity : AppCompatActivity() {
 
     fun accessCreateProfile(view: View?) {
         val intent = Intent(this, UserSettingsActivity::class.java).apply {  }
+        startActivity(intent)
+    }
+
+    fun gotToNavComponent(view: View?) {
+        val intent = Intent(this, MainNavActivity::class.java)
         startActivity(intent)
     }
     

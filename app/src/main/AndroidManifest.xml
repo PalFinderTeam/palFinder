@@ -64,6 +64,8 @@
             android:name=".user.settings.UserSettingsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
+        <activity android:name=".activities.MainNavActivity"
+            android:exported="false" />
 
     </application>
 

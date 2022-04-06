@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.github.palFinderTeam.palfinder.MainActivity
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.activities.MainNavActivity
 import com.google.android.gms.auth.api.identity.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
