@@ -63,7 +63,7 @@ fun Calendar.toSimpleTime(): SimpleTime {
 }
 
 /**
- * Ask the user a date with a UI
+ * Ask the user a date+time with a UI
  *
  * @param supportFragmentManager
  * @param date: Default Date
@@ -88,5 +88,21 @@ fun askTime(
     }
     return timeFrag.value.thenApply {
         dateRes!!.withTime(it)
+    }
+}
+
+/**
+ * Ask the user a date with a UI
+ *
+ * @param supportFragmentManager
+ * @param date: Default Date
+ * @return future of the Calendar
+ */
+fun askDate(supportFragmentManager: FragmentManager, date: SimpleDate? = null): CompletableFuture<Calendar>{
+    val dateFrag = DatePickerFragment(date)
+    dateFrag.show(supportFragmentManager, "datePicker")
+
+    return dateFrag.value.thenApply {
+        it.withTime(SimpleTime(0,0))
     }
 }

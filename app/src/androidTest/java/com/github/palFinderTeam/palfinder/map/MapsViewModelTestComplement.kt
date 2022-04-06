@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.rule.GrantPermissionRule
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
+import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -21,6 +22,8 @@ class MapsViewModelTestComplement {
 
     @Inject
     lateinit var meetUpRepository: MeetUpRepository
+    @Inject
+    lateinit var profileService: ProfileService
 
 
     @get:Rule
@@ -40,7 +43,7 @@ class MapsViewModelTestComplement {
     @Before
     fun init_() {
         hiltRule.inject()
-        viewModel = MapListViewModel(meetUpRepository)
+        viewModel = MapListViewModel(meetUpRepository, profileService)
     }
 
     @Test
