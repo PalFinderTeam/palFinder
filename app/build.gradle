@@ -80,6 +80,12 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
 
+    def nav_version = "2.4.1"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
+
+
     androidTestImplementation ('androidx.test.espresso:espresso-contrib:3.4.0',{
         exclude group: 'com.google.protobuf',module: 'protobuf-javalite'
         exclude group: 'com.google.protobuf',module: 'protobuf-lite'
@@ -110,6 +116,8 @@ dependencies {
     kaptAndroidTest 'com.google.dagger:hilt-compiler:2.41'
 
     androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
+
+    androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
 }
 
 kapt {
