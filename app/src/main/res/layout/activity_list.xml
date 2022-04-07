@@ -29,13 +29,26 @@
         android:id="@+id/sort_list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="4dp"
         android:onClick="showMenu"
         android:text="@string/list_sort_menu"
         app:layout_constraintBottom_toTopOf="@id/list_select_tag"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/search_place"
         app:layout_constraintLeft_toRightOf="@id/search_list"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/search_place"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="2dp"
+        android:onClick="searchOnMap"
+        android:tint="@color/purple_500"
+        app:layout_constraintBottom_toTopOf="@id/list_select_tag"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/search_list"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_dialog_map" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/meetup_list_recycler"
@@ -59,5 +72,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
     </SearchView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
