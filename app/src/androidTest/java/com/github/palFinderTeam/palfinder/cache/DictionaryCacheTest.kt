@@ -7,7 +7,6 @@ import androidx.test.core.app.ApplicationProvider
 import com.github.palFinderTeam.palfinder.chat.ChatService
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileService
-import com.github.palFinderTeam.palfinder.utils.UIMockContextServiceModule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -43,7 +42,7 @@ class DictionaryCacheTest {
         val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
         scenario.use {
             val dummy = Dummy("dummy", 0)
-            val cache = DictionaryCache("test", Dummy::class.java, false, UIMockContextServiceModule.provideContextService())
+            val cache = DictionaryCache("test", Dummy::class.java, false, context)
 
             cache.delete("dummy")
             assertThat(cache.contains("dummy"), `is`(false))
@@ -71,7 +70,7 @@ class DictionaryCacheTest {
         val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
         scenario.use {
             val dummy = Dummy("dummy", 0)
-            val cache = FileCache("test", Dummy::class.java, false, UIMockContextServiceModule.provideContextService())
+            val cache = FileCache("test", Dummy::class.java, false, context)
 
             cache.delete()
             assertThat(cache.exist(), `is`(false))

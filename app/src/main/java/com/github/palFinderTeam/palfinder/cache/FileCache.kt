@@ -1,6 +1,6 @@
 package com.github.palFinderTeam.palfinder.cache
 
-import com.github.palFinderTeam.palfinder.utils.context.ContextService
+import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import java.io.File
@@ -17,16 +17,17 @@ class FileCache<T> (
     private val name: String,
     private val clazz: Class<T>,
     private val permanent: Boolean,
-    private val contextService: ContextService){
+    private val context: Context
+){
 
     private val gson = Gson()
 
     private fun getDir(): File? {
         return if (permanent){
-            contextService.get().dataDir
+            context.dataDir
         }
         else{
-            contextService.get().cacheDir
+            context.cacheDir
         }
     }
 

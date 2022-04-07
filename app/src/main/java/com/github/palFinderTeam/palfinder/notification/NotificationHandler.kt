@@ -23,7 +23,7 @@ class NotificationHandler @Inject constructor(
     private var hasCreateChannel = false
     private var data = MetaData(0)
 
-    private var cache = FileCache("NotificationHandlerMetadata", MetaData::class.java, true, contextProvider)
+    private var cache = FileCache("NotificationHandlerMetadata", MetaData::class.java, true, contextProvider.get())
 
     private fun initChannel(){
         if (!hasCreateChannel){
