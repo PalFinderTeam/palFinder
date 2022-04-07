@@ -92,7 +92,11 @@ class MapsViewModelTestComplement {
         scenario.use{
             scenario.onActivity {
                 it.viewModel.setPositionAndZoom(position, zoom)
-                Assert.assertEquals(position, it.viewModel.getCameraPosition())
+                Assert.assertTrue(
+                    Location(position.longitude, position.latitude).distanceInKm(
+                        Location(it.viewModel.getCameraPosition().longitude,
+                            it.viewModel.getCameraPosition().latitude))  < 1.0)
+
                 Assert.assertEquals(zoom, it.viewModel.getZoom())
             }
         }
