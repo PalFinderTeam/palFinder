@@ -178,13 +178,15 @@ class MapsActivityTest {
 
         scenario.use {
             scenario.onActivity {
-
                 Assert.assertEquals(GoogleMap.MAP_TYPE_NORMAL, it.viewModel.map.mapType)
-                onView(withId(R.id.bt_changeMapType)).perform(click())
+            }
+            onView(withId(R.id.bt_changeMapType)).perform(click())
+            scenario.onActivity {
                 Assert.assertEquals(GoogleMap.MAP_TYPE_SATELLITE, it.viewModel.map.mapType)
-                onView(withId(R.id.bt_changeMapType)).perform(click())
-                Assert.assertEquals(GoogleMap.MAP_TYPE_NORMAL, it.viewModel.map.mapType)
-
+            }
+            onView(withId(R.id.bt_changeMapType)).perform(click())
+            scenario.onActivity {
+            Assert.assertEquals(GoogleMap.MAP_TYPE_NORMAL, it.viewModel.map.mapType)
             }
         }
     }
