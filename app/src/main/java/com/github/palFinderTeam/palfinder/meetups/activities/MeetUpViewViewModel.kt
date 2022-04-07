@@ -70,6 +70,7 @@ class MeetUpViewViewModel @Inject constructor(
             false
         }
     }
+
     fun joinOrLeave(context: Context){
         val uuid = profileService.getLoggedInUserID()
         if (uuid != null){

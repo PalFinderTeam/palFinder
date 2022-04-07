@@ -35,6 +35,7 @@ class MeetUpCreationViewModel @Inject constructor(
     private val _hasMaxCapacity: MutableLiveData<Boolean> = MutableLiveData()
     private val _name: MutableLiveData<String> = MutableLiveData()
     private val _description: MutableLiveData<String> = MutableLiveData()
+    private val _icon: MutableLiveData<String?> = MutableLiveData()
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData()
     private val _participantsId: MutableLiveData<List<String>> = MutableLiveData(emptyList())
     private val _location: MutableLiveData<Location> = MutableLiveData()
@@ -47,6 +48,7 @@ class MeetUpCreationViewModel @Inject constructor(
     val hasMaxCapacity: LiveData<Boolean> = _hasMaxCapacity
     val name: LiveData<String> = _name
     val description: LiveData<String> = _description
+    val icon: LiveData<String?> = _icon
     val sendSuccess: LiveData<Boolean> = _sendSuccess
     val tags: LiveData<Set<Category>> = _tags
     val participantsId: LiveData<List<String>> = _participantsId
@@ -126,6 +128,7 @@ class MeetUpCreationViewModel @Inject constructor(
             if (meetUp != null) {
                 uuid = meetUp.uuid
                 _name.postValue(meetUp.name)
+                _icon.postValue(meetUp.iconId)
                 _description.postValue(meetUp.description)
                 _startDate.postValue(meetUp.startDate)
                 _endDate.postValue(meetUp.endDate)
