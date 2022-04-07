@@ -99,11 +99,6 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         }
         
 
-        navBar.isVisible = false
-        navBar.isEnabled = false
-        }
-        
-
 
 
     

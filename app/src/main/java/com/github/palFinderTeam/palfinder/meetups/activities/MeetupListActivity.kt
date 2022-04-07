@@ -70,7 +70,7 @@ class MeetupListActivity : MapListSuperActivity() {
                         meetups, meetups.toMutableList(), ::filter
                     ) {
                         adapter.notifyDataSetChanged()
-                    })
+                    }, Location.latLngToLocation(viewModel.getCameraPosition()))
                 { onListItemClick(it) }
                 meetupList.adapter = adapter
                 SearchedFilter.setupSearchField(searchField, adapter.filter)
@@ -175,7 +175,7 @@ class MeetupListActivity : MapListSuperActivity() {
     fun searchOnMap(view: View?){
         val intent = Intent(this, MapsActivity::class.java)
         val extras = Bundle().apply {
-            putParcelable(LOCATION_SELECT, LatLng(1.0, 1.0))
+            putParcelable(LOCATION_SELECT, viewModel.getCameraPosition())
             putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
         }
         intent.putExtras(extras)
