@@ -309,6 +309,7 @@ class MeetUpListTest {
 
             intended(hasExtras(BundleMatchers.hasEntry(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)))
             intended(hasExtras(BundleMatchers.hasEntry(LOCATION_SELECT, LatLng(0.0, 0.0))))
+            release()
         }
     }
 
