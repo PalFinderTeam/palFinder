@@ -44,6 +44,15 @@ class NotificationHandler @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotification(title: String, content: String, icon: Int): Notification{
+        return Notification.Builder(contextProvider.get(), CHANNEL_ID)
+            .setContentTitle(title)
+            .setContentText(content)
+            .setSmallIcon(icon)
+            .build()
+    }
+
 
     private fun post(notification: Notification){
         initChannel()
@@ -64,12 +73,7 @@ class NotificationHandler @Inject constructor(
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun post(title: String, content: String, icon: Int){
-        var builder = Notification.Builder(contextProvider.get(), CHANNEL_ID)
-            .setContentTitle(title)
-            .setContentText(content)
-            .setSmallIcon(icon)
-
-        post(builder.build())
+        post(createNotification(title,content, icon))
     }
 
     /**
@@ -87,6 +91,7 @@ class NotificationHandler @Inject constructor(
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun schedule(date: Calendar, notification: Notification){
         val notificationIntent = Intent(contextProvider.get(), this::class.java).apply {
             putExtra(NOTIFICATION, notification)
@@ -95,7 +100,7 @@ class NotificationHandler @Inject constructor(
             contextProvider.get(),
             0,
             notificationIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_MUTABLE
         )
 
         val alarmManager = getSystemService(contextProvider.get(), AlarmManager::class.java)
@@ -109,14 +114,9 @@ class NotificationHandler @Inject constructor(
      * @param content: Content of the notification
      * @param icon: Icon of the notification
      */
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.S)
     fun schedule(date: Calendar, title: String, content: String, icon: Int){
-        var builder = Notification.Builder(contextProvider.get(), CHANNEL_ID)
-            .setContentTitle(title)
-            .setContentText(content)
-            .setSmallIcon(icon)
-
-        schedule(date, builder.build())
+        schedule(date, createNotification(title,content, icon))
     }
 
     /**
@@ -126,7 +126,7 @@ class NotificationHandler @Inject constructor(
      * @param content: Content of the notification
      * @param icon: Icon of the notification
      */
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.S)
     fun schedule(date: Calendar, title: Int, content: Int, icon: Int){
         schedule(
             date,

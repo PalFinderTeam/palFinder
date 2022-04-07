@@ -117,5 +117,6 @@
     <string name="userSettingsSaveFail">An error occurred while trying to save. Please try again</string>
     <string name="userSettingsSaveCreate">Account created! Welcome to PalFinder :)</string>
 
-
+    <string name="testNotifTitle">title</string>
+    <string name="testNotifContent">content</string>
 </resources>
