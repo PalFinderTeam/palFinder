@@ -51,20 +51,22 @@ class MeetupListActivity : MapListSuperActivity() {
         viewModel.showOnlyJoined = intent.getBooleanExtra(SHOW_JOINED_ONLY,false)
 
         viewModel.listOfMeetUpResponse.observe(this) { it ->
-            val meetups = (it as Response.Success).data
-            adapter = MeetupListAdapter(
-                meetups,
-                meetups.toMutableList(),
-                SearchedFilter(
-                    meetups, meetups.toMutableList(), ::filter
-                ) {
-                    adapter.notifyDataSetChanged()
-                },
-                Location.latLngToLocation(viewModel.getCameraPosition())
-            )
-            { onListItemClick(it) }
-            meetupList.adapter = adapter
-            SearchedFilter.setupSearchField(searchField, adapter.filter)
+            if (it is Response.Success) {
+                val meetups = it.data
+                adapter = MeetupListAdapter(
+                    meetups,
+                    meetups.toMutableList(),
+                    SearchedFilter(
+                        meetups, meetups.toMutableList(), ::filter
+                    ) {
+                        adapter.notifyDataSetChanged()
+                    },
+                    Location.latLngToLocation(viewModel.getCameraPosition())
+                )
+                { onListItemClick(it) }
+                meetupList.adapter = adapter
+                SearchedFilter.setupSearchField(searchField, adapter.filter)
+            }
         }
 
         tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
