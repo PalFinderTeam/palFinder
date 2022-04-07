@@ -10,35 +10,33 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.FileCache
-import com.github.palFinderTeam.palfinder.utils.context.ContextService
 import java.util.*
-import javax.inject.Inject
 
 private const val CHANNEL_ID = "PalFinder"
 private const val NOTIFICATION = "notification"
 
-class NotificationHandler @Inject constructor(
-    private val contextProvider: ContextService
+class NotificationHandler (
+    private val context: Context
 ): BroadcastReceiver(){
     private var hasCreateChannel = false
     private var data = MetaData(0)
 
-    private var cache = FileCache("NotificationHandlerMetadata", MetaData::class.java, true, contextProvider.get())
+    private var cache = FileCache("NotificationHandlerMetadata", MetaData::class.java, true, context)
 
     private fun initChannel(){
         if (!hasCreateChannel){
             hasCreateChannel = true
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val name = contextProvider.get().getString(R.string.app_name)
-                val descriptionText = contextProvider.get().getString(R.string.app_name)
+                val name = context.getString(R.string.app_name)
+                val descriptionText = context.getString(R.string.app_name)
                 val importance = NotificationManager.IMPORTANCE_DEFAULT
                 val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                     description = descriptionText
                 }
 
                 val notificationManager: NotificationManager =
-                    getSystemService(contextProvider.get(), NotificationManager::class.java)!!
+                    getSystemService(context, NotificationManager::class.java)!!
                 notificationManager.createNotificationChannel(channel)
             }
         }
@@ -46,7 +44,7 @@ class NotificationHandler @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotification(title: String, content: String, icon: Int): Notification{
-        return Notification.Builder(contextProvider.get(), CHANNEL_ID)
+        return Notification.Builder(context, CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(content)
             .setSmallIcon(icon)
@@ -56,7 +54,7 @@ class NotificationHandler @Inject constructor(
 
     private fun post(notification: Notification){
         initChannel()
-        with(NotificationManagerCompat.from(contextProvider.get())) {
+        with(NotificationManagerCompat.from(context)) {
             if (cache.exist()){
                 data = cache.get()
             }
@@ -85,25 +83,25 @@ class NotificationHandler @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun post(title: Int, content: Int, icon: Int){
         post(
-            contextProvider.get().getString(title),
-            contextProvider.get().getString(content),
+            context.getString(title),
+            context.getString(content),
             icon
         )
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
     private fun schedule(date: Calendar, notification: Notification){
-        val notificationIntent = Intent(contextProvider.get(), this::class.java).apply {
+        val notificationIntent = Intent(context, this::class.java).apply {
             putExtra(NOTIFICATION, notification)
         }
         val pendingIntent = PendingIntent.getBroadcast(
-            contextProvider.get(),
+            context,
             0,
             notificationIntent,
             PendingIntent.FLAG_MUTABLE
         )
 
-        val alarmManager = getSystemService(contextProvider.get(), AlarmManager::class.java)
+        val alarmManager = getSystemService(context, AlarmManager::class.java)
         alarmManager!![AlarmManager.ELAPSED_REALTIME_WAKEUP, date.timeInMillis] = pendingIntent
     }
 
@@ -130,8 +128,8 @@ class NotificationHandler @Inject constructor(
     fun schedule(date: Calendar, title: Int, content: Int, icon: Int){
         schedule(
             date,
-            contextProvider.get().getString(title),
-            contextProvider.get().getString(content),
+            context.getString(title),
+            context.getString(content),
             icon
         )
     }
