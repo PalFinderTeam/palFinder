@@ -86,7 +86,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
                     if (it is Response.Success) {
                         viewModel.refresh()
                     }
-                button.apply { this.hide() }
+                selectMapTypeButton.apply { this.hide() }
                 mapSelection.active.value = false
                 }
             }
