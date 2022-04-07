@@ -58,7 +58,8 @@ class MeetupListActivity : MapListSuperActivity() {
                         meetups, meetups.toMutableList(), ::filterTags
                     ) {
                         adapter.notifyDataSetChanged()
-                    })
+                    }, Location.latLngToLocation
+                (viewModel.getCameraPosition()))
                 { onListItemClick(it) }
                 meetupList.adapter = adapter
                 SearchedFilter.setupSearchField(searchField, adapter.filter)
