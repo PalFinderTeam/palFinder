@@ -50,7 +50,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         selectLocationButton = findViewById(R.id.bt_locationSelection)
-        selectLocationButton = findViewById(R.id.bt_changeMapType)
+        selectMapTypeButton = findViewById(R.id.bt_changeMapType)
         navBar = findViewById(R.id.fc_navbar)
         viewModel.update()
 

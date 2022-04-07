@@ -7,9 +7,6 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.Intents.*
-import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -22,6 +19,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.internal.ContextUtils.getActivity
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -46,6 +44,7 @@ class MapsActivityTest {
     lateinit var profileService: ProfileService
 
 
+
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
@@ -58,12 +57,10 @@ class MapsActivityTest {
         GrantPermissionRule.grant(android.Manifest.permission.ACCESS_COARSE_LOCATION)
 
 
-    lateinit var utils: MapListViewModel
 
     @Before
     fun init_() {
         hiltRule.inject()
-        utils = MapListViewModel(meetUpRepository, profileService)
     }
 
 
@@ -137,7 +134,6 @@ class MapsActivityTest {
         device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
 
         scenario.use{
-            utils.setCameraPosition(basePosition)
             val marker = device.findObject(
                 UiSelector().descriptionContains("Google Map")
                     .childSelector(UiSelector().descriptionContains("Here"))
@@ -181,7 +177,15 @@ class MapsActivityTest {
         val scenario = ActivityScenario.launch<MapsActivity>(intent)
 
         scenario.use {
-            //Assert.assertEquals(onView(withId(R.id.map)))
+            scenario.onActivity {
+
+                Assert.assertEquals(GoogleMap.MAP_TYPE_NORMAL, it.viewModel.map.mapType)
+                onView(withId(R.id.bt_changeMapType)).perform(click())
+                Assert.assertEquals(GoogleMap.MAP_TYPE_SATELLITE, it.viewModel.map.mapType)
+                onView(withId(R.id.bt_changeMapType)).perform(click())
+                Assert.assertEquals(GoogleMap.MAP_TYPE_NORMAL, it.viewModel.map.mapType)
+
+            }
         }
     }
 }
