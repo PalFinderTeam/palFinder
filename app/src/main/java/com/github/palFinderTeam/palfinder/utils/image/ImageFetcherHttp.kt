@@ -2,16 +2,12 @@ package com.github.palFinderTeam.palfinder.utils.image
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.AsyncTask
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedInputStream
-import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 
 /**
  * Download an image as a bitmap from an HTTPS link

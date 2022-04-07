@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.icu.util.Calendar
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +12,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.isBefore
 import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
 import com.google.android.gms.maps.model.LatLng
@@ -21,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MeetUpCreationViewModel @Inject constructor(
     private val meetUpRepository: MeetUpRepository,
+    private val imageUploader: ImageUploader,
     private val profileService: ProfileService,
     private val calendar: Calendar
 ) : ViewModel() {
@@ -39,6 +42,8 @@ class MeetUpCreationViewModel @Inject constructor(
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData()
     private val _participantsId: MutableLiveData<List<String>> = MutableLiveData(emptyList())
     private val _location: MutableLiveData<Location> = MutableLiveData()
+    private val _iconUri: MutableLiveData<Uri> = MutableLiveData()
+    private val _iconUrl: MutableLiveData<String> = MutableLiveData()
 
     private val _sendSuccess: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -52,6 +57,8 @@ class MeetUpCreationViewModel @Inject constructor(
     val sendSuccess: LiveData<Boolean> = _sendSuccess
     val tags: LiveData<Set<Category>> = _tags
     val participantsId: LiveData<List<String>> = _participantsId
+    val iconUri: LiveData<Uri> = _iconUri
+    val iconUrl: LiveData<String> = _iconUrl
 
     val maxStartDate: Calendar
         get() {
@@ -117,6 +124,10 @@ class MeetUpCreationViewModel @Inject constructor(
 
     fun getMeetUpId() = uuid
 
+    fun setIcon(iconUri: Uri) {
+        _iconUri.value = iconUri
+    }
+
     /**
      * Load asynchronously a meetUp and update liveData on success.
      *
@@ -137,6 +148,9 @@ class MeetUpCreationViewModel @Inject constructor(
                 _tags.postValue(meetUp.tags)
                 _participantsId.postValue(meetUp.participantsId)
                 _location.postValue(meetUp.location)
+                meetUp.iconId?.let {
+                    _iconUrl.postValue(it)
+                }
 
                 _canEditStartDate.postValue(!meetUp.isStarted(Calendar.getInstance()))
                 _canEditEndDate.postValue(!meetUp.isFinished(Calendar.getInstance()))
@@ -152,38 +166,45 @@ class MeetUpCreationViewModel @Inject constructor(
      * Send every field as a MeetUp to DB.
      */
     fun sendMeetUp() {
-        val owner = profileService.getLoggedInUserID()!!
-        var meetUp = MeetUp(
-            uuid.orEmpty(),
-            owner,
-            // TODO Put real icon
-            "icons/cat.png",
-            name.value!!,
-            description.value!!,
-            startDate.value!!,
-            endDate.value!!,
-            location.value!!,
-            tags.value.orEmpty(),
-            hasMaxCapacity.value!!,
-            capacity.value!!,
-            participantsId.value!!
-        )
-        if (uuid == null) {
-            // create new meetup
-            // Make sure the meetup start at least now when it is created
-            if (startDate.value!!.isBefore(Calendar.getInstance())) {
-                _startDate.value = Calendar.getInstance()
-                checkDateIntegrity()
-                meetUp = meetUp.copy(startDate = startDate.value!!, endDate = endDate.value!!)
+        viewModelScope.launch {
+            val iconPath = iconUri.value?.let { uri ->
+                val id = imageUploader.uploadImage(uri)
+                // Also remove the previous icon from DB to avoid garbage.
+                iconUrl.value?.let { url ->
+                    imageUploader.removeImage(url)
+                }
+                id
             }
-            viewModelScope.launch {
+            val owner = profileService.getLoggedInUserID()!!
+            var meetUp = MeetUp(
+                uuid.orEmpty(),
+                // TODO Get ID
+                owner,
+                iconPath,
+                name.value!!,
+                description.value!!,
+                startDate.value!!,
+                endDate.value!!,
+                location.value!!,
+                tags.value.orEmpty(),
+                hasMaxCapacity.value!!,
+                capacity.value!!,
+                participantsId.value!!
+            )
+            if (uuid == null) {
+                // create new meetup
+                // create new meetup
+                // Make sure the meetup start at least now when it is created
+                if (startDate.value!!.isBefore(Calendar.getInstance())) {
+                    _startDate.value = Calendar.getInstance()
+                    checkDateIntegrity()
+                    meetUp = meetUp.copy(startDate = startDate.value!!, endDate = endDate.value!!)
+                }
                 uuid = meetUpRepository.createMeetUp(meetUp)
                 // Notify sending result
                 _sendSuccess.postValue(uuid != null)
-            }
-        } else {
-            // Edit existing one
-            viewModelScope.launch {
+            } else {
+                // Edit existing one
                 meetUpRepository.editMeetUp(uuid!!, meetUp)
                 // Notify sending result
                 _sendSuccess.postValue(true)

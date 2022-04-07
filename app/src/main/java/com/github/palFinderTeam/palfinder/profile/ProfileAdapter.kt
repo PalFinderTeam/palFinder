@@ -14,7 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ProfileAdapter<T: ProfileUser>(private val dataSet: List<T>, private val onItemClicked: (position: Int) -> Unit) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(),
+class ProfileAdapter(private val dataSet: List<ProfileUser>, private val onItemClicked: (position: Int) -> Unit) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(),
     Filterable {
     val currentDataSet = dataSet.toMutableList()
 

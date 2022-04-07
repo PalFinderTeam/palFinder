@@ -1,16 +1,15 @@
 package com.github.palFinderTeam.palfinder.user.settings
 
-import android.content.Intent
 import android.icu.util.Calendar
-import android.util.Log
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,10 +17,11 @@ import javax.inject.Inject
 @HiltViewModel
 class UserSettingsViewModel @Inject constructor(
     private val profileService: ProfileService,
+    private val imageUploader: ImageUploader
 ) : ViewModel() {
 
     // Define length constraints
-    companion object{
+    companion object {
         const val FIELD_USERNAME = "username"
         const val FIELD_NAME = "name"
         const val FIELD_SURNAME = "surname"
@@ -31,16 +31,17 @@ class UserSettingsViewModel @Inject constructor(
 
         // Define each field's allowed MIN/MAX length
         val FIELDS_LENGTH: Map<String, Pair<Int, Int>> = hashMapOf(
-            FIELD_USERNAME to Pair(1,32),
-            FIELD_NAME to Pair(1,32),
-            FIELD_SURNAME to Pair(0,32),
-            FIELD_BIO to Pair(0,180)
+            FIELD_USERNAME to Pair(1, 32),
+            FIELD_NAME to Pair(1, 32),
+            FIELD_SURNAME to Pair(0, 32),
+            FIELD_BIO to Pair(0, 180)
         )
 
         const val MSG_NO_MSG = ""
         const val MSG_FIELD_TOO_LONG = "Your %s exceeds the max %d characters allowed (has %d)"
         const val MSG_FIELD_TOO_SHORT = "Your %s is too short (or cannot be empty)!"
-        const val MSG_USERNAME_BAD = "Username \"%s\" is invalid (can contain letters/numbers/. or _)"
+        const val MSG_USERNAME_BAD =
+            "Username \"%s\" is invalid (can contain letters/numbers/. or _)"
 
         // Values for updates that indicate the status of the update process
         const val UPDATE_IDLE = 0
@@ -50,7 +51,8 @@ class UserSettingsViewModel @Inject constructor(
         const val CREATE_SUCCESS = 4
     }
 
-    var loggedUID: String = "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2" //TODO: TEMP VALUE, actual logged in ID to be fetched
+    var loggedUID: String =
+        "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2" //TODO: TEMP VALUE, actual logged in ID to be fetched
     //var loggedUID: String = "aaaaaaa"
 
     private lateinit var _joinDate: Calendar
@@ -62,7 +64,10 @@ class UserSettingsViewModel @Inject constructor(
     private val _surname: MutableLiveData<String> = MutableLiveData()
     private val _birthday: MutableLiveData<Calendar?> = MutableLiveData()
     private val _userBio: MutableLiveData<String> = MutableLiveData()
-    private val _pfp: MutableLiveData<String> = MutableLiveData() //TODO: Image will be the path to the uploaded picture
+    private val _pfp: MutableLiveData<String> = MutableLiveData()
+
+    // The difference with the _pfp is that here it points to a local file and will be set only if the user choose a new icon.
+    private val _pfpUri: MutableLiveData<Uri> = MutableLiveData()
 
     val username: LiveData<String> = _username
     val name: LiveData<String> = _name
@@ -70,6 +75,7 @@ class UserSettingsViewModel @Inject constructor(
     val birthday: LiveData<Calendar?> = _birthday
     val userBio: LiveData<String> = _userBio
     val pfp: LiveData<String> = _pfp
+    val pfpUri: LiveData<Uri> = _pfpUri
 
     // To indicate success of database fetch
     private val _updateStatus: MutableLiveData<Int> = MutableLiveData(UPDATE_IDLE)
@@ -85,7 +91,8 @@ class UserSettingsViewModel @Inject constructor(
         _surname.value = ""
         _birthday.value = null
         _userBio.value = ""
-        _pfp.value = "" //TODO: TEMP VALUE until image upload works (everyone turns into a cat for now)
+        _pfp.value =
+            "" //TODO: TEMP VALUE until image upload works (everyone turns into a cat for now)
     }
 
     /**
@@ -157,6 +164,10 @@ class UserSettingsViewModel @Inject constructor(
         _userBio.value = bio
     }
 
+    fun setPfp(uri: Uri) {
+        _pfpUri.value = uri
+    }
+
     /**
      * Checks if a specific field value meets the
      * defined requirements. If the requirements of
@@ -168,7 +179,7 @@ class UserSettingsViewModel @Inject constructor(
      * @return a string message to display in case of an error,
      * if no error EMPTY_STRING is returned
      */
-    private fun checkField(fieldName: String, fieldValue: String) : String{
+    private fun checkField(fieldName: String, fieldValue: String): String {
         // Anything that was not defined with constraints are accepted
         if (!FIELDS_LENGTH.containsKey(fieldName)) return ""
 
@@ -194,17 +205,28 @@ class UserSettingsViewModel @Inject constructor(
     fun saveValuesIntoDatabase() {
         viewModelScope.launch {
             _updateStatus.postValue(UPDATE_RUNNING)
+            pfpUri.value?.let {
+                val newPath = imageUploader.uploadImage(it)
+                if (newPath != null) {
+                    // Also remove the previous icon from DB to avoid garbage.
+                    pfp.value?.let { url ->
+                        imageUploader.removeImage(url)
+                    }
+                    // We choose the new image only if not null
+                    _pfp.value = newPath!!
+                }
+            }
+            val newUser = ProfileUser(
+                uuid = loggedUID,
+                username = username.value!!,
+                name = name.value!!,
+                surname = surname.value!!,
+                joinDate = _joinDate,
+                pfp = ImageInstance(pfp.value!!),
+                description = userBio.value!!,
+                birthday = birthday.value
+            )
             if (_isNewUser) {
-                val newUser = ProfileUser(
-                    uuid = loggedUID,
-                    username = username.value!!,
-                    name = name.value!!,
-                    surname = surname.value!!,
-                    joinDate = _joinDate,
-                    pfp = ImageInstance(pfp.value!!),
-                    description = userBio.value!!,
-                    birthday = birthday.value
-                )
 
                 // Notify result
                 if (profileService.createProfile(newUser) != null) {
@@ -217,18 +239,8 @@ class UserSettingsViewModel @Inject constructor(
 
                 // If user not found for some reason, fall back to adding new join date
                 val joinDate = oldUser?.joinDate ?: Calendar.getInstance()
-                val newUser = ProfileUser(
-                    uuid = loggedUID,
-                    username = username.value!!,
-                    name = name.value!!,
-                    surname = surname.value!!,
-                    joinDate = joinDate,
-                    pfp = ImageInstance(pfp.value!!),
-                    description = userBio.value!!,
-                    birthday = birthday.value
-                )
                 // Notify result
-                if (profileService.editUserProfile(loggedUID, newUser) != null) {
+                if (profileService.editUserProfile(loggedUID, newUser.copy(joinDate = joinDate)) != null) {
                     _updateStatus.postValue(UPDATE_SUCCESS)
                 } else {
                     _updateStatus.postValue(UPDATE_ERROR)
@@ -246,7 +258,7 @@ class UserSettingsViewModel @Inject constructor(
      * @return empty MSG if all fields passed, error message
      * otherwise
      */
-    fun checkAllFields() : String {
+    fun checkAllFields(): String {
         val fieldsToDataCheck: Map<String, LiveData<String>> = hashMapOf(
             FIELD_USERNAME to username,
             FIELD_NAME to name,
