@@ -4,6 +4,7 @@ import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.SearchView
@@ -57,11 +58,11 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
 
         val extras = intent.extras
 
-        context = if(extras != null) ({
+        context = if(extras != null) {
             if (extras.containsKey(CONTEXT)){
                 extras.getString(CONTEXT)!!
             } else MARKER
-        }.toString()) else MARKER
+        } else MARKER
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -215,6 +216,10 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
 
     override fun onQueryTextChange(p0: String?): Boolean {
         return false
+    }
+
+    fun getContext(): String{
+        return context
     }
 
 }

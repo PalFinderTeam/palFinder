@@ -134,6 +134,9 @@ class MapsActivityTest {
         device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
 
         scenario.use{
+            scenario.onActivity {
+                Assert.assertEquals(MapsActivity.SELECT_LOCATION,it.getContext())
+            }
             utils.setCameraPosition(basePosition)
             val marker = device.findObject(
                 UiSelector().descriptionContains("Google Map")
