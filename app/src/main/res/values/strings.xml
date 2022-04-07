@@ -46,6 +46,7 @@
     <string name="meetup_creation_meetup_entries">Limit Entries</string>
     <string name="meetup_creation_meetup_done">Done</string>
     <string name="meetup_creation_meetup_select_location">Select Location</string>
+    <string name="meetup_creation_meetup_location_not_selected">Location Not Selected</string>
 
     <string name="list_sort_by_alphabetical_order">Sort by Alph.</string>
     <string name="list_sort_by_capacity">Sort by Cap.</string>
@@ -123,5 +124,6 @@
     <string name="userSettingsSaveFail">An error occurred while trying to save. Please try again</string>
     <string name="userSettingsSaveCreate">Account created! Welcome to PalFinder :)</string>
 
-
+    <string name="testNotifTitle">title</string>
+    <string name="testNotifContent">content</string>
 </resources>
