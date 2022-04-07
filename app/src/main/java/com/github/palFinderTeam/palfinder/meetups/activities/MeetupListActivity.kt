@@ -64,13 +64,14 @@ class MeetupListActivity : MapListSuperActivity() {
 
         viewModel.listOfMeetUpResponse.observe(this) { it ->
             if (it is Response.Success) {
-                val meetups = (it as Response.Success).data.filter { filter(it) }
+                val meetups = it.data.filter { isParticipating(it) }
                 adapter = MeetupListAdapter(meetups, meetups.toMutableList(),
                     SearchedFilter(
-                        meetups, meetups.toMutableList(), ::filter
+                        meetups, meetups.toMutableList(), ::filterTags
                     ) {
                         adapter.notifyDataSetChanged()
-                    }, Location.latLngToLocation(viewModel.getCameraPosition()))
+                    }, Location.latLngToLocation
+                (viewModel.getCameraPosition()))
                 { onListItemClick(it) }
                 meetupList.adapter = adapter
                 SearchedFilter.setupSearchField(searchField, adapter.filter)
@@ -88,24 +89,20 @@ class MeetupListActivity : MapListSuperActivity() {
         registerActivityResult()
     }
 
-    private fun filter(meetup : MeetUp): Boolean {
-        return if (viewModel.showOnlyJoined){
-            filterTags(meetup) && isParticipating(meetup)
-        } else{
-            filterTags(meetup)
-        }
-    }
-
     private fun filterTags(meetup : MeetUp): Boolean {
         return meetup.tags.containsAll(viewModel.tags.value!!)
     }
 
     private fun isParticipating(meetup : MeetUp): Boolean {
-        val user = viewModel.getUser()
-        return if (user != null){
-            meetup.isParticipating(user)
-        } else{
-            false
+        return if (viewModel.showOnlyJoined) {
+            val user = viewModel.getUser()
+            return if (user != null) {
+                meetup.isParticipating(user)
+            } else {
+                false
+            }
+        } else {
+            true
         }
     }
 

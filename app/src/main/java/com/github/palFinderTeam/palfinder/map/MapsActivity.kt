@@ -35,7 +35,7 @@ const val CONTEXT = "com.github.palFinderTeam.palFinder.MAP.CONTEXT"
 
 @AndroidEntryPoint
 class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
-    GoogleMap.OnCameraMoveListener, SearchView.OnQueryTextListener {
+    GoogleMap.OnCameraMoveCanceledListener, SearchView.OnQueryTextListener {
 
     private lateinit var binding: ActivityMapsBinding
     private lateinit var button: FloatingActionButton
@@ -167,7 +167,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         when(context){
             MARKER -> {
                 map.setOnMarkerClickListener(this)
-                map.setOnCameraMoveListener(this)
+                map.setOnCameraMoveCanceledListener(this)
             }
             SELECT_LOCATION -> {
                 map.setOnMapClickListener { onMapClick(it) }
@@ -183,7 +183,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
 
     }
 
-    override fun onCameraMove() {
+    override fun onCameraMoveCanceled() {
         viewModel.update()
     }
 
