@@ -41,12 +41,13 @@ data class ImageInstance(
             view.setImageBitmap(bitmapCache)
         } else {
             if(imgURL != "") {
+                EspressoIdlingResource.increment()
                 try {
                     view.setImageResource(android.R.color.background_dark)
                     view.alpha = 0.3f
 
-                    EspressoIdlingResource.increment()
-                    fetchFromDB()
+                    bitmapCache = fetchFromDB()
+                    isCached = true
 
                     imgStatus = CACHED
                     view.setImageBitmap(bitmapCache)
@@ -80,11 +81,9 @@ data class ImageInstance(
     /**
      * Load the online image with the correct tools
      */
-    private suspend fun fetchFromDB(){
+    private suspend fun fetchFromDB(): Bitmap?{
         if (imgFetch!=null) {
-            bitmapCache = imgFetch!!.fetchImage()
-            isCached = true
-            return
+            return imgFetch!!.fetchImage()
         }
         // Select corresponding fetcher
         val fetcher : ImageFetcher = if (UrlFormat.getUrlType(imgURL) == UrlFormat.URL_IS_FIREBASE) {
@@ -92,7 +91,6 @@ data class ImageInstance(
         } else {
             ImageFetcherHttp(imgURL)
         }
-        bitmapCache = fetcher.fetchImage()
-        isCached = true
+        return fetcher.fetchImage()
     }
 }
