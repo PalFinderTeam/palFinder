@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.user.settings
 
 import android.icu.util.Calendar
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,7 @@ import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -51,9 +53,7 @@ class UserSettingsViewModel @Inject constructor(
         const val CREATE_SUCCESS = 4
     }
 
-    var loggedUID: String =
-        "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2" //TODO: TEMP VALUE, actual logged in ID to be fetched
-    //var loggedUID: String = "aaaaaaa"
+    var loggedUID: String = profileService.getLoggedInUserID().orEmpty()
 
     private lateinit var _joinDate: Calendar
 
@@ -121,6 +121,7 @@ class UserSettingsViewModel @Inject constructor(
      */
     fun loadUserInfo(preFillUser: ProfileUser? = null) {
         // Add prefill text, that means user creates an account
+        _joinDate = Calendar.getInstance()
         if (preFillUser != null) {
             _isNewUser = true
             _joinDate = preFillUser.joinDate
@@ -210,7 +211,13 @@ class UserSettingsViewModel @Inject constructor(
                 if (newPath != null) {
                     // Also remove the previous icon from DB to avoid garbage.
                     pfp.value?.let { url ->
-                        imageUploader.removeImage(url)
+                        if (url.isNotEmpty()) {
+                            try {
+                                imageUploader.removeImage(url)
+                            } catch (e : Exception) {
+                                Log.e("UserSettings", e.message.orEmpty())
+                            }
+                        }
                     }
                     // We choose the new image only if not null
                     _pfp.value = newPath!!
