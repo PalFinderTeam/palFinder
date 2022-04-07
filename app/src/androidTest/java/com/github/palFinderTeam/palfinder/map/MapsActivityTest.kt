@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.map
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import android.view.KeyEvent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -21,11 +22,8 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.material.internal.ContextUtils.getActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.not
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -125,9 +123,12 @@ class MapsActivityTest {
     fun testSelectLocation(){
         val intent = Intent(ApplicationProvider.getApplicationContext(), MapsActivity::class.java)
         val basePosition = LatLng(42.0, 42.0)
-        intent.apply {
-            putExtra(LOCATION_SELECT, basePosition)
+        val extras = Bundle().apply {
+            putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
+            putParcelable(LOCATION_SELECT, basePosition)
         }
+        intent.putExtras(extras)
+
         val scenario = ActivityScenario.launch<MapsActivity>(intent)
 
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())

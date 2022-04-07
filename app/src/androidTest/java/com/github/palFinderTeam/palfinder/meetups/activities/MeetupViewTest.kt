@@ -241,6 +241,7 @@ class MeetupViewTest {
         }
     }
 
+
     /*@Test
     fun userClickableInFragment() = runTest {
         val userid = profileRepository.createProfile(user)
