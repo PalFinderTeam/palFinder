@@ -88,8 +88,8 @@
     <string name="DB_error_msg">Cannot contact database</string>
 
     <string name="pretty_location_too_small">Here</string>
-    <string name="pretty_location_m">%1$s m away</string>
-    <string name="pretty_location_km">%1$s km away</string>
+    <string name="pretty_location_m">%1$s m</string>
+    <string name="pretty_location_km">%1$s km</string>
 
     <string name="nav_bar_create">Create</string>
     <string name="nav_bar_find">Find</string>
@@ -111,6 +111,10 @@
     <string name="read_more">Read more</string>
     <string name="userSettingsBirthday">Birthday (Optional)</string>
     <string name="working_out_tag">working out</string>
+
+    <string name="meetup_demo_title">This is a demo title for a meetup</string>
+    <string name="meetup_demo_desc">This is a demo description for a meetup, it\'s fun but if it\'s too long it\'s still okay because it fits this box</string>
+
     <string name="SettingsBdayHint">Please note that you won\'t be able to join events that require a minimum age.</string>
     <string name="userSettings">Read more</string>
 
