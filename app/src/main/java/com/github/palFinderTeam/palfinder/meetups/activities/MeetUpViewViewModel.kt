@@ -1,7 +1,9 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.content.Context
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -70,6 +72,7 @@ class MeetUpViewViewModel @Inject constructor(
             false
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     fun joinOrLeave(context: Context){
         val uuid = profileService.getLoggedInUserID()
         if (uuid != null){

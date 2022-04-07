@@ -9,78 +9,137 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.cache.FileCache
+import com.github.palFinderTeam.palfinder.utils.context.ContextService
 import java.util.*
+import javax.inject.Inject
 
+private const val CHANNEL_ID = "PalFinder"
+private const val NOTIFICATION = "notification"
 
-object NotificationHandler: BroadcastReceiver(){
+class NotificationHandler @Inject constructor(
+    private val contextProvider: ContextService
+): BroadcastReceiver(){
     private var hasCreateChannel = false
-    var NOTIFICATION = "notification"
-    var notificationId = 0
+    private var data = MetaData(0)
 
-    val CHANNEL_ID = "PalFinder"
+    private var cache = FileCache("NotificationHandlerMetadata", MetaData::class.java, true, contextProvider)
 
-    private fun initChannel(context: Context){
+    private fun initChannel(){
         if (!hasCreateChannel){
             hasCreateChannel = true
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val name = context.getString(R.string.app_name)
-                val descriptionText = context.getString(R.string.app_name)
+                val name = contextProvider.get().getString(R.string.app_name)
+                val descriptionText = contextProvider.get().getString(R.string.app_name)
                 val importance = NotificationManager.IMPORTANCE_DEFAULT
                 val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                     description = descriptionText
                 }
-                // Register the channel with the system
+
                 val notificationManager: NotificationManager =
-                    getSystemService(context, NotificationManager::class.java)!!
+                    getSystemService(contextProvider.get(), NotificationManager::class.java)!!
                 notificationManager.createNotificationChannel(channel)
             }
         }
     }
 
-    fun post(context: Context, notification: Notification){
-        initChannel(context)
-        with(NotificationManagerCompat.from(context)) {
-            notify(notificationId++, notification)
+
+    private fun post(notification: Notification){
+        initChannel()
+        with(NotificationManagerCompat.from(contextProvider.get())) {
+            if (cache.exist()){
+                data = cache.get()
+            }
+            notify(data.notificationId++, notification)
+            cache.store(data)
         }
     }
 
+    /**
+     * Post a Notification
+     * @param title: Title of the notification
+     * @param content: Content of the notification
+     * @param icon: Icon of the notification
+     */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun post(context: Context, title: String, content: String){
-        var builder = Notification.Builder(context, CHANNEL_ID)
+    fun post(title: String, content: String, icon: Int){
+        var builder = Notification.Builder(contextProvider.get(), CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(content)
+            .setSmallIcon(icon)
 
-        post(context, builder.build())
+        post(builder.build())
     }
 
+    /**
+     * Post a Notification
+     * @param title: Title of the notification
+     * @param content: Content of the notification
+     * @param icon: Icon of the notification
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun post(title: Int, content: Int, icon: Int){
+        post(
+            contextProvider.get().getString(title),
+            contextProvider.get().getString(content),
+            icon
+        )
+    }
 
-    fun schedule(context: Context, date: Calendar, notification: Notification){
-        val notificationIntent = Intent(context, this::class.java).apply {
+    private fun schedule(date: Calendar, notification: Notification){
+        val notificationIntent = Intent(contextProvider.get(), this::class.java).apply {
             putExtra(NOTIFICATION, notification)
         }
         val pendingIntent = PendingIntent.getBroadcast(
-            context,
+            contextProvider.get(),
             0,
             notificationIntent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val alarmManager = getSystemService(context, AlarmManager::class.java)
+        val alarmManager = getSystemService(contextProvider.get(), AlarmManager::class.java)
         alarmManager!![AlarmManager.ELAPSED_REALTIME_WAKEUP, date.timeInMillis] = pendingIntent
     }
 
+    /**
+     * Schedule a Notification for the [date]
+     * @param date: Date to post the notification
+     * @param title: Title of the notification
+     * @param content: Content of the notification
+     * @param icon: Icon of the notification
+     */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun schedule(context: Context, date: Calendar, title: String, content: String){
-        var builder = Notification.Builder(context, CHANNEL_ID)
+    fun schedule(date: Calendar, title: String, content: String, icon: Int){
+        var builder = Notification.Builder(contextProvider.get(), CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(content)
+            .setSmallIcon(icon)
 
-        schedule(context, date, builder.build())
+        schedule(date, builder.build())
+    }
+
+    /**
+     * Schedule a Notification for the [date]
+     * @param date: Date to post the notification
+     * @param title: Title of the notification
+     * @param content: Content of the notification
+     * @param icon: Icon of the notification
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun schedule(date: Calendar, title: Int, content: Int, icon: Int){
+        schedule(
+            date,
+            contextProvider.get().getString(title),
+            contextProvider.get().getString(content),
+            icon
+        )
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val notification: Notification = intent!!.getParcelableExtra(NOTIFICATION)!!
-        post(context!!, notification)
+        post(notification)
     }
+
+    data class MetaData(var notificationId:Int)
 }

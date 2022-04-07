@@ -8,7 +8,6 @@ import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
-import android.widget.CalendarView
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
@@ -252,5 +251,6 @@ class MeetUpCreation : AppCompatActivity() {
 
     private fun onLocationSelected(p0: LatLng) {
         viewModel.setLatLng(p0)
+        setTextView(R.id.tv_location, p0.toString())
     }
 }

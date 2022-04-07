@@ -1,26 +1,44 @@
 package com.github.palFinderTeam.palfinder.cache
 
-import android.content.Context
+import com.github.palFinderTeam.palfinder.utils.context.ContextService
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import java.io.File
 
+/**
+ * Cache For Dictionary/Map
+ *
+ * @param directory: name of the pseudo directory (it is in fact a prefix)
+ * @param clazz: Class to store
+ * @param permanent: Prevent Android from randomly deleting the data
+ * @param contextService: Context Provider
+ */
 class DictionaryCache<T> (
-    private val context: Context,
     private val directory: String,
-    private val clazz: Class<T>){
+    private val clazz: Class<T>,
+    private val permanent: Boolean,
+    private val contextService: ContextService){
 
     private var wasLoaded = false
     private var keylist = HashSet<String>()
 
     private val gson = Gson()
 
+    private fun getDir(): File? {
+        return if (permanent){
+            contextService.get().dataDir
+        }
+        else{
+            contextService.get().cacheDir
+        }
+    }
+
     /**
      * Return if true if the cache contains the object with key [uuid]
      */
     fun contains(uuid: String): Boolean{
-        val file = File(context.cacheDir, "${directory}_${uuid}")
+        val file = File(getDir(), "${directory}_${uuid}")
         return file.exists()
     }
 
@@ -28,7 +46,7 @@ class DictionaryCache<T> (
      * Return if the cached object with key [uuid]
      */
     fun get(uuid: String): T {
-        val file = File(context.cacheDir, "${directory}_${uuid}")
+        val file = File(getDir(), "${directory}_${uuid}")
         val content = file.readText()
 
         return gson.fromJson(JsonParser.parseString(content), clazz)
@@ -38,7 +56,7 @@ class DictionaryCache<T> (
      * Store the object [obj] with key [uuid]
      */
     fun store(uuid: String, obj: T){
-        val file = File(context.cacheDir, "${directory}_${uuid}")
+        val file = File(getDir(), "${directory}_${uuid}")
         file.writeText(gson.toJson(obj))
 
         loadMetaCache()
@@ -52,7 +70,7 @@ class DictionaryCache<T> (
      * Delete the cached version of object with key [uuid]
      */
     fun delete(uuid: String){
-        val file = File(context.cacheDir, "${directory}_${uuid}")
+        val file = File(getDir(), "${directory}_${uuid}")
         if (file.exists()) {
             file.delete()
         }
@@ -71,22 +89,14 @@ class DictionaryCache<T> (
         return keylist.filter { contains(it) }.map { get(it) }.toList()
     }
 
-
-
-
-
-
-
-
-
     private fun storeMetaCache(){
-        val file = File(context.cacheDir, directory)
+        val file = File(getDir(), directory)
         file.writeText(gson.toJson(keylist))
     }
     private fun loadMetaCache(){
         if (!wasLoaded) {
             wasLoaded = true
-            val file = File(context.cacheDir, directory)
+            val file = File(getDir(), directory)
             if (file.exists()) {
                 val content = file.readText()
 
