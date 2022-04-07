@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import org.hamcrest.CoreMatchers.`is`
@@ -14,6 +15,8 @@ import org.mockito.Mockito
 class MeetUpTest {
     private var meetUp: MeetUp? = null
 
+    lateinit var participanteList: List<String>
+
     @Before
     fun initMeetup() {
         val date1 = Mockito.mock(Calendar::class.java)
@@ -23,6 +26,8 @@ class MeetUpTest {
         Mockito.`when`(date2.timeInMillis).thenReturn(1)
 
         val user = "userId"
+
+        participanteList = mutableListOf(user)
 
         meetUp = MeetUp(
             "dummy",
@@ -36,13 +41,18 @@ class MeetUpTest {
             setOf(Category.DRINKING),
             true,
             2,
-            mutableListOf(user)
+            participanteList
         )
     }
 
     @Test
     fun isFullTest() {
         assertEquals(false, meetUp!!.isFull())
+    }
+
+    @Test
+    fun isNumberOfParticipantsCorrect() {
+        assertEquals(participanteList.size, meetUp!!.numberOfParticipants())
     }
 
     @Test
