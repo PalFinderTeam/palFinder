@@ -11,6 +11,8 @@ import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
+import com.github.palFinderTeam.palfinder.utils.time.RealTimeService
+import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -19,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UserSettingsViewModel @Inject constructor(
     private val profileService: ProfileService,
-    private val imageUploader: ImageUploader
+    private val imageUploader: ImageUploader,
+    private val timeService: TimeService
 ) : ViewModel() {
 
     // Define length constraints
@@ -121,7 +124,7 @@ class UserSettingsViewModel @Inject constructor(
      */
     fun loadUserInfo(preFillUser: ProfileUser? = null) {
         // Add prefill text, that means user creates an account
-        _joinDate = Calendar.getInstance()
+        _joinDate = timeService.now()
         if (preFillUser != null) {
             _isNewUser = true
             _joinDate = preFillUser.joinDate
@@ -245,7 +248,7 @@ class UserSettingsViewModel @Inject constructor(
                 val oldUser = profileService.fetchUserProfile(loggedUID)
 
                 // If user not found for some reason, fall back to adding new join date
-                val joinDate = oldUser?.joinDate ?: Calendar.getInstance()
+                val joinDate = oldUser?.joinDate ?: timeService.now()
                 // Notify result
                 if (profileService.editUserProfile(loggedUID, newUser.copy(joinDate = joinDate)) != null) {
                     _updateStatus.postValue(UPDATE_SUCCESS)
