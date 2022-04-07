@@ -8,7 +8,10 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.PopupMenu
 import android.widget.SearchView
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
@@ -48,16 +51,22 @@ class MeetupListActivity : MapListSuperActivity() {
         viewModel.showOnlyJoined = intent.getBooleanExtra(SHOW_JOINED_ONLY,false)
 
         viewModel.listOfMeetUpResponse.observe(this) { it ->
-            val meetups = (it as Response.Success).data.filter { filter(it) }
-            adapter = MeetupListAdapter(meetups, meetups.toMutableList(),
-                SearchedFilter(
-                    meetups, meetups.toMutableList(), ::filter
-                ) {
-                    adapter.notifyDataSetChanged()
-                }, viewModel)
-            { onListItemClick(it) }
-            meetupList.adapter = adapter
-            SearchedFilter.setupSearchField(searchField, adapter.filter)
+            if (it is Response.Success) {
+                val meetups = it.data
+                adapter = MeetupListAdapter(
+                    meetups,
+                    meetups.toMutableList(),
+                    SearchedFilter(
+                        meetups, meetups.toMutableList(), ::filter
+                    ) {
+                        adapter.notifyDataSetChanged()
+                    },
+                    Location.latLngToLocation(viewModel.getCameraPosition())
+                )
+                { onListItemClick(it) }
+                meetupList.adapter = adapter
+                SearchedFilter.setupSearchField(searchField, adapter.filter)
+            }
         }
 
         tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
