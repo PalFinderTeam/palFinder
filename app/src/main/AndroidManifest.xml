@@ -15,6 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PalFinder">
         <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings" />
+        <activity
             android:name=".chat.ChatActivity"
             android:exported="false"
             android:parentActivityName=".meetups.activities.MeetupListActivity" />
@@ -58,13 +62,11 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"/>
-
+            android:exported="true" />
         <activity
             android:name=".user.settings.UserSettingsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
-
     </application>
 
 </manifest>

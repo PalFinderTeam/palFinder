@@ -13,6 +13,7 @@ import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
+import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -61,6 +62,10 @@ class MainActivity : AppCompatActivity() {
                 val logoutIntent = Intent(this, LoginActivity::class.java)
                 logoutIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(logoutIntent)
+                return true
+            }
+            R.id.miSettings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
                 return true
             }
             else -> {
