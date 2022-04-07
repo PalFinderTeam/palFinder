@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.utils
 
 import android.content.Context
 import com.github.palFinderTeam.palfinder.R
+import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
@@ -36,5 +37,11 @@ class LocationTest {
         Assert.assertEquals(p1.prettyDistanceTo(cont, p2), "Here")
         Assert.assertEquals(p1.prettyDistanceTo(cont, p3), "In M")
         Assert.assertEquals(p1.prettyDistanceTo(cont, p4), "In Km")
+    }
+    @Test
+    fun lonLatToLocationWorks(){
+        val p1 = LatLng(0.0,1.0)
+        val p2 = Location.latLngToLocation(p1)
+        Assert.assertEquals(p2.latitude, p1.latitude, 0.0001)
     }
 }
