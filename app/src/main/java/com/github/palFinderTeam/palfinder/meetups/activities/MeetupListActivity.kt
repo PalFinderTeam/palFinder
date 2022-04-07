@@ -51,16 +51,18 @@ class MeetupListActivity : MapListSuperActivity() {
         viewModel.showOnlyJoined = intent.getBooleanExtra(SHOW_JOINED_ONLY,false)
 
         viewModel.listOfMeetUpResponse.observe(this) { it ->
-            val meetups = (it as Response.Success).data.filter { filter(it) }
-            adapter = MeetupListAdapter(meetups, meetups.toMutableList(),
-                SearchedFilter(
-                    meetups, meetups.toMutableList(), ::filter
-                ) {
-                    adapter.notifyDataSetChanged()
-                })
-            { onListItemClick(it) }
-            meetupList.adapter = adapter
-            SearchedFilter.setupSearchField(searchField, adapter.filter)
+            if (it is Response.Success) {
+                val meetups = it.data.filter { isParticipating(it) }
+                adapter = MeetupListAdapter(meetups, meetups.toMutableList(),
+                    SearchedFilter(
+                        meetups, meetups.toMutableList(), ::filterTags
+                    ) {
+                        adapter.notifyDataSetChanged()
+                    })
+                { onListItemClick(it) }
+                meetupList.adapter = adapter
+                SearchedFilter.setupSearchField(searchField, adapter.filter)
+            }
         }
 
         tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
@@ -74,24 +76,20 @@ class MeetupListActivity : MapListSuperActivity() {
         }
     }
 
-    private fun filter(meetup : MeetUp): Boolean {
-        return if (viewModel.showOnlyJoined){
-            filterTags(meetup) && isParticipating(meetup)
-        } else{
-            filterTags(meetup)
-        }
-    }
-
     private fun filterTags(meetup : MeetUp): Boolean {
         return meetup.tags.containsAll(viewModel.tags.value!!)
     }
 
     private fun isParticipating(meetup : MeetUp): Boolean {
-        val user = viewModel.getUser()
-        return if (user != null){
-            meetup.isParticipating(user)
-        } else{
-            false
+        return if (viewModel.showOnlyJoined) {
+            val user = viewModel.getUser()
+            return if (user != null) {
+                meetup.isParticipating(user)
+            } else {
+                false
+            }
+        } else {
+            true
         }
     }
 

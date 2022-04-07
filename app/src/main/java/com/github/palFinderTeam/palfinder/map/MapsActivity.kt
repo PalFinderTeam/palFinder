@@ -34,7 +34,7 @@ const val LOCATION_SELECTED = "com.github.palFinderTeam.palFinder.MAP.LOCATION_S
 
 @AndroidEntryPoint
 class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
-    GoogleMap.OnCameraMoveListener, SearchView.OnQueryTextListener {
+    GoogleMap.OnCameraMoveCanceledListener, SearchView.OnQueryTextListener {
 
     private lateinit var binding: ActivityMapsBinding
     private lateinit var button: FloatingActionButton
@@ -142,7 +142,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
 
-        map.setOnCameraMoveListener(this)
+        map.setOnCameraMoveCanceledListener(this)
         super.setUserLocation()
 
 
@@ -154,7 +154,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
 
     }
 
-    override fun onCameraMove() {
+    override fun onCameraMoveCanceled() {
         viewModel.update()
     }
 
