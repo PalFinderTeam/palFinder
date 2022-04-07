@@ -83,6 +83,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
                     }
                 button.apply { this.hide() }
                 mapSelection.active.value = false
+                }
             }
             mapContext.SELECT_LOCATION -> {
 
