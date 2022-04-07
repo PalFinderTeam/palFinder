@@ -8,10 +8,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.PopupMenu
 import android.widget.SearchView
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
@@ -56,7 +53,7 @@ class MeetupListActivity : MapListSuperActivity() {
                     meetups, meetups.toMutableList(), ::filter
                 ) {
                     adapter.notifyDataSetChanged()
-                })
+                }, viewModel)
             { onListItemClick(it) }
             meetupList.adapter = adapter
             SearchedFilter.setupSearchField(searchField, adapter.filter)

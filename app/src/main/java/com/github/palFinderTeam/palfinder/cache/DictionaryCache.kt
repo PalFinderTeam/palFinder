@@ -21,7 +21,7 @@ class DictionaryCache<T> (
     private val contextService: ContextService){
 
     private var wasLoaded = false
-    private var keylist = HashSet<String>()
+    var keylist = HashSet<String>()
 
     private val gson = Gson()
 
@@ -60,7 +60,7 @@ class DictionaryCache<T> (
         file.writeText(gson.toJson(obj))
 
         loadMetaCache()
-        if (keylist.contains(uuid)) {
+        if (!keylist.contains(uuid)) {
             keylist.add(uuid)
             storeMetaCache()
         }

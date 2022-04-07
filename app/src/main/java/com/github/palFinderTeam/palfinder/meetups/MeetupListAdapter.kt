@@ -5,20 +5,29 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import kotlinx.coroutines.launch
 
 
-class MeetupListAdapter(private val dataSet: List<MeetUp>, val currentDataSet: MutableList<MeetUp>,
-                        private var filter: SearchedFilter<MeetUp>, private val onItemClicked: (position: Int) -> Unit) :
+class MeetupListAdapter(private val dataSet: List<MeetUp>,
+                        val currentDataSet: MutableList<MeetUp>,
+                        private var filter: SearchedFilter<MeetUp>,
+                        private val viewModel: ViewModel,
+                        private val onItemClicked: (position: Int) -> Unit) :
     RecyclerView.Adapter<MeetupListAdapter.ViewHolder>(), Filterable {
 
     class ViewHolder(view: View, private val onItemClicked: (position: Int) -> Unit) :
         RecyclerView.ViewHolder(view), View.OnClickListener {
         //TODO - add some remaining fields to display
+        val meetUpIcon: ImageView = view.findViewById(R.id.meetup_icon)
         val meetupTitle: TextView = view.findViewById(R.id.meetup_title)
         val meetupDate: TextView = view.findViewById(R.id.date)
         val meetupDescription: TextView = view.findViewById(R.id.meetup_description)
@@ -58,6 +67,10 @@ class MeetupListAdapter(private val dataSet: List<MeetUp>, val currentDataSet: M
         meetupDescription.text = currentDataSet[position].description
         val meetupNumberParticipants = holder.meetupNumberParticipants
         meetupNumberParticipants.text = currentDataSet[position].capacity.toString()
+
+        viewModel.viewModelScope.launch {
+            ImageInstance(currentDataSet[position].iconId).loadImageInto(holder.meetUpIcon)
+        }
     }
 
     override fun getItemCount(): Int = currentDataSet.size
