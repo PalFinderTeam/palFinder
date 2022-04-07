@@ -96,6 +96,8 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         val searchLocation = findViewById<SearchView>(R.id.search_on_map)
         searchLocation.imeOptions = EditorInfo.IME_ACTION_DONE
         searchLocation.setOnQueryTextListener(this)
+        }
+        
 
         navBar.isVisible = false
         navBar.isEnabled = false
@@ -109,6 +111,8 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
     private fun loadSelectionButton(){
 
         mapSelection.active.value = true
+        navBar.isVisible = false
+        navBar.isEnabled = false
         button.apply { this.isEnabled = false }
         if (extrasPos != null){
             setSelectionMarker(extrasPos)
