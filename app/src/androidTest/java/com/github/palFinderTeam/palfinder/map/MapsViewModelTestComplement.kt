@@ -12,6 +12,7 @@ import androidx.test.uiautomator.Until
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.utils.Location
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -20,6 +21,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltAndroidTest
 class MapsViewModelTestComplement {
@@ -71,7 +73,11 @@ class MapsViewModelTestComplement {
         scenario.use{
             scenario.onActivity {
                 it.viewModel.setCameraPosition(position)
-                Assert.assertEquals(position, it.viewModel.getCameraPosition())
+                Assert.assertTrue(
+                    Location(position.longitude, position.latitude).distanceInKm(
+                        Location(it.viewModel.getCameraPosition().longitude,
+                        it.viewModel.getCameraPosition().latitude))  < 1.0)
+
             }
         }
     }
