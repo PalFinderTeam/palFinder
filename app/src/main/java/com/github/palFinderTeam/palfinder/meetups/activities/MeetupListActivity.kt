@@ -175,8 +175,8 @@ class MeetupListActivity : MapListSuperActivity() {
     fun searchOnMap(view: View?){
         val intent = Intent(this, MapsActivity::class.java)
         val extras = Bundle().apply {
+            putParcelable(LOCATION_SELECT, LatLng(1.0, 1.0))
             putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
-            putParcelable(LOCATION_SELECT, LatLng(0.0, 0.0))
         }
         intent.putExtras(extras)
 
