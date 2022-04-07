@@ -28,9 +28,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="show profiles" />
-      
+
+        <Button
+            android:id="@+id/bt_JoinMeetup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onJoinOrLeave"
+            android:text="@string/meetup_view_join" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButton3"
+            android:id="@+id/bt_ChatMeetup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
@@ -49,7 +56,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/bt_EditMeetup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

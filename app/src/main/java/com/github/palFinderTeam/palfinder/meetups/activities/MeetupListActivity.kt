@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.PopupMenu
@@ -13,6 +11,7 @@ import android.widget.SearchView
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
@@ -21,21 +20,19 @@ import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
-import com.github.palFinderTeam.palfinder.utils.Location
-import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
-import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
+import com.github.palFinderTeam.palfinder.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 
+const val SHOW_JOINED_ONLY = "com.github.palFinderTeam.palFinder.meetup_list_view.SHOW_JOINED_ONLY"
+
 @AndroidEntryPoint
-class MeetupListActivity : AppCompatActivity() {
+class MeetupListActivity : MapListSuperActivity() {
     private lateinit var meetupList: RecyclerView
     lateinit var adapter: MeetupListAdapter
     lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     lateinit var tagsViewModel: TagsViewModel<Category>
 
-    val viewModel: MeetUpListViewModel by viewModels()
 
 
     @SuppressLint("NotifyDataSetChanged")
@@ -51,11 +48,13 @@ class MeetupListActivity : AppCompatActivity() {
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
 
 
-        viewModel.listOfMeetUp.observe(this) { meetups ->
-            val mutableMeetUp = meetups.toMutableList()
-            adapter = MeetupListAdapter(meetups, mutableMeetUp,
+        viewModel.showOnlyJoined = intent.getBooleanExtra(SHOW_JOINED_ONLY,false)
+
+        viewModel.listOfMeetUpResponse.observe(this) { it ->
+            val meetups = (it as Response.Success).data.filter { filter(it) }
+            adapter = MeetupListAdapter(meetups, meetups.toMutableList(),
                 SearchedFilter(
-                    meetups, mutableMeetUp, ::filterTag
+                    meetups, meetups.toMutableList(), ::filter
                 ) {
                     adapter.notifyDataSetChanged()
                 })
@@ -71,38 +70,49 @@ class MeetupListActivity : AppCompatActivity() {
         }
         viewModel.tags.observe(this) {
             tagsViewModel.refreshTags()
-            filterByTag(it)
+            filter(it)
         }
-
     }
 
-    private fun filterTag(meetup : MeetUp): Boolean {
+    private fun filter(meetup : MeetUp): Boolean {
+        return if (viewModel.showOnlyJoined){
+            filterTags(meetup) && isParticipating(meetup)
+        } else{
+            filterTags(meetup)
+        }
+    }
+
+    private fun filterTags(meetup : MeetUp): Boolean {
         return meetup.tags.containsAll(viewModel.tags.value!!)
     }
 
+    private fun isParticipating(meetup : MeetUp): Boolean {
+        val user = viewModel.getUser()
+        return if (user != null){
+            meetup.isParticipating(user)
+        } else{
+            false
+        }
+    }
 
-    fun filterByTag(tags: Set<Category>?) {
+
+    fun filter(tags: Set<Category>?) {
         if (::adapter.isInitialized) {
             adapter.currentDataSet.clear()
-            viewModel.listOfMeetUp.value?.let { meetups -> performFilterByTag(meetups, adapter.currentDataSet, tags) }
+            viewModel.listOfMeetUpResponse.value?.let { meetups -> performFilter((meetups as Response.Success).data, adapter.currentDataSet, tags) }
             adapter.notifyDataSetChanged()
         }
     }
 
-    private fun performFilterByTag(
+    private fun performFilter(
         meetups: List<MeetUp>,
         currentDataSet: MutableList<MeetUp>,
         tags: Set<Category>?
     ) {
-        if (tags!!.isEmpty()) {
-            currentDataSet.addAll(meetups)
-        } else {
-            for (meetup: MeetUp in meetups) {
-                if (meetup.tags.containsAll(tags)) {
-                    currentDataSet.add(meetup)
-                }
-            }
-        }
+        currentDataSet.addAll(meetups.filter {
+            (tags==null || it.tags.containsAll(tags)) &&
+            (!viewModel.showOnlyJoined || isParticipating(it))
+        })
     }
 
     fun sortByCap() {
@@ -128,7 +138,7 @@ class MeetupListActivity : AppCompatActivity() {
 
     private fun sort(sorted: List<MeetUp>) {
         adapter.currentDataSet.clear()
-        viewModel.listOfMeetUp.value?.let { meetups -> adapter.currentDataSet.addAll(sorted) }
+        viewModel.listOfMeetUpResponse.value?.let { it -> adapter.currentDataSet.addAll(sorted) }
         adapter.notifyDataSetChanged()
     }
 
@@ -152,7 +162,7 @@ class MeetupListActivity : AppCompatActivity() {
 
     private fun onListItemClick(position: Int) {
         val intent = Intent(this, MeetUpView::class.java)
-            .apply { putExtra(MEETUP_SHOWN, viewModel.listOfMeetUp.value?.get(position)?.uuid) }
+            .apply { putExtra(MEETUP_SHOWN, (viewModel.listOfMeetUpResponse.value as Response.Success).data[position].uuid) }
         startActivity(intent)
     }
 

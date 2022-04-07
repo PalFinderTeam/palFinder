@@ -60,4 +60,18 @@ interface ProfileService {
      * @return a flow emitting Response regarding the state of the request.
      */
     fun fetchProfileFlow(userId: String): Flow<Response<ProfileUser>>
+
+    /**
+     * @return the userId of the logged in user or null if not
+     */
+    fun getLoggedInUserID(): String?
+
+    /**
+     * Checks if user exists in database
+     *
+     * @param userId Id of the user
+     *
+     * @return boolean
+     */
+    suspend fun doesUserIDExist(userId: String): Boolean
 }

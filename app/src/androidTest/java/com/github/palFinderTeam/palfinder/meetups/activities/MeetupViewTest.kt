@@ -3,8 +3,9 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
-import android.util.Log
 import android.view.View
+import android.widget.DatePicker
+import android.widget.TimePicker
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.closeSoftKeyboard
@@ -13,15 +14,15 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.*
+import androidx.test.espresso.intent.Intents.init
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
-import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
+import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
@@ -29,28 +30,33 @@ import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.google.android.material.chip.Chip
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.notNullValue
+import org.hamcrest.CoreMatchers.*
 import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
 
+
 @ExperimentalCoroutinesApi
 @HiltAndroidTest
 class MeetupViewTest {
 
     private lateinit var meetup: MeetUp
+    private lateinit var newMeetup: MeetUp
     private lateinit var user: ProfileUser
+    private lateinit var user2: ProfileUser
     private val eventName = "dummy1"
     private val eventDescription = "dummy2"
     private lateinit var date1: Calendar
@@ -67,15 +73,25 @@ class MeetupViewTest {
     lateinit var meetUpRepository: MeetUpRepository
     @Inject
     lateinit var profileRepository: ProfileService
+    @Inject
+    lateinit var timeService: TimeService
 
     @Before
     fun setup() {
         hiltRule.inject()
 
         date1 = Calendar.getInstance()
-        date1.set(2022, 2, 1, 0, 0, 0)
+        date1.add(Calendar.DAY_OF_MONTH, 1)
+        date1.set(Calendar.HOUR_OF_DAY, 0)
+        date1.set(Calendar.MINUTE, 0)
+        date1.set(Calendar.SECOND, 0)
+        //date1.set(2022, 2, 1, 0, 0, 0)
         date2 = Calendar.getInstance()
-        date2.set(2022, 2, 1, 1, 0, 0)
+        //date2.set(2022, 2, 1, 1, 0, 0)
+        date2.add(Calendar.DAY_OF_MONTH, 1)
+        date2.set(Calendar.HOUR_OF_DAY, 1)
+        date2.set(Calendar.MINUTE, 0)
+        date2.set(Calendar.SECOND, 0)
 
 
         expectDate1 = format.format(date1)
@@ -86,6 +102,15 @@ class MeetupViewTest {
             "user",
             "Michou",
         "Jonas",
+            "Martin",
+            date1,
+            ImageInstance(""),
+            "Ne la laisse pas tomber"
+        )
+        user2 = ProfileUser(
+            "user2",
+            "Michou",
+            "Jonas",
             "Martin",
             date1,
             ImageInstance(""),
@@ -216,11 +241,11 @@ class MeetupViewTest {
         }
     }
 
-    @Test
-    fun profileFragmentCorrectlyDisplayed() = runTest {
+    /*@Test
+    fun userClickableInFragment() = runTest {
         val userid = profileRepository.createProfile(user)
         assertThat(userid, notNullValue())
-        val newMeetup = MeetUp(
+        newMeetup = MeetUp(
             "dummy",
             userid!!,
             "",
@@ -240,38 +265,7 @@ class MeetupViewTest {
             .apply{putExtra(MEETUP_SHOWN, id)}
         val scenario = ActivityScenario.launch<MeetUpView>(intent)
         scenario.use {
-            onView(withId(R.id.show_profile_list_button)).perform(click())
-            onView(RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(0, R.id.profile_name))
-                .check(matches(withText(user.username)))
-            onView(RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(0, R.id.fullName))
-                .check(matches(withText(user.fullName())))
-        }
-    }
-
-    @Test
-    fun UserClickableInFragment() = runTest {
-        val userid = profileRepository.createProfile(user)
-        assertThat(userid, notNullValue())
-        val newMeetup = MeetUp(
-            "dummy",
-            userid!!,
-            "",
-            eventName,
-            eventDescription,
-            date1,
-            date2,
-            Location(0.0, 0.0),
-            emptySet(),
-            true,
-            2,
-            mutableListOf(userid)
-        )
-        val id = meetUpRepository.createMeetUp(newMeetup)
-        assertThat(id, notNullValue())
-        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
-            .apply{putExtra(MEETUP_SHOWN, id)}
-        val scenario = ActivityScenario.launch<MeetUpView>(intent)
-        scenario.use {
+            init()
             onView(withId(R.id.show_profile_list_button)).perform(click())
             onView(
                 RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
@@ -282,35 +276,7 @@ class MeetupViewTest {
                 .perform(click())
         }
 
-    }
-
-    @Test
-    fun clickOnEditWorks() = runTest {
-        val id = meetUpRepository.createMeetUp(meetup)
-        assertThat(id, notNullValue())
-        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
-            .apply{putExtra(MEETUP_SHOWN, id)}
-        ActivityScenario.launch<MeetUpView>(intent)
-        init()
-        onView(withId(R.id.floatingActionButton)).perform(click())
-        intended(hasComponent(MeetUpCreation::class.java.name))
-        release()
-
-    }
-
-    @Test
-    fun clickOnChatWorks() = runTest {
-        val id = meetUpRepository.createMeetUp(meetup)
-        assertThat(id, notNullValue())
-        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
-            .apply{putExtra(MEETUP_SHOWN, id)}
-        ActivityScenario.launch<MeetUpView>(intent)
-        init()
-        onView(withId(R.id.floatingActionButton3)).perform(click())
-        intended(hasComponent(ChatActivity::class.java.name))
-        release()
-
-    }
+    }*/
 
     @Test
     fun addTagAddToDb() = runTest {
@@ -387,7 +353,146 @@ class MeetupViewTest {
             onView(withId(R.id.tag_group)).check(matches(hasChildCount(0)))
         }
     }
+    @Test
+    fun checkErrorWork() = runTest {
+        val uid = profileRepository.createProfile(user)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
 
+        val id = meetUpRepository.createMeetUp(meetup)
+        assertThat(id, notNullValue())
+
+        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        scenario.use {
+            onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
+            onView(withText(R.string.meetup_creation_missing_name_desc_title)).check(matches(isDisplayed()));
+        }
+    }
+
+    @Test
+    fun testEditButton() = runTest {
+        val uid = profileRepository.createProfile(user)
+        val mid = meetUpRepository.createMeetUp(meetup.copy(creatorId = uid!!))
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+        Intents.init()
+        ActivityScenario.launch<MeetUpView>(intent)
+        onView(withId(R.id.bt_EditMeetup)).perform(click())
+        Intents.intended(IntentMatchers.hasComponent(MeetUpCreation::class.java.name))
+        Intents.intended(IntentMatchers.hasExtra(MEETUP_EDIT, mid))
+        Intents.release()
+    }
+
+    @Test
+    fun testHiddenEditButton() = runTest {
+        val id = meetUpRepository.createMeetUp(meetup)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, id)
+        }
+        ActivityScenario.launch<MeetUpView>(intent)
+        onView(withId(R.id.bt_EditMeetup)).check(matches(isNotClickable()))
+    }
+
+    @Test
+    fun testChatButton() = runTest {
+        val uid = profileRepository.createProfile(user)
+        val mid = meetUpRepository.createMeetUp(meetup.copy(participantsId = listOf(uid!!)))
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+        Intents.init()
+        ActivityScenario.launch<MeetUpView>(intent)
+        onView(withId(R.id.bt_ChatMeetup)).perform(click())
+        Intents.intended(IntentMatchers.hasComponent(ChatActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasExtra(CHAT, mid))
+        Intents.release()
+    }
+
+    @Test
+    fun testHiddenChatButton() = runTest {
+        val mid = meetUpRepository.createMeetUp(meetup)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+
+        ActivityScenario.launch<MeetUpView>(intent)
+        onView(withId(R.id.bt_ChatMeetup)).check(matches(isNotClickable()))
+    }
+
+    @Test
+    fun checkPickers() = runTest {
+        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        scenario.use {
+            onView(withId(R.id.tv_StartDate)).perform(scrollTo(), click())
+
+            onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
+                PickerActions.setDate(date1.get(Calendar.YEAR), date1.get(Calendar.MONTH)+1, date1.get(Calendar.DAY_OF_MONTH)),
+            )
+            onView(withText("OK")).perform(click()) // Library is stupid and can't even press the f. button
+            onView(withClassName(Matchers.equalTo(TimePicker::class.java.name))).perform(
+                PickerActions.setTime(date1.get(Calendar.HOUR_OF_DAY), date1.get(Calendar.MINUTE)),
+            )
+            onView(withText("OK")).perform(click())
+            onView(withId(R.id.tv_StartDate)).check(matches(withText(expectDate1)))
+
+
+            onView(withId(R.id.tv_EndDate)).perform(scrollTo(), click())
+
+            onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
+                PickerActions.setDate(date2.get(Calendar.YEAR), date2.get(Calendar.MONTH) + 1, date2.get(Calendar.DAY_OF_MONTH)),
+            )
+            onView(withText("OK")).perform(click()) // Library is stupid and can't even press the f. button
+            onView(withClassName(Matchers.equalTo(TimePicker::class.java.name))).perform(
+                PickerActions.setTime(date2.get(Calendar.HOUR_OF_DAY), date2.get(Calendar.MINUTE)),
+            )
+            onView(withText("OK")).perform(click())
+            onView(withId(R.id.tv_EndDate)).check(matches(withText(expectDate2)))
+        }
+    }
+
+    @Test
+    fun testJoinLeaveButton() = runTest {
+        val mid = meetUpRepository.createMeetUp(meetup)
+        val uid = profileRepository.createProfile(user2)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+        ActivityScenario.launch<MeetUpView>(intent)
+
+        // Join
+        onView(withId(R.id.bt_JoinMeetup)).perform(click())
+        assertThat(meetUpRepository.getMeetUpData(mid!!)!!.isParticipating(uid!!), `is`(true))
+
+        // Leave
+        onView(withId(R.id.bt_JoinMeetup)).perform(click())
+        assertThat(meetUpRepository.getMeetUpData(mid!!)!!.isParticipating(uid!!), `is`(false))
+    }
+
+    @Test
+    fun testJoinLeaveCreatorButton() = runTest {
+        val uid = profileRepository.createProfile(user)
+        val mid = meetUpRepository.createMeetUp(meetup.copy(creatorId = uid!!))
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+        ActivityScenario.launch<MeetUpView>(intent)
+
+        onView(withId(R.id.bt_JoinMeetup)).check(matches(isNotClickable()))
+    }
 }
 
 class ClickCloseIconAction : ViewAction {
@@ -404,4 +509,6 @@ class ClickCloseIconAction : ViewAction {
         val chip = view as Chip//we matched
         chip.performCloseIconClick()
     }
+
+
 }

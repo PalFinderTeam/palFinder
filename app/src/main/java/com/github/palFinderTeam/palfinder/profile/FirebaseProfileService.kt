@@ -3,7 +3,9 @@ package com.github.palFinderTeam.palfinder.profile
 import android.util.Log
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -23,6 +25,7 @@ class FirebaseProfileService @Inject constructor(
             db.collection(PROFILE_COLL)
                 .document(userId).get().await().toProfileUser()
         } catch (e: Exception) {
+            Log.d("db user", "failed safely")
             null
         }
     }
@@ -79,6 +82,12 @@ class FirebaseProfileService @Inject constructor(
         } catch (e: Exception) {
             null
         }
+    }
+
+    override fun getLoggedInUserID(): String? = Firebase.auth.currentUser?.uid
+
+    override suspend fun doesUserIDExist(userId: String): Boolean {
+        return db.collection(PROFILE_COLL).document(userId).get().await().exists()
     }
 
     companion object {

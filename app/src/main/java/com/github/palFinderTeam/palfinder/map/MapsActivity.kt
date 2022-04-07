@@ -1,26 +1,24 @@
 package com.github.palFinderTeam.palfinder.map
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.Location
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.SearchView
+import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.recyclerview.widget.RecyclerView
 import androidx.core.view.isVisible
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
-import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.activities.MapListSuperActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
-import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.github.palFinderTeam.palfinder.utils.Response
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -28,29 +26,22 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.IOException
+
 
 const val LOCATION_SELECT = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECT"
 const val LOCATION_SELECTED = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECTED"
 
 @AndroidEntryPoint
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraMoveCanceledListener {
+class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
+    GoogleMap.OnCameraMoveListener, SearchView.OnQueryTextListener {
 
     private lateinit var binding: ActivityMapsBinding
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var lastLocation: Location
-    private lateinit var map: GoogleMap
     private lateinit var button: FloatingActionButton
     private lateinit var navBar: View
     private lateinit var mapView: View
 
     private val mapSelection: MapsSelectionModel by viewModels()
-    val viewModel : MapsActivityViewModel by viewModels()
-
-    companion object {
-        private const val USER_LOCATION_PERMISSION_REQUEST_CODE = 1
-
-
-    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +51,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         setContentView(binding.root)
         button = findViewById(R.id.bt_locationSelection)
         navBar = findViewById(R.id.fc_navbar)
+        viewModel.update()
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -69,23 +61,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
         mapView.contentDescription = "MAP NOT READY"
         mapFragment.getMapAsync(this)
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-        viewModel.updateFetcherLocation(viewModel.getCameraPosition())
-        viewModel.FlowOfMeetUp.observe(this) {
-            viewModel.refresh()
+        viewModel.listOfMeetUpResponse.observe(this) {
+            if (it is Response.Success) {
+                viewModel.refresh()
+            }
         }
+
+
+        val searchLocation = findViewById<SearchView>(R.id.search_on_map)
+        searchLocation.imeOptions = EditorInfo.IME_ACTION_DONE
+        searchLocation.setOnQueryTextListener(this)
+
 
     }
 
-    private fun loadSelectionButton(){
+    private fun loadSelectionButton() {
         if (intent.hasExtra(LOCATION_SELECT)) {
             val pos = intent.getParcelableExtra<LatLng>(LOCATION_SELECT)
             mapSelection.active.value = true
             navBar.isVisible = false
             navBar.isEnabled = false
             button.apply { this.isEnabled = false }
-            if (pos != null){
+            if (pos != null) {
                 setSelectionMarker(pos)
             }
         } else {
@@ -95,40 +92,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
     }
 
 
-    private fun setUserLocation(){
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ){
-            ActivityCompat.requestPermissions(this,
-                arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),
-                USER_LOCATION_PERMISSION_REQUEST_CODE
-            )
-            return
-        }
-
-        map.isMyLocationEnabled = true
-        fusedLocationClient.lastLocation.addOnSuccessListener(this){
-            location -> if(location != null){
-                lastLocation = location
-                val currentLatLng = LatLng(location.latitude, location.longitude)
-                viewModel.setPositionAndZoom(currentLatLng, viewModel.getZoom())
-            }
-        }
-    }
-
-
-
     /**
      * When a meetUp marker is clicked, open the marker description
      */
     override fun onMarkerClick(marker: Marker): Boolean {
         val id = marker.title
-        if(id != null){
+        if (id != null) {
             val intent = Intent(this, MeetUpView::class.java).apply {
                 putExtra(MEETUP_SHOWN, id)
             }
@@ -148,7 +117,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
     /**
      * Add or Update the Position Selection Marker
      */
-    private fun setSelectionMarker(p0: LatLng){
+    private fun setSelectionMarker(p0: LatLng) {
         mapSelection.targetMarker.value?.remove()
         mapSelection.targetMarker.value = map.addMarker(
             MarkerOptions().position(p0).title("Here").draggable(true)
@@ -159,21 +128,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
     /**
      * Return the selected Location to the previous activity
      */
-    fun onConfirm(v: View){
+    fun onConfirm(v: View) {
         val resultIntent = Intent()
         resultIntent.putExtra(LOCATION_SELECTED, mapSelection.targetMarker.value!!.position)
         setResult(RESULT_OK, resultIntent)
         finish()
     }
-    
+
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        viewModel.setMap(map)
+        viewModel.setGmap(map)
+        viewModel.mapReady = true
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
 
-
-        setUserLocation()
+        map.setOnCameraMoveListener(this)
+        super.setUserLocation()
 
 
         map.setOnMapClickListener { onMapClick(it) }
@@ -184,8 +154,39 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,  GoogleMap.OnMarke
 
     }
 
-    override fun onCameraMoveCanceled() {
-        viewModel.updateFetcherLocation(viewModel.getCameraPosition())
+    override fun onCameraMove() {
+        viewModel.update()
+    }
+
+    override fun onQueryTextSubmit(p0: String?): Boolean {
+        var addressList: List<Address>? = null
+
+        if (p0 == null || p0 == "") {
+            Toast.makeText(applicationContext,getString(R.string.search_no_location),Toast.LENGTH_SHORT).show()
+        }
+        else{
+            val geoCoder = Geocoder(this)
+            try {
+                addressList = geoCoder.getFromLocationName(p0, 1)
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            if (addressList == null || addressList.isEmpty()) {
+                Toast.makeText(applicationContext,getString(R.string.search_location_not_found),Toast.LENGTH_SHORT).show()
+            } else {
+                val address = addressList[0]
+                val latLng = LatLng(address.latitude, address.longitude)
+                viewModel.setCameraPosition(latLng)
+                map.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+                viewModel.update()
+            }
+        }
+        return false
+    }
+
+    override fun onQueryTextChange(p0: String?): Boolean {
+        return false
     }
 
 }

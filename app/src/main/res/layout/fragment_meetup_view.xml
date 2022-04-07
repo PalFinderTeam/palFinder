@@ -14,7 +14,7 @@
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/iv_MeetupImage"
             android:layout_width="match_parent"
             android:layout_height="128dp"
             tools:src="@drawable/demo_pfp" />

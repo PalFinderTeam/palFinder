@@ -35,7 +35,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
     buildFeatures {
         viewBinding true
@@ -61,12 +61,14 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:2.4.1"
     implementation "androidx.navigation:navigation-ui-ktx:2.4.1"
 
+
     implementation 'com.google.android.material:material:1.5.0'
 
     implementation 'com.google.android.gms:play-services-base:18.0.1'
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
+    implementation 'com.google.android.libraries.places:places:2.6.0'
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.0'
@@ -82,7 +84,13 @@ dependencies {
     implementation 'com.google.dagger:hilt-android:2.41'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    androidTestImplementation ('androidx.test.espresso:espresso-contrib:3.4.0',{
+        exclude group: 'com.google.protobuf',module: 'protobuf-javalite'
+        exclude group: 'com.google.protobuf',module: 'protobuf-lite'
+    })
+
+
     kapt 'com.google.dagger:hilt-compiler:2.41'
 
     testImplementation 'junit:junit:4.13.2'
@@ -136,7 +144,9 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'crea
         '**/*Hilt*.*',
         'hilt_aggregated_deps/**',
         '**/*_Factory.class',
-        '**/*_MembersInjector.class'
+        '**/*_MembersInjector.class',
+        // Exclude Hilt modules
+        '**/di/**'
     ]
     def debugTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
     def mainSrc = "$project.projectDir/src/main/java"

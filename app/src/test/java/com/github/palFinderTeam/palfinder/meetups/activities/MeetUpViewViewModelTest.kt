@@ -4,8 +4,10 @@ import android.icu.util.Calendar
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.MockProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.MockTimeService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -31,6 +33,8 @@ class MeetUpViewViewModelTest {
 
     private lateinit var viewModel: MeetUpViewViewModel
     private lateinit var meetUpRepository: MockMeetUpRepository
+    private lateinit var profileService: MockProfileService
+    private var timeService: MockTimeService = MockTimeService()
     private lateinit var testStartDate: Calendar
     private lateinit var testEndDate: Calendar
 
@@ -42,7 +46,9 @@ class MeetUpViewViewModelTest {
         Mockito.`when`(testEndDate.timeInMillis).thenReturn(420)
         meetUpRepository = MockMeetUpRepository()
         meetUpRepository.clearDB()
-        viewModel = MeetUpViewViewModel(meetUpRepository)
+        profileService = MockProfileService()
+        profileService.db.clear()
+        viewModel = MeetUpViewViewModel(meetUpRepository, profileService, timeService)
         Dispatchers.setMain(UnconfinedTestDispatcher())
     }
 
