@@ -9,6 +9,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.By
@@ -19,6 +20,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -40,6 +42,7 @@ class MapsActivityTest {
     lateinit var profileService: ProfileService
 
 
+
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
@@ -52,12 +55,10 @@ class MapsActivityTest {
         GrantPermissionRule.grant(android.Manifest.permission.ACCESS_COARSE_LOCATION)
 
 
-    lateinit var utils: MapListViewModel
 
     @Before
     fun init_() {
         hiltRule.inject()
-        utils = MapListViewModel(meetUpRepository, profileService)
     }
 
 
@@ -134,10 +135,6 @@ class MapsActivityTest {
         device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
 
         scenario.use{
-            scenario.onActivity {
-                Assert.assertEquals(MapsActivity.SELECT_LOCATION,it.getContext())
-            }
-            utils.setCameraPosition(basePosition)
             val marker = device.findObject(
                 UiSelector().descriptionContains("Google Map")
                     .childSelector(UiSelector().descriptionContains("Here"))
@@ -172,6 +169,26 @@ class MapsActivityTest {
             onView(withId(R.id.search_on_map)).perform(click()).perform(pressKey(KeyEvent.KEYCODE_ENTER))
             onView(withId(R.id.search_on_map)).perform(click(), typeText("invalid_location")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
 
+        }
+    }
+
+    @Test
+    fun canChangeMapType(){
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MapsActivity::class.java)
+        val scenario = ActivityScenario.launch<MapsActivity>(intent)
+
+        scenario.use {
+            scenario.onActivity {
+                Assert.assertEquals(GoogleMap.MAP_TYPE_NORMAL, it.viewModel.map.mapType)
+            }
+            onView(withId(R.id.bt_changeMapType)).perform(click())
+            scenario.onActivity {
+                Assert.assertEquals(GoogleMap.MAP_TYPE_HYBRID, it.viewModel.map.mapType)
+            }
+            onView(withId(R.id.bt_changeMapType)).perform(click())
+            scenario.onActivity {
+            Assert.assertEquals(GoogleMap.MAP_TYPE_NORMAL, it.viewModel.map.mapType)
+            }
         }
     }
 }
