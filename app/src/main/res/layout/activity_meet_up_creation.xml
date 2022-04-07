@@ -59,6 +59,12 @@
                 android:text="@string/meetup_creation_meetup_select_location" />
 
             <TextView
+                android:id="@+id/tv_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/meetup_creation_meetup_location_not_selected" />
+
+            <TextView
                 android:id="@+id/tv_LocationCoordinate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

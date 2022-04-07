@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.map.CONTEXT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
@@ -26,9 +27,11 @@ import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
 const val defaultTimeDelta = 1000 * 60 * 60
@@ -155,6 +158,13 @@ class MeetUpCreation : AppCompatActivity() {
         viewModel.canEditEndDate.observe(this) {
             endDateField.isClickable = it
         }
+        viewModel.icon.observe(this) {
+            viewModel.viewModelScope.launch {
+                if (it != null) {
+                    ImageInstance(it).loadImageInto(findViewById(R.id.iv_Icon))
+                }
+            }
+        }
     }
 
     private fun setCapacityField(isEditable: Boolean) {
@@ -256,5 +266,6 @@ class MeetUpCreation : AppCompatActivity() {
 
     private fun onLocationSelected(p0: LatLng) {
         viewModel.setLatLng(p0)
+        setTextView(R.id.tv_location, p0.toString())
     }
 }
