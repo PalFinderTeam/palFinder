@@ -22,6 +22,7 @@ import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.ui.login.CREATE_ACCOUNT_PROFILE
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
+import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
@@ -41,6 +42,9 @@ class UserSettingsActivityTest {
     lateinit var profileService: ProfileService
     @Inject
     lateinit var imageUploader: ImageUploader
+    @Inject
+    lateinit var timeService: TimeService
+
     lateinit var viewModel: UserSettingsViewModel
     lateinit var user: ProfileUser
     lateinit var bdFormat: SimpleDateFormat
@@ -74,7 +78,7 @@ class UserSettingsActivityTest {
         // Create viewModel with mock profile service
         profileService = UIMockProfileServiceModule.provideProfileService()
 
-        viewModel = UserSettingsViewModel(profileService, imageUploader)
+        viewModel = UserSettingsViewModel(profileService, imageUploader, timeService)
         //Dispatchers.setMain(UnconfinedTestDispatcher())
     }
 
