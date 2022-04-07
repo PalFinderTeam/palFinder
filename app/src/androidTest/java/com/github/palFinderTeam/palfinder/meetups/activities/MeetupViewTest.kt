@@ -16,6 +16,7 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.init
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -53,6 +54,7 @@ import javax.inject.Inject
 class MeetupViewTest {
 
     private lateinit var meetup: MeetUp
+    private lateinit var newMeetup: MeetUp
     private lateinit var user: ProfileUser
     private lateinit var user2: ProfileUser
     private val eventName = "dummy1"
@@ -239,12 +241,12 @@ class MeetupViewTest {
         }
     }
 
-    @Test
-    fun profileFragmentCorrectlyDisplayed() = runTest {
-        val userid = profileRepository.createProfile(user)
 
+    /*@Test
+    fun userClickableInFragment() = runTest {
+        val userid = profileRepository.createProfile(user)
         assertThat(userid, notNullValue())
-        val newMeetup = MeetUp(
+        newMeetup = MeetUp(
             "dummy",
             userid!!,
             "",
@@ -264,49 +266,18 @@ class MeetupViewTest {
             .apply{putExtra(MEETUP_SHOWN, id)}
         val scenario = ActivityScenario.launch<MeetUpView>(intent)
         scenario.use {
+            init()
             onView(withId(R.id.show_profile_list_button)).perform(click())
-            onView(RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(0, R.id.profile_name))
-                .check(matches(withText(user.username)))
-            onView(RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(0, R.id.fullName))
-                .check(matches(withText(user.fullName())))
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    0,
+                    R.id.profile_name
+                )
+            )
+                .perform(click())
         }
-    }
 
-//    @Test
-//    fun userClickableInFragment() = runTest {
-//        val userid = profileRepository.createProfile(user)
-//        assertThat(userid, notNullValue())
-//        val newMeetup = MeetUp(
-//            "dummy",
-//            userid!!,
-//            "",
-//            eventName,
-//            eventDescription,
-//            date1,
-//            date2,
-//            Location(0.0, 0.0),
-//            emptySet(),
-//            true,
-//            2,
-//            mutableListOf(userid)
-//        )
-//        val id = meetUpRepository.createMeetUp(newMeetup)
-//        assertThat(id, notNullValue())
-//        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
-//            .apply{putExtra(MEETUP_SHOWN, id)}
-//        val scenario = ActivityScenario.launch<MeetUpView>(intent)
-//        scenario.use {
-//            onView(withId(R.id.show_profile_list_button)).perform(click())
-//            onView(
-//                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
-//                    0,
-//                    R.id.profile_name
-//                )
-//            )
-//                .perform(click())
-//        }
-//
-//    }
+    }*/
 
     @Test
     fun addTagAddToDb() = runTest {

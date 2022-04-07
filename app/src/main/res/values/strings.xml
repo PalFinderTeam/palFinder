@@ -23,6 +23,9 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="title_activity_meetup_creation">meetup_creation</string>
 
+    <string name="search_no_location">Please provide a location</string>
+    <string name="search_location_not_found">Location not found</string>
+
 
     <!-- Strings used for meetup creation -->
     <string name="meetup_creation_meetup_name">Event Name</string>
