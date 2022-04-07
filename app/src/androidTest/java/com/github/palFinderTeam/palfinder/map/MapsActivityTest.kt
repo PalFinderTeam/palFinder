@@ -182,7 +182,7 @@ class MapsActivityTest {
             }
             onView(withId(R.id.bt_changeMapType)).perform(click())
             scenario.onActivity {
-                Assert.assertEquals(GoogleMap.MAP_TYPE_SATELLITE, it.viewModel.map.mapType)
+                Assert.assertEquals(GoogleMap.MAP_TYPE_HYBRID, it.viewModel.map.mapType)
             }
             onView(withId(R.id.bt_changeMapType)).perform(click())
             scenario.onActivity {
