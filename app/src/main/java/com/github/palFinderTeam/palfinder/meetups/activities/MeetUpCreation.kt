@@ -10,15 +10,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.activity.result.ActivityResult
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.TextView
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.map.CONTEXT
@@ -178,6 +175,13 @@ class MeetUpCreation : AppCompatActivity() {
         viewModel.canEditEndDate.observe(this) {
             endDateField.isClickable = it
         }
+        viewModel.icon.observe(this) {
+            viewModel.viewModelScope.launch {
+                if (it != null) {
+                    ImageInstance(it).loadImageInto(findViewById(R.id.iv_Icon))
+                }
+            }
+        }
     }
 
     private fun setCapacityField(isEditable: Boolean) {
@@ -268,8 +272,8 @@ class MeetUpCreation : AppCompatActivity() {
     fun onSelectLocation(v: View) {
         val intent = Intent(this, MapsActivity::class.java)
         val extras = Bundle().apply {
-                putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
-                putParcelable(LOCATION_SELECT, LatLng(0.0, 0.0))
+            putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
+            putParcelable(LOCATION_SELECT, LatLng(0.0, 0.0))
         }
         intent.putExtras(extras)
         registerForLocationResult.launch(intent)
@@ -287,6 +291,7 @@ class MeetUpCreation : AppCompatActivity() {
 
     private fun onLocationSelected(p0: LatLng) {
         viewModel.setLatLng(p0)
+        setTextView(R.id.tv_location, p0.toString())
     }
 
     // Runs when image picker returns result
