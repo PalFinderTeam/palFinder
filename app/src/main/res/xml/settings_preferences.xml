@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:iconSpaceReserved="false">
+
+    <SwitchPreference
+        android:layout_width="match_parent"
+        android:defaultValue="true"
+        android:key="switch"
+        android:summary="Click to switch on or off"
+        android:title="Switch Preference"
+        app:iconSpaceReserved="false" />
+
+    <ListPreference
+        android:dialogTitle="Select colors"
+        android:entries="@array/settings_list_colors_titles"
+        android:entryValues="@array/settings_list_colors_values"
+        android:key="list"
+        android:summary="Click to show the different color themes"
+        android:title="Color themes"
+        app:iconSpaceReserved="false" />
+
+    <Preference
+        app:iconSpaceReserved="false"
+        app:key="feedback"
+        app:summary="Report technical issues or suggest new features"
+        app:title="Send feedback" />
+
+</PreferenceScreen>

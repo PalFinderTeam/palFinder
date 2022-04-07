@@ -25,6 +25,7 @@ import com.github.palFinderTeam.palfinder.meetups.activities.RecyclerViewMatcher
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
+import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -64,6 +65,20 @@ class MainActivityTest {
         onView(withText("Logout"))
             .perform(click())
         intended(hasComponent(LoginActivity::class.java.name))
+        release()
+    }
+
+    @Test
+    fun settingsMenuButtonBringsToSettings() {
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
+        init()
+        ActivityScenario.launch<MainActivity>(intent)
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+
+        // Click the item.
+        onView(withText("Settings"))
+            .perform(click())
+        intended(hasComponent(SettingsActivity::class.java.name))
         release()
     }
 
