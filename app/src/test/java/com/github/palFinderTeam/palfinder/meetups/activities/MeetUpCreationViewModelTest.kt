@@ -8,6 +8,8 @@ import com.github.palFinderTeam.palfinder.profile.MockProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
+import com.github.palFinderTeam.palfinder.utils.images.MockImageUploader
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +38,7 @@ class MeetUpCreationViewModelTest {
 
     private lateinit var viewModel: MeetUpCreationViewModel
     private lateinit var meetUpRepository: MockMeetUpRepository
+    private lateinit var imageUploader: MockImageUploader
     private lateinit var profileService: MockProfileService
     private lateinit var testStartDate: Calendar
     private lateinit var testEndDate: Calendar
@@ -58,6 +61,9 @@ class MeetUpCreationViewModelTest {
         meetUpRepository = MockMeetUpRepository()
         meetUpRepository.clearDB()
 
+        imageUploader = MockImageUploader()
+        imageUploader.clearDB()
+
         profileService = MockProfileService()
         user = ProfileUser(
                 "user2",
@@ -69,7 +75,7 @@ class MeetUpCreationViewModelTest {
                 "Ne la laisse pas tomber"
             )
 
-        viewModel = MeetUpCreationViewModel(meetUpRepository, profileService, testStartDate)
+        viewModel = MeetUpCreationViewModel(meetUpRepository, imageUploader, profileService, testStartDate)
         Dispatchers.setMain(UnconfinedTestDispatcher())
     }
 

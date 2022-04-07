@@ -28,7 +28,7 @@ import com.google.firebase.firestore.GeoPoint
 data class MeetUp(
     val uuid: String,
     val creatorId: String,
-    val iconId: String,
+    val iconId: String?,
     val name: String,
     val description: String,
     val startDate: Calendar,
@@ -96,7 +96,7 @@ data class MeetUp(
     /**
      * @return a representation which is Firestore friendly of the MeetUp
      */
-    fun toFirestoreData(): HashMap<String, Any> {
+    fun toFirestoreData(): HashMap<String, Any?> {
         return hashMapOf(
             "capacity" to capacity,
             "creator" to creatorId,
