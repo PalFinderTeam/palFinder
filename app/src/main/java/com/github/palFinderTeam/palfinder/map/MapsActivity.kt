@@ -4,7 +4,6 @@ import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.SearchView
@@ -41,24 +40,28 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
     private lateinit var button: FloatingActionButton
     private lateinit var navBar: View
     private lateinit var mapView: View
-    private lateinit var context: mapContext
+    private lateinit var context: String
 
     private val mapSelection: MapsSelectionModel by viewModels()
 
     companion object{
-        enum class mapContext{
-            MARKER,
-            SELECT_LOCATION,
-        }
+        val MARKER = "marker"
+        val SELECT_LOCATION = "selectLocation"
+
     }
 
+    private lateinit var extrasPos: LatLng
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        context = if(intent.hasExtra(CONTEXT)){
-            intent.getParcelableExtra(CONTEXT)!!
-        }else mapContext.MARKER
+        val extras = intent.extras
+
+        context = if(extras != null) ({
+            if (extras.containsKey(CONTEXT)){
+                extras.getString(CONTEXT)!!
+            } else MARKER
+        }.toString()) else MARKER
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -74,9 +77,8 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         mapView.contentDescription = "MAP NOT READY"
         mapFragment.getMapAsync(this)
 
-
         when(context) {
-            mapContext.MARKER -> {
+            MARKER -> {
                 viewModel.listOfMeetUpResponse.observe(this) {
                     if (it is Response.Success) {
                         viewModel.refresh()
@@ -85,8 +87,8 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
                 mapSelection.active.value = false
                 }
             }
-            mapContext.SELECT_LOCATION -> {
-
+            SELECT_LOCATION -> {
+                extrasPos = (extras?.get(LOCATION_SELECT) as LatLng?)!!
             }
          }
         
@@ -102,13 +104,12 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
 
     private fun loadSelectionButton(){
 
-        val pos = intent.getParcelableExtra<LatLng>(LOCATION_SELECT)
         mapSelection.active.value = true
         navBar.isVisible = false
         navBar.isEnabled = false
         button.apply { this.isEnabled = false }
-        if (pos != null){
-            setSelectionMarker(pos)
+        if (extrasPos != null){
+            setSelectionMarker(extrasPos)
         }
 
     }
@@ -163,11 +164,11 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         map.uiSettings.isZoomControlsEnabled = true
 
         when(context){
-            mapContext.MARKER -> {
+            MARKER -> {
                 map.setOnMarkerClickListener(this)
                 map.setOnCameraMoveListener(this)
             }
-            mapContext.SELECT_LOCATION -> {
+            SELECT_LOCATION -> {
                 map.setOnMapClickListener { onMapClick(it) }
                 loadSelectionButton()
             }

@@ -8,7 +8,6 @@ import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
-import android.widget.CalendarView
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
@@ -245,10 +244,13 @@ class MeetUpCreation : AppCompatActivity() {
     }
 
     fun onSelectLocation(v: View) {
-        val intent = Intent(this, MapsActivity::class.java).apply {
-            putExtra(CONTEXT,MapsActivity.Companion.mapContext.SELECT_LOCATION)
-            putExtra(LOCATION_SELECT, LatLng(0.0, 0.0))
+        val intent = Intent(this, MapsActivity::class.java)
+        val extras = Bundle().apply {
+                putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
+                putParcelable(LOCATION_SELECT, LatLng(0.0, 0.0))
         }
+        intent.putExtras(extras)
+
         resultLauncher.launch(intent)
     }
 
