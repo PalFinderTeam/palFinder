@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -8,23 +9,33 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.PopupMenu
 import android.widget.SearchView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.map.CONTEXT
+import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
+import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
+import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.*
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 const val SHOW_JOINED_ONLY = "com.github.palFinderTeam.palFinder.meetup_list_view.SHOW_JOINED_ONLY"
+const val BASE_RADIUS = 500.0
 
 @AndroidEntryPoint
 class MeetupListActivity : MapListSuperActivity() {
@@ -32,6 +43,7 @@ class MeetupListActivity : MapListSuperActivity() {
     lateinit var adapter: MeetupListAdapter
     lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     lateinit var tagsViewModel: TagsViewModel<Category>
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
 
 
@@ -65,7 +77,6 @@ class MeetupListActivity : MapListSuperActivity() {
                 SearchedFilter.setupSearchField(searchField, adapter.filter)
             }
         }
-
         tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
         tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
         if (savedInstanceState == null) {
@@ -75,6 +86,7 @@ class MeetupListActivity : MapListSuperActivity() {
             tagsViewModel.refreshTags()
             filter(it)
         }
+        registerActivityResult()
     }
 
     private fun filterTags(meetup : MeetUp): Boolean {
@@ -155,6 +167,29 @@ class MeetupListActivity : MapListSuperActivity() {
             false
         })
         popupMenu.show()
+    }
+
+    fun searchOnMap(view: View?){
+        val intent = Intent(this, MapsActivity::class.java)
+        val extras = Bundle().apply {
+            putParcelable(LOCATION_SELECT, viewModel.getCameraPosition())
+            putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
+        }
+        intent.putExtras(extras)
+
+        resultLauncher.launch(intent)
+    }
+
+    private fun registerActivityResult() {
+        resultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val data: Intent? = result.data
+                    if (data != null) {
+                        viewModel.setGetMeetupAroundLocation(data.getParcelableExtra(LOCATION_SELECTED)!!, BASE_RADIUS)
+                    }
+                }
+            }
     }
 
 

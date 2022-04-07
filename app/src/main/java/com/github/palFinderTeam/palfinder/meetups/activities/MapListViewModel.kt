@@ -69,17 +69,19 @@ class MapListViewModel @Inject constructor(
             // at zoom 0, the map is of size 256x256 pixels and for every zoom, the number of pixel is multiplied by 2
             val radiusAtZoom0 = earthCircumference/256
             val radius = radiusAtZoom0/2.0.pow(getZoom().toDouble())
-            viewModelScope.launch {
-                meetUpRepository.getMeetUpsAroundLocation(
-                    Location(
-                        getCameraPosition().longitude,
-                        getCameraPosition().latitude
-                    ), 1450.0
-                ).collect {
-                    _listOfMeetUpResponse.postValue(it)
-                }
-            }
+            setGetMeetupAroundLocation(getCameraPosition(), radius)
 
+        }
+    }
+
+    fun setGetMeetupAroundLocation(position:LatLng, radius:Double){
+        viewModelScope.launch {
+            meetUpRepository.getMeetUpsAroundLocation(
+                Location(position.longitude, position.latitude),
+                1450.0
+            ).collect {
+                _listOfMeetUpResponse.postValue(it)
+            }
         }
     }
 
