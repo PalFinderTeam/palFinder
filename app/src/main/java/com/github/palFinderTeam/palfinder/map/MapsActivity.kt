@@ -1,29 +1,23 @@
 package com.github.palFinderTeam.palfinder.map
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.Location
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.SearchView
+import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.recyclerview.widget.RecyclerView
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
-import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListSuperActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
-import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.github.palFinderTeam.palfinder.utils.Response
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -31,29 +25,52 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.IOException
+
 
 const val LOCATION_SELECT = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECT"
 const val LOCATION_SELECTED = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECTED"
+const val CONTEXT = "com.github.palFinderTeam.palFinder.MAP.CONTEXT"
 
 @AndroidEntryPoint
-class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraMoveCanceledListener {
+class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
+    GoogleMap.OnCameraMoveCanceledListener, SearchView.OnQueryTextListener {
 
     private lateinit var binding: ActivityMapsBinding
-    private lateinit var button: FloatingActionButton
+    private lateinit var selectLocationButton: FloatingActionButton
+    private lateinit var selectMapTypeButton: FloatingActionButton
     private lateinit var navBar: View
     private lateinit var mapView: View
+    private lateinit var context: String
 
     private val mapSelection: MapsSelectionModel by viewModels()
 
+    companion object{
+        val MARKER = "marker"
+        val SELECT_LOCATION = "selectLocation"
 
+    }
+
+    private lateinit var extrasPos: LatLng
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val extras = intent.extras
+
+        context = if(extras != null) {
+            if (extras.containsKey(CONTEXT)){
+                extras.getString(CONTEXT)!!
+            } else MARKER
+        } else MARKER
+
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        button = findViewById(R.id.bt_locationSelection)
+        selectLocationButton = findViewById(R.id.bt_locationSelection)
+        selectMapTypeButton = findViewById(R.id.bt_changeMapType)
         navBar = findViewById(R.id.fc_navbar)
+        viewModel.update()
+
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -63,29 +80,44 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
         mapView.contentDescription = "MAP NOT READY"
         mapFragment.getMapAsync(this)
 
-        viewModel.update(viewModel.getCameraPosition())
-        viewModel.listOfMeetUpResponse.observe(this) {
-            viewModel.refresh()
+        when(context) {
+            MARKER -> {
+                viewModel.listOfMeetUpResponse.observe(this) {
+                    if (it is Response.Success) {
+                        viewModel.refresh()
+                    }
+                mapSelection.active.value = false
+                }
+            }
+            SELECT_LOCATION -> {
+                extrasPos = (extras?.get(LOCATION_SELECT) as LatLng?)!!
+            }
+         }
+        
+        val searchLocation = findViewById<SearchView>(R.id.search_on_map)
+        searchLocation.imeOptions = EditorInfo.IME_ACTION_DONE
+        searchLocation.setOnQueryTextListener(this)
         }
+        
 
-    }
 
-    private fun loadSelectionButton(){
+
+    private fun loadSelectionButton() {
         if (intent.hasExtra(LOCATION_SELECT)) {
             val pos = intent.getParcelableExtra<LatLng>(LOCATION_SELECT)
             mapSelection.active.value = true
             navBar.isVisible = false
             navBar.isEnabled = false
-            button.apply { this.isEnabled = false }
-            if (pos != null){
+            selectLocationButton.apply { this.isEnabled = false }
+            if (pos != null) {
                 setSelectionMarker(pos)
             }
         } else {
-            button.apply { this.hide() }
+            selectLocationButton.apply { this.hide() }
             mapSelection.active.value = false
         }
-    }
 
+    }
 
 
     /**
@@ -93,7 +125,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
      */
     override fun onMarkerClick(marker: Marker): Boolean {
         val id = marker.title
-        if(id != null){
+        if (id != null) {
             val intent = Intent(this, MeetUpView::class.java).apply {
                 putExtra(MEETUP_SHOWN, id)
             }
@@ -105,52 +137,95 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback,  GoogleMap.OnMa
 
     private fun onMapClick(p0: LatLng) {
         // Add a marker if the map is used to select a location
-        if (mapSelection.active.value!!) {
-            setSelectionMarker(p0)
-        }
+        setSelectionMarker(p0)
+
     }
 
     /**
      * Add or Update the Position Selection Marker
      */
-    private fun setSelectionMarker(p0: LatLng){
+    private fun setSelectionMarker(p0: LatLng) {
         mapSelection.targetMarker.value?.remove()
         mapSelection.targetMarker.value = map.addMarker(
             MarkerOptions().position(p0).title("Here").draggable(true)
         )
-        button.apply { this.isEnabled = mapSelection.targetMarker.value != null }
+        selectLocationButton.apply { this.isEnabled = mapSelection.targetMarker.value != null }
     }
 
     /**
      * Return the selected Location to the previous activity
      */
-    fun onConfirm(v: View){
+    fun onConfirm(v: View) {
         val resultIntent = Intent()
         resultIntent.putExtra(LOCATION_SELECTED, mapSelection.targetMarker.value!!.position)
         setResult(RESULT_OK, resultIntent)
         finish()
     }
-    
+
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        viewModel.setMap(map)
+        viewModel.setGmap(map)
+        viewModel.mapReady = true
         map.uiSettings.isZoomControlsEnabled = true
-        map.setOnMarkerClickListener(this)
 
+        when(context){
+            MARKER -> {
+                map.setOnMarkerClickListener(this)
+                map.setOnCameraMoveCanceledListener(this)
+            }
+            SELECT_LOCATION -> {
+                map.setOnMapClickListener { onMapClick(it) }
+                loadSelectionButton()
+            }
+
+        }
 
         super.setUserLocation()
 
-
-        map.setOnMapClickListener { onMapClick(it) }
-
         mapView.contentDescription = "MAP READY"
-        loadSelectionButton()
 
-
+        selectMapTypeButton.setOnClickListener(View.OnClickListener {
+            changeMapType()
+        })
     }
 
     override fun onCameraMoveCanceled() {
-        viewModel.update(viewModel.getCameraPosition())
+        viewModel.update()
     }
 
+    override fun onQueryTextSubmit(p0: String?): Boolean {
+        var addressList: List<Address>? = null
+
+        if (p0 == null || p0 == "") {
+            Toast.makeText(applicationContext,getString(R.string.search_no_location),Toast.LENGTH_SHORT).show()
+        }
+        else{
+            val geoCoder = Geocoder(this)
+            try {
+                addressList = geoCoder.getFromLocationName(p0, 1)
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            if (addressList == null || addressList.isEmpty()) {
+                Toast.makeText(applicationContext,getString(R.string.search_location_not_found),Toast.LENGTH_SHORT).show()
+            } else {
+                val address = addressList[0]
+                val latLng = LatLng(address.latitude, address.longitude)
+                viewModel.setCameraPosition(latLng)
+                map.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+                viewModel.update()
+            }
+        }
+        return false
+    }
+
+    override fun onQueryTextChange(p0: String?): Boolean {
+        return false
+    }
+
+    private fun changeMapType(){
+        if(map.mapType == GoogleMap.MAP_TYPE_NORMAL) map.mapType = GoogleMap.MAP_TYPE_HYBRID
+        else map.mapType = GoogleMap.MAP_TYPE_NORMAL
+    }
 }

@@ -1,30 +1,41 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.PopupMenu
 import android.widget.SearchView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.map.CONTEXT
+import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
+import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
+import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.*
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+
+const val SHOW_JOINED_ONLY = "com.github.palFinderTeam.palFinder.meetup_list_view.SHOW_JOINED_ONLY"
+const val BASE_RADIUS = 500.0
 
 @AndroidEntryPoint
 class MeetupListActivity : MapListSuperActivity() {
@@ -32,6 +43,7 @@ class MeetupListActivity : MapListSuperActivity() {
     lateinit var adapter: MeetupListAdapter
     lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     lateinit var tagsViewModel: TagsViewModel<Category>
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
 
 
@@ -40,7 +52,7 @@ class MeetupListActivity : MapListSuperActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-        viewModel.update(null)
+
 
         meetupList = findViewById(R.id.meetup_list_recycler)
         meetupList.layoutManager = LinearLayoutManager(this)
@@ -48,19 +60,23 @@ class MeetupListActivity : MapListSuperActivity() {
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
 
 
-        viewModel.listOfMeetUpResponse.observe(this) { it ->
-            val meetups = (it as Response.Success).data
-            adapter = MeetupListAdapter(meetups, meetups.toMutableList(),
-                SearchedFilter(
-                    meetups, meetups.toMutableList(), ::filterTag
-                ) {
-                    adapter.notifyDataSetChanged()
-                })
-            { onListItemClick(it) }
-            meetupList.adapter = adapter
-            SearchedFilter.setupSearchField(searchField, adapter.filter)
-        }
+        viewModel.showOnlyJoined = intent.getBooleanExtra(SHOW_JOINED_ONLY,false)
 
+        viewModel.listOfMeetUpResponse.observe(this) { it ->
+            if (it is Response.Success) {
+                val meetups = it.data.filter { isParticipating(it) }
+                adapter = MeetupListAdapter(meetups, meetups.toMutableList(),
+                    SearchedFilter(
+                        meetups, meetups.toMutableList(), ::filterTags
+                    ) {
+                        adapter.notifyDataSetChanged()
+                    }, Location.latLngToLocation
+                (viewModel.getCameraPosition()))
+                { onListItemClick(it) }
+                meetupList.adapter = adapter
+                SearchedFilter.setupSearchField(searchField, adapter.filter)
+            }
+        }
         tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
         tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
         if (savedInstanceState == null) {
@@ -68,38 +84,46 @@ class MeetupListActivity : MapListSuperActivity() {
         }
         viewModel.tags.observe(this) {
             tagsViewModel.refreshTags()
-            filterByTag(it)
+            filter(it)
         }
-
+        registerActivityResult()
     }
 
-    private fun filterTag(meetup : MeetUp): Boolean {
+    private fun filterTags(meetup : MeetUp): Boolean {
         return meetup.tags.containsAll(viewModel.tags.value!!)
     }
 
+    private fun isParticipating(meetup : MeetUp): Boolean {
+        return if (viewModel.showOnlyJoined) {
+            val user = viewModel.getUser()
+            return if (user != null) {
+                meetup.isParticipating(user)
+            } else {
+                false
+            }
+        } else {
+            true
+        }
+    }
 
-    fun filterByTag(tags: Set<Category>?) {
+
+    fun filter(tags: Set<Category>?) {
         if (::adapter.isInitialized) {
             adapter.currentDataSet.clear()
-            viewModel.listOfMeetUpResponse.value?.let { meetups -> performFilterByTag((meetups as Response.Success).data, adapter.currentDataSet, tags) }
+            viewModel.listOfMeetUpResponse.value?.let { meetups -> performFilter((meetups as Response.Success).data, adapter.currentDataSet, tags) }
             adapter.notifyDataSetChanged()
         }
     }
 
-    private fun performFilterByTag(
+    private fun performFilter(
         meetups: List<MeetUp>,
         currentDataSet: MutableList<MeetUp>,
         tags: Set<Category>?
     ) {
-        if (tags!!.isEmpty()) {
-            currentDataSet.addAll(meetups)
-        } else {
-            for (meetup: MeetUp in meetups) {
-                if (meetup.tags.containsAll(tags)) {
-                    currentDataSet.add(meetup)
-                }
-            }
-        }
+        currentDataSet.addAll(meetups.filter {
+            (tags==null || it.tags.containsAll(tags)) &&
+            (!viewModel.showOnlyJoined || isParticipating(it))
+        })
     }
 
     fun sortByCap() {
@@ -143,6 +167,29 @@ class MeetupListActivity : MapListSuperActivity() {
             false
         })
         popupMenu.show()
+    }
+
+    fun searchOnMap(view: View?){
+        val intent = Intent(this, MapsActivity::class.java)
+        val extras = Bundle().apply {
+            putParcelable(LOCATION_SELECT, viewModel.getCameraPosition())
+            putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
+        }
+        intent.putExtras(extras)
+
+        resultLauncher.launch(intent)
+    }
+
+    private fun registerActivityResult() {
+        resultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val data: Intent? = result.data
+                    if (data != null) {
+                        viewModel.setGetMeetupAroundLocation(data.getParcelableExtra(LOCATION_SELECTED)!!, BASE_RADIUS)
+                    }
+                }
+            }
     }
 
 

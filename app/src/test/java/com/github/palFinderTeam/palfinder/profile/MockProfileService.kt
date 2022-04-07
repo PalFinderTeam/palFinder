@@ -56,7 +56,7 @@ class MockProfileService : ProfileService {
     }
 
     override suspend fun createProfile(newUserProfile: ProfileUser): String? {
-        val key = counter.toString()
+        val key = newUserProfile.uuid
         db[key] = newUserProfile.copy(uuid = key)
         counter.inc()
         return key
@@ -67,5 +67,9 @@ class MockProfileService : ProfileService {
             val profile = db[userId]!!
             emit(Response.Success(profile))
         }
+    }
+
+    fun clearDB() {
+        db.clear()
     }
 }

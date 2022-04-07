@@ -35,10 +35,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
     buildFeatures {
         viewBinding true
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 }
 
@@ -58,12 +61,14 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:2.4.1"
     implementation "androidx.navigation:navigation-ui-ktx:2.4.1"
 
+
     implementation 'com.google.android.material:material:1.5.0'
 
     implementation 'com.google.android.gms:play-services-base:18.0.1'
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
+    implementation 'com.google.android.libraries.places:places:2.6.0'
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.0'
@@ -81,6 +86,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
+    implementation 'com.github.dhaval2404:imagepicker:2.1'
+
     androidTestImplementation ('androidx.test.espresso:espresso-contrib:3.4.0',{
         exclude group: 'com.google.protobuf',module: 'protobuf-javalite'
         exclude group: 'com.google.protobuf',module: 'protobuf-lite'
@@ -97,6 +104,7 @@ dependencies {
 
     implementation 'androidx.test.espresso:espresso-idling-resource:3.4.0'
 
+    androidTestImplementation 'org.mockito:mockito-android:2.7.15'
     androidTestImplementation 'androidx.test:core:1.4.0'
     androidTestImplementation 'androidx.test:core-ktx:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
@@ -111,6 +119,7 @@ dependencies {
     kaptAndroidTest 'com.google.dagger:hilt-compiler:2.41'
 
     androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
+    implementation 'com.google.code.gson:gson:2.9.0'
 }
 
 kapt {

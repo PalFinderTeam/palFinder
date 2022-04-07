@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
+import com.github.palFinderTeam.palfinder.notification.NotificationHandler
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
@@ -105,9 +106,21 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun editCatAccount(view: View?) {
+        val intent = Intent(this, UserSettingsActivity::class.java).apply {
+            putExtra(USER_ID, "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2")
+        }
+        startActivity(intent)
+    }
+
     fun accessCreateProfile(view: View?) {
         val intent = Intent(this, UserSettingsActivity::class.java).apply {  }
         startActivity(intent)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun notif(view: View){
+        NotificationHandler(this).post("test", "content", R.drawable.icon_beer)
     }
     
 }

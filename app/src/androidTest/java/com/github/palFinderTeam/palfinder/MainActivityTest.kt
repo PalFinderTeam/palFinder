@@ -22,14 +22,18 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.RecyclerViewMatcher
+import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import javax.inject.Inject
 
 
 @RunWith(AndroidJUnit4::class)
@@ -37,6 +41,15 @@ import org.junit.runner.RunWith
 class MainActivityTest {
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
+    @Inject
+    lateinit var profileRepository: ProfileService
+
+    @Before
+    fun setup(){
+        hiltRule.inject()
+
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID("dummy")
+    }
 
     @Test
     fun logoutMenuButtonActuallyLogout() {
@@ -119,5 +132,4 @@ class MainActivityTest {
         intended(hasComponent(UserSettingsActivity::class.java.name))
         release()
     }
-
 }

@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.utils
 import com.google.firebase.firestore.GeoPoint
 import android.content.Context
 import com.github.palFinderTeam.palfinder.R
+import com.google.android.gms.maps.model.LatLng
 import java.io.Serializable
 import kotlin.math.*
 
@@ -27,6 +28,13 @@ data class Location(val longitude: Double, val latitude: Double): Serializable{
          */
         fun GeoPoint.toLocation(): Location {
             return Location(longitude, latitude)
+        }
+
+        /**
+         * Conversion from LatLong to Location
+         */
+        fun latLngToLocation(latLng: LatLng): Location {
+            return Location(latLng.longitude, latLng.latitude)
         }
     }
 

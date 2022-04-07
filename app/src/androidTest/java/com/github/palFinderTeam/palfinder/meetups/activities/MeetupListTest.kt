@@ -3,23 +3,31 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.content.Intent
 import android.content.res.Resources
 import android.icu.util.Calendar
+import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents.*
+import androidx.test.espresso.intent.matcher.BundleMatchers
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
+import com.github.palFinderTeam.palfinder.map.CONTEXT
+import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
+import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.tag.Category
-import com.github.palFinderTeam.palfinder.tag.TagSelectorFragment
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -81,7 +89,7 @@ class MeetUpListTest {
                 description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre",
                 startDate = date1,
                 endDate = date2,
-                location = Location(0.0, 0.0),
+                location = Location(-122.0, 37.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 45,
                 creatorId = user1,
@@ -97,7 +105,7 @@ class MeetUpListTest {
                 description = "nous aimerions bien nous atteler à la cuisson de patates au beurre",
                 startDate = date2,
                 endDate = date1,
-                location = Location(0.0, 0.0),
+                location = Location(-122.0, 37.0),
                 tags = setOf(Category.WORKING_OUT, Category.DUMMY_TAG1),
                 capacity = 48,
                 creatorId = user1,
@@ -113,7 +121,7 @@ class MeetUpListTest {
                 description = "workout pepouse au pont chauderon",
                 startDate = date3,
                 endDate = date1,
-                location = Location(0.0, 0.0),
+                location = Location(-122.0, 37.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 9,
                 creatorId = user2,
@@ -129,7 +137,7 @@ class MeetUpListTest {
                 description = "Expo sans tableau c'est bo",
                 startDate = date4,
                 endDate = date1,
-                location = Location(0.0, 0.0),
+                location = Location(-122.0, 37.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 15,
                 creatorId = user1,
@@ -145,7 +153,7 @@ class MeetUpListTest {
                 description = "popopo",
                 startDate = date4,
                 endDate = date2,
-                location = Location(0.0, 0.0),
+                location = Location(-122.0, 37.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 13,
                 creatorId = user1,
@@ -170,6 +178,8 @@ class MeetUpListTest {
 
         val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
         scenario.use {
+            scenario.onActivity { it.viewModel.setCameraPosition(LatLng(37.0, -122.0));
+                it.viewModel.update()}
             onView(
                 RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0,
                     R.id.meetup_title
@@ -190,6 +200,8 @@ class MeetUpListTest {
 
         val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
         scenario.use{
+            scenario.onActivity { it.viewModel.setCameraPosition(LatLng(37.0, -122.0));
+                it.viewModel.update()}
             scenario.onActivity { it.sortByCap() }
             onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
                 .check(matches(withText(meetUpList.sortedBy { it.capacity }[0].name)))
@@ -206,11 +218,13 @@ class MeetUpListTest {
 
         val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
         scenario.use {
-            scenario.onActivity { it.filterByTag(setOf(Category.CINEMA)) }
+            scenario.onActivity { it.viewModel.setCameraPosition(LatLng(37.0, -122.0));
+                it.viewModel.update()}
+            scenario.onActivity { it.filter(setOf(Category.CINEMA)) }
             scenario.onActivity { assert(it.adapter.currentDataSet.isEmpty()) }
-            scenario.onActivity { it.filterByTag(setOf(Category.WORKING_OUT, Category.DUMMY_TAG1)) }
+            scenario.onActivity { it.filter(setOf(Category.WORKING_OUT, Category.DUMMY_TAG1)) }
             scenario.onActivity { assertEquals(1, it.adapter.currentDataSet.size) }
-            scenario.onActivity { it.filterByTag(setOf()) }
+            scenario.onActivity { it.filter(setOf()) }
             scenario.onActivity { assertEquals(5, it.adapter.currentDataSet.size) }
         }
     }
@@ -222,6 +236,8 @@ class MeetUpListTest {
 
         val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
         scenario.use {
+            scenario.onActivity { it.viewModel.setCameraPosition(LatLng(37.0, -122.0));
+                it.viewModel.update()}
             scenario.onActivity { it.viewModel.tagRepository.addTag(Category.CINEMA)}
             scenario.onActivity { assert(it.adapter.currentDataSet.isEmpty()) }
             scenario.onActivity { it.viewModel.tagRepository.removeTag(Category.CINEMA)}
@@ -243,6 +259,8 @@ class MeetUpListTest {
 
         val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
         scenario.use {
+            scenario.onActivity { it.viewModel.setCameraPosition(LatLng(37.0, -122.0));
+                it.viewModel.update()}
             onView(withId(R.id.sort_list)).perform(click())
             onView(withText(R.string.list_sort_by_capacity))
                 .perform(click());
@@ -255,7 +273,7 @@ class MeetUpListTest {
             onView(withId(R.id.sort_list)).perform(click())
             onView(withText(R.string.list_sort_by_location)).perform(click())
             onView(RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(0, R.id.meetup_title))
-                .check(matches(withText(meetUpList.sortedBy { it.location.distanceInKm(Location(0.0, 0.0))}[0].name)))
+                .check(matches(withText(meetUpList.sortedBy { it.location.distanceInKm(Location(122.0, 37.0))}[0].name)))
         }
     }
 
@@ -263,17 +281,41 @@ class MeetUpListTest {
     fun clickItem() = runTest {
         meetUpList.forEach { meetUpRepository.createMeetUp(it) }
         val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
-        ActivityScenario.launch<MeetupListActivity>(intent)
-        init()
-        onView(
-            RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
-                0,
-                R.id.meetup_title
-            )
-        ).perform(click())
-        intended(hasComponent(MeetUpView::class.java.name))
-        release()
+        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+       scenario.use {
+           init()
+           scenario.onActivity { it.viewModel.setCameraPosition(LatLng(37.0, -122.0));
+               it.viewModel.update()}
+           onView(
+               RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
+                   0,
+                   R.id.meetup_title
+               )
+           ).perform(click())
+           intended(hasComponent(MeetUpView::class.java.name))
+           release()
+       }
     }
+
+    @Test
+    fun openMap(){
+        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+
+        scenario.use{
+            init()
+            onView(withId(R.id.search_place)).perform(click())
+            intended(hasComponent(MapsActivity::class.java.name))
+
+            intended(hasExtras(BundleMatchers.hasEntry(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)))
+            var currentLocation: LatLng = LatLng(43.0, 15.0)
+            scenario.onActivity { currentLocation = it.viewModel.getCameraPosition() }
+            intended(hasExtras(BundleMatchers.hasEntry(LOCATION_SELECT, currentLocation)))
+            release()
+        }
+    }
+
+    
 }
 
 
@@ -323,4 +365,6 @@ class RecyclerViewMatcher(private val recyclerViewId: Int) {
             }
         }
     }
+
+
 }

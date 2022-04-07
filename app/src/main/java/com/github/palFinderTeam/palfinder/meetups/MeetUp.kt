@@ -28,7 +28,7 @@ import com.google.firebase.firestore.GeoPoint
 data class MeetUp(
     val uuid: String,
     val creatorId: String,
-    val iconId: String,
+    val iconId: String?,
     val name: String,
     val description: String,
     val startDate: Calendar,
@@ -46,6 +46,13 @@ data class MeetUp(
      */
     fun distanceInKm(currentLocation: Location): Double {
         return location.distanceInKm(currentLocation)
+    }
+
+    /**
+     * @return the number of participants currently in the meetup
+     */
+    fun numberOfParticipants() : Int {
+        return participantsId.size
     }
 
     /**
@@ -82,14 +89,14 @@ data class MeetUp(
     /**
      *  @return if the user is taking part in the event
      */
-    fun isParticipating(userId: String): Boolean {
+    fun isParticipating(userId: String?): Boolean {
         return participantsId.contains(userId)
     }
 
     /**
      * @return a representation which is Firestore friendly of the MeetUp
      */
-    fun toFirestoreData(): HashMap<String, Any> {
+    fun toFirestoreData(): HashMap<String, Any?> {
         return hashMapOf(
             "capacity" to capacity,
             "creator" to creatorId,

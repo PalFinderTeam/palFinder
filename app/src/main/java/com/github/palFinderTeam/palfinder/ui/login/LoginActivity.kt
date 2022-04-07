@@ -103,8 +103,8 @@ class LoginActivity : AppCompatActivity() {
             else if (isValidEmail(email)) {
                 createAccount(email, password)
             } else {
-            //pop "email not valid"
-            Toast.makeText(baseContext, "Email not valid", Toast.LENGTH_SHORT).show()
+                //pop "email not valid"
+                Toast.makeText(baseContext, "Email not valid", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -276,15 +276,15 @@ class LoginActivity : AppCompatActivity() {
         Identity.getCredentialSavingClient(this).savePassword(savePasswordRequest)
             .addOnSuccessListener { result ->
                 try {
-                startIntentSenderForResult(
-                    result.pendingIntent.intentSender,
-                    REQUEST_CODE_GIS_SAVE_PASSWORD,  /* fillInIntent= */
-                    null,  /* flagsMask= */
-                    0,  /* flagsValue= */
-                    0,  /* extraFlags= */
-                    0,  /* options= */
-                    null
-                )}catch (e: IntentSender.SendIntentException) {
+                    startIntentSenderForResult(
+                        result.pendingIntent.intentSender,
+                        REQUEST_CODE_GIS_SAVE_PASSWORD,  /* fillInIntent= */
+                        null,  /* flagsMask= */
+                        0,  /* flagsValue= */
+                        0,  /* extraFlags= */
+                        0,  /* options= */
+                        null
+                    )}catch (e: IntentSender.SendIntentException) {
                     Log.e(TAG, "Couldn't save password: ${e.localizedMessage}")
                 }
             }

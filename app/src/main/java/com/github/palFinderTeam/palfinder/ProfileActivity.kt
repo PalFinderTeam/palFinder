@@ -38,7 +38,7 @@ class ProfileActivity : AppCompatActivity() {
         viewModel.profile.observe(this) {
             when(it) {
                 is Response.Success -> injectUserInfo(it.data)
-                is Response.Loading ->  Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
+                is Response.Loading -> Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
                 is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
             }
         }

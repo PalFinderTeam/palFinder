@@ -14,7 +14,7 @@
         app:layout_constraintBottom_toTopOf="@+id/fc_navbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_on_map"
         tools:context=".map.MapsActivity" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -32,6 +32,20 @@
         app:srcCompat="@android:drawable/ic_dialog_map"
         tools:ignore="SpeakableTextPresentCheck" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/bt_changeMapType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="92dp"
+        android:clickable="true"
+        android:onClick="onConfirm"
+        app:layout_constraintBottom_toBottomOf="@+id/fc_navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_mapmode" />
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fc_navbar"
         android:name="com.github.palFinderTeam.palfinder.navbar.NavigationBarFragment"
@@ -39,6 +53,16 @@
         android:layout_height="65dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <SearchView
+        android:id="@+id/search_on_map"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:iconifiedByDefault="false"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

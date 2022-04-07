@@ -90,6 +90,7 @@ object UIMockMeetUpRepositoryModule {
             radiusInKm: Double
         ): Flow<Response<List<MeetUp>>> {
             return flow {
+                println("location " + location.toString())
                 val meetUps = db.values.filter { meetUp ->
                     meetUp.location.distanceInKm(location) <= radiusInKm
                 }

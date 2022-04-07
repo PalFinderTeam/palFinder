@@ -8,16 +8,17 @@ import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
-import android.widget.CalendarView
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.TextView
-import androidx.activity.result.ActivityResultLauncher
+import android.widget.*
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.map.CONTEXT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
 import com.github.palFinderTeam.palfinder.map.MapsActivity
@@ -26,9 +27,12 @@ import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.github.palFinderTeam.palfinder.utils.image.pickProfileImage
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
 const val defaultTimeDelta = 1000 * 60 * 60
@@ -36,7 +40,6 @@ const val defaultTimeDelta = 1000 * 60 * 60
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 @AndroidEntryPoint
 class MeetUpCreation : AppCompatActivity() {
-    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
     private val viewModel: MeetUpCreationViewModel by viewModels()
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
@@ -49,33 +52,19 @@ class MeetUpCreation : AppCompatActivity() {
     private lateinit var limitEditText: EditText
     private lateinit var nameEditText: EditText
     private lateinit var descriptionEditText: EditText
+    private lateinit var changeIconButton: Button
+    private lateinit var icon: ImageView
     private lateinit var startDateField: TextView
     private lateinit var endDateField: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        registerActivityResult()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_creation)
 
         dateFormat = SimpleDateFormat(getString(R.string.date_long_format))
 
-        hasLimitCheckBox = findViewById(R.id.hasCapacityButton)
-        limitEditText = findViewById(R.id.et_Capacity)
-        nameEditText = findViewById(R.id.et_EventName)
-        descriptionEditText = findViewById(R.id.et_Description)
-        startDateField = findViewById(R.id.tv_StartDate)
-        endDateField = findViewById(R.id.tv_EndDate)
-
-
+        initiateFieldRefs()
         bindUI()
-
-        // Create tag fragment
-        tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
-        tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
-
-        if (savedInstanceState == null) {
-            addTagsToFragmentManager(supportFragmentManager, R.id.fc_tags)
-        }
 
         // Load meetup or start from scratch
         if (intent.hasExtra(MEETUP_EDIT)) {
@@ -87,53 +76,44 @@ class MeetUpCreation : AppCompatActivity() {
             viewModel.fillWithDefaultValues()
         }
 
+        // Create tag fragment
+        tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
+        tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
+
+        if (savedInstanceState == null) {
+            addTagsToFragmentManager(supportFragmentManager, R.id.fc_tags)
+        }
         // Make sure tags are refreshed once when fetching from DB
         viewModel.tags.observe(this) {
             tagsViewModel.refreshTags()
         }
-
-        registerActivityResult()
     }
 
-    private fun registerActivityResult() {
-        resultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    val data: Intent? = result.data
-                    if (data != null) {
-                        onLocationSelected(data.getParcelableExtra(LOCATION_SELECTED)!!)
-                    }
-                }
-            }
+    private fun initiateFieldRefs() {
+        hasLimitCheckBox = findViewById(R.id.hasCapacityButton)
+        limitEditText = findViewById(R.id.et_Capacity)
+        nameEditText = findViewById(R.id.et_EventName)
+        descriptionEditText = findViewById(R.id.et_Description)
+        changeIconButton = findViewById(R.id.bt_SelectIcon)
+        icon = findViewById(R.id.iv_Icon)
+        startDateField = findViewById(R.id.tv_StartDate)
+        endDateField = findViewById(R.id.tv_EndDate)
     }
 
     private fun bindUI() {
-        viewModel.startDate.observe(this) { newDate ->
-            setTextView(R.id.tv_StartDate, dateFormat.format(newDate))
-        }
-        viewModel.endDate.observe(this) { newDate ->
-            setTextView(R.id.tv_EndDate, dateFormat.format(newDate))
-        }
+        forwardBind()
+        backwardBind()
+    }
 
-        viewModel.name.observeOnce(this) {
-            setTextView(R.id.et_EventName, it)
-        }
+    // Bind fields to viewModel
+    private fun forwardBind() {
         nameEditText.doAfterTextChanged { text ->
             viewModel.setName(text.toString())
-        }
-        viewModel.description.observeOnce(this) {
-            setTextView(R.id.et_Description, it)
         }
         descriptionEditText.doAfterTextChanged { text ->
             viewModel.setDescription(text.toString())
         }
-        viewModel.hasMaxCapacity.observeOnce(this) { hasMaxCapacity ->
-            hasLimitCheckBox.isChecked = hasMaxCapacity
-            limitEditText.isEnabled = hasMaxCapacity
-        }
-        viewModel.capacity.observeOnce(this) {
-            setTextView(R.id.et_Capacity, it.toString())
-        }
+
         hasLimitCheckBox.setOnCheckedChangeListener { _, isChecked ->
             setCapacityField(isChecked)
             viewModel.setHasMaxCapacity(isChecked)
@@ -149,11 +129,58 @@ class MeetUpCreation : AppCompatActivity() {
         }
         limitEditText.isEnabled = hasLimitCheckBox.isChecked
 
+        changeIconButton.setOnClickListener {
+            pickProfileImage(
+                this,
+                registerForImagePickerResult::launch
+            )
+        }
+        icon.setOnClickListener {
+            pickProfileImage(this, registerForImagePickerResult::launch)
+        }
+    }
+
+    // Observe viewModel for changes
+    private fun backwardBind() {
+        viewModel.description.observeOnce(this) {
+            setTextView(R.id.et_Description, it)
+        }
+        viewModel.startDate.observe(this) { newDate ->
+            setTextView(R.id.tv_StartDate, dateFormat.format(newDate))
+        }
+        viewModel.endDate.observe(this) { newDate ->
+            setTextView(R.id.tv_EndDate, dateFormat.format(newDate))
+        }
+
+        // Observe once when fetching existing meetup to avoid infinite loop
+        viewModel.name.observeOnce(this) {
+            setTextView(R.id.et_EventName, it)
+        }
+        viewModel.hasMaxCapacity.observeOnce(this) { hasMaxCapacity ->
+            hasLimitCheckBox.isChecked = hasMaxCapacity
+            limitEditText.isEnabled = hasMaxCapacity
+        }
+        viewModel.capacity.observeOnce(this) {
+            setTextView(R.id.et_Capacity, it.toString())
+        }
+        viewModel.iconUrl.observeOnce(this) {
+            lifecycleScope.launch {
+                ImageInstance(it).loadImageInto(icon)
+            }
+        }
+
         viewModel.canEditStartDate.observe(this) {
             startDateField.isClickable = it
         }
         viewModel.canEditEndDate.observe(this) {
             endDateField.isClickable = it
+        }
+        viewModel.icon.observe(this) {
+            viewModel.viewModelScope.launch {
+                if (it != null) {
+                    ImageInstance(it).loadImageInto(findViewById(R.id.iv_Icon))
+                }
+            }
         }
     }
 
@@ -210,7 +237,6 @@ class MeetUpCreation : AppCompatActivity() {
     }
 
     fun onDone(v: View) {
-
         // Check field validity
         val name = nameEditText.text.toString()
         val description = descriptionEditText.text.toString()
@@ -244,13 +270,46 @@ class MeetUpCreation : AppCompatActivity() {
     }
 
     fun onSelectLocation(v: View) {
-        val intent = Intent(this, MapsActivity::class.java).apply {
-            putExtra(LOCATION_SELECT, LatLng(0.0, 0.0))
+        val intent = Intent(this, MapsActivity::class.java)
+        val extras = Bundle().apply {
+            putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
+            putParcelable(LOCATION_SELECT, LatLng(0.0, 0.0))
         }
-        resultLauncher.launch(intent)
+        intent.putExtras(extras)
+        registerForLocationResult.launch(intent)
     }
+
+    private val registerForLocationResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                if (data != null) {
+                    onLocationSelected(data.getParcelableExtra(LOCATION_SELECTED)!!)
+                }
+            }
+        }
 
     private fun onLocationSelected(p0: LatLng) {
         viewModel.setLatLng(p0)
+        setTextView(R.id.tv_location, p0.toString())
     }
+
+    // Runs when image picker returns result
+    private val registerForImagePickerResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val resultCode = result.resultCode
+            val data = result.data
+
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    //Image Uri will not be null for RESULT_OK
+                    val fileUri = data?.data!!
+                    viewModel.setIcon(fileUri)
+                    icon.setImageURI(fileUri)
+                }
+                ImagePicker.RESULT_ERROR -> {
+                    Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 }
