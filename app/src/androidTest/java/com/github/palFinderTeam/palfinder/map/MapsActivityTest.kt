@@ -128,6 +128,7 @@ class MapsActivityTest {
         val intent = Intent(ApplicationProvider.getApplicationContext(), MapsActivity::class.java)
         val basePosition = LatLng(42.0, 42.0)
         intent.apply {
+            putExtra(CONTEXT, MapsActivity.Companion.mapContext.SELECT_LOCATION)
             putExtra(LOCATION_SELECT, basePosition)
         }
         val scenario = ActivityScenario.launch<MapsActivity>(intent)
