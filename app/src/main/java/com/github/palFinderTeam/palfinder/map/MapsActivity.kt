@@ -194,7 +194,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
     }
 
     private fun changeMapType(){
-        if(map.mapType == GoogleMap.MAP_TYPE_NORMAL) map.mapType = GoogleMap.MAP_TYPE_SATELLITE
+        if(map.mapType == GoogleMap.MAP_TYPE_NORMAL) map.mapType = GoogleMap.MAP_TYPE_HYBRID
         else map.mapType = GoogleMap.MAP_TYPE_NORMAL
     }
 }
