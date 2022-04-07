@@ -11,6 +11,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.By
@@ -171,6 +172,16 @@ class MapsActivityTest {
             onView(withId(R.id.search_on_map)).perform(click()).perform(pressKey(KeyEvent.KEYCODE_ENTER))
             onView(withId(R.id.search_on_map)).perform(click(), typeText("invalid_location")).perform(pressKey(KeyEvent.KEYCODE_ENTER))
 
+        }
+    }
+
+    @Test
+    fun canChangeMapType(){
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MapsActivity::class.java)
+        val scenario = ActivityScenario.launch<MapsActivity>(intent)
+
+        scenario.use {
+            //Assert.assertEquals(onView(withId(R.id.map)))
         }
     }
 }

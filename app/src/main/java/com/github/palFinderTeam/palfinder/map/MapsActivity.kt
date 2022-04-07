@@ -4,7 +4,6 @@ import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.SearchView
@@ -37,7 +36,8 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
     GoogleMap.OnCameraMoveListener, SearchView.OnQueryTextListener {
 
     private lateinit var binding: ActivityMapsBinding
-    private lateinit var button: FloatingActionButton
+    private lateinit var selectLocationButton: FloatingActionButton
+    private lateinit var selectMapTypeButton: FloatingActionButton
     private lateinit var navBar: View
     private lateinit var mapView: View
 
@@ -49,9 +49,11 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        button = findViewById(R.id.bt_locationSelection)
+        selectLocationButton = findViewById(R.id.bt_locationSelection)
+        selectLocationButton = findViewById(R.id.bt_changeMapType)
         navBar = findViewById(R.id.fc_navbar)
         viewModel.update()
+
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -81,12 +83,12 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
             mapSelection.active.value = true
             navBar.isVisible = false
             navBar.isEnabled = false
-            button.apply { this.isEnabled = false }
+            selectLocationButton.apply { this.isEnabled = false }
             if (pos != null) {
                 setSelectionMarker(pos)
             }
         } else {
-            button.apply { this.hide() }
+            selectLocationButton.apply { this.hide() }
             mapSelection.active.value = false
         }
     }
@@ -122,7 +124,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         mapSelection.targetMarker.value = map.addMarker(
             MarkerOptions().position(p0).title("Here").draggable(true)
         )
-        button.apply { this.isEnabled = mapSelection.targetMarker.value != null }
+        selectLocationButton.apply { this.isEnabled = mapSelection.targetMarker.value != null }
     }
 
     /**
@@ -151,7 +153,9 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         mapView.contentDescription = "MAP READY"
         loadSelectionButton()
 
-
+        selectMapTypeButton.setOnClickListener(View.OnClickListener {
+            changeMapType()
+        })
     }
 
     override fun onCameraMove() {
@@ -189,4 +193,8 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         return false
     }
 
+    private fun changeMapType(){
+        if(map.mapType == GoogleMap.MAP_TYPE_NORMAL) map.mapType = GoogleMap.MAP_TYPE_SATELLITE
+        else map.mapType = GoogleMap.MAP_TYPE_NORMAL
+    }
 }
