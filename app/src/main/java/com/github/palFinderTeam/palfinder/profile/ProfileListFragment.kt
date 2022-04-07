@@ -49,7 +49,7 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
 
     private fun onListItemClick(position: Int) {
         val intent = Intent(activity?.applicationContext, ProfileActivity::class.java)
-            .apply { putExtra(USER_ID, (recyclerView.adapter as ProfileAdapter<*>).currentDataSet[position].uuid) }
+            .apply { putExtra(USER_ID, (recyclerView.adapter as ProfileAdapter).currentDataSet[position].uuid) }
         startActivity(intent)
     }
 

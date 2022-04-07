@@ -68,4 +68,8 @@ class MockProfileService : ProfileService {
             emit(Response.Success(profile))
         }
     }
+
+    fun clearDB() {
+        db.clear()
+    }
 }

@@ -10,6 +10,7 @@ import com.github.palFinderTeam.palfinder.user.settings.UserSettingsViewModel.Co
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsViewModel.Companion.MSG_FIELD_TOO_LONG
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsViewModel.Companion.MSG_FIELD_TOO_SHORT
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.github.palFinderTeam.palfinder.utils.images.MockImageUploader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -35,6 +36,7 @@ class UserSettingsViewModelTest {
 
     private lateinit var viewModel: UserSettingsViewModel
     private lateinit var profileUserService: MockProfileService
+    private lateinit var imageUploader: MockImageUploader
     private lateinit var joinDate: Calendar
     private lateinit var birthday: Calendar
     private lateinit var imgInst: ImageInstance
@@ -65,8 +67,10 @@ class UserSettingsViewModelTest {
 
         // Create viewModel with mock profile service
         profileUserService = MockProfileService()
-        profileUserService.db.clear()
-        viewModel = UserSettingsViewModel(profileUserService)
+        profileUserService.clearDB()
+        imageUploader = MockImageUploader()
+        imageUploader.clearDB()
+        viewModel = UserSettingsViewModel(profileUserService, imageUploader)
         Dispatchers.setMain(UnconfinedTestDispatcher())
     }
 
