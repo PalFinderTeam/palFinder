@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.content.Context
+import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,11 +27,12 @@ class MeetupListAdapter(private val dataSet: List<MeetUp>, val currentDataSet: M
 
     companion object {
         const val PARTICIPANTS_RATIO: String = "%d / %d"
+        const val PARTICIPANTS_NO_LIMIT: String = "%d"
     }
 
     class ViewHolder(view: View, private val onItemClicked: (position: Int) -> Unit) :
         RecyclerView.ViewHolder(view), View.OnClickListener {
-        //TODO - add some remaining fields to display
+
         val meetupTitle: TextView = view.findViewById(R.id.meetup_title)
         val meetupDate: TextView = view.findViewById(R.id.meetup_date)
         val meetupDescription: TextView = view.findViewById(R.id.meetup_description)
@@ -78,19 +80,28 @@ class MeetupListAdapter(private val dataSet: List<MeetUp>, val currentDataSet: M
             currentDataSet[position].location.prettyDistanceTo(holder.parContext, currentLocation)
 
         val meetupNumberParticipants = holder.meetupNumberParticipants
-        meetupNumberParticipants.text = String.format(
-            PARTICIPANTS_RATIO,
-            currentDataSet[position].numberOfParticipants(),
-            currentDataSet[position].capacity
-        )
+        meetupNumberParticipants.text = if (currentDataSet[position].hasMaxCapacity) {
+            String.format(
+                PARTICIPANTS_RATIO,
+                currentDataSet[position].numberOfParticipants(),
+                currentDataSet[position].capacity
+            )
+        } else {
+            currentDataSet[position].numberOfParticipants().toString()
+        }
 
         val meetupPicture = holder.meetupImage
 
-        CoroutineScope(Dispatchers.Main).launch {
-            currentDataSet[position].iconId?.let {
-                ImageInstance(it).loadImageInto(meetupPicture)
+        if (currentDataSet[position].iconId != null) {
+            CoroutineScope(Dispatchers.Main).launch {
+                currentDataSet[position].iconId?.let {
+                    ImageInstance(it).loadImageInto(meetupPicture)
+                }
             }
+        } else {
+            meetupPicture.visibility = View.GONE
         }
+
     }
 
     override fun getItemCount(): Int = currentDataSet.size
