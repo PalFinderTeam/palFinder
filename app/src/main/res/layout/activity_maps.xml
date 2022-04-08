@@ -26,6 +26,7 @@
         android:layout_alignParentBottom="true"
         android:clickable="true"
         android:onClick="onConfirm"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/fc_navbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
