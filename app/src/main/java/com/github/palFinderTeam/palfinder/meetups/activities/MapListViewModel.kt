@@ -28,7 +28,7 @@ class MapListViewModel @Inject constructor(
 ) : ViewModel() {
     private val _listOfMeetUpResponse: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
     val listOfMeetUpResponse: LiveData<Response<List<MeetUp>>> = _listOfMeetUpResponse
-    lateinit var meetupList: List<MeetUp>
+    private var meetupList: List<MeetUp> = listOf()
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
     val tags: LiveData<Set<Category>> = _tags
     var startingCameraPosition: LatLng = LatLng(46.31, 6.38)
@@ -144,15 +144,16 @@ class MapListViewModel @Inject constructor(
         if (!mapReady) return
         val response = listOfMeetUpResponse.value
 
-        meetupList = if(response is Response.Success){
-            response.data
-        }else emptyList()
-        clearMarkers()
-
-        meetupList.forEach{ meetUp ->
-            val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
-            val marker = map.addMarker(MarkerOptions().position(position).title(meetUp.uuid))
-                ?.let { markers[meetUp.uuid] = it }
+        if (response is Response.Success) {
+            val deletedMarkers = meetupList.minus(response.data)
+            val addedMarkers = response.data.minus(meetupList)
+            meetupList = response.data
+            deletedMarkers.forEach { markers[it.uuid]?.remove() }
+            addedMarkers.forEach { meetUp ->
+                val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
+                map.addMarker(MarkerOptions().position(position).title(meetUp.uuid))
+                    ?.let { markers[meetUp.uuid] = it }
+            }
         }
     }
 
