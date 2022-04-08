@@ -150,6 +150,7 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
             MarkerOptions().position(p0).title("Here").draggable(true)
         )
         selectLocationButton.apply { this.isEnabled = mapSelection.targetMarker.value != null }
+        selectLocationButton.apply { this.show() }
     }
 
     /**
