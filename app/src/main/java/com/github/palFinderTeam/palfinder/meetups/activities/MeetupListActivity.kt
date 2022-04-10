@@ -1,88 +1,90 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.PopupMenu
 import android.widget.SearchView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.map.CONTEXT
-import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
-import com.github.palFinderTeam.palfinder.map.MapsActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.*
-import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 
 const val SHOW_JOINED_ONLY = "com.github.palFinderTeam.palFinder.meetup_list_view.SHOW_JOINED_ONLY"
 const val BASE_RADIUS = 500.0
 
 @AndroidEntryPoint
-class MeetupListActivity : MapListSuperActivity() {
+class MeetupListActivity : Fragment() {
     private lateinit var meetupList: RecyclerView
     lateinit var adapter: MeetupListAdapter
     lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     lateinit var tagsViewModel: TagsViewModel<Category>
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
+    private val viewModel: MapListViewModel by activityViewModels()
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.meetup_listview, container, false).rootView
+    }
 
-    @SuppressLint("NotifyDataSetChanged")
-    @RequiresApi(Build.VERSION_CODES.N)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_list)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-
-        meetupList = findViewById(R.id.meetup_list_recycler)
-        meetupList.layoutManager = LinearLayoutManager(this)
-        val searchField = findViewById<SearchView>(R.id.search_list)
+        meetupList = view.findViewById(R.id.meetup_list_recycler)
+        meetupList.layoutManager = LinearLayoutManager(requireContext())
+        val searchField = view.findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
 
 
-        viewModel.showOnlyJoined = intent.getBooleanExtra(SHOW_JOINED_ONLY,false)
+        //viewModel.showOnlyJoined = intent.getBooleanExtra(SHOW_JOINED_ONLY,false)
 
-        viewModel.listOfMeetUpResponse.observe(this) { it ->
-            if (it is Response.Success) {
-                val meetups = it.data.filter { isParticipating(it) }
+        viewModel.listOfMeetUpResponse.observe(requireActivity()) { it ->
+            if (it is Response.Success && viewModel.searchLocation.value != null) {
+                val meetups = it.data
                 adapter = MeetupListAdapter(meetups, meetups.toMutableList(),
                     SearchedFilter(
                         meetups, meetups.toMutableList(), ::filterTags
                     ) {
                         adapter.notifyDataSetChanged()
-                    }, Location.latLngToLocation
-                (viewModel.getCameraPosition()))
+                    },
+                        viewModel.searchLocation.value!!
+                        )
                 { onListItemClick(it) }
                 meetupList.adapter = adapter
                 SearchedFilter.setupSearchField(searchField, adapter.filter)
             }
         }
+
+        viewModel.userLocation.observe(requireActivity()) { it ->
+            viewModel.searchLocation.value = it
+            viewModel.fetchMeetUps()
+        }
         tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
         tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
         if (savedInstanceState == null) {
-            addTagsToFragmentManager(supportFragmentManager, R.id.list_select_tag)
+            addTagsToFragmentManager(childFragmentManager, R.id.list_select_tag)
         }
-        viewModel.tags.observe(this) {
+        viewModel.tags.observe(requireActivity()) {
             tagsViewModel.refreshTags()
             filter(it)
         }
@@ -154,7 +156,7 @@ class MeetupListActivity : MapListSuperActivity() {
     }
 
     fun showMenu(view: View?) {
-        val popupMenu = PopupMenu(this, view) //View will be an anchor for PopupMenu
+        val popupMenu = PopupMenu(requireContext(), view) //View will be an anchor for PopupMenu
         popupMenu.inflate(R.menu.sort)
         popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
             item ->
@@ -169,16 +171,16 @@ class MeetupListActivity : MapListSuperActivity() {
         popupMenu.show()
     }
 
-    fun searchOnMap(view: View?){
-        val intent = Intent(this, MapsActivity::class.java)
-        val extras = Bundle().apply {
-            putParcelable(LOCATION_SELECT, viewModel.getCameraPosition())
-            putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
-        }
-        intent.putExtras(extras)
-
-        resultLauncher.launch(intent)
-    }
+//    fun searchOnMap(view: View?){
+//        val intent = Intent(requireContext(), MapsActivity::class.java)
+//        val extras = Bundle().apply {
+//            putParcelable(LOCATION_SELECT, viewModel.getCameraPosition())
+//            putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
+//        }
+//        intent.putExtras(extras)
+//
+//        resultLauncher.launch(intent)
+//    }
 
     private fun registerActivityResult() {
         resultLauncher =
@@ -186,7 +188,7 @@ class MeetupListActivity : MapListSuperActivity() {
                 if (result.resultCode == Activity.RESULT_OK) {
                     val data: Intent? = result.data
                     if (data != null) {
-                        viewModel.setGetMeetupAroundLocation(data.getParcelableExtra(LOCATION_SELECTED)!!, BASE_RADIUS)
+                        viewModel.getMeetupAroundLocation(data.getParcelableExtra(LOCATION_SELECTED)!!, BASE_RADIUS)
                     }
                 }
             }
@@ -195,7 +197,7 @@ class MeetupListActivity : MapListSuperActivity() {
 
 
     private fun onListItemClick(position: Int) {
-        val intent = Intent(this, MeetUpView::class.java)
+        val intent = Intent(requireContext(), MeetUpView::class.java)
             .apply { putExtra(MEETUP_SHOWN, (viewModel.listOfMeetUpResponse.value as Response.Success).data[position].uuid) }
         startActivity(intent)
     }

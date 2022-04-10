@@ -20,6 +20,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.github.palFinderTeam.palfinder.MainActivity
+import com.github.palFinderTeam.palfinder.MainNavActivity
 import com.github.palFinderTeam.palfinder.R
 import com.google.android.gms.auth.api.identity.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -359,7 +360,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         if (firebaseProfileService.doesUserIDExist(user.uid)) {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, MainNavActivity::class.java))
             finish()
         } else {
             val profileUser = ProfileUser(

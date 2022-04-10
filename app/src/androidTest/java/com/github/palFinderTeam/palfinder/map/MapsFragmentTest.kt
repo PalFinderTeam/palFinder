@@ -9,7 +9,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.By
@@ -18,7 +17,6 @@ import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
@@ -29,11 +27,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 
 @HiltAndroidTest
-class MapsActivityTest {
+class MapsFragmentTest {
 
 
     @Inject
@@ -121,15 +118,15 @@ class MapsActivityTest {
 
     @Test
     fun testSelectLocation(){
-        val intent = Intent(ApplicationProvider.getApplicationContext(), MapsActivity::class.java)
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MapsFragment::class.java)
         val basePosition = LatLng(42.0, 42.0)
         val extras = Bundle().apply {
-            putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
+            putSerializable(CONTEXT, MapsFragment.Companion.SELECT_LOCATION)
             putParcelable(LOCATION_SELECT, basePosition)
         }
         intent.putExtras(extras)
 
-        val scenario = ActivityScenario.launch<MapsActivity>(intent)
+        val scenario = ActivityScenario.launch<MapsFragment>(intent)
 
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
@@ -150,12 +147,12 @@ class MapsActivityTest {
 
     @Test
     fun canSearchOnMap() {
-        val intent = Intent(ApplicationProvider.getApplicationContext(), MapsActivity::class.java)
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MapsFragment::class.java)
         val basePosition = LatLng(42.0, 42.0)
         intent.apply {
             putExtra(LOCATION_SELECT, basePosition)
         }
-        val scenario = ActivityScenario.launch<MapsActivity>(intent)
+        val scenario = ActivityScenario.launch<MapsFragment>(intent)
 
         val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
@@ -174,8 +171,8 @@ class MapsActivityTest {
 
     @Test
     fun canChangeMapType(){
-        val intent = Intent(ApplicationProvider.getApplicationContext(), MapsActivity::class.java)
-        val scenario = ActivityScenario.launch<MapsActivity>(intent)
+        val intent = Intent(ApplicationProvider.getApplicationContext(), MapsFragment::class.java)
+        val scenario = ActivityScenario.launch<MapsFragment>(intent)
 
         scenario.use {
             scenario.onActivity {

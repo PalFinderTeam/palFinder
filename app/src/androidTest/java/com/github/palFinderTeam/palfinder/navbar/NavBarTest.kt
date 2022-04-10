@@ -13,7 +13,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import com.github.palFinderTeam.palfinder.MainActivity
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.map.MapsActivity
+import com.github.palFinderTeam.palfinder.map.MapsFragment
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.SHOW_JOINED_ONLY
@@ -79,7 +79,7 @@ class NavBarTest {
         Espresso.onView(
             ViewMatchers.withId(R.id.nav_bar_find)
         ).perform(ViewActions.click())
-        Intents.intended(IntentMatchers.hasComponent(MapsActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(MapsFragment::class.java.name))
         release()
     }
 

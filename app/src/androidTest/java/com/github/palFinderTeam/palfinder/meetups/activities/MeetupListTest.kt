@@ -3,7 +3,6 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.content.Intent
 import android.content.res.Resources
 import android.icu.util.Calendar
-import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
@@ -13,7 +12,6 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.BundleMatchers
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -22,7 +20,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.map.CONTEXT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
-import com.github.palFinderTeam.palfinder.map.MapsActivity
+import com.github.palFinderTeam.palfinder.map.MapsFragment
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.tag.Category
@@ -305,9 +303,9 @@ class MeetUpListTest {
         scenario.use{
             init()
             onView(withId(R.id.search_place)).perform(click())
-            intended(hasComponent(MapsActivity::class.java.name))
+            intended(hasComponent(MapsFragment::class.java.name))
 
-            intended(hasExtras(BundleMatchers.hasEntry(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)))
+            intended(hasExtras(BundleMatchers.hasEntry(CONTEXT, MapsFragment.Companion.SELECT_LOCATION)))
             var currentLocation: LatLng = LatLng(43.0, 15.0)
             scenario.onActivity { currentLocation = it.viewModel.getCameraPosition() }
             intended(hasExtras(BundleMatchers.hasEntry(LOCATION_SELECT, currentLocation)))

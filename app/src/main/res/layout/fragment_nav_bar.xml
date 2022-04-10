@@ -24,8 +24,6 @@
             app:elevation="0dp"
             app:itemHorizontalTranslationEnabled="true"
             app:itemIconTint="@color/theme_primary"
-            app:itemTextAppearanceActive="@font/fredoka_normal"
-            app:itemTextAppearanceInactive="@font/fredoka_normal"
             app:itemTextColor="@color/theme_primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

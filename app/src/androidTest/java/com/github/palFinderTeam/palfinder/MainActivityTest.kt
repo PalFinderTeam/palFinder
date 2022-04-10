@@ -6,22 +6,16 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.*
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import com.github.palFinderTeam.palfinder.map.MapsActivity
+import com.github.palFinderTeam.palfinder.map.MapsFragment
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
-import com.github.palFinderTeam.palfinder.meetups.activities.RecyclerViewMatcher
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
@@ -29,7 +23,6 @@ import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -133,7 +126,7 @@ class MainActivityTest {
         ActivityScenario.launch<MainActivity>(intent)
         onView(ViewMatchers.withId(R.id.mapGoButton))
             .perform(click())
-        intended(hasComponent(MapsActivity::class.java.name))
+        intended(hasComponent(MapsFragment::class.java.name))
         release()
     }
 

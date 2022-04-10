@@ -21,7 +21,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.map.CONTEXT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
-import com.github.palFinderTeam.palfinder.map.MapsActivity
+import com.github.palFinderTeam.palfinder.map.MapsFragment
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
@@ -270,9 +270,9 @@ class MeetUpCreation : AppCompatActivity() {
     }
 
     fun onSelectLocation(v: View) {
-        val intent = Intent(this, MapsActivity::class.java)
+        val intent = Intent(this, MapsFragment::class.java)
         val extras = Bundle().apply {
-            putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
+            putSerializable(CONTEXT, MapsFragment.Context.SELECT_LOCATION)
             putParcelable(LOCATION_SELECT, LatLng(0.0, 0.0))
         }
         intent.putExtras(extras)
