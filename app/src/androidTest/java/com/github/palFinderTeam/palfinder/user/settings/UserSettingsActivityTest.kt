@@ -15,7 +15,7 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.*
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
@@ -26,7 +26,6 @@ import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
-import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
@@ -144,7 +143,7 @@ class UserSettingsActivityTest {
         ActivityScenario.launch<UserSettingsActivity>(intent)
         Intents.init()
         onView(withId(R.id.SettingsSubmitButton)).perform(ViewActions.scrollTo(), click())
-        Intents.intended(IntentMatchers.hasComponent(MeetupListActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(MeetupListFragment::class.java.name))
         Intents.release()
     }
 

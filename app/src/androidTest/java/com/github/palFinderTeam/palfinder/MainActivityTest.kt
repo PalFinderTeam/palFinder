@@ -15,7 +15,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.github.palFinderTeam.palfinder.map.MapsFragment
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
@@ -115,7 +115,7 @@ class MainActivityTest {
         ActivityScenario.launch<MainActivity>(intent)
         onView(ViewMatchers.withId(R.id.mainGoButton))
             .perform(click())
-        intended(hasComponent(MeetupListActivity::class.java.name))
+        intended(hasComponent(MeetupListFragment::class.java.name))
         release()
     }
 

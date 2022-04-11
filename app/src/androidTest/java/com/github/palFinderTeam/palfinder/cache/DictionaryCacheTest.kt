@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import com.github.palFinderTeam.palfinder.chat.ChatService
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -38,8 +38,8 @@ class DictionaryCacheTest {
     @Test
     fun storeAndReadDictionary() = runTest {
         val context: Context = ApplicationProvider.getApplicationContext()
-        val intent = Intent(context, MeetupListActivity::class.java)
-        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        val intent = Intent(context, MeetupListFragment::class.java)
+        val scenario = ActivityScenario.launch<MeetupListFragment>(intent)
         scenario.use {
             val dummy = Dummy("dummy", 0)
             val cache = DictionaryCache("test", Dummy::class.java, false, context)
@@ -66,8 +66,8 @@ class DictionaryCacheTest {
     @Test
     fun storeAndReadFile() = runTest {
         val context: Context = ApplicationProvider.getApplicationContext()
-        val intent = Intent(context, MeetupListActivity::class.java)
-        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        val intent = Intent(context, MeetupListFragment::class.java)
+        val scenario = ActivityScenario.launch<MeetupListFragment>(intent)
         scenario.use {
             val dummy = Dummy("dummy", 0)
             val cache = FileCache("test", Dummy::class.java, false, context)

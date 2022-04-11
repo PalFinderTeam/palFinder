@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav_graph"
-    app:startDestination="@id/mapsActivity">
+    app:startDestination="@id/maps_fragment">
 
     <fragment
-        android:id="@+id/mapsActivity"
+        android:id="@+id/maps_fragment"
         android:name="com.github.palFinderTeam.palfinder.map.MapsFragment"
         android:label="activity_maps"
         tools:layout="@layout/activity_maps" >
@@ -19,9 +19,27 @@
             app:argType="com.github.palFinderTeam.palfinder.utils.Location"
             app:nullable="true"
             android:defaultValue="@null" />
+        <argument
+            android:name="ShowNavBar"
+            app:argType="boolean"
+            android:defaultValue="true" />
+        <argument
+            android:name="ShowFindTabs"
+            app:argType="boolean"
+            android:defaultValue="true" />
     </fragment>
     <fragment
-        android:id="@+id/meetupListActivity"
-        android:name="com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity"
-        android:label="MeetupListActivity" />
+        android:id="@+id/list_fragment"
+        android:name="com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment"
+        android:label="MeetupListActivity"
+        tools:layout="@layout/activity_list" >
+        <argument
+            android:name="ShowNavBar"
+            app:argType="boolean"
+            android:defaultValue="true" />
+        <argument
+            android:name="ShowFindTabs"
+            app:argType="boolean"
+            android:defaultValue="true" />
+    </fragment>
 </navigation>

@@ -30,7 +30,7 @@ const val SHOW_JOINED_ONLY = "com.github.palFinderTeam.palFinder.meetup_list_vie
 const val BASE_RADIUS = 500.0
 
 @AndroidEntryPoint
-class MeetupListActivity : Fragment() {
+class MeetupListFragment : Fragment() {
     private lateinit var meetupList: RecyclerView
     lateinit var adapter: MeetupListAdapter
     lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
@@ -44,7 +44,7 @@ class MeetupListActivity : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.meetup_listview, container, false).rootView
+        return inflater.inflate(R.layout.activity_list, container, false).rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,10 +75,10 @@ class MeetupListActivity : Fragment() {
             }
         }
 
-        viewModel.userLocation.observe(requireActivity()) { it ->
-            viewModel.searchLocation.value = it
-            viewModel.fetchMeetUps()
-        }
+//        viewModel.userLocation.observe(requireActivity()) { it ->
+//            viewModel.searchLocation.value = it
+//            viewModel.fetchMeetUps()
+//        }
         tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
         tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
         if (savedInstanceState == null) {

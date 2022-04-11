@@ -142,4 +142,6 @@
 
     <string name="testNotifTitle">title</string>
     <string name="testNotifContent">content</string>
+    <string name="map">map</string>
+    <string name="list">list</string>
 </resources>

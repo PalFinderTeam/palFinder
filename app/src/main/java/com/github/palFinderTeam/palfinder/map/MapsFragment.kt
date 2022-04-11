@@ -82,7 +82,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = childFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
+            .findFragmentById(R.id.map_tab) as SupportMapFragment
 
         mapFragment.getMapAsync(this)
 
@@ -193,10 +193,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             }
         }
 
-
-
         selectMapTypeButton.setOnClickListener {
             changeMapType()
+        }
+
+        viewModel.searchLocation.value?.let {
+            map.animateCamera(CameraUpdateFactory.newLatLng(it.toLatLng()))
         }
     }
 

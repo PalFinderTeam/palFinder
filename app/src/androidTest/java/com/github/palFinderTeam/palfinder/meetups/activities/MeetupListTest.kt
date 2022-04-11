@@ -172,9 +172,9 @@ class MeetUpListTest {
     @Test
     fun testDisplayActivities() = runTest {
         meetUpList.forEach { meetUpRepository.createMeetUp(it) }
-        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+        val intent = Intent(getApplicationContext(), MeetupListFragment::class.java)
 
-        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        val scenario = ActivityScenario.launch<MeetupListFragment>(intent)
         scenario.use {
             scenario.onActivity { it.viewModel.setCameraPosition(LatLng(37.0, -122.0));
                 it.viewModel.update()}
@@ -194,9 +194,9 @@ class MeetUpListTest {
     @Test
     fun sortWorks() = runTest {
         meetUpList.forEach { meetUpRepository.createMeetUp(it) }
-        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+        val intent = Intent(getApplicationContext(), MeetupListFragment::class.java)
 
-        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        val scenario = ActivityScenario.launch<MeetupListFragment>(intent)
         scenario.use{
             scenario.onActivity { it.viewModel.setCameraPosition(LatLng(37.0, -122.0));
                 it.viewModel.update()}
@@ -212,9 +212,9 @@ class MeetUpListTest {
     @Test
     fun filterWorks() = runTest {
         meetUpList.forEach { meetUpRepository.createMeetUp(it) }
-        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+        val intent = Intent(getApplicationContext(), MeetupListFragment::class.java)
 
-        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        val scenario = ActivityScenario.launch<MeetupListFragment>(intent)
         scenario.use {
             scenario.onActivity { it.viewModel.setCameraPosition(LatLng(37.0, -122.0));
                 it.viewModel.update()}
@@ -230,9 +230,9 @@ class MeetUpListTest {
     @Test
     fun filterWorksAddTag() = runTest {
         meetUpList.forEach { meetUpRepository.createMeetUp(it) }
-        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+        val intent = Intent(getApplicationContext(), MeetupListFragment::class.java)
 
-        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        val scenario = ActivityScenario.launch<MeetupListFragment>(intent)
         scenario.use {
             scenario.onActivity { it.viewModel.setCameraPosition(LatLng(37.0, -122.0));
                 it.viewModel.update()}
@@ -253,9 +253,9 @@ class MeetUpListTest {
     @Test
     fun sortButtonWorks() = runTest {
         meetUpList.forEach { meetUpRepository.createMeetUp(it) }
-        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
+        val intent = Intent(getApplicationContext(), MeetupListFragment::class.java)
 
-        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        val scenario = ActivityScenario.launch<MeetupListFragment>(intent)
         scenario.use {
             scenario.onActivity { it.viewModel.setCameraPosition(LatLng(37.0, -122.0));
                 it.viewModel.update()}
@@ -278,8 +278,8 @@ class MeetUpListTest {
     @Test
     fun clickItem() = runTest {
         meetUpList.forEach { meetUpRepository.createMeetUp(it) }
-        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
-        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        val intent = Intent(getApplicationContext(), MeetupListFragment::class.java)
+        val scenario = ActivityScenario.launch<MeetupListFragment>(intent)
        scenario.use {
            init()
            scenario.onActivity { it.viewModel.setCameraPosition(LatLng(37.0, -122.0));
@@ -297,8 +297,8 @@ class MeetUpListTest {
 
     @Test
     fun openMap(){
-        val intent = Intent(getApplicationContext(), MeetupListActivity::class.java)
-        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        val intent = Intent(getApplicationContext(), MeetupListFragment::class.java)
+        val scenario = ActivityScenario.launch<MeetupListFragment>(intent)
 
         scenario.use{
             init()

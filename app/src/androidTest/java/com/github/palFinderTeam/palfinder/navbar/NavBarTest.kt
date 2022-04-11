@@ -15,7 +15,7 @@ import com.github.palFinderTeam.palfinder.MainActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.map.MapsFragment
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
 import com.github.palFinderTeam.palfinder.meetups.activities.SHOW_JOINED_ONLY
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
@@ -91,7 +91,7 @@ class NavBarTest {
         Espresso.onView(
             ViewMatchers.withId(R.id.nav_bar_groups)
         ).perform(ViewActions.click())
-        Intents.intended(IntentMatchers.hasComponent(MeetupListActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(MeetupListFragment::class.java.name))
         Intents.intended(IntentMatchers.hasExtra(SHOW_JOINED_ONLY, true))
         release()
     }

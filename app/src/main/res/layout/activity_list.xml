@@ -8,15 +8,6 @@
 
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fc_navbar3"
-        android:name="com.github.palFinderTeam.palfinder.navbar.NavigationBarFragment"
-        android:layout_width="0dp"
-        android:layout_height="65dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/list_select_tag"
         android:name="com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment"
         android:layout_width="match_parent"
@@ -55,7 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:padding="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/fc_navbar3"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/list_select_tag">

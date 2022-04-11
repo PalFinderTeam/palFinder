@@ -6,16 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.github.palFinderTeam.palfinder.R
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 /**
  * Class to handle the Navigation Bar Fragments
  */
 class NavigationBarFragment : Fragment() {
+
+    private lateinit var binding: View
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_nav_bar, container, false)
+        binding = inflater.inflate(R.layout.fragment_nav_bar, container, false)
+        return binding.rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
