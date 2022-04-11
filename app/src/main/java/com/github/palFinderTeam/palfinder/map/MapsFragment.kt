@@ -5,7 +5,6 @@ import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,7 +44,7 @@ const val CONTEXT = "com.github.palFinderTeam.palFinder.MAP.CONTEXT"
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
-     SearchView.OnQueryTextListener {
+    SearchView.OnQueryTextListener {
 
     private lateinit var selectLocationButton: FloatingActionButton
     private lateinit var selectMapTypeButton: FloatingActionButton
@@ -57,6 +56,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     private val args: MapsFragmentArgs by navArgs()
 
     private val markers = HashMap<String, Marker>()
+    private var meetUpForMarkers: Set<MeetUp> = emptySet()
     private var mapReady = false
 
     enum class Context {
@@ -277,10 +277,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             return
         }
 
-        clearMarkers()
-
-        meetUpList.forEach { meetUp ->
-            val position = meetUp.location.toLatLng()
+        val deletedMarkers = meetUpForMarkers.minus(meetUpList)
+        val addedMarkers = meetUpList.minus(meetUpForMarkers)
+        meetUpForMarkers = meetUpList.toSet()
+        deletedMarkers.forEach { markers[it.uuid]?.remove() }
+        addedMarkers.forEach { meetUp ->
+            val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
             map.addMarker(MarkerOptions().position(position).title(meetUp.uuid))
                 ?.let { markers[meetUp.uuid] = it }
         }
