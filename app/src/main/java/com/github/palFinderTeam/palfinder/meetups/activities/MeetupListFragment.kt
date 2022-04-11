@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -7,12 +8,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.SearchView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
@@ -24,11 +29,13 @@ import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
 const val SHOW_JOINED_ONLY = "com.github.palFinderTeam.palFinder.meetup_list_view.SHOW_JOINED_ONLY"
 const val BASE_RADIUS = 500.0
 
+@ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class MeetupListFragment : Fragment() {
     private lateinit var meetupList: RecyclerView
@@ -38,6 +45,8 @@ class MeetupListFragment : Fragment() {
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
     private val viewModel: MapListViewModel by activityViewModels()
+
+    private val args: MeetupListFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,23 +65,28 @@ class MeetupListFragment : Fragment() {
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
 
 
-        //viewModel.showOnlyJoined = intent.getBooleanExtra(SHOW_JOINED_ONLY,false)
+        viewModel.showOnlyJoined = args.showOnlyJoined
 
         viewModel.listOfMeetUpResponse.observe(requireActivity()) { it ->
             if (it is Response.Success && viewModel.searchLocation.value != null) {
                 val meetups = it.data
-                adapter = MeetupListAdapter(meetups, meetups.toMutableList(),
+                adapter = MeetupListAdapter(
+                    meetups, meetups.toMutableList(),
                     SearchedFilter(
                         meetups, meetups.toMutableList(), ::filterTags
                     ) {
                         adapter.notifyDataSetChanged()
                     },
-                        viewModel.searchLocation.value!!
-                        )
+                    viewModel.searchLocation.value!!
+                )
                 { onListItemClick(it) }
                 meetupList.adapter = adapter
                 SearchedFilter.setupSearchField(searchField, adapter.filter)
             }
+        }
+
+        viewModel.searchLocation.observe(requireActivity()) {
+            viewModel.fetchMeetUps()
         }
 
 //        viewModel.userLocation.observe(requireActivity()) { it ->
@@ -89,13 +103,16 @@ class MeetupListFragment : Fragment() {
             filter(it)
         }
         registerActivityResult()
+
+        view.findViewById<Button>(R.id.sort_list).setOnClickListener { showMenu(it) }
+        view.findViewById<ImageButton>(R.id.search_place).setOnClickListener { searchOnMap() }
     }
 
-    private fun filterTags(meetup : MeetUp): Boolean {
+    private fun filterTags(meetup: MeetUp): Boolean {
         return meetup.tags.containsAll(viewModel.tags.value!!)
     }
 
-    private fun isParticipating(meetup : MeetUp): Boolean {
+    private fun isParticipating(meetup: MeetUp): Boolean {
         return if (viewModel.showOnlyJoined) {
             val user = viewModel.getUser()
             return if (user != null) {
@@ -109,10 +126,15 @@ class MeetupListFragment : Fragment() {
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     fun filter(tags: Set<Category>?) {
         if (::adapter.isInitialized) {
             adapter.currentDataSet.clear()
-            viewModel.listOfMeetUpResponse.value?.let { meetups -> performFilter((meetups as Response.Success).data, adapter.currentDataSet, tags) }
+            viewModel.listOfMeetUpResponse.value?.let { meetups ->
+                if (meetups is Response.Success) {
+                    performFilter(meetups.data, adapter.currentDataSet, tags)
+                }
+            }
             adapter.notifyDataSetChanged()
         }
     }
@@ -123,43 +145,44 @@ class MeetupListFragment : Fragment() {
         tags: Set<Category>?
     ) {
         currentDataSet.addAll(meetups.filter {
-            (tags==null || it.tags.containsAll(tags)) &&
-            (!viewModel.showOnlyJoined || isParticipating(it))
+            (tags == null || it.tags.containsAll(tags)) &&
+                    (!viewModel.showOnlyJoined || isParticipating(it))
         })
     }
 
-    fun sortByCap() {
+    private fun sortByCap() {
         if (::adapter.isInitialized) {
             val sorted = adapter.currentDataSet.sortedBy { it.capacity }
             sort(sorted)
         }
     }
 
-    fun sortByName() {
+    private fun sortByName() {
         if (::adapter.isInitialized) {
             val sorted = adapter.currentDataSet.sortedBy { it.name.lowercase() }
             sort(sorted)
         }
     }
 
-    fun sortByDist() {
+    private fun sortByDist() {
         if (::adapter.isInitialized) {
-            val sorted = adapter.currentDataSet.sortedBy { it.location.distanceInKm(Location(0.0, 0.0)) }
+            val sorted =
+                adapter.currentDataSet.sortedBy { it.location.distanceInKm(Location(0.0, 0.0)) }
             sort(sorted)
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun sort(sorted: List<MeetUp>) {
         adapter.currentDataSet.clear()
         viewModel.listOfMeetUpResponse.value?.let { it -> adapter.currentDataSet.addAll(sorted) }
         adapter.notifyDataSetChanged()
     }
 
-    fun showMenu(view: View?) {
+    private fun showMenu(view: View?) {
         val popupMenu = PopupMenu(requireContext(), view) //View will be an anchor for PopupMenu
         popupMenu.inflate(R.menu.sort)
-        popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
-            item ->
+        popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.menu_sort_name -> sortByName()
                 R.id.menu_sort_cap -> sortByCap()
@@ -171,16 +194,10 @@ class MeetupListFragment : Fragment() {
         popupMenu.show()
     }
 
-//    fun searchOnMap(view: View?){
-//        val intent = Intent(requireContext(), MapsActivity::class.java)
-//        val extras = Bundle().apply {
-//            putParcelable(LOCATION_SELECT, viewModel.getCameraPosition())
-//            putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
-//        }
-//        intent.putExtras(extras)
-//
-//        resultLauncher.launch(intent)
-//    }
+    private fun searchOnMap() {
+        val action = MeetupListFragmentDirections.actionListPickLocation()
+        findNavController().navigate(action)
+    }
 
     private fun registerActivityResult() {
         resultLauncher =
@@ -188,17 +205,24 @@ class MeetupListFragment : Fragment() {
                 if (result.resultCode == Activity.RESULT_OK) {
                     val data: Intent? = result.data
                     if (data != null) {
-                        viewModel.getMeetupAroundLocation(data.getParcelableExtra(LOCATION_SELECTED)!!, BASE_RADIUS)
+                        viewModel.getMeetupAroundLocation(
+                            data.getParcelableExtra(LOCATION_SELECTED)!!,
+                            BASE_RADIUS
+                        )
                     }
                 }
             }
     }
 
 
-
     private fun onListItemClick(position: Int) {
         val intent = Intent(requireContext(), MeetUpView::class.java)
-            .apply { putExtra(MEETUP_SHOWN, (viewModel.listOfMeetUpResponse.value as Response.Success).data[position].uuid) }
+            .apply {
+                putExtra(
+                    MEETUP_SHOWN,
+                    (viewModel.listOfMeetUpResponse.value as Response.Success).data[position].uuid
+                )
+            }
         startActivity(intent)
     }
 

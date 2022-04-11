@@ -41,5 +41,25 @@
             android:name="ShowFindTabs"
             app:argType="boolean"
             android:defaultValue="true" />
+        <action
+            android:id="@+id/action_list_pick_location"
+            app:destination="@id/maps_fragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" >
+            <argument
+                android:name="Context"
+                app:argType="com.github.palFinderTeam.palfinder.map.MapsFragment$Context"
+                android:defaultValue="SELECT_LOCATION" />
+            <argument
+                android:name="ShowNavBar"
+                android:defaultValue="false" />
+            <argument
+                android:name="ShowFindTabs"
+                android:defaultValue="false" />
+        </action>
+        <argument
+            android:name="ShowOnlyJoined"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
 </navigation>

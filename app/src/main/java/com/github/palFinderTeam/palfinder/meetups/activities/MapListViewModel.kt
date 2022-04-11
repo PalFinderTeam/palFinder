@@ -19,6 +19,8 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -85,8 +87,13 @@ class MapListViewModel @Inject constructor(
      * call it by themself.
      */
     fun fetchMeetUps() {
-        val radius = 500.0
-        getMeetupAroundLocation(searchLocation.value!!, radius)
+        if (showOnlyJoined) {
+            fetchUserMeetUps()
+        } else {
+            // TODO Fix radius
+            //getMeetupAroundLocation(searchLocation.value!!, searchRadius.value ?: INITIAL_RADIUS)
+            getMeetupAroundLocation(searchLocation.value!!, 500.0)
+        }
     }
 
     /**
@@ -107,6 +114,24 @@ class MapListViewModel @Inject constructor(
             ).collect {
                 _listOfMeetUpResponse.postValue(it)
             }
+        }
+    }
+
+    /**
+     * Fetch all meetUp the user is taking part to.
+     */
+    private fun fetchUserMeetUps() {
+        val userId = profileService.getLoggedInUserID()
+        if (userId != null) {
+            viewModelScope.launch {
+                meetUpRepository.getAllMeetUps().map {
+                    it.filter { it.participantsId.contains(userId) }
+                }.collect {
+                    _listOfMeetUpResponse.postValue(Response.Success(it))
+                }
+            }
+        } else {
+            _listOfMeetUpResponse.value = Response.Failure("No login users.")
         }
     }
 

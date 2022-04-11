@@ -1,12 +1,12 @@
 package com.github.palFinderTeam.palfinder
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
-import com.github.palFinderTeam.palfinder.navbar.NavigationBarFragment
+import com.github.palFinderTeam.palfinder.map.MapsFragment
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +33,31 @@ class MainNavActivity : AppCompatActivity() {
             tabMenu.isVisible = arguments?.getBoolean("ShowFindTabs", false) == true
         }
 
-        bottomNavigationView!!.setupWithNavController(navController)
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            val selected = bottomNavigationView.selectedItemId
+            if (selected != item.itemId) {
+                when (item.itemId) {
+                    R.id.nav_bar_create -> {
+                        val intent = Intent(this, MeetUpCreation::class.java)
+                        startActivity(intent)
+                        return@setOnItemSelectedListener true
+                    }
+                    R.id.nav_bar_groups -> {
+                        val args = Bundle().apply {
+                            putBoolean("ShowOnlyJoined", true)
+                            putBoolean("ShowFindTabs", false)
+                        }
+                        navController.navigate(R.id.list_fragment, args)
+                        return@setOnItemSelectedListener true
+                    }
+                    R.id.nav_bar_find -> {
+                        navController.navigate(R.id.maps_fragment)
+                        return@setOnItemSelectedListener true
+                    }
+                }
+            }
+            false
+        }
 
         tabMenu.addOnTabSelectedListener(
             object : TabLayout.OnTabSelectedListener {
@@ -41,14 +65,8 @@ class MainNavActivity : AppCompatActivity() {
                     if (tab != null) {
                         when (tab.position) {
                             0 -> navController.navigate(R.id.maps_fragment)
-                            1 -> {
-                                Log.i("Main", "List")
-                                navController.navigate(R.id.list_fragment)
-                            }
-                            else -> {
-                                Log.i("Main", tab.id.toString())
-                                Log.i("Main", R.id.list_fragment.toString())
-                            }
+                            1 -> navController.navigate(R.id.list_fragment)
+                            else -> {}
                         }
                     }
                 }

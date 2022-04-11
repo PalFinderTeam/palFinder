@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
@@ -80,6 +81,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         selectLocationButton = view.findViewById(R.id.bt_locationSelection)
         selectMapTypeButton = view.findViewById(R.id.bt_changeMapType)
 
+        viewModel.showOnlyJoined = false
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = childFragmentManager
             .findFragmentById(R.id.map_tab) as SupportMapFragment
@@ -136,15 +139,20 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
      * When a meetUp marker is clicked, open the marker description
      */
     override fun onMarkerClick(marker: Marker): Boolean {
-        val id = marker.title
-        if (id != null) {
-            val intent = Intent(requireActivity(), MeetUpView::class.java).apply {
-                putExtra(MEETUP_SHOWN, id)
+        when(context) {
+            Context.MARKER -> {
+                val id = marker.title
+                if (id != null) {
+                    val intent = Intent(requireActivity(), MeetUpView::class.java).apply {
+                        putExtra(MEETUP_SHOWN, id)
+                    }
+                    startActivity(intent)
+                    return true
+                }
+                return false
             }
-            startActivity(intent)
-            return true
+            else -> return false
         }
-        return false
     }
 
     private fun onMapClick(p0: LatLng) {
@@ -163,11 +171,19 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         )
         selectLocationButton.apply { this.isEnabled = mapSelection.targetMarker.value != null }
         selectLocationButton.apply { this.show() }
+        selectLocationButton.setOnClickListener {
+            onConfirm(p0.toLocation())
+        }
     }
 
     /**
-     * Return the selected Location to the previous activity
+     * Return the selected Location to the previous activity through the viewModel.
      */
+    private fun onConfirm(location: Location) {
+        viewModel.searchLocation.value = location
+        findNavController().navigateUp()
+    }
+
 //    fun onConfirm(v: View) {
 //        val resultIntent = Intent()
 //        resultIntent.putExtra(LOCATION_SELECTED, mapSelection.targetMarker.value!!.position)
