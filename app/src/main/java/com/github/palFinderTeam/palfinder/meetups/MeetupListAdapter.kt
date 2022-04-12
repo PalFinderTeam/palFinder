@@ -92,10 +92,10 @@ class MeetupListAdapter(private val dataSet: List<MeetUp>, val currentDataSet: M
 
         val meetupPicture = holder.meetupImage
 
-        if (currentDataSet[position].iconId != null) {
+        if (currentDataSet[position].iconImage != null) {
             CoroutineScope(Dispatchers.Main).launch {
-                currentDataSet[position].iconId?.let {
-                    ImageInstance(it).loadImageInto(meetupPicture)
+                currentDataSet[position].iconImage?.let {
+                    it.loadImageInto(meetupPicture)
                 }
             }
         } else {

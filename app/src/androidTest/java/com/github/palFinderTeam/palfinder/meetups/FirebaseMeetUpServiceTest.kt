@@ -60,7 +60,7 @@ class FirebaseMeetUpServiceTest {
         meetUp = MeetUp(
             "dummy",
             "userId",
-            "",
+            null,
             "dummy",
             "dummy",
             date1,

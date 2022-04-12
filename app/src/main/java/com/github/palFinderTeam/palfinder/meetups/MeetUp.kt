@@ -7,6 +7,7 @@ import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.isBefore
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
@@ -14,7 +15,7 @@ import com.google.firebase.firestore.GeoPoint
 /**
  * @param uuid: Unique Identifier of the meetup
  * @param creatorId: Creator of the meetup
- * @param iconId: Path to the Icon
+ * @param iconImage: The meetup's image (can be null)
  * @param name: Name of the Meetup
  * @param description: Description of the meetup
  * @param startDate: Date & Time of the begin of the meetup
@@ -28,7 +29,7 @@ import com.google.firebase.firestore.GeoPoint
 data class MeetUp(
     val uuid: String,
     val creatorId: String,
-    val iconId: String?,
+    val iconImage: ImageInstance?,
     val name: String,
     val description: String,
     val startDate: Calendar,
@@ -105,7 +106,7 @@ data class MeetUp(
             "endDate" to endDate.time,
             "hasMaxCapacity" to hasMaxCapacity,
             "capacity" to capacity.toLong(),
-            "icon" to iconId,
+            "icon" to iconImage?.imgURL,
             "location" to GeoPoint(location.latitude, location.longitude),
             "geohash" to GeoFireUtils.getGeoHashForLocation(
                 GeoLocation(
@@ -127,7 +128,8 @@ data class MeetUp(
         fun DocumentSnapshot.toMeetUp(): MeetUp? {
             try {
                 val uuid = id
-                val iconId = getString("icon") // Now this field can be null, because meetups with no image made it crash
+                val iconUrl = getString("icon")
+                val iconImage = if(iconUrl == null) { null } else { ImageInstance(iconUrl) } // Now this field can be null, because meetups with no image made it crash
                 val creator = getString("creator")!!
                 val capacity = getLong("capacity")!!
                 val description = getString("description")!!
@@ -146,7 +148,7 @@ data class MeetUp(
                 return MeetUp(
                     uuid,
                     creator,
-                    iconId,
+                    iconImage,
                     name,
                     description,
                     startDateCal,
