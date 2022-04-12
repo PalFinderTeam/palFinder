@@ -127,7 +127,7 @@ data class MeetUp(
         fun DocumentSnapshot.toMeetUp(): MeetUp? {
             try {
                 val uuid = id
-                val iconId = getString("icon")!!
+                val iconId = getString("icon")
                 val creator = getString("creator")!!
                 val capacity = getLong("capacity")!!
                 val description = getString("description")!!
