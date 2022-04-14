@@ -170,16 +170,6 @@ class MeetUpCreationViewModel @Inject constructor(
      */
     fun sendMeetUp() {
         viewModelScope.launch {
-//            val iconPath = iconUri.value?.let { uri ->
-//                val id = imageUploader.uploadImage(uri)
-//                // Also remove the previous icon from DB to avoid garbage.
-//                iconUrl.value?.let { url ->
-//                    imageUploader.removeImage(url)
-//                }
-//                id
-//            }
-//
-
             val iconPath = iconUri.value?.let { uri ->
                 val newPath = imageUploader.uploadImage(uri)
                 if (newPath != null) {
@@ -194,7 +184,7 @@ class MeetUpCreationViewModel @Inject constructor(
                         }
                     }
                     // We choose the new image only if not null
-                    _icon.value = newPath!!
+                    _icon.value = newPath
                     newPath
                 } else {
                     null
