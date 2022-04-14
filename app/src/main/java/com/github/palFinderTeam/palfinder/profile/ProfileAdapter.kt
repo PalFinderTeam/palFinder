@@ -12,6 +12,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class ProfileAdapter(private val dataSet: List<ProfileUser>, private val onItemClicked: (position: Int) -> Unit) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(),
@@ -45,7 +46,8 @@ class ProfileAdapter(private val dataSet: List<ProfileUser>, private val onItemC
         val fullName = holder.fullName
         fullName.text = currentDataSet[position].fullName()
         name.text = currentDataSet[position].username
-        CoroutineScope(Dispatchers.IO).launch { currentDataSet[position].pfp.loadImageInto(holder.pic) }
+
+        CoroutineScope(Dispatchers.Main).launch { currentDataSet[position].pfp.loadImageInto(holder.pic) }
     }
 
     override fun getItemCount(): Int = currentDataSet.size

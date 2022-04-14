@@ -34,6 +34,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 const val SHOW_JOINED_ONLY = "com.github.palFinderTeam.palFinder.meetup_list_view.SHOW_JOINED_ONLY"
 const val BASE_RADIUS = 500.0
+const val LOCATION_RESULT = "location"
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -56,6 +57,7 @@ class MeetupListFragment : Fragment() {
         return inflater.inflate(R.layout.activity_list, container, false).rootView
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -89,10 +91,13 @@ class MeetupListFragment : Fragment() {
             viewModel.fetchMeetUps()
         }
 
-//        viewModel.userLocation.observe(requireActivity()) { it ->
-//            viewModel.searchLocation.value = it
-//            viewModel.fetchMeetUps()
-//        }
+        getNavigationResultLiveData<Location>(LOCATION_RESULT)?.observe(viewLifecycleOwner) { result ->
+            viewModel.searchLocation.value = result
+            viewModel.fetchMeetUps()
+            // Make sure to consume the value
+            removeNavigationResult<Location>(LOCATION_RESULT)
+        }
+
         tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
         tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
         if (savedInstanceState == null) {
