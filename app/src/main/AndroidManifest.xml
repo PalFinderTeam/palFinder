@@ -60,7 +60,7 @@
         <activity
             android:name=".user.settings.UserSettingsActivity"
             android:exported="false"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainNavActivity" />
     </application>
 
 </manifest>
