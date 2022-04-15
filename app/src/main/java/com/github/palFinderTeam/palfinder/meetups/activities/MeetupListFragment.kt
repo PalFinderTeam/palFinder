@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,8 +11,6 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.SearchView
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -21,7 +18,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.tag.Category
@@ -43,9 +39,8 @@ class MeetupListFragment : Fragment() {
     lateinit var adapter: MeetupListAdapter
     lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     lateinit var tagsViewModel: TagsViewModel<Category>
-    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
-    private val viewModel: MapListViewModel by activityViewModels()
+    val viewModel: MapListViewModel by activityViewModels()
 
     private val args: MeetupListFragmentArgs by navArgs()
 
@@ -107,7 +102,6 @@ class MeetupListFragment : Fragment() {
             tagsViewModel.refreshTags()
             filter(it)
         }
-        registerActivityResult()
 
         view.findViewById<Button>(R.id.sort_list).setOnClickListener { showMenu(it) }
         view.findViewById<ImageButton>(R.id.search_place).setOnClickListener { searchOnMap() }
@@ -115,19 +109,6 @@ class MeetupListFragment : Fragment() {
 
     private fun filterTags(meetup: MeetUp): Boolean {
         return meetup.tags.containsAll(viewModel.tags.value!!)
-    }
-
-    private fun isParticipating(meetup: MeetUp): Boolean {
-        return if (viewModel.showOnlyJoined) {
-            val user = viewModel.getUser()
-            return if (user != null) {
-                meetup.isParticipating(user)
-            } else {
-                false
-            }
-        } else {
-            true
-        }
     }
 
 
@@ -150,8 +131,7 @@ class MeetupListFragment : Fragment() {
         tags: Set<Category>?
     ) {
         currentDataSet.addAll(meetups.filter {
-            (tags == null || it.tags.containsAll(tags)) &&
-                    (!viewModel.showOnlyJoined || isParticipating(it))
+            (tags == null || it.tags.containsAll(tags))
         })
     }
 
@@ -172,7 +152,11 @@ class MeetupListFragment : Fragment() {
     private fun sortByDist() {
         if (::adapter.isInitialized) {
             val sorted =
-                adapter.currentDataSet.sortedBy { it.location.distanceInKm(Location(0.0, 0.0)) }
+                adapter.currentDataSet.sortedBy {
+                    it.location.distanceInKm(
+                        viewModel.searchLocation.value ?: MapListViewModel.START_LOCATION
+                    )
+                }
             sort(sorted)
         }
     }
@@ -203,22 +187,6 @@ class MeetupListFragment : Fragment() {
         val action = MeetupListFragmentDirections.actionListPickLocation()
         findNavController().navigate(action)
     }
-
-    private fun registerActivityResult() {
-        resultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    val data: Intent? = result.data
-                    if (data != null) {
-                        viewModel.getMeetupAroundLocation(
-                            data.getParcelableExtra(LOCATION_SELECTED)!!,
-                            BASE_RADIUS
-                        )
-                    }
-                }
-            }
-    }
-
 
     private fun onListItemClick(position: Int) {
         val intent = Intent(requireContext(), MeetUpView::class.java)

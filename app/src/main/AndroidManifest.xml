@@ -61,6 +61,8 @@
             android:name=".user.settings.UserSettingsActivity"
             android:exported="false"
             android:parentActivityName=".MainNavActivity" />
+        <activity android:name=".HiltTestActivity"
+            android:exported="false"/>
     </application>
 
 </manifest>

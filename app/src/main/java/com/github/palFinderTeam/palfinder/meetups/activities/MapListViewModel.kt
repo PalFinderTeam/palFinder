@@ -46,15 +46,14 @@ class MapListViewModel @Inject constructor(
 
     private val _requestPermissions = MutableLiveData(false)
     val requestPermissions: LiveData<Boolean> = _requestPermissions
+    val useUserLocation: MutableLiveData<Boolean> = MutableLiveData(true)
 
     val zoom = MutableLiveData(STARTING_ZOOM)
 
     val searchRadius = MutableLiveData(INITIAL_RADIUS)
-    val searchLocation = MutableLiveData(Location(45.0, 45.0))
+    val searchLocation = MutableLiveData(START_LOCATION)
 
     var showOnlyJoined = false
-
-    private var startingCameraPosition = LatLng(45.0, 45.0)
 
     init {
         if (ActivityCompat.checkSelfPermission(
@@ -73,12 +72,6 @@ class MapListViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-
-    private fun setUserLocation(value: Location) {
-        _userLocation.value = value
-        fetchMeetUps()
     }
 
     /**
@@ -125,7 +118,7 @@ class MapListViewModel @Inject constructor(
         if (userId != null) {
             viewModelScope.launch {
                 meetUpRepository.getAllMeetUps().map {
-                    it.filter { it.participantsId.contains(userId) }
+                    it.filter { it.isParticipating(userId) }
                 }.collect {
                     _listOfMeetUpResponse.postValue(Response.Success(it))
                 }
@@ -174,7 +167,8 @@ class MapListViewModel @Inject constructor(
     }
 
     companion object {
-        private const val STARTING_ZOOM = 15f
-        private const val INITIAL_RADIUS: Double = 400.0
+        const val STARTING_ZOOM = 15f
+        const val INITIAL_RADIUS: Double = 400.0
+        val START_LOCATION = Location(45.0, 45.0)
     }
 }

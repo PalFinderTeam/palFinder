@@ -54,8 +54,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     private lateinit var context: Context
     private lateinit var map: GoogleMap
 
+    val viewModel: MapListViewModel by activityViewModels()
     private val mapSelection: MapsSelectionModel by viewModels()
-    private val viewModel: MapListViewModel by activityViewModels()
     private val args: MapsFragmentArgs by navArgs()
 
     private val markers = HashMap<String, Marker>()
@@ -113,7 +113,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
         // TODO make things clear and consistent
         viewModel.userLocation.observe(requireActivity()) { location ->
-            setUserLocation(location)
+            if (viewModel.useUserLocation.value == true) {
+                setUserLocation(location)
+            }
         }
 
         // Could add a condition when search parameters haven't change
@@ -141,7 +143,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
      * When a meetUp marker is clicked, open the marker description
      */
     override fun onMarkerClick(marker: Marker): Boolean {
-        when(context) {
+        when (context) {
             Context.MARKER -> {
                 val id = marker.title
                 if (id != null) {
@@ -182,22 +184,18 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
      * Return the selected Location to the previous activity through the viewModel.
      */
     private fun onConfirm(location: Location) {
-        //viewModel.searchLocation.value = location
         setNavigationResult(location, LOCATION_RESULT)
         findNavController().navigateUp()
     }
-
-//    fun onConfirm(v: View) {
-//        val resultIntent = Intent()
-//        resultIntent.putExtra(LOCATION_SELECTED, mapSelection.targetMarker.value!!.position)
-//        setResult(RESULT_OK, resultIntent)
-//        finish()
-//    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.uiSettings.isZoomControlsEnabled = true
         mapReady = true
+
+        viewModel.searchLocation.value?.let {
+            map.animateCamera(CameraUpdateFactory.newLatLng(it.toLatLng()))
+        }
 
         when (context) {
             Context.MARKER -> {
@@ -206,6 +204,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 map.setOnCameraIdleListener {
                     fetchMeetUpsInView()
                 }
+                fetchMeetUpsInView()
             }
             Context.SELECT_LOCATION -> {
                 map.setOnMapClickListener { onMapClick(it) }
@@ -214,10 +213,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
         selectMapTypeButton.setOnClickListener {
             changeMapType()
-        }
-
-        viewModel.searchLocation.value?.let {
-            map.animateCamera(CameraUpdateFactory.newLatLng(it.toLatLng()))
         }
     }
 
@@ -295,7 +290,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
      */
     private fun refreshMarkers(meetUpList: List<MeetUp>) {
         if (!mapReady) {
-            return
+            meetUpForMarkers
         }
 
         val deletedMarkers = meetUpForMarkers.minus(meetUpList)
@@ -326,5 +321,27 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         viewModel.searchRadius.value = radius
         viewModel.searchLocation.value = position
         viewModel.fetchMeetUps()
+    }
+
+    fun getMapLocation(): Location {
+        return if (!mapReady) {
+            MapListViewModel.START_LOCATION
+        } else {
+            map.cameraPosition.target.toLocation()
+        }
+    }
+
+    fun getMapType(): Int {
+        return if (!mapReady) {
+            GoogleMap.MAP_TYPE_NORMAL
+        } else {
+            map.mapType
+        }
+    }
+
+    fun setMapLocation(location: Location) {
+        if (mapReady) {
+            map.animateCamera(CameraUpdateFactory.newLatLng(location.toLatLng()))
+        }
     }
 }
