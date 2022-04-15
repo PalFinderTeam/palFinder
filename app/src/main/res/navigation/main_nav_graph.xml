@@ -27,6 +27,14 @@
             android:name="ShowFindTabs"
             app:argType="boolean"
             android:defaultValue="true" />
+        <argument
+            android:name="ShowOnlyJoined"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="StartOnUserLocation"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/list_fragment"

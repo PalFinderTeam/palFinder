@@ -83,7 +83,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         selectLocationButton = view.findViewById(R.id.bt_locationSelection)
         selectMapTypeButton = view.findViewById(R.id.bt_changeMapType)
 
-        viewModel.showOnlyJoined = false
+        viewModel.setSearchParameters(showOnlyJoined = args.showOnlyJoined)
+        if (args.startOnUserLocation) {
+            viewModel.userLocation.observe(requireActivity()) { location ->
+                viewModel.setSearchParameters(location = location)
+            }
+        }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = childFragmentManager
@@ -111,31 +116,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             }
         }
 
-        // TODO make things clear and consistent
-        viewModel.userLocation.observe(requireActivity()) { location ->
-            if (viewModel.useUserLocation.value == true) {
-                setUserLocation(location)
-            }
-        }
-
-        // Could add a condition when search parameters haven't change
-
         val searchLocation = view.findViewById<SearchView>(R.id.search_on_map)
         searchLocation.imeOptions = EditorInfo.IME_ACTION_DONE
         searchLocation.setOnQueryTextListener(this)
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun setUserLocation(location: Location) {
-        if (!mapReady) {
-            return
-        }
-
-        map.isMyLocationEnabled = true
-
-        viewModel.searchLocation.value = location
-        viewModel.fetchMeetUps()
-        map.animateCamera(CameraUpdateFactory.newLatLng(location.toLatLng()))
     }
 
 
@@ -188,13 +171,20 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         findNavController().navigateUp()
     }
 
+    @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.uiSettings.isZoomControlsEnabled = true
+
+        // If we don't have requestPermissions that mean we have the right permissions.
+        if (viewModel.requestPermissions.value == false) {
+            map.isMyLocationEnabled = true
+        }
+
         mapReady = true
 
         viewModel.searchLocation.value?.let {
-            map.animateCamera(CameraUpdateFactory.newLatLng(it.toLatLng()))
+            map.moveCamera(CameraUpdateFactory.newLatLng(it.toLatLng()))
         }
 
         when (context) {
@@ -208,6 +198,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             }
             Context.SELECT_LOCATION -> {
                 map.setOnMapClickListener { onMapClick(it) }
+                args.startSelection?.let {
+                    onMapClick(it.toLatLng())
+                }
             }
         }
 
@@ -242,7 +235,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             } else {
                 val address = addressList[0]
                 val location = Location(address.longitude, address.latitude)
-                viewModel.searchLocation.value = location
+                viewModel.setSearchParameters(location = location)
                 viewModel.fetchMeetUps()
                 map.animateCamera(CameraUpdateFactory.newLatLng(location.toLatLng()))
             }
@@ -263,34 +256,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     }
 
     /**
-     * get the Marker in this utils memory corresponding to this id
-     * @param id: Unique identifier of the meetup
-     * @return the marker corresponding to the id, null if non existent
-     */
-    private fun getMarker(id: String): Marker? {
-        return markers[id]
-    }
-
-    /**
-     * clear the map of all markers
-     */
-    private fun clearMarkers() {
-        val iterator = markers.iterator()
-        while (iterator.hasNext()) {
-            val marker = iterator.next()
-            marker.value.remove()
-            iterator.remove()
-        }
-    }
-
-    /**
      * refresh the map to remove Marker that are not in the meetup list and
      * add those of the meetup list that are not in the map
      * if the map is not ready, do nothing
      */
     private fun refreshMarkers(meetUpList: List<MeetUp>) {
         if (!mapReady) {
-            meetUpForMarkers
+            return
         }
 
         val deletedMarkers = meetUpForMarkers.minus(meetUpList)
@@ -318,8 +290,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         val radius = radiusAtZoom0 / 2.0.pow(map.cameraPosition.zoom.toDouble())
         val position: Location = map.cameraPosition.target.toLocation()
 
-        viewModel.searchRadius.value = radius
-        viewModel.searchLocation.value = position
+        viewModel.setSearchParameters(location = position, radiusInKm = radius)
         viewModel.fetchMeetUps()
     }
 

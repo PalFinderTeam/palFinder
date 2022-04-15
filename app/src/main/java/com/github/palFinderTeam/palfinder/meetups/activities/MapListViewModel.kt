@@ -16,10 +16,8 @@ import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -46,14 +44,13 @@ class MapListViewModel @Inject constructor(
 
     private val _requestPermissions = MutableLiveData(false)
     val requestPermissions: LiveData<Boolean> = _requestPermissions
-    val useUserLocation: MutableLiveData<Boolean> = MutableLiveData(true)
 
-    val zoom = MutableLiveData(STARTING_ZOOM)
-
-    val searchRadius = MutableLiveData(INITIAL_RADIUS)
-    val searchLocation = MutableLiveData(START_LOCATION)
-
-    var showOnlyJoined = false
+    // Search params.
+    private val _searchRadius = MutableLiveData(INITIAL_RADIUS)
+    private val _searchLocation = MutableLiveData(START_LOCATION)
+    val searchLocation: LiveData<Location> = _searchLocation
+    val searchRadius: LiveData<Double> = _searchRadius
+    private var showOnlyJoined = false
 
     init {
         if (ActivityCompat.checkSelfPermission(
@@ -75,6 +72,26 @@ class MapListViewModel @Inject constructor(
     }
 
     /**
+     * Set search parameters that you want to apply.
+     * @param location Location around which to search.
+     * @param radiusInKm Radius of the search.
+     * @param showOnlyJoined If true, only show joined meetups, this will ignore the radius.
+     */
+    fun setSearchParameters(
+        location: Location? = null,
+        radiusInKm: Double? = null,
+        showOnlyJoined: Boolean = false,
+    ) {
+        location?.let {
+            _searchLocation.value = it
+        }
+        radiusInKm?.let {
+            _searchRadius.value = it
+        }
+        this.showOnlyJoined = showOnlyJoined
+    }
+
+    /**
      * Fetch asynchronously the meetups with the different parameters value set in the viewModel.
      * This is not triggered automatically when a parameter (like radius) is changed, views have to
      * call it by themself.
@@ -85,7 +102,7 @@ class MapListViewModel @Inject constructor(
         } else {
             // TODO Fix radius
             //getMeetupAroundLocation(searchLocation.value!!, searchRadius.value ?: INITIAL_RADIUS)
-            getMeetupAroundLocation(searchLocation.value!!, 500.0)
+            getMeetupAroundLocation(_searchLocation.value!!, 500.0)
         }
     }
 
@@ -96,7 +113,7 @@ class MapListViewModel @Inject constructor(
      * @param position Location around which it will fetch.
      * @param radiusInKm Radius of the search, in Km.
      */
-    fun getMeetupAroundLocation(
+    private fun getMeetupAroundLocation(
         position: Location,
         radiusInKm: Double
     ) {
@@ -159,15 +176,7 @@ class MapListViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Return the currently logged in user id
-     */
-    fun getUser(): String? {
-        return profileService.getLoggedInUserID()
-    }
-
     companion object {
-        const val STARTING_ZOOM = 15f
         const val INITIAL_RADIUS: Double = 400.0
         val START_LOCATION = Location(45.0, 45.0)
     }

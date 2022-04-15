@@ -62,7 +62,7 @@ class MeetupListFragment : Fragment() {
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
 
 
-        viewModel.showOnlyJoined = args.showOnlyJoined
+        viewModel.setSearchParameters(showOnlyJoined = args.showOnlyJoined)
 
         viewModel.listOfMeetUpResponse.observe(requireActivity()) { it ->
             if (it is Response.Success && viewModel.searchLocation.value != null) {
@@ -87,7 +87,7 @@ class MeetupListFragment : Fragment() {
         }
 
         getNavigationResultLiveData<Location>(LOCATION_RESULT)?.observe(viewLifecycleOwner) { result ->
-            viewModel.searchLocation.value = result
+            viewModel.setSearchParameters(location = result)
             viewModel.fetchMeetUps()
             // Make sure to consume the value
             removeNavigationResult<Location>(LOCATION_RESULT)

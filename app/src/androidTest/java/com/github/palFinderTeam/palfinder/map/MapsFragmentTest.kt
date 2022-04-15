@@ -16,7 +16,6 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
@@ -105,7 +104,7 @@ class MapsFragmentTest {
         })
         scenario!!.use {
             scenario.onHiltFragment<MapsFragment> {
-                it.viewModel.useUserLocation.value = false
+                it.viewModel._useUserLocation.value = false
                 it.viewModel.showOnlyJoined = false
                 it.viewModel.searchLocation.value = meetup.location
                 it.viewModel.fetchMeetUps()
