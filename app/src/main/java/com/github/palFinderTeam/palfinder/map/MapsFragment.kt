@@ -55,7 +55,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     private lateinit var map: GoogleMap
 
     val viewModel: MapListViewModel by activityViewModels()
-    private val mapSelection: MapsSelectionModel by viewModels()
     private val args: MapsFragmentArgs by navArgs()
 
     private val markers = HashMap<String, Marker>()
@@ -98,7 +97,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
         when (context) {
             Context.MARKER -> {
-                mapSelection.active.value = false
 
                 viewModel.listOfMeetUpResponse.observe(viewLifecycleOwner) {
                     if (it is Response.Success) {
@@ -107,12 +105,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 }
             }
             Context.SELECT_LOCATION -> {
-                mapSelection.active.value = true
-
-                val startSelection = args.startSelection
-                if (startSelection != null) {
-                    setSelectionMarker(startSelection.toLatLng())
-                }
             }
         }
 
@@ -144,22 +136,21 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
     private fun onMapClick(p0: LatLng) {
         // Add a marker if the map is used to select a location
-        setSelectionMarker(p0)
+        setSelectionMarker(p0.toLocation())
 
     }
 
     /**
      * Add or Update the Position Selection Marker
      */
-    private fun setSelectionMarker(p0: LatLng) {
-        mapSelection.targetMarker.value?.remove()
-        mapSelection.targetMarker.value = map.addMarker(
-            MarkerOptions().position(p0).title("Here").draggable(true)
+    private fun setSelectionMarker(location: Location) {
+        map.clear()
+        map.addMarker(
+            MarkerOptions().position(location.toLatLng()).title("Here").draggable(true)
         )
-        selectLocationButton.apply { this.isEnabled = mapSelection.targetMarker.value != null }
         selectLocationButton.apply { this.show() }
         selectLocationButton.setOnClickListener {
-            onConfirm(p0.toLocation())
+            onConfirm(location)
         }
     }
 
