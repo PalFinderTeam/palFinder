@@ -14,6 +14,7 @@ import org.mockito.Mockito
 
 class MeetUpTest {
     private var meetUp: MeetUp? = null
+    private val user = "userId"
 
     lateinit var participanteList: List<String>
 
@@ -24,8 +25,6 @@ class MeetUpTest {
 
         val date2 = Mockito.mock(Calendar::class.java)
         Mockito.`when`(date2.timeInMillis).thenReturn(1)
-
-        val user = "userId"
 
         participanteList = mutableListOf(user)
 
@@ -61,7 +60,7 @@ class MeetUpTest {
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
 
-        assertEquals(true, meetUp!!.canJoin(now))
+        assertEquals(true, meetUp!!.canJoin(now, user))
     }
 
     @Test
@@ -69,7 +68,7 @@ class MeetUpTest {
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(5)
 
-        assertEquals(false, meetUp!!.canJoin(now))
+        assertEquals(false, meetUp!!.canJoin(now, user))
     }
 
     @Test
