@@ -1,13 +1,18 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.getField
 import java.io.Serializable
+import java.time.LocalDate
+import java.time.Period
+import java.time.Year
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -89,6 +94,17 @@ data class ProfileUser(
 
     fun fullName(): String {
         return "$name $surname"
+    }
+
+    fun getAge(): Int {
+        return if (birthday == null) {
+            1
+        } else {
+            Period.between(
+                LocalDate.of(birthday.get(Calendar.YEAR), birthday.get(Calendar.MONTH), birthday.get(Calendar.DAY_OF_MONTH)),
+                LocalDate.now()
+            ).years
+        }
     }
 
     fun atUsername(): String {

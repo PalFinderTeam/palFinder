@@ -1,10 +1,15 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.os.Build
 import android.provider.ContactsContract
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.fragment.app.viewModels
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
+import com.github.palFinderTeam.palfinder.ProfileViewModel
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
@@ -70,8 +75,22 @@ data class MeetUp(
      * @param now: current date
      * @return if a user can join
      */
-    fun canJoin(now: Calendar): Boolean {
-        return !isFull() && !isFinished(now)
+    fun canJoin(now: Calendar, profile: ProfileUser): Boolean {
+        return !isFull() && !isFinished(now) && criterionFulfilled(profile)
+    }
+
+    private fun criterionFulfilled(profile: ProfileUser): Boolean {
+    return ageFulfilled(profile.getAge()) && genderFulfilled(profile)
+    }
+
+    private fun ageFulfilled(age: Int): Boolean {
+        if (criterionAge == null) {
+            return true
+        }
+        return (criterionAge.first!! <= age && criterionAge.second!! >= age)
+    }
+    private fun genderFulfilled(profile: ProfileUser): Boolean {
+        return true
     }
 
     /**
