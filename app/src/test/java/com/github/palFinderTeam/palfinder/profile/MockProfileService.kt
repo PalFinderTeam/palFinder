@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import kotlinx.coroutines.flow.Flow
@@ -39,6 +40,7 @@ class MockProfileService : ProfileService {
                 ProfileUser.PICTURE_KEY -> oldVal.copy(pfp = ImageInstance(value as String))
                 ProfileUser.DESCRIPTION_KEY -> oldVal.copy(description = value as String)
                 ProfileUser.JOINED_MEETUPS_KEY -> oldVal.copy(joinedMeetUps = value as List<String>)
+                ProfileUser.GENDER -> oldVal.copy(gender = value as Gender)
                 else -> oldVal
             }
             return userId

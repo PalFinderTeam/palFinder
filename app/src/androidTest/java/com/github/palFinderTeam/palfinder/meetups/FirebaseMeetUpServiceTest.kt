@@ -9,6 +9,7 @@ import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Compani
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
+import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
@@ -70,7 +71,7 @@ class FirebaseMeetUpServiceTest {
             Location(0.0, 0.0),
             setOf(Category.DRINKING),
             true,
-            3,
+            45,
             listOf("userId2"),
             Pair(null, null),
             CriterionGender.ALL
@@ -315,7 +316,7 @@ class FirebaseMeetUpServiceTest {
     }
 
     @Test
-    fun joinMeetUpWithoutCheckingCriterionsFails()= runTest {
+    fun joinMeetUpWithoutCheckingCriterionAgeFails()= runTest {
         val seniorMeetUp = meetUp.copy(creatorId = "userId2", criterionAge = Pair(45, 66))
         val id = firebaseMeetUpService.createMeetUp(seniorMeetUp)
         assertThat(id, notNullValue())
@@ -331,6 +332,28 @@ class FirebaseMeetUpServiceTest {
             assertThat(id3, notNullValue())
             result = firebaseMeetUpService.joinMeetUp(it, id3!!, seniorMeetUp.startDate, firebaseProfileService.fetchUserProfile(id3)!!)
             assertThat(result, instanceOf(Response.Success::class.java))
+
+            db.collection(MEETUP_COLL).document(it).delete().await()
+            db.collection(PROFILE_COLL).document(id2).delete().await()
+            db.collection(PROFILE_COLL).document(id3).delete().await()
+        }
+    }
+
+    @Test
+    fun joinMeetUpWithoutCheckingCriterionGenderFails()= runTest {
+        val virilMeetUp = meetUp.copy(creatorId = "userId2", criterionGender = CriterionGender.MALE)
+        val id = firebaseMeetUpService.createMeetUp(virilMeetUp)
+        assertThat(id, notNullValue())
+        val id2 = firebaseProfileService.createProfile(user1)
+        assertThat(id2, notNullValue())
+        id!!.let {
+            var result = firebaseMeetUpService.joinMeetUp(it, id2!!, virilMeetUp.startDate, firebaseProfileService.fetchUserProfile(id2)!!)
+            assertThat(result, instanceOf(Response.Failure::class.java))
+            val id3 = firebaseProfileService.createProfile(user1.copy(gender = Gender.MALE))
+            assertThat(id3, notNullValue())
+            result = firebaseMeetUpService.joinMeetUp(it, id3!!, virilMeetUp.startDate, firebaseProfileService.fetchUserProfile(id3)!!)
+            assertThat(result, instanceOf(Response.Success::class.java))
+
 
             db.collection(MEETUP_COLL).document(it).delete().await()
             db.collection(PROFILE_COLL).document(id2).delete().await()

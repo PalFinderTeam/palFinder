@@ -6,6 +6,6 @@ enum class CriterionGender(val genderName: String) {
     ALL("All"),
     NULL("Null");
     companion object{
-        fun from(type: String?): CriterionGender = values().find { it.name == type } ?: ALL
+        fun from(type: String?): CriterionGender = values().find { it.genderName == type } ?: ALL
     }
 }

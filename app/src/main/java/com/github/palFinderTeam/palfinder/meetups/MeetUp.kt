@@ -12,6 +12,7 @@ import com.github.palFinderTeam.palfinder.ProfileViewModel
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
+import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.isBefore
@@ -80,17 +81,22 @@ data class MeetUp(
     }
 
     private fun criterionFulfilled(profile: ProfileUser): Boolean {
-    return ageFulfilled(profile.getAge()) && genderFulfilled(profile)
+        return genderFulfilled(profile) && ageFulfilled(profile.getAge())
     }
 
     private fun ageFulfilled(age: Int): Boolean {
-        if (criterionAge == null) {
+        if (criterionAge == Pair(null, null)) {
             return true
         }
-        return (criterionAge.first!! <= age && criterionAge.second!! >= age)
+        return (criterionAge!!.first!! <= age && criterionAge.second!! >= age)
     }
     private fun genderFulfilled(profile: ProfileUser): Boolean {
-        return true
+        return when (criterionGender) {
+            CriterionGender.ALL -> true
+            CriterionGender.FEMALE -> profile.gender == Gender.FEMALE
+            CriterionGender.MALE -> profile.gender == Gender.MALE
+            else -> true
+        }
     }
 
     /**
@@ -169,9 +175,8 @@ data class MeetUp(
                 val endDateCal = Calendar.getInstance()
                 startDateCal.time = startDate
                 endDateCal.time = endDate
-                var criterionGender = getString("criterionGender")?.let { CriterionGender.from(it) }
+                var criterionGender = CriterionGender.from(getString("criterionGender"))
                 val criterionAge = Pair(getLong("criterionAgeFirst")?.toInt(), getLong("criterionAgeSecond")?.toInt())
-
                 return MeetUp(
                     uuid,
                     creator,
