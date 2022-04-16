@@ -37,8 +37,8 @@ const val LOCATION_RESULT = "location"
 class MeetupListFragment : Fragment() {
     private lateinit var meetupList: RecyclerView
     lateinit var adapter: MeetupListAdapter
-    lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
-    lateinit var tagsViewModel: TagsViewModel<Category>
+    private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
+    private lateinit var tagsViewModel: TagsViewModel<Category>
 
     val viewModel: MapListViewModel by activityViewModels()
 

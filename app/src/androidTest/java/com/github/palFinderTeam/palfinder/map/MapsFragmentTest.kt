@@ -104,9 +104,7 @@ class MapsFragmentTest {
         })
         scenario!!.use {
             scenario.onHiltFragment<MapsFragment> {
-                it.viewModel._useUserLocation.value = false
-                it.viewModel.showOnlyJoined = false
-                it.viewModel.searchLocation.value = meetup.location
+                it.viewModel.setSearchParameters(location = meetup.location, showOnlyJoined = false)
                 it.viewModel.fetchMeetUps()
                 it.setMapLocation(meetup.location)
             }

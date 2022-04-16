@@ -109,28 +109,6 @@ class MainActivityTest {
     }
 
     @Test
-    fun meetupListTest() {
-        val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
-        init()
-        ActivityScenario.launch<MainActivity>(intent)
-        onView(ViewMatchers.withId(R.id.mainGoButton))
-            .perform(click())
-        intended(hasComponent(MeetupListFragment::class.java.name))
-        release()
-    }
-
-    @Test
-    fun mapTest() {
-        val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
-        init()
-        ActivityScenario.launch<MainActivity>(intent)
-        onView(ViewMatchers.withId(R.id.mapGoButton))
-            .perform(click())
-        intended(hasComponent(MapsFragment::class.java.name))
-        release()
-    }
-
-    @Test
     fun userSettingsTest() {
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         init()

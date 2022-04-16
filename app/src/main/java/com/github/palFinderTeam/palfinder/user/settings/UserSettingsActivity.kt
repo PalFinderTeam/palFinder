@@ -18,9 +18,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.github.palFinderTeam.palfinder.MainNavActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.USER_ID
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.ui.login.CREATE_ACCOUNT_PROFILE
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
@@ -186,7 +186,7 @@ class UserSettingsActivity : AppCompatActivity() {
             // Go to main activity
             if (status == UserSettingsViewModel.CREATE_SUCCESS) {
                 displayToastMsg(getString(R.string.userSettingsSaveCreate))
-                val intent = Intent(this, MeetupListFragment::class.java)
+                val intent = Intent(this, MainNavActivity::class.java)
                 startActivity(intent)
             }
         }

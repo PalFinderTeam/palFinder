@@ -70,4 +70,33 @@
             app:argType="boolean"
             android:defaultValue="false" />
     </fragment>
+    <fragment
+        android:id="@+id/creation_fragment"
+        android:name="com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation"
+        android:label="activity_meet_up_creation"
+        tools:layout="@layout/activity_meet_up_creation" >
+        <argument
+            android:name="ShowNavBar"
+            app:argType="boolean"
+            android:defaultValue="true" />
+        <argument
+            android:name="MeetUpId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_creation_pick_location"
+            app:destination="@id/maps_fragment" >
+            <argument
+                android:name="ShowNavBar"
+                android:defaultValue="false" />
+            <argument
+                android:name="ShowFindTabs"
+                android:defaultValue="false" />
+            <argument
+                android:name="Context"
+                app:argType="com.github.palFinderTeam.palfinder.map.MapsFragment$Context"
+                android:defaultValue="SELECT_LOCATION" />
+        </action>
+    </fragment>
 </navigation>

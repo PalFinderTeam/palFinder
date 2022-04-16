@@ -2,14 +2,12 @@ package com.github.palFinderTeam.palfinder
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -39,6 +37,7 @@ class MainNavActivity : AppCompatActivity() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav)
         val tabMenu = findViewById<TabLayout>(R.id.find_tabs)
 
+
         navController.addOnDestinationChangedListener { _, _, arguments ->
             // Hide navbar when needed
             if (bottomNavigationView != null) {
@@ -59,8 +58,11 @@ class MainNavActivity : AppCompatActivity() {
 
                 when (item.itemId) {
                     R.id.nav_bar_create -> {
-                        val intent = Intent(this, MeetUpCreation::class.java)
-                        startActivity(intent)
+                        navController.navigate(
+                            R.id.creation_fragment,
+                            args = null,
+                            navOptions = navOptions.build()
+                        )
                         return@setOnItemSelectedListener true
                     }
                     R.id.nav_bar_groups -> {

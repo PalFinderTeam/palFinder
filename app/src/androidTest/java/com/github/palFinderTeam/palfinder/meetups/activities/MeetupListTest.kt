@@ -201,7 +201,7 @@ class MeetUpListTest {
 
         scenario!!.use {
             scenario.onHiltFragment<MeetupListFragment> {
-                it.viewModel.searchLocation.value = searchLocation
+                it.viewModel.setSearchParameters(location = searchLocation)
                 it.viewModel.fetchMeetUps()
             }
 
@@ -231,7 +231,7 @@ class MeetUpListTest {
         }, navHostController = navController)
         scenario!!.use {
             scenario.onHiltFragment<MeetupListFragment> {
-                it.viewModel.searchLocation.value = searchLocation
+                it.viewModel.setSearchParameters(location = searchLocation)
                 it.viewModel.fetchMeetUps()
             }
             onView(withId(R.id.sort_list)).perform(click())
@@ -281,7 +281,7 @@ class MeetUpListTest {
 
         scenario!!.use {
             scenario.onHiltFragment<MeetupListFragment> { listFrag ->
-                listFrag.viewModel.searchLocation.value = searchLocation
+                listFrag.viewModel.setSearchParameters(location = searchLocation)
                 listFrag.viewModel.fetchMeetUps()
                 listFrag.filter(setOf(Category.CINEMA))
                 assert(listFrag.adapter.currentDataSet.isEmpty())
@@ -303,7 +303,7 @@ class MeetUpListTest {
 
         scenario!!.use {
             scenario.onHiltFragment<MeetupListFragment> { listFrag ->
-                listFrag.viewModel.searchLocation.value = searchLocation
+                listFrag.viewModel.setSearchParameters(location = searchLocation)
                 listFrag.viewModel.fetchMeetUps()
                 listFrag.viewModel.tagRepository.addTag(Category.CINEMA)
                 assert(listFrag.adapter.currentDataSet.isEmpty())
@@ -330,7 +330,7 @@ class MeetUpListTest {
         scenario!!.use {
             init()
             scenario.onHiltFragment<MeetupListFragment> {
-                it.viewModel.searchLocation.value = searchLocation
+                it.viewModel.setSearchParameters(location = searchLocation)
                 it.viewModel.fetchMeetUps()
             }
             onView(
@@ -352,7 +352,7 @@ class MeetUpListTest {
 
         scenario!!.use {
             scenario.onHiltFragment<MeetupListFragment> {
-                it.viewModel.searchLocation.value = searchLocation
+                it.viewModel.setSearchParameters(location = searchLocation)
                 it.viewModel.fetchMeetUps()
             }
 
@@ -372,7 +372,7 @@ class MeetUpListTest {
 
         scenario!!.use {
             scenario.onHiltFragment<MeetupListFragment> {
-                it.viewModel.searchLocation.value = searchLocation
+                it.viewModel.setSearchParameters(location = searchLocation)
                 it.viewModel.fetchMeetUps()
             }
 
