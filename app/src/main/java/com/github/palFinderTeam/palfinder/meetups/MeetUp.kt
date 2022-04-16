@@ -77,7 +77,7 @@ data class MeetUp(
      * @return if a user can join
      */
     fun canJoin(now: Calendar, profile: ProfileUser): Boolean {
-        return !isFull() && !isFinished(now) && criterionFulfilled(profile)
+        return (!isFull() && !isFinished(now) && criterionFulfilled(profile))
     }
 
     private fun criterionFulfilled(profile: ProfileUser): Boolean {

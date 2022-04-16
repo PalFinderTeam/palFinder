@@ -71,7 +71,7 @@ class FirebaseMeetUpServiceTest {
             Location(0.0, 0.0),
             setOf(Category.DRINKING),
             true,
-            45,
+            3,
             listOf("userId2"),
             Pair(null, null),
             CriterionGender.ALL
@@ -243,11 +243,13 @@ class FirebaseMeetUpServiceTest {
 
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
+        val id2 = firebaseProfileService.createProfile(user1)
         id!!.let {
-            val result = firebaseMeetUpService.joinMeetUp(it, "userId2", meetUp.startDate, firebaseProfileService.fetchUserProfile("userId2")!!)
+            val result = firebaseMeetUpService.joinMeetUp(it, id2!!, meetUp.startDate, firebaseProfileService.fetchUserProfile(id2)!!)
             assertThat(result, instanceOf(Response.Success::class.java))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
+            db.collection(MEETUP_COLL).document(id2).delete().await()
         }
     }
 
@@ -255,14 +257,16 @@ class FirebaseMeetUpServiceTest {
     fun joinMeetUpAfterItEndedReturnFailure() = runTest {
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
+        val id2 = firebaseProfileService.createProfile(user2)
         id!!.let {
             val dateAfter = Calendar.getInstance()
             dateAfter.time = meetUp.endDate.time
             dateAfter.add(Calendar.YEAR, 2)
-            val result = firebaseMeetUpService.joinMeetUp(it, "MichelId", dateAfter, firebaseProfileService.fetchUserProfile("MichelId")!!)
+            val result = firebaseMeetUpService.joinMeetUp(it, id2!!, dateAfter, firebaseProfileService.fetchUserProfile(id2)!!)
             assertThat(result, instanceOf(Response.Failure::class.java))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
+            db.collection(MEETUP_COLL).document(id2).delete().await()
         }
     }
 
@@ -271,29 +275,34 @@ class FirebaseMeetUpServiceTest {
         val smallMeetUp = meetUp.copy(capacity = 2)
         val id = firebaseMeetUpService.createMeetUp(smallMeetUp)
         assertThat(id, notNullValue())
+        val id2 = firebaseProfileService.createProfile(user2)
         id!!.let {
-            val result = firebaseMeetUpService.joinMeetUp(it, "MichelId", smallMeetUp.startDate, firebaseProfileService.fetchUserProfile("MichelId")!!)
+            val result = firebaseMeetUpService.joinMeetUp(it, id2!!, smallMeetUp.startDate, firebaseProfileService.fetchUserProfile(id2)!!)
             assertThat(result, instanceOf(Response.Failure::class.java))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
+            db.collection(MEETUP_COLL).document(id2).delete().await()
         }
     }
 
     @Test
     fun leaveMeetUpYouCreatedReturnsFailure() = runTest {
-        val id = firebaseMeetUpService.createMeetUp(meetUp)
+        val id2 = firebaseProfileService.createProfile(user1)
+        val id = firebaseMeetUpService.createMeetUp(meetUp.copy(creatorId = id2!!))
         assertThat(id, notNullValue())
         id!!.let {
-            val result = firebaseMeetUpService.leaveMeetUp(it, "userId")
+            val result = firebaseMeetUpService.leaveMeetUp(it, id2)
             assertThat(result, instanceOf(Response.Failure::class.java))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
+            db.collection(MEETUP_COLL).document(id2).delete().await()
         }
     }
 
     @Test
     fun joinNonExistingMeetUpReturnsFailure() = runTest {
-        val result = firebaseMeetUpService.joinMeetUp("UWU", "MichelId", Calendar.getInstance(), firebaseProfileService.fetchUserProfile("MichelId")!!)
+        val id2 = firebaseProfileService.createProfile(user1)
+        val result = firebaseMeetUpService.joinMeetUp("UWU", id2!!, Calendar.getInstance(), firebaseProfileService.fetchUserProfile(id2)!!)
         assertThat(result, instanceOf(Response.Failure::class.java))
     }
 
