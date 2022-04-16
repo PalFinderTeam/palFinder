@@ -1,7 +1,11 @@
 package com.github.palFinderTeam.palfinder.utils
 
-enum class CriterionGender(val genderName: String) : java.io.Serializable {
-    FEMALE("female"),
-    MALE("male"),
-    ALL("null"),
+enum class CriterionGender(val genderName: String) {
+    FEMALE("Female"),
+    MALE("Male"),
+    ALL("All"),
+    NULL("Null");
+    companion object{
+        fun from(type: String?): CriterionGender = values().find { it.name == type } ?: ALL
+    }
 }

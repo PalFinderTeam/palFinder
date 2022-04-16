@@ -150,13 +150,7 @@ data class MeetUp(
                 val endDateCal = Calendar.getInstance()
                 startDateCal.time = startDate
                 endDateCal.time = endDate
-                var criterionGenderString = getString("criterionGender")
-                var criterionGender: CriterionGender
-                if (criterionGenderString == null) {
-                    criterionGender = CriterionGender.ALL
-                } else {
-                    criterionGender = CriterionGender.valueOf(criterionGenderString)
-                }
+                var criterionGender = getString("criterionGender")?.let { CriterionGender.from(it) }
                 val criterionAge = Pair(getLong("criterionAgeFirst")?.toInt(), getLong("criterionAgeSecond")?.toInt())
 
                 return MeetUp(
