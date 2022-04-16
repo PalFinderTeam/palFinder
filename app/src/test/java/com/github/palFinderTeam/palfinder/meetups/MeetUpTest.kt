@@ -72,7 +72,8 @@ class MeetUpTest {
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(5)
 
-        assertEquals(false, meetUp!!.canJoin(now))
+        assertEquals(false, meetUp!!.canJoin(now, ProfileUser("userid", "ce",
+            "ce", "ce", now, ImageInstance("w"))))
     }
 
     @Test
