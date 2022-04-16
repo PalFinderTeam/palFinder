@@ -316,18 +316,25 @@ class FirebaseMeetUpServiceTest {
 
     @Test
     fun joinMeetUpWithoutCheckingCriterionsFails()= runTest {
-        val seniorMeetUp = meetUp.copy(criterionAge = Pair(45, 66))
+        val seniorMeetUp = meetUp.copy(creatorId = "userId2", criterionAge = Pair(45, 66))
         val id = firebaseMeetUpService.createMeetUp(seniorMeetUp)
         assertThat(id, notNullValue())
-        val id2 = firebaseProfileService.createProfile(user2)
+        val id2 = firebaseProfileService.createProfile(user1)
         assertThat(id2, notNullValue())
         id!!.let {
-            val result = firebaseMeetUpService.joinMeetUp(it, id2!!, seniorMeetUp.startDate, firebaseProfileService.fetchUserProfile(id2)!!)
+            var result = firebaseMeetUpService.joinMeetUp(it, id2!!, seniorMeetUp.startDate, firebaseProfileService.fetchUserProfile(id2)!!)
             assertThat(result, instanceOf(Response.Failure::class.java))
             // Make sure to clean for next tests
-            firebaseMeetUpService.leaveMeetUp(it, id2!!)
+            val birthday = Calendar.getInstance()
+            birthday.set(1964, 8, 4)
+            val id3 = firebaseProfileService.createProfile(user1.copy(birthday = birthday))
+            assertThat(id3, notNullValue())
+            result = firebaseMeetUpService.joinMeetUp(it, id3!!, seniorMeetUp.startDate, firebaseProfileService.fetchUserProfile(id3)!!)
+            assertThat(result, instanceOf(Response.Success::class.java))
+
             db.collection(MEETUP_COLL).document(it).delete().await()
             db.collection(PROFILE_COLL).document(id2).delete().await()
+            db.collection(PROFILE_COLL).document(id3).delete().await()
         }
     }
 
