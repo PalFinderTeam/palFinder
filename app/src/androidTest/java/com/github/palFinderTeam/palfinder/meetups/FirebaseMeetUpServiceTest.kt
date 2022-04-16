@@ -69,7 +69,9 @@ class FirebaseMeetUpServiceTest {
             setOf(Category.DRINKING),
             true,
             3,
-            listOf("userId2")
+            listOf("userId2"),
+            null,
+            null
         )
     }
 

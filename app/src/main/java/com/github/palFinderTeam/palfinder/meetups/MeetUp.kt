@@ -1,10 +1,12 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.provider.ContactsContract
 import android.util.Log
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.isBefore
@@ -38,6 +40,8 @@ data class MeetUp(
     val hasMaxCapacity: Boolean,
     val capacity: Int,
     val participantsId: List<String>,
+    val criterionAge: Pair<Int?, Int?>?,
+    val criterionGender: CriterionGender?,
 ) : java.io.Serializable {
 
     /**
@@ -66,7 +70,7 @@ data class MeetUp(
      * @param now: current date
      * @return if a user can join
      */
-    fun canJoin(now: Calendar): Boolean {
+    fun canJoin(now: Calendar, userId: String): Boolean {
         return !isFull() && !isFinished(now)
     }
 
@@ -116,6 +120,9 @@ data class MeetUp(
             "name" to name,
             "participants" to participantsId.toList(),
             "tags" to tags.map { it.toString() },
+            "criterionAgeFirst" to criterionAge?.first?.toLong(),
+            "criterionAgeSecond" to criterionAge?.second?.toLong(),
+            "criterionGender" to criterionGender?.genderName,
         )
     }
 
@@ -143,6 +150,15 @@ data class MeetUp(
                 val endDateCal = Calendar.getInstance()
                 startDateCal.time = startDate
                 endDateCal.time = endDate
+                var criterionGenderString = getString("criterionGender")
+                var criterionGender: CriterionGender
+                if (criterionGenderString == null) {
+                    criterionGender = CriterionGender.ALL
+                } else {
+                    criterionGender = CriterionGender.valueOf(criterionGenderString)
+                }
+                val criterionAge = Pair(getLong("criterionAgeFirst")?.toInt(), getLong("criterionAgeSecond")?.toInt())
+
                 return MeetUp(
                     uuid,
                     creator,
@@ -155,7 +171,9 @@ data class MeetUp(
                     tags.map { Category.valueOf(it) }.toSet(),
                     hasMaxCapacity,
                     capacity.toInt(),
-                    participantsId
+                    participantsId,
+                    criterionAge,
+                    criterionGender
                 )
             } catch (e: Exception) {
                 Log.e("Meetup", "Error deserializing meetup", e)

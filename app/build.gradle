@@ -120,6 +120,8 @@ dependencies {
 
     androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
     implementation 'com.google.code.gson:gson:2.9.0'
+
+    implementation 'org.florescu.android.rangeseekbar:rangeseekbar-library:0.3.0'
 }
 
 kapt {

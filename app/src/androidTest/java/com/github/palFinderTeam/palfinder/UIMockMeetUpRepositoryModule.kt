@@ -109,7 +109,7 @@ object UIMockMeetUpRepositoryModule {
                 if (meetUp.isParticipating(userId)) {
                     return Response.Success(Unit)
                 }
-                if (!meetUp.canJoin(now)) {
+                if (!meetUp.canJoin(now, userId)) {
                     return Response.Failure("Cannot join meetup now.")
                 }
                 if (meetUp.isFull()) {

@@ -97,7 +97,9 @@ class MeetUpListTest {
                 participantsId = listOf(
                     user2
                 ),
-                uuid = "ce"
+                uuid = "ce",
+                criterionAge = null,
+                criterionGender = null
             ),
             MeetUp(
                 iconId = "",
@@ -113,7 +115,9 @@ class MeetUpListTest {
                 participantsId = listOf(
                     user2
                 ),
-                uuid = "ce"
+                uuid = "ce",
+                criterionAge = null,
+                criterionGender = null
             ),
             MeetUp(
                 iconId = "",
@@ -129,7 +133,9 @@ class MeetUpListTest {
                 participantsId = listOf(
                     user1
                 ),
-                uuid = "ce"
+                uuid = "ce",
+                criterionAge = null,
+                criterionGender = null
             ),
             MeetUp(
                 iconId = "",
@@ -145,7 +151,9 @@ class MeetUpListTest {
                 participantsId = listOf(
                     user1
                 ),
-                uuid = "ce"
+                uuid = "ce",
+                criterionAge = null,
+                criterionGender = null
             ),
             MeetUp(
                 iconId = "",
@@ -161,7 +169,9 @@ class MeetUpListTest {
                 participantsId = listOf(
                     user2
                 ),
-                uuid = "ce2"
+                uuid = "ce2",
+                criterionAge = null,
+                criterionGender = null
             ),
         )
     }

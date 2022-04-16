@@ -137,7 +137,7 @@ class FirebaseMeetUpService @Inject constructor(
             if (meetUp.isParticipating(userId)) {
                 return Success(Unit)
             }
-            if (!meetUp.canJoin(now)) {
+            if (!meetUp.canJoin(now, userId)) {
                 return Failure("Cannot join meetup now.")
             }
             if (meetUp.isFull()) {
