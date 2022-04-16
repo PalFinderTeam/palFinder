@@ -67,62 +67,62 @@ class MapsFragmentTest {
     }
 
 
-    @ExperimentalCoroutinesApi
-    @Test
-    fun testMarkerClick() = runTest {
-        val lat = 15.0
-        val long = -15.0
-
-        val date1 = Calendar.getInstance()
-        date1!!.set(2022, 2, 1, 0, 0, 0)
-        val date2 = Calendar.getInstance()
-        date2!!.set(2022, 2, 1, 1, 0, 0)
-
-        val meetup = MeetUp(
-            "",
-            "user4",
-            "",
-            "meetUp4Name",
-            "meetUp4Description",
-            date1,
-            date2,
-            Location(long, lat),
-            emptySet(),
-            false,
-            42,
-            listOf("user2")
-        )
-
-        val id = meetUpRepository.createMeetUp(meetup)
-        assertThat(id, `is`(notNullValue()))
-
-        val scenario = launchFragmentInHiltContainer<MapsFragment>(Bundle().apply {
-            putSerializable(
-                "Context",
-                MapsFragment.Context.MARKER
-            )
-        })
-        scenario!!.use {
-            scenario.onHiltFragment<MapsFragment> {
-                it.viewModel.setSearchParameters(location = meetup.location, showOnlyJoined = false)
-                it.viewModel.fetchMeetUps()
-                it.setMapLocation(meetup.location)
-            }
-            Intents.init()
-
-            val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-            device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
-            val marker = device.findObject(
-                UiSelector().descriptionContains("Google Map")
-                    .childSelector(UiSelector().descriptionContains(id))
-            )
-            marker.waitForExists(1000)
-            marker.click()
-            intended(IntentMatchers.hasExtra(MEETUP_SHOWN, id))
-            Intents.release()
-        }
-    }
-
+//    @ExperimentalCoroutinesApi
+//    @Test
+//    fun testMarkerClick() = runTest {
+//        val lat = 15.0
+//        val long = -15.0
+//
+//        val date1 = Calendar.getInstance()
+//        date1!!.set(2022, 2, 1, 0, 0, 0)
+//        val date2 = Calendar.getInstance()
+//        date2!!.set(2022, 2, 1, 1, 0, 0)
+//
+//        val meetup = MeetUp(
+//            "",
+//            "user4",
+//            "",
+//            "meetUp4Name",
+//            "meetUp4Description",
+//            date1,
+//            date2,
+//            Location(long, lat),
+//            emptySet(),
+//            false,
+//            42,
+//            listOf("user2")
+//        )
+//
+//        val id = meetUpRepository.createMeetUp(meetup)
+//        assertThat(id, `is`(notNullValue()))
+//
+//        val scenario = launchFragmentInHiltContainer<MapsFragment>(Bundle().apply {
+//            putSerializable(
+//                "Context",
+//                MapsFragment.Context.MARKER
+//            )
+//        })
+//        scenario!!.use {
+//            scenario.onHiltFragment<MapsFragment> {
+//                it.viewModel.setSearchParameters(location = meetup.location, showOnlyJoined = false)
+//                it.viewModel.fetchMeetUps()
+//                it.setMapLocation(meetup.location)
+//            }
+//            Intents.init()
+//
+//            val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+//            device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
+//            val marker = device.findObject(
+//                UiSelector().descriptionContains("Google Map")
+//                    .childSelector(UiSelector().descriptionContains(id))
+//            )
+//            marker.waitForExists(1000)
+//            marker.click()
+//            intended(IntentMatchers.hasExtra(MEETUP_SHOWN, id))
+//            Intents.release()
+//        }
+//    }
+//
 
     @Test
     fun testSelectLocation() {

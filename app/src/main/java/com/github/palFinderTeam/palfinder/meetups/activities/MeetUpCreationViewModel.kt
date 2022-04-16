@@ -12,6 +12,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.isBefore
 import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
@@ -134,6 +135,10 @@ class MeetUpCreationViewModel @Inject constructor(
      * @param meetUpId Id of the meetUp to fetch
      */
     fun loadMeetUp(meetUpId: String) {
+        if (meetUpId == uuid) {
+            return
+        }
+
         viewModelScope.launch {
             val meetUp = meetUpRepository.getMeetUpData(meetUpId)
             if (meetUp != null) {
@@ -192,7 +197,6 @@ class MeetUpCreationViewModel @Inject constructor(
                 participantsId.value!!
             )
             if (uuid == null) {
-                // create new meetup
                 // create new meetup
                 // Make sure the meetup start at least now when it is created
                 if (startDate.value!!.isBefore(Calendar.getInstance())) {
@@ -278,6 +282,6 @@ class MeetUpCreationViewModel @Inject constructor(
     }
 
     fun setLatLng(p0: LatLng) {
-        _location.value = Location(p0.longitude, p0.latitude)
+        _location.value = p0.toLocation()
     }
 }

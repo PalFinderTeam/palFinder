@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navOptions
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.tag.Category
@@ -294,7 +295,9 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation) {
     private fun selectLocation() {
         val action = MeetUpCreationDirections.actionCreationPickLocation()
         action.startSelection = viewModel.location.value
-        findNavController().navigate(action)
+        findNavController().navigate(action, navOptions {
+            this.restoreState = true
+        })
     }
 
     private fun onLocationSelected(p0: LatLng) {

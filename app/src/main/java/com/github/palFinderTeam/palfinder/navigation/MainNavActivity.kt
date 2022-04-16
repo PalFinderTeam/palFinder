@@ -1,4 +1,4 @@
-package com.github.palFinderTeam.palfinder
+package com.github.palFinderTeam.palfinder.navigation
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,12 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
+import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -22,9 +22,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainNavActivity : AppCompatActivity() {
 
-    private var findState = FindState.MAP
-
     private lateinit var auth: FirebaseAuth
+    private lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,14 +33,12 @@ class MainNavActivity : AppCompatActivity() {
 
         val navController =
             (supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment).navController
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav)
+        bottomNavigationView = findViewById(R.id.bottom_nav)
 
 
         navController.addOnDestinationChangedListener { _, _, arguments ->
             // Hide navbar when needed
-            if (bottomNavigationView != null) {
-                bottomNavigationView.isVisible = arguments?.getBoolean("ShowNavBar", false) == true
-            }
+            hideShowNavBar(arguments?.getBoolean("ShowNavBar", false) == true)
         }
 
         bottomNavigationView.setOnItemSelectedListener { item ->
@@ -55,6 +52,7 @@ class MainNavActivity : AppCompatActivity() {
 
                 when (item.itemId) {
                     R.id.nav_bar_create -> {
+                        navController.popBackStack()
                         navController.navigate(
                             R.id.creation_fragment,
                             args = null,
@@ -63,9 +61,9 @@ class MainNavActivity : AppCompatActivity() {
                         return@setOnItemSelectedListener true
                     }
                     R.id.nav_bar_groups -> {
+                        navController.popBackStack()
                         val args = Bundle().apply {
                             putBoolean("ShowOnlyJoined", true)
-                            putBoolean("ShowFindTabs", false)
                         }
                         navController.navigate(
                             R.id.list_fragment,
@@ -75,6 +73,7 @@ class MainNavActivity : AppCompatActivity() {
                         return@setOnItemSelectedListener true
                     }
                     R.id.nav_bar_find -> {
+                        navController.popBackStack()
                         navController.navigate(
                             R.id.find_fragment,
                             args = null,
@@ -87,6 +86,10 @@ class MainNavActivity : AppCompatActivity() {
             false
         }
 
+    }
+
+    fun hideShowNavBar(show: Boolean) {
+        bottomNavigationView.isVisible = show
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

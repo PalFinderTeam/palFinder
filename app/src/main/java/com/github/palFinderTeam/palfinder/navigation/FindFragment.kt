@@ -1,12 +1,16 @@
-package com.github.palFinderTeam.palfinder
+package com.github.palFinderTeam.palfinder.navigation
 
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
+import com.github.palFinderTeam.palfinder.R
 import com.google.android.material.tabs.TabLayout
 
 class FindFragment : Fragment(R.layout.fragment_find) {
+
+    private val findViewModel: FindViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -19,15 +23,26 @@ class FindFragment : Fragment(R.layout.fragment_find) {
         val navController = navHost.navController
 
 
+        navController.addOnDestinationChangedListener { _, _, arguments ->
+            (requireActivity() as MainNavActivity).hideShowNavBar(
+                arguments?.getBoolean(
+                    "ShowNavBar",
+                    false
+                ) == true
+            )
+        }
+
         tabMenu.addOnTabSelectedListener(
             object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab?) {
                     if (tab != null) {
                         when (tab.position) {
                             0 -> {
+                                findViewModel.tabState = 0
                                 navController.navigate(R.id.maps_fragment)
                             }
                             1 -> {
+                                findViewModel.tabState = 1
                                 navController.navigate(R.id.list_fragment)
                             }
                             else -> {}
@@ -42,8 +57,9 @@ class FindFragment : Fragment(R.layout.fragment_find) {
                 override fun onTabReselected(tab: TabLayout.Tab?) {
                     // Ignore
                 }
-
             }
         )
+
+        tabMenu.getTabAt(findViewModel.tabState)?.select()
     }
 }

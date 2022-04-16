@@ -20,5 +20,10 @@ package com.github.palFinderTeam.palfinder
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * This is only used in tests, to have an empty hilt activity to launch and
+ * test fragments in. Normally we should be able to put it in a debug folder
+ * but it didn't work the first time and it's fine as it is.
+ */
 @AndroidEntryPoint
 class HiltTestActivity : AppCompatActivity()

@@ -15,7 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PalFinder">
         <activity
-            android:name=".MainNavActivity"
+            android:name=".meetups.activities.MeetUpEditCompat"
+            android:exported="false" />
+        <activity
+            android:name=".navigation.MainNavActivity"
             android:exported="false" />
         <activity
             android:name=".ui.settings.SettingsActivity"
@@ -60,9 +63,10 @@
         <activity
             android:name=".user.settings.UserSettingsActivity"
             android:exported="false"
-            android:parentActivityName=".MainNavActivity" />
-        <activity android:name=".HiltTestActivity"
-            android:exported="false"/>
+            android:parentActivityName=".navigation.MainNavActivity" />
+        <activity
+            android:name=".HiltTestActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
