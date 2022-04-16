@@ -85,7 +85,7 @@ data class MeetUp(
     }
 
     private fun ageFulfilled(age: Int): Boolean {
-        if (criterionAge == Pair(null, null)) {
+        if (criterionAge == Pair(null, null) || criterionAge == null) {
             return true
         }
         return (criterionAge!!.first!! <= age && criterionAge.second!! >= age)
