@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav_graph"
-    app:startDestination="@id/maps_fragment">
+    app:startDestination="@id/find_fragment">
 
     <fragment
         android:id="@+id/maps_fragment"
@@ -98,5 +98,15 @@
                 app:argType="com.github.palFinderTeam.palfinder.map.MapsFragment$Context"
                 android:defaultValue="SELECT_LOCATION" />
         </action>
+    </fragment>
+    <fragment
+        android:id="@+id/find_fragment"
+        android:name="com.github.palFinderTeam.palfinder.FindFragment"
+        android:label="FindFragment"
+        tools:layout="@layout/fragment_find" >
+        <argument
+            android:name="ShowNavBar"
+            app:argType="boolean"
+            android:defaultValue="true" />
     </fragment>
 </navigation>

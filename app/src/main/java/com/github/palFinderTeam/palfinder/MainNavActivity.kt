@@ -35,7 +35,6 @@ class MainNavActivity : AppCompatActivity() {
         val navController =
             (supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment).navController
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav)
-        val tabMenu = findViewById<TabLayout>(R.id.find_tabs)
 
 
         navController.addOnDestinationChangedListener { _, _, arguments ->
@@ -43,8 +42,6 @@ class MainNavActivity : AppCompatActivity() {
             if (bottomNavigationView != null) {
                 bottomNavigationView.isVisible = arguments?.getBoolean("ShowNavBar", false) == true
             }
-            // Hide tab bar when needed
-            tabMenu.isVisible = arguments?.getBoolean("ShowFindTabs", false) == true
         }
 
         bottomNavigationView.setOnItemSelectedListener { item ->
@@ -78,18 +75,11 @@ class MainNavActivity : AppCompatActivity() {
                         return@setOnItemSelectedListener true
                     }
                     R.id.nav_bar_find -> {
-                        when (findState) {
-                            FindState.MAP -> navController.navigate(
-                                R.id.maps_fragment,
-                                args = null,
-                                navOptions = navOptions.build()
-                            )
-                            FindState.LIST -> navController.navigate(
-                                R.id.list_fragment,
-                                args = null,
-                                navOptions = navOptions.build()
-                            )
-                        }
+                        navController.navigate(
+                            R.id.find_fragment,
+                            args = null,
+                            navOptions = navOptions.build()
+                        )
                         return@setOnItemSelectedListener true
                     }
                 }
@@ -97,34 +87,6 @@ class MainNavActivity : AppCompatActivity() {
             false
         }
 
-        tabMenu.addOnTabSelectedListener(
-            object : TabLayout.OnTabSelectedListener {
-                override fun onTabSelected(tab: TabLayout.Tab?) {
-                    if (tab != null) {
-                        when (tab.position) {
-                            0 -> {
-                                findState = FindState.MAP
-                                navController.navigate(R.id.maps_fragment)
-                            }
-                            1 -> {
-                                findState = FindState.LIST
-                                navController.navigate(R.id.list_fragment)
-                            }
-                            else -> {}
-                        }
-                    }
-                }
-
-                override fun onTabUnselected(tab: TabLayout.Tab?) {
-                    // Ignore
-                }
-
-                override fun onTabReselected(tab: TabLayout.Tab?) {
-                    // Ignore
-                }
-
-            }
-        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
