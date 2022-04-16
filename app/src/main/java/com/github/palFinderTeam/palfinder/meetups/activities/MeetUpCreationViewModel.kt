@@ -46,7 +46,7 @@ class MeetUpCreationViewModel @Inject constructor(
     private val _iconUri: MutableLiveData<Uri> = MutableLiveData()
     private val _iconUrl: MutableLiveData<String> = MutableLiveData()
     private val _criterionAge: MutableLiveData<Pair<Int, Int>> = MutableLiveData()
-    private val _criterionGender: MutableLiveData<CriterionGender> = MutableLiveData(CriterionGender.ALL)
+    private val _criterionGender: MutableLiveData<CriterionGender> = MutableLiveData()
 
     private val _sendSuccess: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -168,8 +168,12 @@ class MeetUpCreationViewModel @Inject constructor(
 
                 _canEditStartDate.postValue(!meetUp.isStarted(Calendar.getInstance()))
                 _canEditEndDate.postValue(!meetUp.isFinished(Calendar.getInstance()))
-                _criterionAge.postValue(meetUp.criterionAge as Pair<Int, Int>?)
-                _criterionGender.postValue(meetUp.criterionGender)
+                meetUp.criterionAge?.let {
+                    _criterionAge.postValue(it as Pair<Int, Int>?)
+                }
+                meetUp.criterionGender?.let {
+                    _criterionGender.postValue(it)
+                }
             } else {
                 _canEditStartDate.postValue(true)
                 _canEditEndDate.postValue(true)
