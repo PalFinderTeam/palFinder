@@ -69,6 +69,7 @@ object UIMockMeetUpRepositoryModule {
                     "location" -> oldVal.copy(location = value as Location)
                     "participants" -> oldVal.copy(participantsId = value as List<String>)
                     "tags" -> oldVal.copy(tags = value as Set<Category>)
+
                     else -> oldVal
                 }
                 return meetUpId
@@ -109,7 +110,7 @@ object UIMockMeetUpRepositoryModule {
                 if (meetUp.isParticipating(userId)) {
                     return Response.Success(Unit)
                 }
-                if (!meetUp.canJoin(now, userId)) {
+                if (!meetUp.canJoin(now)) {
                     return Response.Failure("Cannot join meetup now.")
                 }
                 if (meetUp.isFull()) {

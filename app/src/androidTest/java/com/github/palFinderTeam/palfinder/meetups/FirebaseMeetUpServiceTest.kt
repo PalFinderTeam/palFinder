@@ -7,6 +7,7 @@ import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
@@ -70,8 +71,8 @@ class FirebaseMeetUpServiceTest {
             true,
             3,
             listOf("userId2"),
-            null,
-            null
+            Pair(null, null),
+            CriterionGender.ALL
         )
     }
 

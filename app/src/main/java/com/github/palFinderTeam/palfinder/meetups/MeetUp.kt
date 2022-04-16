@@ -70,7 +70,7 @@ data class MeetUp(
      * @param now: current date
      * @return if a user can join
      */
-    fun canJoin(now: Calendar, userId: String): Boolean {
+    fun canJoin(now: Calendar): Boolean {
         return !isFull() && !isFinished(now)
     }
 

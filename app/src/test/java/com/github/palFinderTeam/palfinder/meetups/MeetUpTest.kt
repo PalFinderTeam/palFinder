@@ -60,7 +60,7 @@ class MeetUpTest {
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
 
-        assertEquals(true, meetUp!!.canJoin(now, user))
+        assertEquals(true, meetUp!!.canJoin(now))
     }
 
     @Test
@@ -68,7 +68,7 @@ class MeetUpTest {
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(5)
 
-        assertEquals(false, meetUp!!.canJoin(now, user))
+        assertEquals(false, meetUp!!.canJoin(now))
     }
 
     @Test
