@@ -1,9 +1,11 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.provider.ContactsContract
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
@@ -60,7 +62,9 @@ class MeetUpTest {
         val now = Mockito.mock(Calendar::class.java)
         Mockito.`when`(now.timeInMillis).thenReturn(0)
 
-        assertEquals(true, meetUp!!.canJoin(now))
+        assertEquals(true, meetUp!!.canJoin(now, ProfileUser("userid", "ce",
+            "ce", "ce", now, ImageInstance("w"))
+        ))
     }
 
     @Test
