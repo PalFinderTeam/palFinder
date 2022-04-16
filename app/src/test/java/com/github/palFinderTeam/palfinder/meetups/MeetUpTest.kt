@@ -41,7 +41,8 @@ class MeetUpTest {
             setOf(Category.DRINKING),
             true,
             2,
-            participanteList
+            participanteList,
+            null, null
         )
     }
 
