@@ -46,7 +46,7 @@ class MeetUpCreationViewModel @Inject constructor(
     private val _iconUri: MutableLiveData<Uri> = MutableLiveData()
     private val _iconUrl: MutableLiveData<String> = MutableLiveData()
     private val _criterionAge: MutableLiveData<Pair<Int, Int>> = MutableLiveData()
-    private val _criterionGender: MutableLiveData<CriterionGender> = MutableLiveData()
+    private val _criterionGender: MutableLiveData<CriterionGender> = MutableLiveData(CriterionGender.ALL)
 
     private val _sendSuccess: MutableLiveData<Boolean> = MutableLiveData()
 
