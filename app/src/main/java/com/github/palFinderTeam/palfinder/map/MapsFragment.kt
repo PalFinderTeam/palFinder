@@ -13,7 +13,6 @@ import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.github.palFinderTeam.palfinder.R
@@ -227,8 +226,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             } else {
                 val address = addressList[0]
                 val location = Location(address.longitude, address.latitude)
-                viewModel.setSearchParameters(location = location)
-                viewModel.fetchMeetUps()
+                viewModel.setSearchParamAndFetch(location = location)
                 map.animateCamera(CameraUpdateFactory.newLatLng(location.toLatLng()))
             }
         }
@@ -282,8 +280,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         val radius = radiusAtZoom0 / 2.0.pow(map.cameraPosition.zoom.toDouble())
         val position: Location = map.cameraPosition.target.toLocation()
 
-        viewModel.setSearchParameters(location = position, radiusInKm = radius)
-        viewModel.fetchMeetUps()
+        viewModel.setSearchParamAndFetch(location = position, radiusInKm = radius)
     }
 
     fun getMapLocation(): Location {

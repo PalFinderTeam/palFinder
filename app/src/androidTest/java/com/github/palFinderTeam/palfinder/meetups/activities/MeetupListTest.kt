@@ -283,6 +283,8 @@ class MeetUpListTest {
             scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 listFrag.viewModel.setSearchParameters(location = searchLocation)
                 listFrag.viewModel.fetchMeetUps()
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 listFrag.filter(setOf(Category.CINEMA))
                 assert(listFrag.adapter.currentDataSet.isEmpty())
                 listFrag.filter(setOf(Category.WORKING_OUT, Category.DUMMY_TAG1))
@@ -305,6 +307,8 @@ class MeetUpListTest {
             scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 listFrag.viewModel.setSearchParameters(location = searchLocation)
                 listFrag.viewModel.fetchMeetUps()
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 listFrag.viewModel.tagRepository.addTag(Category.CINEMA)
                 assert(listFrag.adapter.currentDataSet.isEmpty())
                 listFrag.viewModel.tagRepository.removeTag(Category.CINEMA)
@@ -372,7 +376,7 @@ class MeetUpListTest {
 
         scenario!!.use {
             scenario.onHiltFragment<MeetupListFragment> {
-                it.viewModel.setSearchParameters(location = searchLocation)
+                it.viewModel.setSearchParamAndFetch(location = searchLocation)
                 it.viewModel.fetchMeetUps()
             }
 

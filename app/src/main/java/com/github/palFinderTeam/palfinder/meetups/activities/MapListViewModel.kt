@@ -73,6 +73,7 @@ class MapListViewModel @Inject constructor(
 
     /**
      * Set search parameters that you want to apply.
+     *
      * @param location Location around which to search.
      * @param radiusInKm Radius of the search.
      * @param showOnlyJoined If true, only show joined meetups, this will ignore the radius.
@@ -80,7 +81,7 @@ class MapListViewModel @Inject constructor(
     fun setSearchParameters(
         location: Location? = null,
         radiusInKm: Double? = null,
-        showOnlyJoined: Boolean = false,
+        showOnlyJoined: Boolean? = null,
     ) {
         location?.let {
             _searchLocation.value = it
@@ -88,7 +89,34 @@ class MapListViewModel @Inject constructor(
         radiusInKm?.let {
             _searchRadius.value = it
         }
-        this.showOnlyJoined = showOnlyJoined
+        showOnlyJoined?.let {
+            this.showOnlyJoined = it
+        }
+    }
+
+    /**
+     * Same as [setSearchParameters] but will also fetch meetups if needed.
+     *
+     * @param location Location around which to search.
+     * @param radiusInKm Radius of the search.
+     * @param showOnlyJoined If true, only show joined meetups, this will ignore the radius.
+     */
+    fun setSearchParamAndFetch(
+        location: Location? = null,
+        radiusInKm: Double? = null,
+        showOnlyJoined: Boolean? = null,
+    ) {
+        // In case the search params are the same we don't fetch again.
+        if (
+            (location == null || searchLocation.value == location)
+            && (radiusInKm == null || searchRadius.value == radiusInKm)
+            && (showOnlyJoined == null || this.showOnlyJoined == showOnlyJoined)
+        ) {
+            return
+        }
+
+        setSearchParameters(location, radiusInKm, showOnlyJoined)
+        fetchMeetUps()
     }
 
     /**

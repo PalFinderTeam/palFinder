@@ -160,7 +160,7 @@ class MeetupViewTest {
         assertThat(id, notNullValue())
 
         val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
-            Pair("MeetUpId", null)
+            Pair("MeetUpId", id)
         ), navHostController = navController)
         scenario.use {
             onView(withId(R.id.et_EventName)).check(matches(withText(eventName)))
@@ -407,7 +407,7 @@ class MeetupViewTest {
         Intents.init()
         ActivityScenario.launch<MeetUpView>(intent)
         onView(withId(R.id.bt_EditMeetup)).perform(click())
-        Intents.intended(IntentMatchers.hasComponent(MeetUpCreation::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(MeetUpEditCompat::class.java.name))
         Intents.intended(IntentMatchers.hasExtra(MEETUP_EDIT, mid))
         Intents.release()
     }

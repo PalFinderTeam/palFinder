@@ -61,9 +61,6 @@ class MeetupListFragment : Fragment() {
         val searchField = view.findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
 
-
-        viewModel.setSearchParameters(showOnlyJoined = args.showOnlyJoined)
-
         viewModel.listOfMeetUpResponse.observe(requireActivity()) { it ->
             if (it is Response.Success && viewModel.searchLocation.value != null) {
                 val meetups = it.data
@@ -82,13 +79,12 @@ class MeetupListFragment : Fragment() {
             }
         }
 
-        viewModel.searchLocation.observe(requireActivity()) {
-            viewModel.fetchMeetUps()
-        }
+//        viewModel.searchLocation.observe(requireActivity()) {
+//            viewModel.fetchMeetUps()
+//        }
 
         getNavigationResultLiveData<Location>(LOCATION_RESULT)?.observe(viewLifecycleOwner) { result ->
-            viewModel.setSearchParameters(location = result)
-            viewModel.fetchMeetUps()
+            viewModel.setSearchParamAndFetch(location = result)
             // Make sure to consume the value
             removeNavigationResult<Location>(LOCATION_RESULT)
         }
@@ -105,6 +101,8 @@ class MeetupListFragment : Fragment() {
 
         view.findViewById<Button>(R.id.sort_list).setOnClickListener { showMenu(it) }
         view.findViewById<ImageButton>(R.id.search_place).setOnClickListener { searchOnMap() }
+
+        viewModel.setSearchParamAndFetch(showOnlyJoined = args.showOnlyJoined)
     }
 
     private fun filterTags(meetup: MeetUp): Boolean {
