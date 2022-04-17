@@ -41,10 +41,6 @@
             android:exported="false"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".meetups.activities.MeetUpCreation"
-            android:exported="false"
-            android:parentActivityName=".MainActivity" />
-        <activity
             android:name=".ui.login.LoginActivity"
             android:exported="true">
             <intent-filter>
