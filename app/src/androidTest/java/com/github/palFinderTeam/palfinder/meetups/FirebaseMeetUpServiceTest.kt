@@ -62,7 +62,7 @@ class FirebaseMeetUpServiceTest {
 
         meetUp = MeetUp(
             "dummy",
-            "userId",
+            "userIdxc3",
             "",
             "dummy",
             "dummy",
@@ -72,7 +72,7 @@ class FirebaseMeetUpServiceTest {
             setOf(Category.DRINKING),
             true,
             3,
-            listOf("userId2"),
+            listOf("userIdxc"),
             Pair(null, null),
             CriterionGender.ALL
         )
@@ -222,7 +222,7 @@ class FirebaseMeetUpServiceTest {
 
     @Test
     fun leaveMeetUpLeaveInDb() = runTest {
-        val userId = firebaseProfileService.createProfile(user2)
+        val userId = firebaseProfileService.createProfile(user2.copy(uuid = "userIdxc"))
         assertThat(userId, notNullValue())
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
@@ -249,7 +249,7 @@ class FirebaseMeetUpServiceTest {
             assertThat(result, instanceOf(Response.Success::class.java))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
-            db.collection(MEETUP_COLL).document(id2).delete().await()
+            db.collection(PROFILE_COLL).document(user1.uuid).delete().await()
         }
     }
 
@@ -266,13 +266,13 @@ class FirebaseMeetUpServiceTest {
             assertThat(result, instanceOf(Response.Failure::class.java))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
-            db.collection(MEETUP_COLL).document(id2).delete().await()
+            db.collection(PROFILE_COLL).document(user2.uuid).delete().await()
         }
     }
 
     @Test
     fun joinFullMeetUpReturnsFailure() = runTest {
-        val smallMeetUp = meetUp.copy(capacity = 2)
+        val smallMeetUp = meetUp.copy(capacity = 1)
         val id = firebaseMeetUpService.createMeetUp(smallMeetUp)
         assertThat(id, notNullValue())
         val id2 = firebaseProfileService.createProfile(user2)
@@ -281,7 +281,7 @@ class FirebaseMeetUpServiceTest {
             assertThat(result, instanceOf(Response.Failure::class.java))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
-            db.collection(MEETUP_COLL).document(id2).delete().await()
+            db.collection(PROFILE_COLL).document(user2.uuid).delete().await()
         }
     }
 
@@ -295,7 +295,7 @@ class FirebaseMeetUpServiceTest {
             assertThat(result, instanceOf(Response.Failure::class.java))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
-            db.collection(MEETUP_COLL).document(id2).delete().await()
+            db.collection(PROFILE_COLL).document(user2.uuid).delete().await()
         }
     }
 

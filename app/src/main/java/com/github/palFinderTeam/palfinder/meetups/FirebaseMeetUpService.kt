@@ -137,6 +137,7 @@ class FirebaseMeetUpService @Inject constructor(
         return try {
             val meetUp = getMeetUpData(meetUpId) ?: return Failure("Could not find meetup.")
             if (meetUp.isParticipating(userId)) {
+                Log.d("cec","agent " + meetUp.participantsId + "  " + userId)
                 return Success(Unit)
             }
 
