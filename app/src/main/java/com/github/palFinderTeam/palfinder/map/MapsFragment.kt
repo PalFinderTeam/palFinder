@@ -191,6 +191,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 map.setOnMapClickListener { onMapClick(it) }
                 args.startSelection?.let {
                     onMapClick(it.toLatLng())
+                    map.moveCamera(CameraUpdateFactory.newLatLng(it.toLatLng()))
                 }
             }
         }
