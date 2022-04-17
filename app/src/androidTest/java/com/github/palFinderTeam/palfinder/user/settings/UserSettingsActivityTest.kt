@@ -16,6 +16,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.*
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
+import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
@@ -143,7 +144,7 @@ class UserSettingsActivityTest {
         ActivityScenario.launch<UserSettingsActivity>(intent)
         Intents.init()
         onView(withId(R.id.SettingsSubmitButton)).perform(ViewActions.scrollTo(), click())
-        Intents.intended(IntentMatchers.hasComponent(MeetupListFragment::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(MainNavActivity::class.java.name))
         Intents.release()
     }
 

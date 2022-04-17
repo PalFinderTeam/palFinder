@@ -1,20 +1,30 @@
 package com.github.palFinderTeam.palfinder.navigation
 
 import android.content.Intent
-import androidx.test.core.app.ActivityScenario
+import android.content.res.Resources
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
+import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.intent.Intents.*
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
+import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -40,15 +50,15 @@ class MainNavActivityTest {
     fun logoutMenuButtonActuallyLogout() {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), MainNavActivity::class.java)
-        Intents.init()
-        ActivityScenario.launch<MainNavActivity>(intent)
-        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        init()
+        launch<MainNavActivity>(intent)
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
 
         // Click the item.
-        Espresso.onView(ViewMatchers.withText("Logout"))
-            .perform(ViewActions.click())
-        Intents.intended(IntentMatchers.hasComponent(LoginActivity::class.java.name))
-        Intents.release()
+        onView(withText("Logout"))
+            .perform(click())
+        intended(hasComponent(LoginActivity::class.java.name))
+        release()
     }
 
 
@@ -56,19 +66,67 @@ class MainNavActivityTest {
     fun settingsMenuButtonBringsToSettings() {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), MainNavActivity::class.java)
-        Intents.init()
-        ActivityScenario.launch<MainNavActivity>(intent)
-        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        init()
+        launch<MainNavActivity>(intent)
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
 
         // Click the item.
-        Espresso.onView(ViewMatchers.withText("Settings"))
-            .perform(ViewActions.click())
-        Intents.intended(IntentMatchers.hasComponent(SettingsActivity::class.java.name))
-        Intents.release()
+        onView(withText("Settings"))
+            .perform(click())
+        intended(hasComponent(SettingsActivity::class.java.name))
+        release()
     }
 
     @Test
     fun navBarNavigateCorrectly() {
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), MainNavActivity::class.java)
+        val scenario = launch<MainNavActivity>(intent)
+        onView(withId(R.id.nav_bar_create)).perform(click())
 
+        scenario.onActivity {
+            assertThat(
+                it.findNavController(R.id.main_content).currentDestination?.id,
+                `is`(R.id.creation_fragment)
+            )
+        }
+
+        onView(withId(R.id.nav_bar_groups)).perform(click())
+
+        scenario.onActivity {
+            assertThat(
+                it.findNavController(R.id.main_content).currentDestination?.id,
+                `is`(R.id.list_fragment)
+            )
+        }
+
+        onView(withId(R.id.nav_bar_find)).perform(click())
+
+        scenario.onActivity {
+            assertThat(
+                it.findNavController(R.id.main_content).currentDestination?.id,
+                `is`(R.id.find_fragment)
+            )
+        }
+    }
+
+    @Test
+    fun findTabsWorkAsExpected() {
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), MainNavActivity::class.java)
+        val scenario = launch<MainNavActivity>(intent)
+        scenario!!.use {
+            var navController: NavController? = null
+            scenario.onActivity {
+                val hostFragment =
+                    it.supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment
+                val fragment = hostFragment.childFragmentManager.fragments[0] as FindFragment
+                navController = (fragment.childFragmentManager.findFragmentById(R.id.find_content) as NavHostFragment).navController
+            }
+            onView(withText(R.string.list)).perform(click())
+            assertThat(navController?.currentDestination?.id, `is`(R.id.list_fragment))
+            onView(withText(R.string.map)).perform(click())
+            assertThat(navController?.currentDestination?.id, `is`(R.id.maps_fragment))
+        }
     }
 }
