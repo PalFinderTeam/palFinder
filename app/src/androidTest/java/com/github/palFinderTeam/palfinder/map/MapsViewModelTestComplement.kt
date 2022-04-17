@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 class MapsViewModelTestComplement {
+/*
 
 
     @Inject
@@ -50,20 +51,26 @@ class MapsViewModelTestComplement {
     fun testSetZoom(){
         //val intent = Intent(ApplicationProvider.getApplicationContext(), MapsFragment::class.java)
 
+*/
 /*
         val scenario = launchFragmentInHiltContainer<MapsFragment>()
         var zoom: Float = 15f
         scenario.use{
             scenario.onFragment {
+*//*
+
 */
 /*
                 it.viewModel.setZoom(zoom)
                 Assert.assertEquals(zoom, it.viewModel.getZoom())
 *//*
+*/
+/*
 
             }
         }
-*/
+*//*
+
     }
 
     @Test
@@ -73,13 +80,15 @@ class MapsViewModelTestComplement {
         val position = LatLng(-67.0, 34.5)
         scenario.use{
             scenario.onFragment {
+*/
 /*
                 it.viewModel.setCameraPosition(position)
                 Assert.assertTrue(
                     Location(position.longitude, position.latitude).distanceInKm(
                         Location(it.viewModel.getCameraPosition().longitude,
                         it.viewModel.getCameraPosition().latitude))  < 1.0)
-*/
+*//*
+
 
             }
         }
@@ -94,6 +103,7 @@ class MapsViewModelTestComplement {
         val zoom = 8f
         scenario.use{
             scenario.onFragment {
+*/
 /*
                 it.viewModel.setPositionAndZoom(position, zoom)
                 Assert.assertTrue(
@@ -102,11 +112,13 @@ class MapsViewModelTestComplement {
                             it.viewModel.getCameraPosition().latitude))  < 1.0)
 
                 Assert.assertEquals(zoom, it.viewModel.getZoom())
-*/
+*//*
+
             }
         }
     }
 
 
 
+*/
 }
