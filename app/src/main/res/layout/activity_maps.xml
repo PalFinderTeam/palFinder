@@ -25,13 +25,13 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:clickable="true"
-        android:onClick="onConfirm"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/map_tab"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/ic_dialog_map"
-        tools:ignore="SpeakableTextPresentCheck" />
+        tools:ignore="SpeakableTextPresentCheck"
+        android:focusable="true" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/bt_changeMapType"
@@ -39,12 +39,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:clickable="true"
-        android:onClick="onConfirm"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_mapmode" />
+        app:srcCompat="@android:drawable/ic_menu_mapmode"
+        android:focusable="true" />
 
     <SearchView
         android:id="@+id/search_on_map"

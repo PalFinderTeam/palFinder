@@ -31,7 +31,7 @@
             android:id="@+id/show_profile_list_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="show profiles" />
+            android:text="@string/show_profiles" />
 
         <Button
             android:id="@+id/bt_JoinMeetup"
@@ -46,7 +46,8 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:onClick="onChat"
-            app:srcCompat="@android:drawable/stat_notify_chat" />
+            app:srcCompat="@android:drawable/stat_notify_chat"
+            android:focusable="true" />
 
     </LinearLayout>
 
@@ -63,6 +64,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_menu_edit"
-        tools:ignore="SpeakableTextPresentCheck" />
+        tools:ignore="SpeakableTextPresentCheck"
+        android:focusable="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
