@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.navigation
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
@@ -22,7 +23,7 @@ class FindFragment : Fragment(R.layout.fragment_find) {
         val tabMenu = view.findViewById<TabLayout>(R.id.find_tabs)
         val navController = navHost.navController
 
-
+        // Hide navBar when needed
         navController.addOnDestinationChangedListener { _, _, arguments ->
             (requireActivity() as MainNavActivity).hideShowNavBar(
                 arguments?.getBoolean(
@@ -39,10 +40,12 @@ class FindFragment : Fragment(R.layout.fragment_find) {
                         when (tab.position) {
                             0 -> {
                                 findViewModel.tabState = 0
+                                navController.popBackStack()
                                 navController.navigate(R.id.maps_fragment)
                             }
                             1 -> {
                                 findViewModel.tabState = 1
+                                navController.popBackStack()
                                 navController.navigate(R.id.list_fragment)
                             }
                             else -> {}
@@ -61,5 +64,18 @@ class FindFragment : Fragment(R.layout.fragment_find) {
         )
 
         tabMenu.getTabAt(findViewModel.tabState)?.select()
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    // Do custom work here
+                    if(!navController.navigateUp()) {
+                        // If no up navigation available, fall back on the main activity.
+                        isEnabled = false
+                        requireActivity().onBackPressed()
+                    }
+                }
+            })
+
     }
 }

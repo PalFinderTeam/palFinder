@@ -41,14 +41,28 @@ class MainNavActivity : AppCompatActivity() {
             hideShowNavBar(arguments?.getBoolean("ShowNavBar", false) == true)
         }
 
+        // Make sure that selected item is the one displayed to the user
+        navController.currentDestination?.let {
+            when(it.id) {
+                R.id.find_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_find
+                R.id.list_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_groups
+                R.id.creation_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_create
+            }
+        }
+
+        // Bottom navigation behaviour
         bottomNavigationView.setOnItemSelectedListener { item ->
             val selected = bottomNavigationView.selectedItemId
             if (selected != item.itemId) {
                 val direction = navItemToPosition(item.itemId) - navItemToPosition(selected)
                 val animationIn = if (direction < 0) R.anim.slide_in_left else R.anim.slide_in_right
                 val animationOut = if (direction < 0) R.anim.slide_out_right else R.anim.slide_out_left
-                val navOptions = NavOptions.Builder()
-                navOptions.setEnterAnim(animationIn).setExitAnim(animationOut)
+                val options = androidx.navigation.navOptions {
+                    this.anim {
+                        enter = animationIn
+                        exit = animationOut
+                    }
+                }
 
                 when (item.itemId) {
                     R.id.nav_bar_create -> {
@@ -56,7 +70,7 @@ class MainNavActivity : AppCompatActivity() {
                         navController.navigate(
                             R.id.creation_fragment,
                             args = null,
-                            navOptions = navOptions.build()
+                            navOptions = options
                         )
                         return@setOnItemSelectedListener true
                     }
@@ -68,7 +82,7 @@ class MainNavActivity : AppCompatActivity() {
                         navController.navigate(
                             R.id.list_fragment,
                             args = args,
-                            navOptions = navOptions.build()
+                            navOptions = options
                         )
                         return@setOnItemSelectedListener true
                     }
@@ -77,7 +91,7 @@ class MainNavActivity : AppCompatActivity() {
                         navController.navigate(
                             R.id.find_fragment,
                             args = null,
-                            navOptions = navOptions.build()
+                            navOptions = options
                         )
                         return@setOnItemSelectedListener true
                     }
@@ -132,11 +146,5 @@ class MainNavActivity : AppCompatActivity() {
             R.id.nav_bar_groups -> 2
             else -> -1
         }
-    }
-
-    // Make sure we keep track of what mode of find was used.
-    private enum class FindState {
-        MAP,
-        LIST
     }
 }
