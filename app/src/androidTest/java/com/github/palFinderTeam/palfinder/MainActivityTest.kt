@@ -76,17 +76,6 @@ class MainActivityTest {
     }
 
     @Test
-    fun openMeetupCreationPageIntentTest() {
-        val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
-        init()
-        ActivityScenario.launch<MainActivity>(intent)
-        onView(ViewMatchers.withId(R.id.mainGoButton3))
-            .perform(click())
-        intended(hasComponent(MeetUpCreation::class.java.name))
-        release()
-    }
-
-    @Test
     fun profileLoucaTest() {
         val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
         init()
