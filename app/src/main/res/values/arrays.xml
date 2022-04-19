@@ -11,12 +11,12 @@
     </string-array>
 
     <string-array name="settings_list_colors_titles">
-        <item>Reply</item>
-        <item>Reply to all</item>
+        <item>Default</item>
+        <item>Warm</item>
     </string-array>
 
     <string-array name="settings_list_colors_values">
-        <item>Reply</item>
-        <item>Reply to all</item>
+        <item>Default</item>
+        <item>Warm</item>
     </string-array>
 </resources>

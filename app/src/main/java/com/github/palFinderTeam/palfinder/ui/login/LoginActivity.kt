@@ -7,6 +7,7 @@ package com.github.palFinderTeam.palfinder.ui.login
 //import androidx.annotation.StringRes
 
 //import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.icu.util.Calendar
@@ -33,6 +34,8 @@ import com.google.firebase.auth.ktx.auth
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
+import com.github.palFinderTeam.palfinder.utils.ColorModeProvider
+import com.github.palFinderTeam.palfinder.utils.ColorModeProviderImpl
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.ktx.firestore
 //import com.google.firebase.firestore.SetOptions
@@ -73,6 +76,9 @@ class LoginActivity : AppCompatActivity() {
 
     // onCreate One Tap version
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPref = getPreferences(Context.MODE_PRIVATE) ?: return
+        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
+        setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
