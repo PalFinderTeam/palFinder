@@ -34,8 +34,6 @@ import com.google.firebase.auth.ktx.auth
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
-import com.github.palFinderTeam.palfinder.utils.ColorModeProvider
-import com.github.palFinderTeam.palfinder.utils.ColorModeProviderImpl
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.ktx.firestore
 //import com.google.firebase.firestore.SetOptions
