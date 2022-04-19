@@ -26,8 +26,7 @@
             android:label="@string/title_activity_settings" />
         <activity
             android:name=".chat.ChatActivity"
-            android:exported="false"
-            android:parentActivityName=".meetups.activities.MeetupListFragment" />
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

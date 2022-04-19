@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
@@ -50,19 +51,26 @@ class MainNavActivity : AppCompatActivity() {
             }
         }
 
+        val animateLeftOptions = navOptions {
+            this.anim {
+                enter = R.anim.slide_in_right
+                exit = R.anim.slide_out_left
+            }
+        }
+        val animateRightOptions = navOptions {
+            this.anim {
+                enter = R.anim.slide_in_left
+                exit = R.anim.slide_out_right
+            }
+        }
+
         // Bottom navigation behaviour
         bottomNavigationView.setOnItemSelectedListener { item ->
             val selected = bottomNavigationView.selectedItemId
             if (selected != item.itemId) {
                 val direction = navItemToPosition(item.itemId) - navItemToPosition(selected)
-                val animationIn = if (direction < 0) R.anim.slide_in_left else R.anim.slide_in_right
-                val animationOut = if (direction < 0) R.anim.slide_out_right else R.anim.slide_out_left
-                val options = androidx.navigation.navOptions {
-                    this.anim {
-                        enter = animationIn
-                        exit = animationOut
-                    }
-                }
+                val options = if (direction < 0) animateRightOptions else animateLeftOptions
+
 
                 when (item.itemId) {
                     R.id.nav_bar_create -> {
@@ -72,7 +80,6 @@ class MainNavActivity : AppCompatActivity() {
                             args = null,
                             navOptions = options
                         )
-                        return@setOnItemSelectedListener true
                     }
                     R.id.nav_bar_groups -> {
                         navController.popBackStack()
@@ -84,7 +91,6 @@ class MainNavActivity : AppCompatActivity() {
                             args = args,
                             navOptions = options
                         )
-                        return@setOnItemSelectedListener true
                     }
                     R.id.nav_bar_find -> {
                         navController.popBackStack()
@@ -93,11 +99,10 @@ class MainNavActivity : AppCompatActivity() {
                             args = null,
                             navOptions = options
                         )
-                        return@setOnItemSelectedListener true
                     }
                 }
             }
-            false
+            true
         }
 
     }
