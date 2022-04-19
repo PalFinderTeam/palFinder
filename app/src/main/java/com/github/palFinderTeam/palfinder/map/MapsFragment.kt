@@ -39,15 +39,12 @@ import java.io.IOException
 import kotlin.math.pow
 
 
-const val LOCATION_SELECT = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECT"
-const val LOCATION_SELECTED = "com.github.palFinderTeam.palFinder.MAP.LOCATION_SELECTED"
-const val CONTEXT = "com.github.palFinderTeam.palFinder.MAP.CONTEXT"
-
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
     SearchView.OnQueryTextListener {
 
+    private lateinit var mapFragment: SupportMapFragment
     private lateinit var selectLocationButton: FloatingActionButton
     private lateinit var selectMapTypeButton: FloatingActionButton
     private lateinit var context: Context
@@ -89,8 +86,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        val mapFragment = childFragmentManager
-            .findFragmentById(R.id.map_tab) as SupportMapFragment
+        mapFragment = childFragmentManager
+            .findFragmentById(R.id.map_content) as SupportMapFragment
 
         mapFragment.getMapAsync(this)
 
@@ -110,6 +107,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         val searchLocation = view.findViewById<SearchView>(R.id.search_on_map)
         searchLocation.imeOptions = EditorInfo.IME_ACTION_DONE
         searchLocation.setOnQueryTextListener(this)
+
     }
 
 
@@ -198,6 +196,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         selectMapTypeButton.setOnClickListener {
             changeMapType()
         }
+
+        mapFragment.requireView().contentDescription = "MAP READY"
     }
 
     override fun onQueryTextSubmit(p0: String?): Boolean {
@@ -283,14 +283,24 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         viewModel.setSearchParamAndFetch(location = position, radiusInKm = radius)
     }
 
+    // The following methods make it easy to programmatically interact with the map,
+    // from the parent fragment/activity for instance.
+
+    /**
+     * @return The location at the center of the map.
+     */
     fun getMapLocation(): Location {
         return if (!mapReady) {
-            MapListViewModel.START_LOCATION
+            viewModel.searchLocation.value ?: MapListViewModel.START_LOCATION
         } else {
             map.cameraPosition.target.toLocation()
         }
     }
 
+    /**
+     * @return The type of the map actually used, either [GoogleMap.MAP_TYPE_NORMAL]
+     * or [GoogleMap.MAP_TYPE_HYBRID].
+     */
     fun getMapType(): Int {
         return if (!mapReady) {
             GoogleMap.MAP_TYPE_NORMAL
@@ -299,9 +309,23 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         }
     }
 
-    fun setMapLocation(location: Location) {
-        if (mapReady) {
-            map.animateCamera(CameraUpdateFactory.newLatLng(location.toLatLng()))
+    /**
+     * Set the location focused by the map. If [instantaneous] is true, it will "teleport" to the target,
+     * otherwise the transition will be animated.
+     *
+     * @param location Target location.
+     * @param instantaneous If true, will move instantaneously.
+     */
+    fun setMapLocation(location: Location, instantaneous: Boolean = false) {
+        if (!mapReady) {
+            viewModel.setSearchParamAndFetch(location)
+        } else {
+            val target = CameraUpdateFactory.newLatLng(location.toLatLng())
+            if (instantaneous) {
+                map.moveCamera(target)
+            } else {
+                map.animateCamera(target)
+            }
         }
     }
 }

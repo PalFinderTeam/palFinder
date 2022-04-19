@@ -75,12 +75,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun openMeetupCreationPage(view: View?) {
-        val intent = Intent(this, MeetUpCreation::class.java).apply {
-        }
-        startActivity(intent)
-    }
-
     fun goToProfileLouca(view: View?) {
         val intent = Intent(this, ProfileActivity::class.java).apply {
             putExtra(USER_ID, "VqcgAHtrm7hmPmSqfC5eGayy1jY2")
@@ -92,17 +86,6 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, ProfileActivity::class.java).apply {
             putExtra(USER_ID, "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2")
         }
-        startActivity(intent)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun seeList(view: View?) {
-        val intent = Intent(this, MeetupListFragment::class.java)
-        startActivity(intent)
-    }
-
-    fun accessMap(view: View?) {
-        val intent = Intent(this, MapsFragment::class.java).apply {  }
         startActivity(intent)
     }
 

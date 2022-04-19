@@ -173,6 +173,22 @@ class MeetupViewTest {
     }
 
     @Test
+    fun selectLocationBringsTheMap() = runTest {
+        val id = meetUpRepository.createMeetUp(meetup)
+        assertThat(id, notNullValue())
+
+        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
+            Pair("MeetUpId", id)
+        ), navHostController = navController)
+
+        scenario.use {
+            onView(withId(R.id.bt_locationSelect)).perform(click())
+            assertThat(navController.currentDestination?.id, `is`(R.id.maps_fragment))
+
+        }
+    }
+
+    @Test
     fun editExistingMeetupEditTheRightOneInDB() = runTest {
 
         val id = meetUpRepository.createMeetUp(meetup)
@@ -511,7 +527,7 @@ class MeetupViewTest {
 
         // Leave
         onView(withId(R.id.bt_JoinMeetup)).perform(click())
-        assertThat(meetUpRepository.getMeetUpData(mid!!)!!.isParticipating(uid!!), `is`(false))
+        assertThat(meetUpRepository.getMeetUpData(mid)!!.isParticipating(uid), `is`(false))
     }
 
     @Test
@@ -533,7 +549,7 @@ class MeetupViewTest {
 class ClickCloseIconAction : ViewAction {
 
     override fun getConstraints(): Matcher<View> {
-        return ViewMatchers.isAssignableFrom(Chip::class.java)
+        return isAssignableFrom(Chip::class.java)
     }
 
     override fun getDescription(): String {

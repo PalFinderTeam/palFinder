@@ -7,7 +7,7 @@
     tools:context=".map.MapsFragment">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/map_tab"
+        android:id="@+id/map_content"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -24,27 +24,29 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
         android:clickable="true"
+        android:focusable="true"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/map_tab"
+        app:layout_constraintBottom_toBottomOf="@+id/map_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/ic_dialog_map"
-        tools:ignore="SpeakableTextPresentCheck"
-        android:focusable="true" />
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/bt_changeMapType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
         android:clickable="true"
+        android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_mapmode"
-        android:focusable="true" />
+        app:srcCompat="@android:drawable/ic_menu_mapmode" />
 
     <SearchView
         android:id="@+id/search_on_map"
