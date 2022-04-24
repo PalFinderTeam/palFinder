@@ -152,4 +152,10 @@
 
     <string name="testNotifTitle">title</string>
     <string name="testNotifContent">content</string>
+
+    <string name="theme">theme</string>
+
+    <string name="hint_username">username</string>
+    <string name="hint_password">password</string>
+
 </resources>
