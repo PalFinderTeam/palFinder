@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
-import android.util.Log
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
@@ -9,10 +8,7 @@ import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Compani
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.Response.*
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
@@ -84,6 +80,7 @@ class FirebaseMeetUpService @Inject constructor(
                 .startAt(it.startHash)
                 .endAt(it.endHash)
         }
+        var remaining = tasks.size
 
 
         return callbackFlow {
@@ -91,8 +88,8 @@ class FirebaseMeetUpService @Inject constructor(
 
             val result = mutableSetOf<MeetUp>()
 
-            val listeners = tasks.map {
-                it.addSnapshotListener { value, error ->
+            val listeners = tasks.map { task ->
+                task.addSnapshotListener { value, error ->
                     if (error != null) {
                         trySend(Failure(error.message.orEmpty()))
                         cancel(
@@ -102,7 +99,7 @@ class FirebaseMeetUpService @Inject constructor(
                         return@addSnapshotListener
                     }
 
-                    val map = value?.documents
+                    val meetups = value?.documents
                         ?.mapNotNull { it.toMeetUp() }
                         ?.filter {
                             // Filter the last false positive
@@ -111,10 +108,28 @@ class FirebaseMeetUpService @Inject constructor(
                                 docLocation.distanceInKm(location)
                             distanceInKm <= radiusInKm
                         }
-                    if (map != null) {
-                        // Probably not thread safe but yolo
-                        result.addAll(map)
-                        trySend(Success(result.toList()))
+
+                    val deletedMeetups = value?.documentChanges
+                        ?.filter {
+                            it.type == DocumentChange.Type.REMOVED
+                        }
+                        ?.mapNotNull { it.document.toMeetUp() }
+                    if (meetups != null) {
+                        // They run on the main thread so this is thread safe
+                        result.addAll(meetups)
+                        deletedMeetups?.let {
+                            result.removeAll(it)
+                        }
+
+                        if (remaining > 0) {
+                            remaining -= 1
+                        }
+                        // We first wait that every task terminate once before sending, after
+                        // that every task should always update the list when new meetups appear.
+                        // They can't disappear btw (but we could add it).
+                        if (remaining == 0) {
+                            trySend(Success(result.toList()))
+                        }
                     }
                 }
 
