@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
@@ -85,7 +86,8 @@ class MockMeetUpRepository : MeetUpRepository {
     override suspend fun joinMeetUp(
         meetUpId: String,
         userId: String,
-        now: Calendar
+        now: Calendar,
+        profileUser: ProfileUser
     ): Response<Unit> {
         return if (db.containsKey(meetUpId)) {
             val meetUp = db[meetUpId] ?: return Response.Failure("Could not find meetup")

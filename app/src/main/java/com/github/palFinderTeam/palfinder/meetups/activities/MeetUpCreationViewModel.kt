@@ -11,6 +11,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
+import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.isBefore
@@ -44,6 +45,8 @@ class MeetUpCreationViewModel @Inject constructor(
     private val _location: MutableLiveData<Location> = MutableLiveData()
     private val _iconUri: MutableLiveData<Uri> = MutableLiveData()
     private val _iconUrl: MutableLiveData<String> = MutableLiveData()
+    private val _criterionAge: MutableLiveData<Pair<Int, Int>> = MutableLiveData()
+    private val _criterionGender: MutableLiveData<CriterionGender> = MutableLiveData()
 
     private val _sendSuccess: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -59,6 +62,8 @@ class MeetUpCreationViewModel @Inject constructor(
     val participantsId: LiveData<List<String>> = _participantsId
     val iconUri: LiveData<Uri> = _iconUri
     val iconUrl: LiveData<String> = _iconUrl
+    val criterionAge: LiveData<Pair<Int, Int>> = _criterionAge
+    val criterionGender = _criterionGender
 
     val maxStartDate: Calendar
         get() {
@@ -94,6 +99,7 @@ class MeetUpCreationViewModel @Inject constructor(
         _tags.value = emptySet()
         _participantsId.value = listOf(profileService.getLoggedInUserID()!!)
         _location.value = Location(0.0, 0.0)
+        _criterionAge.value = Pair(13, 66)
     }
 
     fun setStartDate(date: Calendar) {
@@ -128,6 +134,14 @@ class MeetUpCreationViewModel @Inject constructor(
         _iconUri.value = iconUri
     }
 
+    fun setCriterionAge(interval: Pair<Int, Int>) {
+        _criterionAge.value = interval
+    }
+
+    fun setCriterionGender(gender: CriterionGender) {
+        _criterionGender.value = gender
+    }
+
     /**
      * Load asynchronously a meetUp and update liveData on success.
      *
@@ -154,6 +168,12 @@ class MeetUpCreationViewModel @Inject constructor(
 
                 _canEditStartDate.postValue(!meetUp.isStarted(Calendar.getInstance()))
                 _canEditEndDate.postValue(!meetUp.isFinished(Calendar.getInstance()))
+                meetUp.criterionAge?.let {
+                    _criterionAge.postValue(it as Pair<Int, Int>?)
+                }
+                meetUp.criterionGender?.let {
+                    _criterionGender.postValue(it)
+                }
             } else {
                 _canEditStartDate.postValue(true)
                 _canEditEndDate.postValue(true)
@@ -189,7 +209,9 @@ class MeetUpCreationViewModel @Inject constructor(
                 tags.value.orEmpty(),
                 hasMaxCapacity.value!!,
                 capacity.value!!,
-                participantsId.value!!
+                participantsId.value!!,
+                criterionAge.value,
+                criterionGender.value
             )
             if (uuid == null) {
                 // create new meetup
