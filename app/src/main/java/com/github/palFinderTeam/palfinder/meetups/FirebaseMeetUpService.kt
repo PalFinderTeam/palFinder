@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
-import android.util.Log
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
@@ -26,7 +25,7 @@ import javax.inject.Inject
 /**
  * Object containing methods to query the database about MeetUps.
  */
-class FirebaseMeetUpService @Inject constructor(
+open class FirebaseMeetUpService @Inject constructor(
     private val db: FirebaseFirestore
 ) : MeetUpRepository {
 
