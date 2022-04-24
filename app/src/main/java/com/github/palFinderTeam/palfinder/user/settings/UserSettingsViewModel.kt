@@ -11,6 +11,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
+import com.github.palFinderTeam.palfinder.utils.image.UrlFormat
 import com.github.palFinderTeam.palfinder.utils.time.RealTimeService
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -214,7 +215,7 @@ class UserSettingsViewModel @Inject constructor(
                 if (newPath != null) {
                     // Also remove the previous icon from DB to avoid garbage.
                     pfp.value?.let { url ->
-                        if (url.isNotEmpty()) {
+                        if (url.isNotEmpty() && UrlFormat.getUrlType(url) == UrlFormat.URL_IS_FIREBASE) {
                             try {
                                 imageUploader.removeImage(url)
                             } catch (e : Exception) {
