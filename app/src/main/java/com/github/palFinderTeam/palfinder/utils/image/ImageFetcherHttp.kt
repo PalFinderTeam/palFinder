@@ -27,7 +27,9 @@ class ImageFetcherHttp(
         // NOTE: Can throw exception, deal with it in the activity
         val inputStream = URL(imgURL).openStream()
         val bufferedInputStream = BufferedInputStream(inputStream)
-        BitmapFactory.decodeStream(bufferedInputStream)
+        val bitmap = BitmapFactory.decodeStream(bufferedInputStream)
+        inputStream.close()
+        bitmap
     }
 
     private fun getInputStream(): InputStream {
