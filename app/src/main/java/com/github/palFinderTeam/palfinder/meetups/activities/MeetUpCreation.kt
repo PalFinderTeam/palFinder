@@ -52,14 +52,14 @@ class MeetUpCreation : AppCompatActivity() {
     private lateinit var limitEditText: EditText
     private lateinit var nameEditText: EditText
     private lateinit var descriptionEditText: EditText
-    private lateinit var changeIconButton: Button
+    private lateinit var changeIconButton: LinearLayout
     private lateinit var icon: ImageView
     private lateinit var startDateField: TextView
     private lateinit var endDateField: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_meet_up_creation)
+        setContentView(R.layout.activity_meet_up_creation_new)
 
         dateFormat = SimpleDateFormat(getString(R.string.date_long_format))
 
@@ -94,7 +94,7 @@ class MeetUpCreation : AppCompatActivity() {
         limitEditText = findViewById(R.id.et_Capacity)
         nameEditText = findViewById(R.id.et_EventName)
         descriptionEditText = findViewById(R.id.et_Description)
-        changeIconButton = findViewById(R.id.bt_SelectIcon)
+        changeIconButton = findViewById(R.id.linearLayout_meetupPic)
         icon = findViewById(R.id.iv_Icon)
         startDateField = findViewById(R.id.tv_StartDate)
         endDateField = findViewById(R.id.tv_EndDate)
@@ -134,9 +134,6 @@ class MeetUpCreation : AppCompatActivity() {
                 this,
                 registerForImagePickerResult::launch
             )
-        }
-        icon.setOnClickListener {
-            pickProfileImage(this, registerForImagePickerResult::launch)
         }
     }
 

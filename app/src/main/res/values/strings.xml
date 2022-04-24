@@ -43,10 +43,10 @@
     <string name="meetup_creation_meetup_tags">Tags</string>
     <string name="meetup_creation_meetup_no_tags">No Tags Selected</string>
     <string name="meetup_creation_meetup_tags_bt">Add Tags</string>
-    <string name="meetup_creation_meetup_entries">Limit Entries</string>
+    <string name="meetup_creation_meetup_entries">participants</string>
     <string name="meetup_creation_meetup_done">Done</string>
-    <string name="meetup_creation_meetup_select_location">Select Location</string>
-    <string name="meetup_creation_meetup_location_not_selected">Location Not Selected</string>
+    <string name="meetup_creation_meetup_select_location">Pick Location</string>
+    <string name="meetup_creation_meetup_location_not_selected">Location not selected</string>
 
     <string name="list_sort_by_alphabetical_order">Sort by Alph.</string>
     <string name="list_sort_by_capacity">Sort by Cap.</string>
@@ -85,7 +85,7 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="limit_people">limit people</string>
+    <string name="limit_people">Limit participations to</string>
     <string name="DB_error_msg">Cannot contact database</string>
 
     <string name="pretty_location_too_small">Here</string>
