@@ -25,7 +25,7 @@ class ImageFetcherHttp(
 
     override suspend fun fetchImage(): Bitmap? = withContext(dispatcher) {
         // NOTE: Can throw exception, deal with it in the activity
-        val inputStream = URL(imgURL).openStream()
+        val inputStream = getInputStream()
         val bufferedInputStream = BufferedInputStream(inputStream)
         val bitmap = BitmapFactory.decodeStream(bufferedInputStream)
         inputStream.close()
