@@ -1,12 +1,15 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.util.Log
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService.Companion.MEETUP_COLL
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.utils.CriterionGender
+import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
@@ -59,7 +62,7 @@ class FirebaseMeetUpServiceTest {
 
         meetUp = MeetUp(
             "dummy",
-            "userId",
+            "userIdxc3",
             "",
             "dummy",
             "dummy",
@@ -69,7 +72,9 @@ class FirebaseMeetUpServiceTest {
             setOf(Category.DRINKING),
             true,
             3,
-            listOf("userId2")
+            listOf("userIdxc"),
+            Pair(null, null),
+            CriterionGender.ALL
         )
     }
 
@@ -204,7 +209,7 @@ class FirebaseMeetUpServiceTest {
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
         id!!.let {
-            val result = firebaseMeetUpService.joinMeetUp(it, userId!!, meetUp.startDate)
+            val result = firebaseMeetUpService.joinMeetUp(it, userId!!, meetUp.startDate, firebaseProfileService.fetchUserProfile(userId)!!)
             assertThat(result, instanceOf(Response.Success::class.java))
             val meetUp = firebaseMeetUpService.getMeetUpData(it)
             assertThat(meetUp, notNullValue())
@@ -217,7 +222,7 @@ class FirebaseMeetUpServiceTest {
 
     @Test
     fun leaveMeetUpLeaveInDb() = runTest {
-        val userId = firebaseProfileService.createProfile(user2)
+        val userId = firebaseProfileService.createProfile(user2.copy(uuid = "userIdxc"))
         assertThat(userId, notNullValue())
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
@@ -238,11 +243,13 @@ class FirebaseMeetUpServiceTest {
 
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
+        val id2 = firebaseProfileService.createProfile(user1)
         id!!.let {
-            val result = firebaseMeetUpService.joinMeetUp(it, "userId2", meetUp.startDate)
+            val result = firebaseMeetUpService.joinMeetUp(it, id2!!, meetUp.startDate, firebaseProfileService.fetchUserProfile(id2)!!)
             assertThat(result, instanceOf(Response.Success::class.java))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
+            db.collection(PROFILE_COLL).document(user1.uuid).delete().await()
         }
     }
 
@@ -250,45 +257,52 @@ class FirebaseMeetUpServiceTest {
     fun joinMeetUpAfterItEndedReturnFailure() = runTest {
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
+        val id2 = firebaseProfileService.createProfile(user2)
         id!!.let {
             val dateAfter = Calendar.getInstance()
             dateAfter.time = meetUp.endDate.time
             dateAfter.add(Calendar.YEAR, 2)
-            val result = firebaseMeetUpService.joinMeetUp(it, "MichelId", dateAfter)
+            val result = firebaseMeetUpService.joinMeetUp(it, id2!!, dateAfter, firebaseProfileService.fetchUserProfile(id2)!!)
             assertThat(result, instanceOf(Response.Failure::class.java))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
+            db.collection(PROFILE_COLL).document(user2.uuid).delete().await()
         }
     }
 
     @Test
     fun joinFullMeetUpReturnsFailure() = runTest {
-        val smallMeetUp = meetUp.copy(capacity = 2)
+        val smallMeetUp = meetUp.copy(capacity = 1)
         val id = firebaseMeetUpService.createMeetUp(smallMeetUp)
         assertThat(id, notNullValue())
+        val id2 = firebaseProfileService.createProfile(user2)
         id!!.let {
-            val result = firebaseMeetUpService.joinMeetUp(it, "MichelId", smallMeetUp.startDate)
+            val result = firebaseMeetUpService.joinMeetUp(it, id2!!, smallMeetUp.startDate, firebaseProfileService.fetchUserProfile(id2)!!)
             assertThat(result, instanceOf(Response.Failure::class.java))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
+            db.collection(PROFILE_COLL).document(user2.uuid).delete().await()
         }
     }
 
     @Test
     fun leaveMeetUpYouCreatedReturnsFailure() = runTest {
-        val id = firebaseMeetUpService.createMeetUp(meetUp)
+        val id2 = firebaseProfileService.createProfile(user1)
+        val id = firebaseMeetUpService.createMeetUp(meetUp.copy(creatorId = id2!!))
         assertThat(id, notNullValue())
         id!!.let {
-            val result = firebaseMeetUpService.leaveMeetUp(it, "userId")
+            val result = firebaseMeetUpService.leaveMeetUp(it, id2)
             assertThat(result, instanceOf(Response.Failure::class.java))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
+            db.collection(PROFILE_COLL).document(user2.uuid).delete().await()
         }
     }
 
     @Test
     fun joinNonExistingMeetUpReturnsFailure() = runTest {
-        val result = firebaseMeetUpService.joinMeetUp("UWU", "Whatever", Calendar.getInstance())
+        val id2 = firebaseProfileService.createProfile(user1)
+        val result = firebaseMeetUpService.joinMeetUp("UWU", id2!!, Calendar.getInstance(), firebaseProfileService.fetchUserProfile(id2)!!)
         assertThat(result, instanceOf(Response.Failure::class.java))
     }
 
@@ -307,6 +321,52 @@ class FirebaseMeetUpServiceTest {
             assertThat(result, instanceOf(Response.Failure::class.java))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
+        }
+    }
+
+    @Test
+    fun joinMeetUpWithoutCheckingCriterionAgeFails()= runTest {
+        val seniorMeetUp = meetUp.copy(creatorId = "userId2", criterionAge = Pair(45, 66))
+        val id = firebaseMeetUpService.createMeetUp(seniorMeetUp)
+        assertThat(id, notNullValue())
+        val id2 = firebaseProfileService.createProfile(user1)
+        assertThat(id2, notNullValue())
+        id!!.let {
+            var result = firebaseMeetUpService.joinMeetUp(it, id2!!, seniorMeetUp.startDate, firebaseProfileService.fetchUserProfile(id2)!!)
+            assertThat(result, instanceOf(Response.Failure::class.java))
+            // Make sure to clean for next tests
+            val birthday = Calendar.getInstance()
+            birthday.set(1964, 8, 4)
+            val id3 = firebaseProfileService.createProfile(user1.copy(birthday = birthday))
+            assertThat(id3, notNullValue())
+            result = firebaseMeetUpService.joinMeetUp(it, id3!!, seniorMeetUp.startDate, firebaseProfileService.fetchUserProfile(id3)!!)
+            assertThat(result, instanceOf(Response.Success::class.java))
+
+            db.collection(MEETUP_COLL).document(it).delete().await()
+            db.collection(PROFILE_COLL).document(id2).delete().await()
+            db.collection(PROFILE_COLL).document(id3).delete().await()
+        }
+    }
+
+    @Test
+    fun joinMeetUpWithoutCheckingCriterionGenderFails()= runTest {
+        val virilMeetUp = meetUp.copy(creatorId = "userId2", criterionGender = CriterionGender.MALE)
+        val id = firebaseMeetUpService.createMeetUp(virilMeetUp)
+        assertThat(id, notNullValue())
+        val id2 = firebaseProfileService.createProfile(user1)
+        assertThat(id2, notNullValue())
+        id!!.let {
+            var result = firebaseMeetUpService.joinMeetUp(it, id2!!, virilMeetUp.startDate, firebaseProfileService.fetchUserProfile(id2)!!)
+            assertThat(result, instanceOf(Response.Failure::class.java))
+            val id3 = firebaseProfileService.createProfile(user1.copy(gender = Gender.MALE))
+            assertThat(id3, notNullValue())
+            result = firebaseMeetUpService.joinMeetUp(it, id3!!, virilMeetUp.startDate, firebaseProfileService.fetchUserProfile(id3)!!)
+            assertThat(result, instanceOf(Response.Success::class.java))
+
+
+            db.collection(MEETUP_COLL).document(it).delete().await()
+            db.collection(PROFILE_COLL).document(id2).delete().await()
+            db.collection(PROFILE_COLL).document(id3).delete().await()
         }
     }
 
