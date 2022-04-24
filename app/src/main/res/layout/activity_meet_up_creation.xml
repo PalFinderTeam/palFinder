@@ -69,26 +69,41 @@
                 android:layout_height="wrap_content"
                 android:text="TextView" />
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/criterionsSelectButton"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:text="@string/criterion_select"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/iv_Icon"
+                    app:layout_constraintTop_toBottomOf="@id/bt_SelectIcon" />
 
                 <ImageView
                     android:id="@+id/iv_Icon"
-                    android:layout_width="141dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/bt_SelectIcon"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:srcCompat="@drawable/ic_launcher_background"
                     tools:srcCompat="@tools:sample/avatars" />
 
                 <Button
                     android:id="@+id/bt_SelectIcon"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="TODO" />
+                    android:text="TODO"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/iv_Icon"
+                    app:layout_constraintTop_toTopOf="@+id/iv_Icon" />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
                 android:id="@+id/divider2"

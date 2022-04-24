@@ -5,6 +5,7 @@ import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.view.View
 import android.widget.DatePicker
+import android.widget.SeekBar
 import android.widget.TimePicker
 import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelStore
@@ -32,10 +33,8 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
-import com.github.palFinderTeam.palfinder.utils.Location
-import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
+import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
-import com.github.palFinderTeam.palfinder.utils.launchFragmentInHiltContainer
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.google.android.material.chip.Chip
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -135,10 +134,11 @@ class MeetupViewTest {
             emptySet(),
             true,
             2,
-            mutableListOf("user")
+            mutableListOf("user"),
+            null,
+            null
         )
 
-        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID("Michel")
 
         UiThreadStatement.runOnUiThread {
             navController = TestNavHostController(getApplicationContext())
@@ -146,6 +146,7 @@ class MeetupViewTest {
             navController.setGraph(R.navigation.main_nav_graph)
             navController.setCurrentDestination(R.id.creation_fragment)
         }
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(user2.uuid)
     }
 
     @After
@@ -222,6 +223,28 @@ class MeetupViewTest {
             onView(withId(R.id.et_Description)).check(matches(withText("")))
             onView(withId(R.id.et_Capacity)).check(matches(isNotEnabled()))
             onView(withId(R.id.hasCapacityButton)).check(matches(isNotChecked()))
+        }
+    }
+
+    @Test
+    fun criterionFragmentWorksCorrectly() = runTest {
+        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
+            Pair("MeetUpId", null)
+        ), navHostController = navController)
+        scenario!!.use {
+            onView(withId(R.id.criterionsSelectButton)).perform(click())
+            onView(withId(R.id.radioMaleAndFemale)).check(matches(isChecked()))
+            onView(withId(R.id.radioMale)).check(matches(isNotChecked()))
+            onView(withId(R.id.maxValueAge)).check(matches(withText("66+")))
+            onView(withId(R.id.minValueAge)).check(matches(withText("13")))
+            onView(withId(R.id.criterionButtonDone)).perform(click())
+            scenario.onHiltFragment<MeetUpCreation>{ it.viewModel.setCriterionAge(Pair(15, 54))
+                it.viewModel.setCriterionGender(CriterionGender.MALE)}
+            onView(withId(R.id.criterionsSelectButton)).perform(click())
+            onView(withId(R.id.radioMaleAndFemale)).check(matches(isNotChecked()))
+            onView(withId(R.id.radioMale)).check(matches(isChecked()))
+            onView(withId(R.id.maxValueAge)).check(matches(withText("54")))
+            onView(withId(R.id.minValueAge)).check(matches(withText("15")))
         }
     }
 

@@ -90,7 +90,9 @@ class MapsViewModelTest {
             emptySet(),
             false,
             2,
-            listOf("user2")
+            listOf("user2"),
+            null,
+            null
         )
 
         meetup2 = MeetUp(
@@ -105,7 +107,9 @@ class MapsViewModelTest {
             emptySet(),
             false,
             2,
-            listOf("user2")
+            listOf("user2"),
+            null,
+            null
         )
 
         meetup3 = MeetUp(
@@ -120,7 +124,9 @@ class MapsViewModelTest {
             emptySet(),
             false,
             4,
-            listOf("user2")
+            listOf("user2"),
+            null,
+            null
         )
 
         meetup4 = MeetUp(
@@ -135,7 +141,8 @@ class MapsViewModelTest {
             emptySet(),
             false,
             1337,
-            listOf("user2")
+            listOf("user2"),
+            null, null
         )
     }
 

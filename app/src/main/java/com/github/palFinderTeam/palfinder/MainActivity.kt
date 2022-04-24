@@ -9,9 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.github.palFinderTeam.palfinder.map.MapsFragment
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
 import com.github.palFinderTeam.palfinder.notification.NotificationHandler
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity

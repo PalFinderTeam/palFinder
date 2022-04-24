@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId "com.github.palFinderTeam.palfinder"
-        minSdk 24
+        minSdk 26
         targetSdk 31
         versionCode 1
         versionName "1.0"
@@ -88,6 +88,8 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
     implementation 'com.github.dhaval2404:imagepicker:2.1'
+
+    implementation 'org.florescu.android.rangeseekbar:rangeseekbar-library:0.3.0'
 
     androidTestImplementation ('androidx.test.espresso:espresso-contrib:3.4.0',{
         exclude group: 'com.google.protobuf',module: 'protobuf-javalite'

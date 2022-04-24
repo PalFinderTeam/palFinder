@@ -27,7 +27,7 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
  */
 inline fun <reified T : Fragment> launchFragmentInHiltContainer(
     fragmentArgs: Bundle? = null,
-    @StyleRes themeResId: Int = R.style.Theme_PalFinder,
+    @StyleRes themeResId: Int = R.style.palFinder_default_theme,
     fragmentFactory: FragmentFactory? = null,
     navHostController: NavHostController? = null,
     crossinline action: T.() -> Unit = {}

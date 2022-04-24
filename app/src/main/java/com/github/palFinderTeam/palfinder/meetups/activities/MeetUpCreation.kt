@@ -21,6 +21,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.navOptions
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
@@ -33,14 +34,12 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
-const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
-const val defaultTimeDelta = 1000 * 60 * 60
 
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 @AndroidEntryPoint
 class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation) {
 
-    private val viewModel: MeetUpCreationViewModel by activityViewModels()
+    val viewModel: MeetUpCreationViewModel by activityViewModels()
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     private lateinit var tagsViewModel: TagsViewModel<Category>
     private val args: MeetUpCreationArgs by navArgs()
@@ -59,6 +58,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation) {
     private lateinit var endDateField: TextView
     private lateinit var selectLocationButton: Button
     private lateinit var doneButton: Button
+    private lateinit var criterionsSelectButton: Button
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -109,6 +109,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation) {
         endDateField = rootView.findViewById(R.id.tv_EndDate)
         selectLocationButton = rootView.findViewById(R.id.bt_locationSelect)
         doneButton = rootView.findViewById(R.id.bt_Done)
+        criterionsSelectButton = rootView.findViewById(R.id.criterionsSelectButton)
     }
 
     private fun bindUI() {
@@ -160,6 +161,10 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation) {
         }
         doneButton.setOnClickListener {
             onDone(it)
+        }
+
+        criterionsSelectButton.setOnClickListener {
+            CriterionsFragment(viewModel).show(childFragmentManager, "criterions")
         }
     }
 
@@ -319,7 +324,8 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation) {
                     icon.setImageURI(fileUri)
                 }
                 ImagePicker.RESULT_ERROR -> {
-                    Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }
