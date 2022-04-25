@@ -1,9 +1,11 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.util.Log
+import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
@@ -81,6 +83,23 @@ class FirebaseProfileService @Inject constructor(
             newUserProfile.uuid
         } catch (e: Exception) {
             null
+        }
+    }
+
+    override suspend fun followUser(user: ProfileUser, targetId: String): Response<Unit> {
+        return try {
+            if (!user.canFollow(targetId)) {
+                return Response.Failure("Cannot follow this user.")
+            }
+            val batch = db.batch()
+            batch.update(
+                db.collection(PROFILE_COLL).document(user.uuid),
+                "following", FieldValue.arrayUnion(targetId)
+            )
+            batch.commit().await()
+            Response.Success(Unit)
+        } catch (e: Exception) {
+            Response.Failure(e.message.orEmpty())
         }
     }
 

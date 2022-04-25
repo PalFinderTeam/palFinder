@@ -31,7 +31,8 @@ data class ProfileUser(
     val description: String = "",
     val birthday: Calendar? = null,
     val joinedMeetUps: List<String> = emptyList(),
-    val gender: Gender? = Gender.NON_SPEC
+    val gender: Gender? = Gender.NON_SPEC,
+    val following: List<String> = emptyList()
 ) : Serializable {
 
     companion object {
@@ -45,6 +46,7 @@ data class ProfileUser(
         const val BIRTHDAY_KEY = "birthday"
         const val JOINED_MEETUPS_KEY = "joined_meetups"
         const val GENDER = "gender"
+        const val FOLLOWING_PROFILES = "following"
 
         /**
          * Provide a way to convert a Firestore query result, in a ProfileUser.
@@ -96,7 +98,8 @@ data class ProfileUser(
             DESCRIPTION_KEY to description,
             BIRTHDAY_KEY to birthday?.time,
             JOINED_MEETUPS_KEY to joinedMeetUps,
-            GENDER to gender?.stringGender
+            GENDER to gender?.stringGender,
+            FOLLOWING_PROFILES to following
         )
     }
 
@@ -117,6 +120,14 @@ data class ProfileUser(
 
     fun atUsername(): String {
         return "@$username"
+    }
+
+    fun canFollow(profileId : String): Boolean {
+        return profileId != uuid && !following.contains(profileId)
+    }
+
+    fun canUnFollow(profileId: String): Boolean {
+        return following.contains(profileId)
     }
 
     fun prettyJoinTime(): String {
