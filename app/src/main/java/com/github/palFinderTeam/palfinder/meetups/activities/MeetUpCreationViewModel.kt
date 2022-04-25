@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.icu.util.Calendar
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,12 +14,14 @@ import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.isBefore
 import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -153,7 +156,7 @@ class MeetUpCreationViewModel @Inject constructor(
             if (meetUp != null) {
                 uuid = meetUp.uuid
                 _name.postValue(meetUp.name)
-                _icon.postValue(meetUp.iconId)
+                _icon.postValue(meetUp.iconImage?.imgURL)
                 _description.postValue(meetUp.description)
                 _startDate.postValue(meetUp.startDate)
                 _endDate.postValue(meetUp.endDate)
@@ -162,7 +165,7 @@ class MeetUpCreationViewModel @Inject constructor(
                 _tags.postValue(meetUp.tags)
                 _participantsId.postValue(meetUp.participantsId)
                 _location.postValue(meetUp.location)
-                meetUp.iconId?.let {
+                meetUp.iconImage?.imgURL.let {
                     _iconUrl.postValue(it)
                 }
 
@@ -188,19 +191,34 @@ class MeetUpCreationViewModel @Inject constructor(
     fun sendMeetUp() {
         viewModelScope.launch {
             val iconPath = iconUri.value?.let { uri ->
-                val id = imageUploader.uploadImage(uri)
-                // Also remove the previous icon from DB to avoid garbage.
-                iconUrl.value?.let { url ->
-                    imageUploader.removeImage(url)
+                val newPath = imageUploader.uploadImage(uri)
+                if (newPath != null) {
+                    // Also remove the previous icon from DB to avoid garbage.
+                    iconUrl.value?.let { url ->
+                        if (url.isNotEmpty()) {
+                            try {
+                                imageUploader.removeImage(url)
+                            } catch (e : Exception) {
+                                Log.e("UserSettings", e.message.orEmpty())
+                            }
+                        }
+                    }
+                    // We choose the new image only if not null
+                    _icon.value = newPath
+                    newPath
+                } else {
+                    null
                 }
-                id
             }
+
+            val imgInst = if (iconPath == null) { null } else { ImageInstance(iconPath) }
+
             val owner = profileService.getLoggedInUserID()!!
             var meetUp = MeetUp(
                 uuid.orEmpty(),
                 // TODO Get ID
                 owner,
-                iconPath,
+                imgInst,
                 name.value!!,
                 description.value!!,
                 startDate.value!!,

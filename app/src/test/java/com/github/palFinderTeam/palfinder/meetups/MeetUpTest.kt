@@ -33,7 +33,7 @@ class MeetUpTest {
         meetUp = MeetUp(
             "dummy",
             user,
-            "",
+            null,
             "dummy",
             "dummy",
             date1,

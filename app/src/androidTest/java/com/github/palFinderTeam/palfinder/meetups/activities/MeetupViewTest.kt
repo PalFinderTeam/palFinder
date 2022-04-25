@@ -120,7 +120,7 @@ class MeetupViewTest {
         meetup = MeetUp(
             "dummy",
             "user",
-            "",
+            null,
             eventName,
             eventDescription,
             date1,

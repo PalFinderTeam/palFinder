@@ -84,7 +84,7 @@ class MeetUpListTest {
 
         meetUpList = listOf(
             MeetUp(
-                iconId = "",
+                iconImage = null,
                 name = "cuire des carottes",
                 description = "nous aimerions bien nous atteler à la cuisson de carottes au beurre",
                 startDate = date1,
@@ -102,7 +102,7 @@ class MeetUpListTest {
                 criterionGender = null
             ),
             MeetUp(
-                iconId = "",
+                iconImage = null,
                 name = "cuire des patates",
                 description = "nous aimerions bien nous atteler à la cuisson de patates au beurre",
                 startDate = date2,
@@ -120,7 +120,7 @@ class MeetUpListTest {
                 criterionGender = null
             ),
             MeetUp(
-                iconId = "",
+                iconImage = null,
                 name = "Street workout",
                 description = "workout pepouse au pont chauderon",
                 startDate = date3,
@@ -138,7 +138,7 @@ class MeetUpListTest {
                 criterionGender = null
             ),
             MeetUp(
-                iconId = "",
+                iconImage = null,
                 name = "Van Gogh Beaulieux",
                 description = "Expo sans tableau c'est bo",
                 startDate = date4,
@@ -156,7 +156,7 @@ class MeetUpListTest {
                 criterionGender = null
             ),
             MeetUp(
-                iconId = "",
+                iconImage = null,
                 name = "Palexpo",
                 description = "popopo",
                 startDate = date4,
@@ -361,7 +361,7 @@ class RecyclerViewMatcher(private val recyclerViewId: Int) {
                         recyclerViewId
                     ) as RecyclerView
                     childView = if (recyclerView.id == recyclerViewId) {
-                        recyclerView.findViewHolderForAdapterPosition(position)!!.itemView
+                        recyclerView.findViewHolderForAdapterPosition(position)?.itemView
                     } else {
                         return false
                     }

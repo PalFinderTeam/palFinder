@@ -172,7 +172,11 @@ class MeetUpCreation : AppCompatActivity() {
         }
         viewModel.iconUrl.observeOnce(this) {
             lifecycleScope.launch {
-                ImageInstance(it).loadImageInto(icon)
+                if (it == null) {
+                    findViewById<ImageView>(R.id.iv_Icon).setImageDrawable(getDrawable(R.drawable.icon_group))
+                } else {
+                    ImageInstance(it).loadImageInto(icon)
+                }
             }
         }
 
@@ -186,6 +190,8 @@ class MeetUpCreation : AppCompatActivity() {
             viewModel.viewModelScope.launch {
                 if (it != null) {
                     ImageInstance(it).loadImageInto(findViewById(R.id.iv_Icon))
+                } else {
+                    findViewById<ImageView>(R.id.iv_Icon).setImageDrawable(getDrawable(R.drawable.icon_group))
                 }
             }
         }

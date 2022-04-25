@@ -80,7 +80,7 @@ class MapsViewModelTest {
         meetup1 = MeetUp(
             "1",
             "user1",
-            "",
+            null,
             "meetUp1Name",
             "meetUp1Description",
             date1,
@@ -97,7 +97,7 @@ class MapsViewModelTest {
         meetup2 = MeetUp(
             "2",
             "user2",
-            "",
+            null,
             "meetUp2Name",
             "meetUp2Description",
             date1,
@@ -114,7 +114,7 @@ class MapsViewModelTest {
         meetup3 = MeetUp(
             "3",
             "user3",
-            "",
+            null,
             "meetUp3Name",
             "meetUp3Description",
             date1,
@@ -131,7 +131,7 @@ class MapsViewModelTest {
         meetup4 = MeetUp(
             "4",
             "user4",
-            "",
+            null,
             "meetUp4Name",
             "meetUp4Description",
             date1,
