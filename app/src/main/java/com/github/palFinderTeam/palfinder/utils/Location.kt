@@ -33,8 +33,8 @@ data class Location(val longitude: Double, val latitude: Double): Serializable{
         /**
          * Conversion from LatLong to Location
          */
-        fun latLngToLocation(latLng: LatLng): Location {
-            return Location(latLng.longitude, latLng.latitude)
+        fun LatLng.toLocation(): Location {
+            return Location(longitude, latitude)
         }
     }
 
@@ -79,5 +79,9 @@ data class Location(val longitude: Double, val latitude: Double): Serializable{
                 context.getString(R.string.pretty_location_km, display)
             }
         }
+    }
+
+    fun toLatLng(): LatLng {
+        return LatLng(latitude, longitude)
     }
 }

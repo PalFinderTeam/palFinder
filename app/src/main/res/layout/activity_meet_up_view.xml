@@ -10,7 +10,11 @@
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/bt_EditMeetup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fc_meetup"
@@ -27,7 +31,7 @@
             android:id="@+id/show_profile_list_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="show profiles" />
+            android:text="@string/show_profiles" />
 
         <Button
             android:id="@+id/bt_JoinMeetup"
@@ -42,18 +46,10 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:onClick="onChat"
-            app:srcCompat="@android:drawable/stat_notify_chat" />
+            app:srcCompat="@android:drawable/stat_notify_chat"
+            android:focusable="true" />
 
     </LinearLayout>
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fc_navbar2"
-        android:name="com.github.palFinderTeam.palfinder.navbar.NavigationBarFragment"
-        android:layout_width="match_parent"
-        android:layout_height="65dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/bt_EditMeetup"
@@ -65,9 +61,10 @@
         android:clickable="true"
         android:foregroundGravity="center_vertical|center"
         android:onClick="onEdit"
-        app:layout_constraintBottom_toTopOf="@+id/fc_navbar2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_menu_edit"
-        tools:ignore="SpeakableTextPresentCheck" />
+        tools:ignore="SpeakableTextPresentCheck"
+        android:focusable="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

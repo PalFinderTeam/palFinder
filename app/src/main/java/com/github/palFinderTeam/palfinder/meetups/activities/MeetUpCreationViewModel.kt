@@ -14,6 +14,7 @@ import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.isBefore
@@ -21,8 +22,9 @@ import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
+
+const val defaultTimeDelta = 1000 * 60 * 60
 
 @HiltViewModel
 class MeetUpCreationViewModel @Inject constructor(
@@ -151,6 +153,10 @@ class MeetUpCreationViewModel @Inject constructor(
      * @param meetUpId Id of the meetUp to fetch
      */
     fun loadMeetUp(meetUpId: String) {
+        if (meetUpId == uuid) {
+            return
+        }
+
         viewModelScope.launch {
             val meetUp = meetUpRepository.getMeetUpData(meetUpId)
             if (meetUp != null) {
@@ -198,7 +204,7 @@ class MeetUpCreationViewModel @Inject constructor(
                         if (url.isNotEmpty()) {
                             try {
                                 imageUploader.removeImage(url)
-                            } catch (e : Exception) {
+                            } catch (e: Exception) {
                                 Log.e("UserSettings", e.message.orEmpty())
                             }
                         }
@@ -211,7 +217,11 @@ class MeetUpCreationViewModel @Inject constructor(
                 }
             }
 
-            val imgInst = if (iconPath == null) { null } else { ImageInstance(iconPath) }
+            val imgInst = if (iconPath == null) {
+                null
+            } else {
+                ImageInstance(iconPath)
+            }
 
             val owner = profileService.getLoggedInUserID()!!
             var meetUp = MeetUp(
@@ -232,7 +242,6 @@ class MeetUpCreationViewModel @Inject constructor(
                 criterionGender.value
             )
             if (uuid == null) {
-                // create new meetup
                 // create new meetup
                 // Make sure the meetup start at least now when it is created
                 if (startDate.value!!.isBefore(Calendar.getInstance())) {
@@ -318,6 +327,6 @@ class MeetUpCreationViewModel @Inject constructor(
     }
 
     fun setLatLng(p0: LatLng) {
-        _location.value = Location(p0.longitude, p0.latitude)
+        _location.value = p0.toLocation()
     }
 }

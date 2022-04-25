@@ -152,6 +152,9 @@
 
     <string name="testNotifTitle">title</string>
     <string name="testNotifContent">content</string>
+    <string name="map">map</string>
+    <string name="list">list</string>
+    <string name="show_profiles">show profiles</string>
 
     <string name="theme">theme</string>
 
