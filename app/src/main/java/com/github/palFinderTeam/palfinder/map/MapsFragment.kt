@@ -36,7 +36,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.IOException
-import kotlin.math.pow
 
 
 @ExperimentalCoroutinesApi
@@ -274,13 +273,41 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             return
         }
 
-        val earthCircumference = 40000.0
-        // at zoom 0, the map is of size 256x256 pixels and for every zoom, the number of pixel is multiplied by 2
-        val radiusAtZoom0 = earthCircumference / 256
-        val radius = radiusAtZoom0 / 2.0.pow(map.cameraPosition.zoom.toDouble())
+        // Taken from https://stackoverflow.com/a/29264003
+        // Because I'm to lazy to do the maths.
+        val visibleRegion = map.projection.visibleRegion
+
+        val farRight = visibleRegion.farRight
+        val farLeft = visibleRegion.farLeft
+        val nearRight = visibleRegion.nearRight
+        val nearLeft = visibleRegion.nearLeft
+
+        val distanceWidth = FloatArray(2)
+        android.location.Location.distanceBetween(
+            (farRight.latitude + nearRight.latitude) / 2,
+            (farRight.longitude + nearRight.longitude) / 2,
+            (farLeft.latitude + nearLeft.latitude) / 2,
+            (farLeft.longitude + nearLeft.longitude) / 2,
+            distanceWidth
+        )
+
+        val distanceHeight = FloatArray(2)
+        android.location.Location.distanceBetween(
+            (farRight.latitude + nearRight.latitude) / 2,
+            (farRight.longitude + nearRight.longitude) / 2,
+            (farLeft.latitude + nearLeft.latitude) / 2,
+            (farLeft.longitude + nearLeft.longitude) / 2,
+            distanceHeight
+        )
+
+        val radiusInKm: Float = if (distanceWidth[0] > distanceHeight[0]) {
+            distanceWidth[0]
+        } else {
+            distanceHeight[0]
+        } / 1000
         val position: Location = map.cameraPosition.target.toLocation()
 
-        viewModel.setSearchParamAndFetch(location = position, radiusInKm = radius, forceFetch = forceFetch)
+        viewModel.setSearchParamAndFetch(location = position, radiusInKm = radiusInKm.toDouble(), forceFetch = forceFetch)
     }
 
     // The following methods make it easy to programmatically interact with the map,

@@ -131,9 +131,8 @@ class MapListViewModel @Inject constructor(
         if (showOnlyJoined) {
             fetchUserMeetUps()
         } else {
-            // TODO Fix radius
-            //getMeetupAroundLocation(searchLocation.value!!, searchRadius.value ?: INITIAL_RADIUS)
-            getMeetupAroundLocation(_searchLocation.value!!, 500.0)
+            getMeetupAroundLocation(searchLocation.value!!, searchRadius.value ?: INITIAL_RADIUS)
+            //getMeetupAroundLocation(_searchLocation.value!!, 500.0)
         }
     }
 
