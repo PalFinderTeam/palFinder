@@ -21,6 +21,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.launchFragmentInHiltContainer
 import com.github.palFinderTeam.palfinder.utils.onHiltFragment
 import com.google.android.gms.maps.GoogleMap
@@ -40,6 +41,7 @@ import javax.inject.Inject
 import kotlin.math.roundToInt
 
 
+@ExperimentalCoroutinesApi
 @HiltAndroidTest
 class MapsFragmentTest {
 
@@ -83,7 +85,7 @@ class MapsFragmentTest {
         val meetup = MeetUp(
             "",
             "user4",
-            "",
+            ImageInstance(""),
             "meetUp4Name",
             "meetUp4Description",
             date1,
@@ -119,7 +121,7 @@ class MapsFragmentTest {
             assertThat(marker, `is`(notNullValue()))
             marker.click()
             intended(IntentMatchers.hasExtra(MEETUP_SHOWN, id))
-            Intents.release()
+            release()
         }
     }
 
