@@ -100,15 +100,18 @@ class MapListViewModel @Inject constructor(
      * @param location Location around which to search.
      * @param radiusInKm Radius of the search.
      * @param showOnlyJoined If true, only show joined meetups, this will ignore the radius.
+     * @param forceFetch If true, always fetch after assigning the params.
      */
     fun setSearchParamAndFetch(
         location: Location? = null,
         radiusInKm: Double? = null,
         showOnlyJoined: Boolean? = null,
+        forceFetch: Boolean = false
     ) {
         // In case the search params are the same we don't fetch again.
         if (
-            (location == null || searchLocation.value == location)
+            (!forceFetch)
+            && (location == null || searchLocation.value == location)
             && (radiusInKm == null || searchRadius.value == radiusInKm)
             && (showOnlyJoined == null || this.showOnlyJoined == showOnlyJoined)
         ) {

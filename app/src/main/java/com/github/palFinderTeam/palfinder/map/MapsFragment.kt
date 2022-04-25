@@ -182,7 +182,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 map.setOnCameraIdleListener {
                     fetchMeetUpsInView()
                 }
-                fetchMeetUpsInView()
+                fetchMeetUpsInView(forceFetch = true)
             }
             Context.SELECT_LOCATION -> {
                 map.setOnMapClickListener { onMapClick(it) }
@@ -269,7 +269,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     /**
      * Fetch meetups that are inside the visible area of the map.
      */
-    private fun fetchMeetUpsInView() {
+    private fun fetchMeetUpsInView(forceFetch: Boolean = false) {
         if (!mapReady) {
             return
         }
@@ -280,7 +280,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         val radius = radiusAtZoom0 / 2.0.pow(map.cameraPosition.zoom.toDouble())
         val position: Location = map.cameraPosition.target.toLocation()
 
-        viewModel.setSearchParamAndFetch(location = position, radiusInKm = radius)
+        viewModel.setSearchParamAndFetch(location = position, radiusInKm = radius, forceFetch = forceFetch)
     }
 
     // The following methods make it easy to programmatically interact with the map,
