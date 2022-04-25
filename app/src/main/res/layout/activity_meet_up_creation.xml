@@ -55,7 +55,6 @@
                 android:id="@+id/bt_locationSelect"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onSelectLocation"
                 android:text="@string/meetup_creation_meetup_select_location" />
 
             <TextView
@@ -121,7 +120,6 @@
                     android:id="@+id/tv_StartDate"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:onClick="onStartTimeSelectButton"
                     android:text="@string/date_long_format"
                     tools:ignore="DuplicateSpeakableTextCheck" />
 
@@ -142,7 +140,6 @@
                     android:id="@+id/tv_EndDate"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:onClick="onEndTimeSelectButton"
                     android:text="@string/date_long_format" />
             </LinearLayout>
 
@@ -191,7 +188,6 @@
                 android:id="@+id/bt_Done"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onDone"
                 android:text="@string/meetup_creation_meetup_done" />
 
         </LinearLayout>

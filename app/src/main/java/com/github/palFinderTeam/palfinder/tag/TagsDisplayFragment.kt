@@ -11,6 +11,7 @@ import android.widget.Button
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.github.palFinderTeam.palfinder.R
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -22,7 +23,16 @@ import com.google.android.material.chip.ChipGroup
 class TagsDisplayFragment<T: Tag>() : Fragment() {
 
     // Grab the viewModel from the parent activity/fragment.
-    private val viewModel: TagsViewModel<T> by activityViewModels()
+    private val viewModel: TagsViewModel<T> by viewModels(
+        ownerProducer = {
+            try {
+                requireParentFragment()
+            } catch (e: IllegalStateException) {
+                requireActivity()
+            }
+        }
+    )
+
     private lateinit var tagGroup: ChipGroup
     private lateinit var plusButton: Button
 

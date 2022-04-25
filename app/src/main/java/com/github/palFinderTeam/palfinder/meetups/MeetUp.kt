@@ -47,8 +47,8 @@ data class MeetUp(
     val hasMaxCapacity: Boolean,
     val capacity: Int,
     val participantsId: List<String>,
-    val criterionAge: Pair<Int?, Int?>?,
-    val criterionGender: CriterionGender?,
+    val criterionAge: Pair<Int?, Int?>? = null,
+    val criterionGender: CriterionGender? = null,
 ) : java.io.Serializable {
 
     /**

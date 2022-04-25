@@ -80,7 +80,7 @@ class MeetUpView : AppCompatActivity() {
 
     fun onEdit(v: View) {
         if (viewModel.isCreator()) {
-            val intent = Intent(this, MeetUpCreation::class.java).apply {
+            val intent = Intent(this, MeetUpEditCompat::class.java).apply {
                 putExtra(MEETUP_EDIT, viewModel.getMeetupID())
             }
             startActivity(intent)
