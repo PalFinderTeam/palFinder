@@ -85,13 +85,13 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="limit_people">Limit participations to</string>
+    <string name="limit_people">Limit participation to</string>
     <string name="DB_error_msg">Cannot contact database</string>
 
     <string name="criterions_age_title">age selection</string>
     <string name="criterions_age_min">13</string>
     <string name="criterions_age_max">66+</string>
-    <string name="criterion_select">select criterions</string>
+    <string name="criterion_select">Select criteria</string>
 
     <string name="criterions_gender_title">gender selection</string>
     <string name="radio_male">Male</string>

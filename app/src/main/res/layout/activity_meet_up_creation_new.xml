@@ -107,7 +107,7 @@
 
 
             <LinearLayout
-                android:id="@+id/linearLayout_mapChoose"
+                android:id="@+id/bt_locationSelect"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -118,7 +118,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                android:onClick="onSelectLocation"
                 app:layout_constraintTop_toBottomOf="@+id/et_DescriptionLayout">
 
 
@@ -175,7 +174,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout_mapChoose" />
+                app:layout_constraintTop_toBottomOf="@+id/bt_locationSelect" />
 
 
             <TextView
@@ -229,7 +228,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="true"
-                        android:onClick="onStartTimeSelectButton"
                         android:focusable="false"
                         android:fontFamily="@font/fredoka_normal"
                         android:singleLine="true" />
@@ -257,7 +255,6 @@
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:focusable="false"
-                        android:onClick="onEndTimeSelectButton"
                         android:fontFamily="@font/fredoka_normal"
                         android:singleLine="true"
                         app:counterMaxLength="60" />
@@ -359,7 +356,7 @@
 
 
                 <LinearLayout
-                    android:id="@+id/linearLayout_meetupPic"
+                    android:id="@+id/bt_SelectIcon"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
@@ -379,7 +376,7 @@
                         android:scaleType="fitCenter"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:shapeAppearanceOverlay="@style/profileRoundEdge"
-                        app:srcCompat="@drawable/icon_user_female" />
+                        app:srcCompat="@drawable/icon_group" />
 
                     <TextView
                         android:id="@+id/iv_IconHint"
@@ -392,6 +389,37 @@
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/settingsPfp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearLayout_criteria"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_marginBottom="16dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/criterionsSelectButton"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/theme_primary"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"
+                        android:text="@string/criterion_select" />
+
+                    <TextView
+                        android:id="@+id/iv_CriterHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/fredoka_normal"
+                        android:text="Tap to select criteria for the meeting, such as the age, gender."
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                 </LinearLayout>
 
@@ -453,7 +481,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout_misc"
                 app:layout_constraintVertical_bias="1.0"
-                android:onClick="onDone"
                 android:text="@string/meetup_creation_meetup_done"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

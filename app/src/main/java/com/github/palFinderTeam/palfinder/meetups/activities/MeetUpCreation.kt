@@ -57,7 +57,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new) {
     private lateinit var icon: ImageView
     private lateinit var startDateField: TextView
     private lateinit var endDateField: TextView
-    private lateinit var selectLocationButton: Button
+    private lateinit var selectLocationButton: LinearLayout
     private lateinit var doneButton: Button
     private lateinit var criterionsSelectButton: Button
 
