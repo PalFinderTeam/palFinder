@@ -5,6 +5,7 @@ import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.Response.*
@@ -145,15 +146,18 @@ class FirebaseMeetUpService @Inject constructor(
     override suspend fun joinMeetUp(
         meetUpId: String,
         userId: String,
-        now: Calendar
+        now: Calendar,
+        profile: ProfileUser
     ): Response<Unit> {
         return try {
             val meetUp = getMeetUpData(meetUpId) ?: return Failure("Could not find meetup.")
             if (meetUp.isParticipating(userId)) {
+                Log.d("cec","agent " + meetUp.participantsId + "  " + userId)
                 return Success(Unit)
             }
-            if (!meetUp.canJoin(now)) {
-                return Failure("Cannot join meetup now.")
+
+            if (!meetUp.canJoin(now, profile)) {
+                return Failure("Cannot join meetup now, either it is full, out of time or you do not meet the requirements")
             }
             if (meetUp.isFull()) {
                 return Failure("Cannot join, it is full.")

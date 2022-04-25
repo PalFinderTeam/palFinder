@@ -12,12 +12,12 @@
         app:iconSpaceReserved="false" />
 
     <ListPreference
-        android:dialogTitle="Select colors"
-        android:entries="@array/settings_list_colors_titles"
-        android:entryValues="@array/settings_list_colors_values"
-        android:key="list"
-        android:summary="Click to show the different color themes"
-        android:title="Color themes"
+        app:dialogTitle="Select colors"
+        app:entries="@array/settings_list_colors_titles"
+        app:entryValues="@array/settings_list_colors_values"
+        app:key="list_color"
+        app:summary="Click to show the different color themes"
+        app:title="Color themes"
         app:iconSpaceReserved="false" />
 
     <Preference

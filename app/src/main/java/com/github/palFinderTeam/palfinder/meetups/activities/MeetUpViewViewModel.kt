@@ -81,7 +81,8 @@ class MeetUpViewViewModel @Inject constructor(
                         else -> Toast.makeText(context, R.string.meetup_view_left, Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    when(val ret = meetUpRepository.joinMeetUp(meetUp.value!!.uuid, uuid, timeService.now())){
+                    when(val ret = meetUpRepository.joinMeetUp(meetUp.value!!.uuid, uuid, timeService.now(),
+                        profileService.fetchUserProfile(profileService.getLoggedInUserID()!!)!!)){
                         is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
                         else -> Toast.makeText(context, R.string.meetup_view_joined, Toast.LENGTH_SHORT).show()
                     }

@@ -118,7 +118,7 @@ class MeetUpCreationViewModelTest {
         val dummyMeetUp = MeetUp(
             "",
             "username",
-            "icon",
+            null,
             "name",
             "description",
             testStartDate,
@@ -127,7 +127,9 @@ class MeetUpCreationViewModelTest {
             setOf(Category.CINEMA),
             true,
             2,
-            mutableListOf()
+            mutableListOf(),
+            null,
+            null
         )
 
         val id = meetUpRepository.createMeetUp(dummyMeetUp)
