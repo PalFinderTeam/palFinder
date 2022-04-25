@@ -56,7 +56,7 @@ class ProfileActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.userProfileJoinDate).apply { text = user.prettyJoinTime() }
         injectBio(user.description)
         lifecycleScope.launch {
-            user.pfp.loadImageInto(findViewById(R.id.userProfileImage))
+            user.pfp.loadImageInto(findViewById(R.id.userProfileImage), applicationContext)
         }
     }
 

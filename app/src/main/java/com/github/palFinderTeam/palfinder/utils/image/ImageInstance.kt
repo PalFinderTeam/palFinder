@@ -1,9 +1,11 @@
 package com.github.palFinderTeam.palfinder.utils.image
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.widget.ImageView
 import androidx.lifecycle.ViewModel
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.cache.FileCache
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
 import java.io.Serializable
 import java.lang.Exception
@@ -16,8 +18,8 @@ import java.lang.Exception
  * return an empty image file.
  */
 data class ImageInstance(
-    val imgURL : String, var imgFetch : ImageFetcher? = null
-) : Serializable, ViewModel(){
+    val imgURL : String, val imgFetch : ImageFetcher? = null
+) : Serializable {
 
     companion object{
         const val NOT_LOADED = 0
@@ -35,10 +37,15 @@ data class ImageInstance(
      * Loads the image asynchronously into the desired Image View
      * @param view ImageView that needs to be change.
      */
-    suspend fun loadImageInto(view : ImageView){
-        // Is image cached?
-        if (isCached) {
-            view.setImageBitmap(bitmapCache)
+    suspend fun loadImageInto(view : ImageView, context: Context){
+        val cache = FileCache(
+            imgURL,
+            Bitmap::class.java,
+            permanent = false,
+            context = context
+        )
+        if (cache.exist()) {
+            view.setImageBitmap(cache.get())
         } else {
             if(imgURL != "") {
                 EspressoIdlingResource.increment()
@@ -46,9 +53,8 @@ data class ImageInstance(
                     view.setImageResource(android.R.color.background_dark)
                     view.alpha = 0.3f
 
-                    bitmapCache = fetchFromDB()
-                    isCached = true
-
+                    val bitmapCache = fetchFromDB()
+                    cache.store(bitmapCache!!)
                     imgStatus = CACHED
                     view.setImageBitmap(bitmapCache)
                 } catch (e: Exception) {
