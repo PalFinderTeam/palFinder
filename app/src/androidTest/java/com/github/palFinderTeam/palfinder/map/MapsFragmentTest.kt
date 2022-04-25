@@ -143,16 +143,15 @@ class MapsFragmentTest {
             onView(withId(R.id.map_content)).perform(click())
 
             val marker = device.findObject(
-                UiSelector().descriptionContains("Google Map")
-                    .childSelector(UiSelector().descriptionContains("Here"))
+                    UiSelector().descriptionContains("Here")
             )
 
             marker.waitForExists(1000)
+            assertThat(marker, `is`(notNullValue()))
 
             init()
             marker.click()
 
-            assertThat(marker, `is`(notNullValue()))
 
             assertThat(getIntents().size, `is`(0))
             release()
@@ -179,8 +178,7 @@ class MapsFragmentTest {
             device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
 
             val marker = device.findObject(
-                UiSelector().descriptionContains("Google Map")
-                    .childSelector(UiSelector().descriptionContains("Here"))
+                UiSelector().descriptionContains("Here")
             )
 
             marker.waitForExists(1000)
@@ -257,8 +255,8 @@ class MapsFragmentTest {
             scenario.onHiltFragment<MapsFragment>{
                 it.setMapLocation(Location(1.0,2.0), instantaneous = true)
                 val location = it.getMapLocation()
-                assertThat(location.longitude, `is`(closeTo(1.0, 1e-2)))
-                assertThat(location.latitude, `is`(closeTo(2.0, 1e-2)))
+                assertThat(location.longitude, `is`(closeTo(1.0, 1e-1)))
+                assertThat(location.latitude, `is`(closeTo(2.0, 1e-1)))
             }
         }
     }
