@@ -9,13 +9,13 @@
 
     <TextView
         android:id="@+id/profile_name"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:fontFamily="@font/fredoka_bold"
         android:text="@string/placeholder_username"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/followButton"
         app:layout_constraintStart_toEndOf="@+id/userPic"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,13 +31,35 @@
 
     <TextView
         android:id="@+id/fullName"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:fontFamily="@font/fredoka_normal"
         android:text="@string/placeholder_name"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/followButton"
         app:layout_constraintStart_toEndOf="@+id/userPic"
         app:layout_constraintTop_toBottomOf="@+id/profile_name" />
+
+    <Button
+        android:id="@+id/followButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="10dp"
+        android:text="follow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/profile_name"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/unfollowButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="7dp"
+        android:layout_marginBottom="10dp"
+        android:text="unFollow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/followButton"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

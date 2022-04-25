@@ -103,6 +103,23 @@ class FirebaseProfileService @Inject constructor(
         }
     }
 
+    override suspend fun unfollowUser(user: ProfileUser, targetId: String): Response<Unit> {
+        return try {
+            if (!user.canUnFollow(targetId)) {
+                return Response.Failure("Cannot unfollow this user.")
+            }
+            val batch = db.batch()
+            batch.update(
+                db.collection(PROFILE_COLL).document(user.uuid),
+                "following", FieldValue.arrayRemove(targetId)
+            )
+            batch.commit().await()
+            Response.Success(Unit)
+        } catch (e: Exception) {
+            Response.Failure(e.message.orEmpty())
+        }
+    }
+
     override fun getLoggedInUserID(): String? = Firebase.auth.currentUser?.uid
 
     override suspend fun doesUserIDExist(userId: String): Boolean {
