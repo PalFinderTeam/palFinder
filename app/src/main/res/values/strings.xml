@@ -88,6 +88,16 @@
     <string name="limit_people">Limit participations to</string>
     <string name="DB_error_msg">Cannot contact database</string>
 
+    <string name="criterions_age_title">age selection</string>
+    <string name="criterions_age_min">13</string>
+    <string name="criterions_age_max">66+</string>
+    <string name="criterion_select">select criterions</string>
+
+    <string name="criterions_gender_title">gender selection</string>
+    <string name="radio_male">Male</string>
+    <string name="radio_female">Female</string>
+    <string name="radio_male_and_female">Male and Female</string>
+
     <string name="pretty_location_too_small">Here</string>
     <string name="pretty_location_m">%1$s m</string>
     <string name="pretty_location_km">%1$s km</string>
@@ -142,4 +152,11 @@
 
     <string name="testNotifTitle">title</string>
     <string name="testNotifContent">content</string>
+
+    <string name="theme">theme</string>
+
+    <string name="hint_username">username</string>
+    <string name="hint_password">password</string>
+    <string name="select_icon">Select Icon</string>
+
 </resources>

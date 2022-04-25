@@ -3,12 +3,14 @@ package com.github.palFinderTeam.palfinder.profile
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.di.ProfileModule
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.DESCRIPTION_KEY
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.GENDER
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOINED_MEETUPS_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOIN_DATE_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.NAME_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.PICTURE_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.SURNAME_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.USERNAME_KEY
+import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import dagger.Module
@@ -62,6 +64,7 @@ object UIMockProfileServiceModule {
                     PICTURE_KEY -> oldVal.copy(pfp = ImageInstance(value as String))
                     DESCRIPTION_KEY -> oldVal.copy(description = value as String)
                     JOINED_MEETUPS_KEY -> oldVal.copy(joinedMeetUps = value as List<String>)
+                    GENDER -> oldVal.copy(gender = value as Gender)
                     else -> oldVal
                 }
                 return userId

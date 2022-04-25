@@ -1,12 +1,21 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.os.Build
+import android.provider.ContactsContract
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.fragment.app.viewModels
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
+import com.github.palFinderTeam.palfinder.ProfileViewModel
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.utils.CriterionGender
+import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.isBefore
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
@@ -14,7 +23,7 @@ import com.google.firebase.firestore.GeoPoint
 /**
  * @param uuid: Unique Identifier of the meetup
  * @param creatorId: Creator of the meetup
- * @param iconId: Path to the Icon
+ * @param iconImage: The meetup's image (can be null)
  * @param name: Name of the Meetup
  * @param description: Description of the meetup
  * @param startDate: Date & Time of the begin of the meetup
@@ -28,7 +37,7 @@ import com.google.firebase.firestore.GeoPoint
 data class MeetUp(
     val uuid: String,
     val creatorId: String,
-    val iconId: String?,
+    val iconImage: ImageInstance?,
     val name: String,
     val description: String,
     val startDate: Calendar,
@@ -38,6 +47,8 @@ data class MeetUp(
     val hasMaxCapacity: Boolean,
     val capacity: Int,
     val participantsId: List<String>,
+    val criterionAge: Pair<Int?, Int?>?,
+    val criterionGender: CriterionGender?,
 ) : java.io.Serializable {
 
     /**
@@ -66,8 +77,27 @@ data class MeetUp(
      * @param now: current date
      * @return if a user can join
      */
-    fun canJoin(now: Calendar): Boolean {
-        return !isFull() && !isFinished(now)
+    fun canJoin(now: Calendar, profile: ProfileUser): Boolean {
+        return (!isFull() && !isFinished(now) && criterionFulfilled(profile))
+    }
+
+    private fun criterionFulfilled(profile: ProfileUser): Boolean {
+        return genderFulfilled(profile) && ageFulfilled(profile.getAge())
+    }
+
+    private fun ageFulfilled(age: Int): Boolean {
+        if (criterionAge == Pair(null, null) || criterionAge == null) {
+            return true
+        }
+        return (criterionAge!!.first!! <= age && criterionAge.second!! >= age)
+    }
+    private fun genderFulfilled(profile: ProfileUser): Boolean {
+        return when (criterionGender) {
+            CriterionGender.ALL -> true
+            CriterionGender.FEMALE -> profile.gender == Gender.FEMALE
+            CriterionGender.MALE -> profile.gender == Gender.MALE
+            else -> true
+        }
     }
 
     /**
@@ -105,7 +135,7 @@ data class MeetUp(
             "endDate" to endDate.time,
             "hasMaxCapacity" to hasMaxCapacity,
             "capacity" to capacity.toLong(),
-            "icon" to iconId,
+            "icon" to iconImage?.imgURL,
             "location" to GeoPoint(location.latitude, location.longitude),
             "geohash" to GeoFireUtils.getGeoHashForLocation(
                 GeoLocation(
@@ -116,6 +146,9 @@ data class MeetUp(
             "name" to name,
             "participants" to participantsId.toList(),
             "tags" to tags.map { it.toString() },
+            "criterionAgeFirst" to criterionAge?.first?.toLong(),
+            "criterionAgeSecond" to criterionAge?.second?.toLong(),
+            "criterionGender" to criterionGender?.genderName,
         )
     }
 
@@ -127,7 +160,8 @@ data class MeetUp(
         fun DocumentSnapshot.toMeetUp(): MeetUp? {
             try {
                 val uuid = id
-                val iconId = getString("icon")
+                val iconUrl = getString("icon")
+                val iconImage = if(iconUrl == null) { null } else { ImageInstance(iconUrl) } // Now this field can be null, because meetups with no image made it crash
                 val creator = getString("creator")!!
                 val capacity = getLong("capacity")!!
                 val description = getString("description")!!
@@ -143,10 +177,12 @@ data class MeetUp(
                 val endDateCal = Calendar.getInstance()
                 startDateCal.time = startDate
                 endDateCal.time = endDate
+                var criterionGender = CriterionGender.from(getString("criterionGender"))
+                val criterionAge = Pair(getLong("criterionAgeFirst")?.toInt(), getLong("criterionAgeSecond")?.toInt())
                 return MeetUp(
                     uuid,
                     creator,
-                    iconId,
+                    iconImage,
                     name,
                     description,
                     startDateCal,
@@ -155,7 +191,9 @@ data class MeetUp(
                     tags.map { Category.valueOf(it) }.toSet(),
                     hasMaxCapacity,
                     capacity.toInt(),
-                    participantsId
+                    participantsId,
+                    criterionAge,
+                    criterionGender
                 )
             } catch (e: Exception) {
                 Log.e("Meetup", "Error deserializing meetup", e)

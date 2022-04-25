@@ -5,6 +5,7 @@ import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.view.View
 import android.widget.DatePicker
+import android.widget.SeekBar
 import android.widget.TimePicker
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -16,7 +17,6 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.init
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -29,6 +29,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
+import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
@@ -119,7 +120,7 @@ class MeetupViewTest {
         meetup = MeetUp(
             "dummy",
             "user",
-            "",
+            null,
             eventName,
             eventDescription,
             date1,
@@ -128,8 +129,11 @@ class MeetupViewTest {
             emptySet(),
             true,
             2,
-            mutableListOf("user")
+            mutableListOf("user"),
+            null,
+            null
         )
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(user2.uuid)
     }
 
     @After
@@ -195,6 +199,27 @@ class MeetupViewTest {
             onView(withId(R.id.et_Description)).check(matches(withText("")))
             onView(withId(R.id.et_Capacity)).check(matches(isNotEnabled()))
             onView(withId(R.id.hasCapacityButton)).check(matches(isNotChecked()))
+        }
+    }
+
+    @Test
+    fun criterionFragmentWorksCorrectly() = runTest {
+        val intent = Intent(getApplicationContext(), MeetUpCreation::class.java)
+        val scenario = ActivityScenario.launch<MeetUpCreation>(intent)
+        scenario.use {
+            onView(withId(R.id.criterionsSelectButton)).perform(click())
+            onView(withId(R.id.radioMaleAndFemale)).check(matches(isChecked()))
+            onView(withId(R.id.radioMale)).check(matches(isNotChecked()))
+            onView(withId(R.id.maxValueAge)).check(matches(withText("66+")))
+            onView(withId(R.id.minValueAge)).check(matches(withText("13")))
+            onView(withId(R.id.criterionButtonDone)).perform(click())
+            scenario.onActivity { it.viewModel.setCriterionAge(Pair(15, 54))
+                it.viewModel.setCriterionGender(CriterionGender.MALE)}
+            onView(withId(R.id.criterionsSelectButton)).perform(click())
+            onView(withId(R.id.radioMaleAndFemale)).check(matches(isNotChecked()))
+            onView(withId(R.id.radioMale)).check(matches(isChecked()))
+            onView(withId(R.id.maxValueAge)).check(matches(withText("54")))
+            onView(withId(R.id.minValueAge)).check(matches(withText("15")))
         }
     }
 
