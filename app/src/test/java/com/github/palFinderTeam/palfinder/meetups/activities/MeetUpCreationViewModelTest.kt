@@ -118,7 +118,7 @@ class MeetUpCreationViewModelTest {
         val dummyMeetUp = MeetUp(
             "",
             "username",
-            "icon",
+            null,
             "name",
             "description",
             testStartDate,

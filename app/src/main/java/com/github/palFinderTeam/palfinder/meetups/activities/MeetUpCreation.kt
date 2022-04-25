@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -193,7 +194,12 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation) {
         }
         viewModel.iconUrl.observeOnce(this) {
             lifecycleScope.launch {
-                ImageInstance(it).loadImageInto(icon)
+                if (it == null) {
+                    rootView.findViewById<ImageView>(R.id.iv_Icon)
+                        .setImageDrawable(getDrawable(requireContext(), R.drawable.icon_group))
+                } else {
+                    ImageInstance(it).loadImageInto(icon)
+                }
             }
         }
 
@@ -207,6 +213,9 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation) {
             viewModel.viewModelScope.launch {
                 if (it != null) {
                     ImageInstance(it).loadImageInto(rootView.findViewById(R.id.iv_Icon))
+                } else {
+                    rootView.findViewById<ImageView>(R.id.iv_Icon)
+                        .setImageDrawable(getDrawable(requireContext(), R.drawable.icon_group))
                 }
             }
         }

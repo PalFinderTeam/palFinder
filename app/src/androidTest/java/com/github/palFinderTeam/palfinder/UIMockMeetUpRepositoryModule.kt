@@ -9,6 +9,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -66,7 +67,7 @@ object UIMockMeetUpRepositoryModule {
                     "startDate" -> oldVal.copy(startDate = value as Calendar)
                     "endDate" -> oldVal.copy(endDate = value as Calendar)
                     "hasMaxCapacity" -> oldVal.copy(hasMaxCapacity = value as Boolean)
-                    "icon" -> oldVal.copy(iconId = value as String)
+                    "icon" -> oldVal.copy(iconImage = value as ImageInstance)
                     "location" -> oldVal.copy(location = value as Location)
                     "participants" -> oldVal.copy(participantsId = value as List<String>)
                     "tags" -> oldVal.copy(tags = value as Set<Category>)
