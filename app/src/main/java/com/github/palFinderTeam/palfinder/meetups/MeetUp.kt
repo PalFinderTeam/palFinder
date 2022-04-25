@@ -1,10 +1,18 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.os.Build
+import android.provider.ContactsContract
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.fragment.app.viewModels
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
+import com.github.palFinderTeam.palfinder.ProfileViewModel
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.utils.CriterionGender
+import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
@@ -39,6 +47,8 @@ data class MeetUp(
     val hasMaxCapacity: Boolean,
     val capacity: Int,
     val participantsId: List<String>,
+    val criterionAge: Pair<Int?, Int?>?,
+    val criterionGender: CriterionGender?,
 ) : java.io.Serializable {
 
     /**
@@ -67,8 +77,27 @@ data class MeetUp(
      * @param now: current date
      * @return if a user can join
      */
-    fun canJoin(now: Calendar): Boolean {
-        return !isFull() && !isFinished(now)
+    fun canJoin(now: Calendar, profile: ProfileUser): Boolean {
+        return (!isFull() && !isFinished(now) && criterionFulfilled(profile))
+    }
+
+    private fun criterionFulfilled(profile: ProfileUser): Boolean {
+        return genderFulfilled(profile) && ageFulfilled(profile.getAge())
+    }
+
+    private fun ageFulfilled(age: Int): Boolean {
+        if (criterionAge == Pair(null, null) || criterionAge == null) {
+            return true
+        }
+        return (criterionAge!!.first!! <= age && criterionAge.second!! >= age)
+    }
+    private fun genderFulfilled(profile: ProfileUser): Boolean {
+        return when (criterionGender) {
+            CriterionGender.ALL -> true
+            CriterionGender.FEMALE -> profile.gender == Gender.FEMALE
+            CriterionGender.MALE -> profile.gender == Gender.MALE
+            else -> true
+        }
     }
 
     /**
@@ -117,6 +146,9 @@ data class MeetUp(
             "name" to name,
             "participants" to participantsId.toList(),
             "tags" to tags.map { it.toString() },
+            "criterionAgeFirst" to criterionAge?.first?.toLong(),
+            "criterionAgeSecond" to criterionAge?.second?.toLong(),
+            "criterionGender" to criterionGender?.genderName,
         )
     }
 
@@ -145,6 +177,8 @@ data class MeetUp(
                 val endDateCal = Calendar.getInstance()
                 startDateCal.time = startDate
                 endDateCal.time = endDate
+                var criterionGender = CriterionGender.from(getString("criterionGender"))
+                val criterionAge = Pair(getLong("criterionAgeFirst")?.toInt(), getLong("criterionAgeSecond")?.toInt())
                 return MeetUp(
                     uuid,
                     creator,
@@ -157,7 +191,9 @@ data class MeetUp(
                     tags.map { Category.valueOf(it) }.toSet(),
                     hasMaxCapacity,
                     capacity.toInt(),
-                    participantsId
+                    participantsId,
+                    criterionAge,
+                    criterionGender
                 )
             } catch (e: Exception) {
                 Log.e("Meetup", "Error deserializing meetup", e)

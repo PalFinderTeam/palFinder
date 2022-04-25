@@ -5,6 +5,7 @@ import android.util.Log
 import com.github.palFinderTeam.palfinder.di.MeetUpModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
@@ -70,6 +71,7 @@ object UIMockMeetUpRepositoryModule {
                     "location" -> oldVal.copy(location = value as Location)
                     "participants" -> oldVal.copy(participantsId = value as List<String>)
                     "tags" -> oldVal.copy(tags = value as Set<Category>)
+
                     else -> oldVal
                 }
                 return meetUpId
@@ -103,14 +105,15 @@ object UIMockMeetUpRepositoryModule {
         override suspend fun joinMeetUp(
             meetUpId: String,
             userId: String,
-            now: Calendar
+            now: Calendar,
+            profile: ProfileUser
         ): Response<Unit> {
             return if (db.containsKey(meetUpId)) {
                 val meetUp = db[meetUpId] ?: return Response.Failure("Could not find meetup")
                 if (meetUp.isParticipating(userId)) {
                     return Response.Success(Unit)
                 }
-                if (!meetUp.canJoin(now)) {
+                if (!meetUp.canJoin(now, profile)) {
                     return Response.Failure("Cannot join meetup now.")
                 }
                 if (meetUp.isFull()) {

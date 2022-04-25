@@ -71,7 +71,9 @@ class MeetUpViewViewModelTest {
             setOf(Category.CINEMA),
             true,
             2,
-            mutableListOf()
+            mutableListOf(),
+            null,
+            null
         )
 
         val id = meetUpRepository.createMeetUp(dummyMeetUp)

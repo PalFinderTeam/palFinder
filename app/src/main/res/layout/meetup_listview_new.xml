@@ -111,7 +111,7 @@
                 android:fontFamily="@font/fredoka_bold"
                 android:gravity="bottom|end"
                 android:text="in 5 days"
-                android:textColor="@color/theme_highlight"
+                android:textColor="@color/primaryDefault"
                 android:textSize="18dp"></TextView>
         </LinearLayout>
 

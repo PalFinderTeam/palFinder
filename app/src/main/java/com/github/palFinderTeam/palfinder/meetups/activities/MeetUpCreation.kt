@@ -22,6 +22,7 @@ import com.github.palFinderTeam.palfinder.map.CONTEXT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
 import com.github.palFinderTeam.palfinder.map.MapsActivity
+import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
@@ -41,7 +42,7 @@ const val defaultTimeDelta = 1000 * 60 * 60
 @AndroidEntryPoint
 class MeetUpCreation : AppCompatActivity() {
 
-    private val viewModel: MeetUpCreationViewModel by viewModels()
+    val viewModel: MeetUpCreationViewModel by viewModels()
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     private lateinit var tagsViewModel: TagsViewModel<Category>
 
@@ -56,6 +57,7 @@ class MeetUpCreation : AppCompatActivity() {
     private lateinit var icon: ImageView
     private lateinit var startDateField: TextView
     private lateinit var endDateField: TextView
+    private lateinit var criterionsSelectButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,6 +100,7 @@ class MeetUpCreation : AppCompatActivity() {
         icon = findViewById(R.id.iv_Icon)
         startDateField = findViewById(R.id.tv_StartDate)
         endDateField = findViewById(R.id.tv_EndDate)
+        criterionsSelectButton = findViewById(R.id.criterionsSelectButton)
     }
 
     private fun bindUI() {
@@ -137,6 +140,10 @@ class MeetUpCreation : AppCompatActivity() {
         }
         icon.setOnClickListener {
             pickProfileImage(this, registerForImagePickerResult::launch)
+        }
+
+        criterionsSelectButton.setOnClickListener {
+            CriterionsFragment(viewModel).show(supportFragmentManager, "criterions")
         }
     }
 
