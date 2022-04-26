@@ -1,9 +1,11 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -35,7 +37,7 @@ class MockMeetUpRepository : MeetUpRepository {
                 "startDate" -> oldVal.copy(startDate = value as Calendar)
                 "endDate" -> oldVal.copy(endDate = value as Calendar)
                 "hasMaxCapacity" -> oldVal.copy(hasMaxCapacity = value as Boolean)
-                "icon" -> oldVal.copy(iconId = value as String)
+                "icon" -> oldVal.copy(iconImage = value as ImageInstance)
                 "location" -> oldVal.copy(location = value as Location)
                 "participants" -> oldVal.copy(participantsId = value as List<String>)
                 "tags" -> oldVal.copy(tags = value as Set<Category>)
@@ -85,7 +87,8 @@ class MockMeetUpRepository : MeetUpRepository {
     override suspend fun joinMeetUp(
         meetUpId: String,
         userId: String,
-        now: Calendar
+        now: Calendar,
+        profileUser: ProfileUser
     ): Response<Unit> {
         return if (db.containsKey(meetUpId)) {
             val meetUp = db[meetUpId] ?: return Response.Failure("Could not find meetup")
