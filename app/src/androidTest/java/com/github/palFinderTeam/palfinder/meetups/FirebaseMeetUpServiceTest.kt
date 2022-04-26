@@ -10,6 +10,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.UIMockContextServiceModule
 import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.FirebaseFirestore
@@ -47,9 +48,9 @@ class FirebaseMeetUpServiceTest {
         db.firestoreSettings = settings
 
         val timeService = UIMockTimeServiceModule.UIMockTimeService().setDate(Calendar.getInstance().apply { time = Date(0) })
-
-        firebaseMeetUpService = CachedMeetUpService(db, timeService)
-        firebaseProfileService = CachedProfileService(db, timeService)
+        val context = UIMockContextServiceModule.UIMockContextService()
+        firebaseMeetUpService = CachedMeetUpService(db, timeService, context)
+        firebaseProfileService = CachedProfileService(db, timeService, context)
 
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }

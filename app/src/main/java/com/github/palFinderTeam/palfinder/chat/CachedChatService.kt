@@ -1,16 +1,17 @@
 package com.github.palFinderTeam.palfinder.chat
 
-import com.github.palFinderTeam.palfinder.PalFinderApplication
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
+import com.github.palFinderTeam.palfinder.utils.context.ContextService
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class CachedChatService @Inject constructor(
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val contextProvider: ContextService
 ) : FirebaseChatService(db) {
-    private var cache = DictionaryCache("chat", ChatCache::class.java, false, PalFinderApplication.instance)
+    private var cache = DictionaryCache("chat", ChatCache::class.java, false, contextProvider.get())
 
     override fun getAllMessageFromChat(chatId: String): Flow<List<ChatMessage>> {
         val ret = super.getAllMessageFromChat(chatId)

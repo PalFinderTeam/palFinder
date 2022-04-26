@@ -1,10 +1,10 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
-import com.github.palFinderTeam.palfinder.PalFinderApplication
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.cache.FileCache
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.context.ContextService
 import com.github.palFinderTeam.palfinder.utils.isBefore
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,9 +15,10 @@ import javax.inject.Inject
 
 class CachedMeetUpService @Inject constructor(
     private val db: FirebaseFirestore,
-    private val time: TimeService
+    private val time: TimeService,
+    private val contextProvider: ContextService
 ): FirebaseMeetUpService(db) {
-    private var cache = DictionaryCache("meetup", MeetUp::class.java, false, PalFinderApplication.instance){
+    private var cache = DictionaryCache("meetup", MeetUp::class.java, false, contextProvider.get()){
         val expirationDate = time.now()
         expirationDate.add(Calendar.MINUTE, -10)
 
@@ -26,7 +27,7 @@ class CachedMeetUpService @Inject constructor(
 
         date.isBefore(expirationDate)
     }
-    private var cacheJoined = FileCache("meetup_joined", JoinedMeetupListWrapper::class.java, true, PalFinderApplication.instance)
+    private var cacheJoined = FileCache("meetup_joined", JoinedMeetupListWrapper::class.java, true, contextProvider.get())
 
     private fun addJoinedMeetupToCache(meetUpId: String){
         val jml = if (cacheJoined.exist()){
