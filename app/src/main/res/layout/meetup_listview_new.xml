@@ -91,7 +91,8 @@
                 android:fontFamily="@font/fredoka_bold"
                 android:gravity="bottom"
                 android:text="50.5 km"
-                android:textSize="18dp"></TextView>
+                android:textSize="18dp"
+                android:visibility="gone"></TextView>
 
             <TextView
                 android:id="@+id/meetup_participant"
