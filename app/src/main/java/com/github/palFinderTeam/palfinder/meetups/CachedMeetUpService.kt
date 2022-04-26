@@ -47,20 +47,12 @@ class CachedMeetUpService @Inject constructor(
         }
     }
 
-    /**
-     * Return List of all joined Meetup and remove null value
-     */
-    suspend fun getAllJoinedMeetups(): List<MeetUp>{
-        return getAllJoinedMeetupID().mapNotNull { getMeetUpData(it) }
-    }
-
-
     override suspend fun getMeetUpData(meetUpId: String): MeetUp? {
-        val ret = super.getMeetUpData(meetUpId)
-        return if (ret == null && cache.contains(meetUpId)){
+        return if (cache.contains(meetUpId)){
             cache.get(meetUpId)
-        } else{
-            null
+        }
+        else{
+            super.getMeetUpData(meetUpId)
         }
     }
 

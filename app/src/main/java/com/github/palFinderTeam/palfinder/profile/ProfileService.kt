@@ -1,10 +1,9 @@
 package com.github.palFinderTeam.palfinder.profile
 
-import com.github.palFinderTeam.palfinder.utils.Repository
 import com.github.palFinderTeam.palfinder.utils.Response
 import kotlinx.coroutines.flow.Flow
 
-interface ProfileService: Repository {
+interface ProfileService {
     /**
      * Fetch a profile from database.
      *

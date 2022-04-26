@@ -64,6 +64,23 @@ class DictionaryCacheTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
+    fun evictTest() = runTest {
+        val context: Context = ApplicationProvider.getApplicationContext()
+        val intent = Intent(context, MeetupListActivity::class.java)
+        val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
+        scenario.use {
+            val dummy = Dummy("dummy", 0)
+            val cache = DictionaryCache("test", Dummy::class.java, false, context)
+
+            cache.store("dummy", dummy)
+            cache.evict { true }
+
+            assertThat(cache.contains("dummy"), `is`(false))
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
     fun storeAndReadFile() = runTest {
         val context: Context = ApplicationProvider.getApplicationContext()
         val intent = Intent(context, MeetupListActivity::class.java)

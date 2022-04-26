@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FirebaseChatService @Inject constructor(
+open class FirebaseChatService @Inject constructor(
     private val db: FirebaseFirestore
 ) : ChatService {
 

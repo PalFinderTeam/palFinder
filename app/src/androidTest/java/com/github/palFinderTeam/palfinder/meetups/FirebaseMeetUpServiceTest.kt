@@ -3,12 +3,14 @@ package com.github.palFinderTeam.palfinder.meetups
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService.Companion.MEETUP_COLL
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
+import com.github.palFinderTeam.palfinder.profile.CachedProfileService
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
@@ -27,7 +29,7 @@ import java.util.*
 @ExperimentalCoroutinesApi
 class FirebaseMeetUpServiceTest {
     private lateinit var firebaseProfileService: FirebaseProfileService
-    private lateinit var firebaseMeetUpService: FirebaseMeetUpService
+    private lateinit var firebaseMeetUpService: CachedMeetUpService
     private lateinit var db: FirebaseFirestore
     private lateinit var meetUp: MeetUp
     private lateinit var user1: ProfileUser
@@ -44,8 +46,10 @@ class FirebaseMeetUpServiceTest {
             .build()
         db.firestoreSettings = settings
 
-        firebaseMeetUpService = FirebaseMeetUpService(db)
-        firebaseProfileService = FirebaseProfileService(db)
+        firebaseMeetUpService = CachedMeetUpService(db)
+        firebaseProfileService = CachedProfileService(db,
+            UIMockTimeServiceModule.UIMockTimeService().setDate(Calendar.getInstance().apply { time = Date(0) })
+        )
 
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }
@@ -127,6 +131,24 @@ class FirebaseMeetUpServiceTest {
             val fetchedMeetup = firebaseMeetUpService.getMeetUpData(it)
             assertThat(fetchedMeetup, notNullValue())
             assertThat(fetchedMeetup, `is`(meetUp.copy(uuid = it)))
+            // Make sure to clean for next tests
+            db.collection(MEETUP_COLL).document(it).delete().await()
+        }
+    }
+
+    @Test
+    fun getMeetUpDataTwiceGetRightInfo() = runTest {
+        val id = firebaseMeetUpService.createMeetUp(meetUp)
+        assertThat(id, notNullValue())
+        id!!.let {
+            var fetchedMeetup = firebaseMeetUpService.getMeetUpData(it)
+            assertThat(fetchedMeetup, notNullValue())
+            assertThat(fetchedMeetup, `is`(meetUp.copy(uuid = it)))
+
+            fetchedMeetup = firebaseMeetUpService.getMeetUpData(it)
+            assertThat(fetchedMeetup, notNullValue())
+            assertThat(fetchedMeetup, `is`(meetUp.copy(uuid = it)))
+
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
         }
@@ -227,6 +249,7 @@ class FirebaseMeetUpServiceTest {
             val meetUp = firebaseMeetUpService.getMeetUpData(it)
             assertThat(meetUp, notNullValue())
             assertThat(meetUp!!.participantsId, not(hasItem(userId)))
+            assertThat(firebaseMeetUpService.getAllJoinedMeetupID(), not(hasItem(meetUp.uuid)))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
             db.collection(PROFILE_COLL).document(user2.uuid).delete().await()
@@ -241,6 +264,7 @@ class FirebaseMeetUpServiceTest {
         id!!.let {
             val result = firebaseMeetUpService.joinMeetUp(it, "userId2", meetUp.startDate)
             assertThat(result, instanceOf(Response.Success::class.java))
+            assertThat(firebaseMeetUpService.getAllJoinedMeetupID(), hasItem(meetUp.uuid))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
         }

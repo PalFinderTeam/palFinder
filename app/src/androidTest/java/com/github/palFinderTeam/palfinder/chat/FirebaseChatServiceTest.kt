@@ -5,7 +5,6 @@ import com.github.palFinderTeam.palfinder.chat.ChatMessage.Companion.toChatMessa
 import com.github.palFinderTeam.palfinder.chat.FirebaseChatService.Companion.CONVERSATION_COLL
 import com.github.palFinderTeam.palfinder.chat.FirebaseChatService.Companion.MSG_COLL
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
-import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,7 +37,7 @@ class FirebaseChatServiceTest {
             .build()
         db.firestoreSettings = settings
 
-        firebaseChatService = FirebaseChatService(db)
+        firebaseChatService = CachedChatService(db)
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }
         message1 = ChatMessage(
