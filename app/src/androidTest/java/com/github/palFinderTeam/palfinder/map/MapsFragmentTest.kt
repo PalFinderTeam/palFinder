@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.KeyEvent
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -21,9 +20,11 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.launchFragmentInHiltContainer
 import com.github.palFinderTeam.palfinder.utils.onHiltFragment
+import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.google.android.gms.maps.GoogleMap
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -33,7 +34,6 @@ import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.closeTo
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -52,6 +52,9 @@ class MapsFragmentTest {
     @Inject
     lateinit var profileService: ProfileService
 
+    @Inject
+    lateinit var timeService: TimeService
+
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -68,6 +71,9 @@ class MapsFragmentTest {
     @Before
     fun init_() {
         hiltRule.inject()
+        val dateNow = Calendar.getInstance()
+        dateNow.set(2022, 2, 0)
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(dateNow)
     }
 
 
@@ -143,7 +149,7 @@ class MapsFragmentTest {
             onView(withId(R.id.map_content)).perform(click())
 
             val marker = device.findObject(
-                    UiSelector().descriptionContains("Here")
+                UiSelector().descriptionContains("Here")
             )
 
             marker.waitForExists(1000)
@@ -229,7 +235,7 @@ class MapsFragmentTest {
                 .perform(pressKey(KeyEvent.KEYCODE_ENTER))
 
 
-            scenario.onHiltFragment<MapsFragment>{
+            scenario.onHiltFragment<MapsFragment> {
                 assertThat(it.viewModel.searchLocation.value?.latitude?.roundToInt(), `is`(29))
                 assertThat(it.viewModel.searchLocation.value?.longitude?.roundToInt(), `is`(77))
             }
@@ -252,8 +258,8 @@ class MapsFragmentTest {
         device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
 
         scenario!!.use {
-            scenario.onHiltFragment<MapsFragment>{
-                it.setMapLocation(Location(1.0,2.0), instantaneous = true)
+            scenario.onHiltFragment<MapsFragment> {
+                it.setMapLocation(Location(1.0, 2.0), instantaneous = true)
                 val location = it.getMapLocation()
                 assertThat(location.longitude, `is`(closeTo(1.0, 1e-1)))
                 assertThat(location.latitude, `is`(closeTo(2.0, 1e-1)))
@@ -274,17 +280,20 @@ class MapsFragmentTest {
 
         scenario?.use {
             scenario.onActivity {
-                val mapFrag = it.supportFragmentManager.findFragmentById(android.R.id.content) as MapsFragment
+                val mapFrag =
+                    it.supportFragmentManager.findFragmentById(android.R.id.content) as MapsFragment
                 assertThat(mapFrag.getMapType(), `is`(GoogleMap.MAP_TYPE_NORMAL))
             }
             onView(withId(R.id.bt_changeMapType)).perform(click())
             scenario.onActivity {
-                val mapFrag = it.supportFragmentManager.findFragmentById(android.R.id.content) as MapsFragment
+                val mapFrag =
+                    it.supportFragmentManager.findFragmentById(android.R.id.content) as MapsFragment
                 assertThat(mapFrag.getMapType(), `is`(GoogleMap.MAP_TYPE_HYBRID))
             }
             onView(withId(R.id.bt_changeMapType)).perform(click())
             scenario.onActivity {
-                val mapFrag = it.supportFragmentManager.findFragmentById(android.R.id.content) as MapsFragment
+                val mapFrag =
+                    it.supportFragmentManager.findFragmentById(android.R.id.content) as MapsFragment
                 assertThat(mapFrag.getMapType(), `is`(GoogleMap.MAP_TYPE_NORMAL))
             }
         }

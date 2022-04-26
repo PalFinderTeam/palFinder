@@ -25,8 +25,11 @@ import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
 import com.github.palFinderTeam.palfinder.utils.launchFragmentInHiltContainer
 import com.github.palFinderTeam.palfinder.utils.onHiltFragment
+import com.github.palFinderTeam.palfinder.utils.time.RealTimeService
+import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -48,6 +51,7 @@ import javax.inject.Inject
 @HiltAndroidTest
 class MeetUpListTest {
 
+    private lateinit var dateNow: Calendar
     private lateinit var date1: Calendar
     private lateinit var date2: Calendar
     private lateinit var date3: Calendar
@@ -69,6 +73,9 @@ class MeetUpListTest {
     @Inject
     lateinit var profileService: ProfileService
 
+    @Inject
+    lateinit var realTimeService: TimeService
+
     @Before
     fun setup() {
         hiltRule.inject()
@@ -78,6 +85,8 @@ class MeetUpListTest {
             loggedUserId
         )
 
+        dateNow = Calendar.getInstance()
+        dateNow.set(2022,0,0)
         date1 = Calendar.getInstance()
         date1.set(2022, 2, 6)
         date2 = Calendar.getInstance()
@@ -86,6 +95,8 @@ class MeetUpListTest {
         date3.set(2022, 2, 1)
         date4 = Calendar.getInstance()
         date4.set(2022, 0, 1)
+
+        (realTimeService as UIMockTimeServiceModule.UIMockTimeService).setDate(dateNow)
 
         //user1 = ProfileUser("User1", "Us", "er1", date1, ImageInstance("icons/demo_pfp.jpeg"))
         //user2 = ProfileUser("User2", "Us", "er2", date2, ImageInstance("icons/demo_pfp.jpeg"))
