@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder
 
 import android.icu.util.Calendar
-import android.util.Log
 import com.github.palFinderTeam.palfinder.di.MeetUpModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
@@ -17,7 +16,6 @@ import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Singleton
 
 @Module
@@ -90,7 +88,9 @@ object UIMockMeetUpRepositoryModule {
 
         override fun getMeetUpsAroundLocation(
             location: Location,
-            radiusInKm: Double
+            radiusInKm: Double,
+            currentDate: Calendar?,
+            loggedUser: String?
         ): Flow<Response<List<MeetUp>>> {
             return flow {
                 println("location " + location.toString())
@@ -145,16 +145,12 @@ object UIMockMeetUpRepositoryModule {
         }
 
         @ExperimentalCoroutinesApi
-        override fun getAllMeetUps(): Flow<List<MeetUp>> {
+        override fun getAllMeetUps(
+            currentDate: Calendar?,
+            loggedUser: String?
+        ): Flow<List<MeetUp>> {
             return flow {
                 emit(db.values.toList())
-            }
-        }
-
-        @ExperimentalCoroutinesApi
-        override fun getAllMeetUpsResponse(): Flow<Response<List<MeetUp>>> {
-            return getAllMeetUps().map {
-                Response.Success(it)
             }
         }
 
