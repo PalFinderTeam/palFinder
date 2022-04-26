@@ -9,6 +9,7 @@ import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class MockMeetUpRepository : MeetUpRepository {
     val db: HashMap<String, MeetUp> = hashMapOf()
@@ -60,7 +61,6 @@ class MockMeetUpRepository : MeetUpRepository {
         location: Location,
         radiusInKm: Double,
         currentDate: Calendar?,
-        loggedUser: String?
     ): Flow<Response<List<MeetUp>>> {
         return flow {
             var meetUps = db.values.filter { meetUp ->
@@ -69,23 +69,17 @@ class MockMeetUpRepository : MeetUpRepository {
             if (currentDate != null) {
                 meetUps = meetUps.filter { !it.isFinished(currentDate) }
             }
-            if (loggedUser != null) {
-                meetUps = meetUps.filter { it.isParticipating(loggedUser) }
-            }
 
             emit(Response.Success(meetUps))
         }
     }
 
     @ExperimentalCoroutinesApi
-    override fun getAllMeetUps(currentDate: Calendar?, loggedUser: String?): Flow<List<MeetUp>> {
+    override fun getAllMeetUps(currentDate: Calendar?): Flow<List<MeetUp>> {
         return flow {
             var meetUps = db.values.toList()
             if (currentDate != null) {
                 meetUps = meetUps.filter { !it.isFinished(currentDate) }
-            }
-            if (loggedUser != null) {
-                meetUps = meetUps.filter { it.isParticipating(loggedUser) }
             }
             emit(meetUps)
         }
@@ -129,6 +123,22 @@ class MockMeetUpRepository : MeetUpRepository {
         } catch (e: Exception) {
             Response.Failure(e.message.orEmpty())
         }
+    }
+
+    override fun getUserMeetups(
+        userId: String,
+        currentDate: Calendar?
+    ): Flow<Response<List<MeetUp>>> {
+        val userMeetUps = getAllMeetUps().map { Response.Success(it.filter { it.isParticipating(userId) }) }
+        if (currentDate != null) {
+            return userMeetUps.map { Response.Success(it.data.filter { !it.isFinished(currentDate) }) }
+        } else {
+            return userMeetUps
+        }
+    }
+
+    override suspend fun getMeetUpsData(meetUpIds: List<String>): List<MeetUp>? {
+        return meetUpIds.mapNotNull { db[it] }
     }
 
     fun clearDB() {
