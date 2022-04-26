@@ -176,8 +176,7 @@ class FirebaseMeetUpServiceTest {
         if (id != null && id2 != null && id3 != null) {
             val fetchedMeetupsFlow =
                 firebaseMeetUpService.getMeetUpsAroundLocation(meetUp.location, 630.0)
-            // After debugging I know that this particular query produces 4 geoqueries
-            val fetchedMeetups = fetchedMeetupsFlow.take(5).toList()
+            val fetchedMeetups = fetchedMeetupsFlow.take(2).toList()
             assertThat(fetchedMeetups[0], instanceOf(Response.Loading::class.java))
             fetchedMeetups.subList(1, fetchedMeetups.size - 1).forEach {
                 assertThat(it, instanceOf(Response.Success::class.java))
