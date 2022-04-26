@@ -250,7 +250,7 @@ class FirebaseMeetUpServiceTest {
             val meetUp = firebaseMeetUpService.getMeetUpData(it)
             assertThat(meetUp, notNullValue())
             assertThat(meetUp!!.participantsId, not(hasItem(userId)))
-            assertThat(firebaseMeetUpService.getAllJoinedMeetupID(), not(hasItem(meetUp.uuid)))
+            assertThat(firebaseMeetUpService.getAllJoinedMeetupID(), not(hasItem(id)))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
             db.collection(PROFILE_COLL).document(user2.uuid).delete().await()
@@ -265,7 +265,7 @@ class FirebaseMeetUpServiceTest {
         id!!.let {
             val result = firebaseMeetUpService.joinMeetUp(it, "userId2", meetUp.startDate)
             assertThat(result, instanceOf(Response.Success::class.java))
-            assertThat(firebaseMeetUpService.getAllJoinedMeetupID(), hasItem(meetUp.uuid))
+            assertThat(firebaseMeetUpService.getAllJoinedMeetupID(), hasItem(id))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
         }
