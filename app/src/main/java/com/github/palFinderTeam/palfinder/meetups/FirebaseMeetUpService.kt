@@ -6,10 +6,10 @@ import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.GEOHASH
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.PARTICIPANTS
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.START_DATE
-import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOINED_MEETUPS_KEY
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOINED_MEETUPS_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
@@ -53,7 +53,10 @@ class FirebaseMeetUpService @Inject constructor(
 
     override suspend fun createMeetUp(newMeetUp: MeetUp): String? {
         return try {
-            db.collection(MEETUP_COLL).add(newMeetUp.toFirestoreData()).await().id
+            val id = db.collection(MEETUP_COLL).add(newMeetUp.toFirestoreData()).await().id
+            db.collection(PROFILE_COLL).document(newMeetUp.creatorId)
+                .update(JOINED_MEETUPS_KEY, FieldValue.arrayUnion(id)).await()
+            id
         } catch (e: Exception) {
             null
         }
@@ -253,7 +256,10 @@ class FirebaseMeetUpService @Inject constructor(
         }
     }
 
-    override fun getUserMeetups(userId: String, currentDate: Calendar?): Flow<Response<List<MeetUp>>> {
+    override fun getUserMeetups(
+        userId: String,
+        currentDate: Calendar?
+    ): Flow<Response<List<MeetUp>>> {
         val query = db.collection(PROFILE_COLL).document(userId)
 
         return flow {
@@ -267,7 +273,8 @@ class FirebaseMeetUpService @Inject constructor(
                     emit(Failure("Could not fetch meetups."))
                 } else {
                     if (currentDate != null) {
-                        emit(Success(meetUps.filter { !it.isFinished(currentDate) }))
+                        val filtered = meetUps.filter { !it.isFinished(currentDate) }
+                        emit(Success(filtered))
                     } else {
                         emit(Success(meetUps))
                     }

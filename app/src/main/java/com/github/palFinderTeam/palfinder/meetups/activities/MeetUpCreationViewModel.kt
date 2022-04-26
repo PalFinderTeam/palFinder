@@ -30,8 +30,7 @@ const val defaultTimeDelta = 1000 * 60 * 60
 class MeetUpCreationViewModel @Inject constructor(
     private val meetUpRepository: MeetUpRepository,
     private val imageUploader: ImageUploader,
-    private val profileService: ProfileService,
-    private val calendar: Calendar
+    private val profileService: ProfileService
 ) : ViewModel() {
     private var uuid: String? = null
 
@@ -217,16 +216,16 @@ class MeetUpCreationViewModel @Inject constructor(
                 }
             }
 
-            val imgInst = if (iconPath == null) {
+            val iconUrl = _icon.value
+            val imgInst = if (iconUrl == null) {
                 null
             } else {
-                ImageInstance(iconPath)
+                ImageInstance(iconUrl)
             }
 
             val owner = profileService.getLoggedInUserID()!!
             var meetUp = MeetUp(
                 uuid.orEmpty(),
-                // TODO Get ID
                 owner,
                 imgInst,
                 name.value!!,
