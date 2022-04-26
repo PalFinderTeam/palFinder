@@ -32,7 +32,8 @@ data class ProfileUser(
     val birthday: Calendar? = null,
     val joinedMeetUps: List<String> = emptyList(),
     val gender: Gender? = Gender.NON_SPEC,
-    val following: List<String> = emptyList()
+    val following: List<String> = emptyList(),
+    val followed: List<String> = emptyList()
 ) : Serializable {
 
     companion object {
@@ -47,6 +48,7 @@ data class ProfileUser(
         const val JOINED_MEETUPS_KEY = "joined_meetups"
         const val GENDER = "gender"
         const val FOLLOWING_PROFILES = "following"
+        const val FOLLOWED_BY = "followed"
 
         /**
          * Provide a way to convert a Firestore query result, in a ProfileUser.
@@ -74,8 +76,11 @@ data class ProfileUser(
                 if (getString(GENDER) != null) {
                     gender = Gender.from(getString(GENDER))
                 }
-
-                ProfileUser(uuid, username, name, surname, joinDateCal, ImageInstance(picture), description, birthdayCal, joinedMeetUp, gender)
+                val following = (get(FOLLOWING_PROFILES) as? List<String>).orEmpty()
+                val followed = (get(FOLLOWING_PROFILES) as? List<String>).orEmpty()
+                ProfileUser(uuid, username, name, surname,
+                    joinDateCal, ImageInstance(picture), description,
+                    birthdayCal, joinedMeetUp, gender, following, followed)
 
             } catch (e: Exception) {
                 Log.e("ProfileUser", "Error deserializing user", e)
@@ -88,7 +93,6 @@ data class ProfileUser(
      * @return a representation which is Firestore friendly of the UserProfile.
      */
     fun toFirestoreData(): HashMap<String, Any?> {
-        //if
         return hashMapOf(
             NAME_KEY to name,
             SURNAME_KEY to surname,
@@ -99,7 +103,8 @@ data class ProfileUser(
             BIRTHDAY_KEY to birthday?.time,
             JOINED_MEETUPS_KEY to joinedMeetUps,
             GENDER to gender?.stringGender,
-            FOLLOWING_PROFILES to following
+            FOLLOWING_PROFILES to following,
+            FOLLOWED_BY to followed
         )
     }
 

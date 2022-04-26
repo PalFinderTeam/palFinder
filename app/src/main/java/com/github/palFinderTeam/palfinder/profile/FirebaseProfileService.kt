@@ -96,6 +96,10 @@ class FirebaseProfileService @Inject constructor(
                 db.collection(PROFILE_COLL).document(user.uuid),
                 "following", FieldValue.arrayUnion(targetId)
             )
+            batch.update(
+                db.collection(PROFILE_COLL).document(targetId),
+                "followed", FieldValue.arrayUnion(user.uuid)
+            )
             batch.commit().await()
             Response.Success(Unit)
         } catch (e: Exception) {
@@ -112,6 +116,10 @@ class FirebaseProfileService @Inject constructor(
             batch.update(
                 db.collection(PROFILE_COLL).document(user.uuid),
                 "following", FieldValue.arrayRemove(targetId)
+            )
+            batch.update(
+                db.collection(PROFILE_COLL).document(targetId),
+                "followed", FieldValue.arrayRemove(user.uuid)
             )
             batch.commit().await()
             Response.Success(Unit)

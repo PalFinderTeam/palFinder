@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:fontFamily="@font/fredoka_bold"
+        android:maxLength="18"
         android:text="@string/placeholder_username"
         android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@id/followButton"
@@ -35,6 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:fontFamily="@font/fredoka_normal"
+        android:maxLength="18"
         android:text="@string/placeholder_name"
         android:textSize="16sp"
         app:layout_constraintEnd_toStartOf="@id/followButton"
@@ -45,21 +47,12 @@
         android:id="@+id/followButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
-        android:text="follow"
+        android:text="@string/unfollow_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/profile_name"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.812" />
 
-    <Button
-        android:id="@+id/unfollowButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="7dp"
-        android:layout_marginBottom="10dp"
-        android:text="unFollow"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/followButton"
-        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
