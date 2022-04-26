@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.meetups
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.cache.FileCache
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.context.ContextService
 import com.github.palFinderTeam.palfinder.utils.isBefore
@@ -90,8 +91,8 @@ class CachedMeetUpService @Inject constructor(
         }
     }
 
-    override suspend fun joinMeetUp(meetUpId: String, userId: String, now: Calendar): Response<Unit> {
-        return when(val ret = super.joinMeetUp(meetUpId, userId, now)){
+    override suspend fun joinMeetUp(meetUpId: String, userId: String, now: Calendar, profile: ProfileUser): Response<Unit> {
+        return when(val ret = super.joinMeetUp(meetUpId, userId, now, profile)){
             is Response.Success -> {
                 addJoinedMeetupToCache(meetUpId)
                 ret
