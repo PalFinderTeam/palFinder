@@ -38,15 +38,9 @@ data class ImageInstance(
      * Loads the image asynchronously into the desired Image View
      * @param view ImageView that needs to be change.
      */
-    suspend fun loadImageInto(view : ImageView, context: Context){
-        val cache = FileCache(
-            imgURL,
-            Bitmap::class.java,
-            permanent = false,
-            context = context
-        )
-        if (cache.exist()) {
-            view.setImageBitmap(cache.get())
+    suspend fun loadImageInto(view : ImageView, context: Context? = null){
+        if (isCached) {
+            view.setImageBitmap(bitmapCache)
         } else {
             if(imgURL != "") {
                 EspressoIdlingResource.increment()
@@ -54,12 +48,12 @@ data class ImageInstance(
                     view.setImageResource(android.R.color.background_dark)
                     view.alpha = 0.3f
 
-                    val bitmapCache = fetchFromDB()
+                    bitmapCache = fetchFromDB(context)
+                    isCached = true
+
                     imgStatus = CACHED
                     view.setImageBitmap(bitmapCache)
-                    cache.store(bitmapCache!!)
                 } catch (e: Exception) {
-                    Log.e("fuck", e.toString())
                     view.setImageResource(R.drawable.not_found)
                     imgStatus = FILE_NOT_FOUND
                     isCached = false
@@ -89,13 +83,13 @@ data class ImageInstance(
     /**
      * Load the online image with the correct tools
      */
-    private suspend fun fetchFromDB(): Bitmap?{
+    private suspend fun fetchFromDB(context: Context?): Bitmap?{
         if (imgFetch!=null) {
-            return imgFetch!!.fetchImage()
+            return imgFetch.fetchImage()
         }
         // Select corresponding fetcher
         val fetcher : ImageFetcher = if (UrlFormat.getUrlType(imgURL) == UrlFormat.URL_IS_FIREBASE) {
-            ImageFetcherFirebase(imgURL)
+            ImageFetcherFirebase(imgURL, context = context)
         } else {
             ImageFetcherHttp(imgURL)
         }

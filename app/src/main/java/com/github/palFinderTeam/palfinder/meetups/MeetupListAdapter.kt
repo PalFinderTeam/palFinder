@@ -95,9 +95,7 @@ class MeetupListAdapter(
 
         if (currentDataSet[position].iconImage != null) {
             CoroutineScope(Dispatchers.Main).launch {
-                currentDataSet[position].iconImage?.let {
-                    it.loadImageInto(meetupPicture, context)
-                }
+                currentDataSet[position].iconImage?.loadImageInto(meetupPicture, context)
             }
         } else {
             meetupPicture.visibility = View.GONE

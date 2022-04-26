@@ -20,7 +20,7 @@ class FileCache<T> (
     private val name: String,
     private val clazz: Class<T>,
     private val permanent: Boolean,
-    private val context: Context
+    private val context: Context,
 ){
 
     private val bitmapJsonConverter = BitmapJsonConverter()
