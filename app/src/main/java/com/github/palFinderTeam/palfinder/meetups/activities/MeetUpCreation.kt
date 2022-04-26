@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 @AndroidEntryPoint
-class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation) {
+class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new) {
 
     val viewModel: MeetUpCreationViewModel by activityViewModels()
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
@@ -53,11 +53,11 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation) {
     private lateinit var limitEditText: EditText
     private lateinit var nameEditText: EditText
     private lateinit var descriptionEditText: EditText
-    private lateinit var changeIconButton: Button
+    private lateinit var changeIconButton: LinearLayout
     private lateinit var icon: ImageView
     private lateinit var startDateField: TextView
     private lateinit var endDateField: TextView
-    private lateinit var selectLocationButton: Button
+    private lateinit var selectLocationButton: LinearLayout
     private lateinit var doneButton: Button
     private lateinit var criterionsSelectButton: Button
 
