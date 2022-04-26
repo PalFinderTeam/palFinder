@@ -1,14 +1,18 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService.Companion.MEETUP_COLL
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
+import com.github.palFinderTeam.palfinder.profile.CachedProfileService
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.UIMockContextServiceModule
+import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
@@ -25,9 +29,9 @@ import org.junit.Test
 import java.util.*
 
 @ExperimentalCoroutinesApi
-class FirebaseMeetUpServiceTest {
+class CachedMeetUpServiceTest {
     private lateinit var firebaseProfileService: FirebaseProfileService
-    private lateinit var firebaseMeetUpService: FirebaseMeetUpService
+    private lateinit var firebaseMeetUpService: CachedMeetUpService
     private lateinit var db: FirebaseFirestore
     private lateinit var meetUp: MeetUp
     private lateinit var user1: ProfileUser
@@ -44,8 +48,13 @@ class FirebaseMeetUpServiceTest {
             .build()
         db.firestoreSettings = settings
 
-        firebaseMeetUpService = FirebaseMeetUpService(db)
-        firebaseProfileService = FirebaseProfileService(db)
+        val timeService = UIMockTimeServiceModule.UIMockTimeService().setDate(Calendar.getInstance().apply { time = Date(0) })
+        val context = UIMockContextServiceModule.UIMockContextService()
+
+        DictionaryCache.clearAllTempCaches(context.get())
+
+        firebaseMeetUpService = CachedMeetUpService(db, timeService, context)
+        firebaseProfileService = CachedProfileService(db, timeService, context)
 
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }
@@ -245,6 +254,7 @@ class FirebaseMeetUpServiceTest {
             val meetUp = firebaseMeetUpService.getMeetUpData(it)
             assertThat(meetUp, notNullValue())
             assertThat(meetUp!!.participantsId, not(hasItem(userId)))
+            assertThat(firebaseMeetUpService.getAllJoinedMeetupID(), not(hasItem(id)))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
             db.collection(PROFILE_COLL).document(user2.uuid).delete().await()
@@ -259,6 +269,7 @@ class FirebaseMeetUpServiceTest {
         id!!.let {
             val result = firebaseMeetUpService.joinMeetUp(it, "userId2", meetUp.startDate)
             assertThat(result, instanceOf(Response.Success::class.java))
+            assertThat(firebaseMeetUpService.getAllJoinedMeetupID(), hasItem(id))
             // Make sure to clean for next tests
             db.collection(MEETUP_COLL).document(it).delete().await()
         }

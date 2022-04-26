@@ -12,7 +12,6 @@ import java.io.File
  * @param directory: name of the pseudo directory (it is in fact a prefix)
  * @param clazz: Class to store
  * @param permanent: Prevent Android from randomly deleting the data
- * @param contextService: Context Provider
  */
 class DictionaryCache<T> (
     private val directory: String,
@@ -21,6 +20,12 @@ class DictionaryCache<T> (
     private val context: Context,
     private val policy: ((File) -> Boolean)? = null
 ){
+    companion object{
+        fun clearAllTempCaches(context: Context){
+            context.cacheDir.listFiles()?.filterNotNull()?.map{ it.delete() }
+        }
+    }
+
     init {
         if (policy!=null){
             setEvictPolicy(policy)
