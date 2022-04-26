@@ -33,7 +33,7 @@ class MeetupViewFragment : Fragment() {
 
         model.meetUp.observe(viewLifecycleOwner, meetupObs)
 
-        return inflater.inflate(R.layout.fragment_meetup_view, container, false)
+        return inflater.inflate(R.layout.fragment_meetup_view_new, container, false)
     }
 
     private fun setTextView(id: Int, value: String){
