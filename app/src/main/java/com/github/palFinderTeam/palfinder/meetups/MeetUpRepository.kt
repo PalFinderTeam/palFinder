@@ -92,10 +92,11 @@ interface MeetUpRepository {
 
     /**
      * Get all meetup the user, with id [userId], is taking part of.
+     * @param currentDate If not null, will fetch only meetups that are available.
      *
      * @return A flow of the form Fetching -> MeetUps or Fetching -> Failure.
      */
-    fun getUserMeetups(userId: String): Flow<Response<List<MeetUp>>>
+    fun getUserMeetups(userId: String, currentDate: Calendar?): Flow<Response<List<MeetUp>>>
 
     /**
      * Get all meetup from the list of ids [meetUpIds].

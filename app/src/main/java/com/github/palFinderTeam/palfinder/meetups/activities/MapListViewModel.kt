@@ -176,9 +176,9 @@ class MapListViewModel @Inject constructor(
         val date = if (showOnlyAvailableInTime) timeService.now() else null
         if (userId != null) {
             viewModelScope.launch {
-                meetUpRepository.getAllMeetUps(loggedUser = userId, currentDate = date)
+                meetUpRepository.getUserMeetups(userId, date)
                     .collect {
-                        _listOfMeetUpResponse.postValue(Response.Success(it))
+                        _listOfMeetUpResponse.postValue(it)
                     }
             }
         } else {
