@@ -545,6 +545,7 @@ class MeetupViewTest {
         val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
             putExtra(MEETUP_SHOWN, mid)
         }
+
         ActivityScenario.launch<MeetUpView>(intent)
 
         // Join
