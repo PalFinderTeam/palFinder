@@ -21,7 +21,7 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     var chatService: ChatService,
     val profileService: ProfileService,
-    private val application: Application
+    application: Application
     ): AndroidViewModel(application) {
 
     val listOfMessage: MutableLiveData<MutableList<ChatMessage>> = MutableLiveData()
@@ -90,6 +90,6 @@ class ChatViewModel @Inject constructor(
 
     private suspend fun loadCachedUser(userId: String, pictureBox: ImageView, nameBox: TextView){
         nameBox.text = profilesData[userId]!!.username
-        profilesData[userId]!!.pfp.loadImageInto(pictureBox)
+        profilesData[userId]!!.pfp.loadImageInto(pictureBox, getApplication<Application>().applicationContext)
     }
 }

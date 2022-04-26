@@ -51,7 +51,7 @@ class MeetupViewFragment : Fragment() {
 
         model.viewModelScope.launch {
             meetUp.iconImage?.let {
-                it.loadImageInto(requireView().findViewById(R.id.iv_MeetupImage))
+                it.loadImageInto(requireView().findViewById(R.id.iv_MeetupImage), requireContext())
             }
         }
         model.getUsernameOf(meetUp.creatorId){

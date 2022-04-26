@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.utils.image
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.ViewModel
 import com.github.palFinderTeam.palfinder.R
@@ -19,7 +20,7 @@ import java.lang.Exception
  */
 data class ImageInstance(
     val imgURL : String, val imgFetch : ImageFetcher? = null
-) : Serializable {
+) : Serializable, ViewModel() {
 
     companion object{
         const val NOT_LOADED = 0
@@ -54,10 +55,11 @@ data class ImageInstance(
                     view.alpha = 0.3f
 
                     val bitmapCache = fetchFromDB()
-                    cache.store(bitmapCache!!)
                     imgStatus = CACHED
                     view.setImageBitmap(bitmapCache)
+                    cache.store(bitmapCache!!)
                 } catch (e: Exception) {
+                    Log.e("fuck", e.toString())
                     view.setImageResource(R.drawable.not_found)
                     imgStatus = FILE_NOT_FOUND
                     isCached = false

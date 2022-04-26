@@ -54,7 +54,7 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
     }
 
     private fun changeAdapter(list : List<ProfileUser>, v: View) {
-        val adapter = ProfileAdapter(list) { onListItemClick(it) }
+        val adapter = ProfileAdapter(list, requireContext()) { onListItemClick(it) }
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
         val searchField = v.findViewById<SearchView>(R.id.profile_list_search)

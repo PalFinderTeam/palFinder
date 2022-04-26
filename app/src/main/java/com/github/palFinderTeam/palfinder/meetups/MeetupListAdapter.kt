@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.content.Context
-import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,15 +13,17 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class MeetupListAdapter(private val dataSet: List<MeetUp>, val currentDataSet: MutableList<MeetUp>,
-                        private var filter: SearchedFilter<MeetUp>, private var currentLocation: Location,
-                        private val onItemClicked: (position: Int) -> Unit) :
+class MeetupListAdapter(
+    private val dataSet: List<MeetUp>, val currentDataSet: MutableList<MeetUp>,
+    private var filter: SearchedFilter<MeetUp>, private var currentLocation: Location,
+    private val context: Context,
+    private val onItemClicked: (position: Int) -> Unit,
+) :
     RecyclerView.Adapter<MeetupListAdapter.ViewHolder>(), Filterable {
 
     companion object {
@@ -95,7 +96,7 @@ class MeetupListAdapter(private val dataSet: List<MeetUp>, val currentDataSet: M
         if (currentDataSet[position].iconImage != null) {
             CoroutineScope(Dispatchers.Main).launch {
                 currentDataSet[position].iconImage?.let {
-                    it.loadImageInto(meetupPicture)
+                    it.loadImageInto(meetupPicture, context)
                 }
             }
         } else {

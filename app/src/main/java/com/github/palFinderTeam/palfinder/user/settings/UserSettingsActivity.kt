@@ -135,7 +135,7 @@ class UserSettingsActivity : AppCompatActivity() {
         }
         viewModel.pfp.observeOnce(this) {
             lifecycleScope.launch {
-                ImageInstance(it).loadImageInto(imageField)
+                ImageInstance(it).loadImageInto(imageField, applicationContext)
             }
         }
         viewModel.birthday.observeOnce(this) {

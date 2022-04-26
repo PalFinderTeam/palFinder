@@ -198,7 +198,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation) {
                     rootView.findViewById<ImageView>(R.id.iv_Icon)
                         .setImageDrawable(getDrawable(requireContext(), R.drawable.icon_group))
                 } else {
-                    ImageInstance(it).loadImageInto(icon)
+                    ImageInstance(it).loadImageInto(icon, requireContext())
                 }
             }
         }
@@ -212,7 +212,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation) {
         viewModel.icon.observe(viewLifecycleOwner) {
             viewModel.viewModelScope.launch {
                 if (it != null) {
-                    ImageInstance(it).loadImageInto(rootView.findViewById(R.id.iv_Icon))
+                    ImageInstance(it).loadImageInto(rootView.findViewById(R.id.iv_Icon), requireContext())
                 } else {
                     rootView.findViewById<ImageView>(R.id.iv_Icon)
                         .setImageDrawable(getDrawable(requireContext(), R.drawable.icon_group))
