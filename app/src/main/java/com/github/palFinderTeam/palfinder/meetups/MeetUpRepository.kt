@@ -52,13 +52,11 @@ interface MeetUpRepository {
      * @param location Location around which to search.
      * @param radiusInKm Radius in Km of the search.
      * @param currentDate If not null, will fetch only meetups that are available at this date.
-     * @param loggedUser If not null, will only fetch meetups joined by this user.
      */
     fun getMeetUpsAroundLocation(
         location: Location,
         radiusInKm: Double,
         currentDate: Calendar? = null,
-        loggedUser: String? = null
     ): Flow<Response<List<MeetUp>>>
 
     /**
@@ -86,11 +84,21 @@ interface MeetUpRepository {
      * Fetches every meetups from DB. It will be removed later but is useful for development.
      *
      * @param currentDate If not null, will fetch only meetups that are available.
-     * @param loggedUser If not null, will only fetch meetups joined by this user.
      */
     @ExperimentalCoroutinesApi
     fun getAllMeetUps(
         currentDate: Calendar? = null,
-        loggedUser: String? = null
     ): Flow<List<MeetUp>>
+
+    /**
+     * Get all meetup the user, with id [userId], is taking part of.
+     *
+     * @return A flow of the form Fetching -> MeetUps or Fetching -> Failure.
+     */
+    fun getUserMeetups(userId: String): Flow<Response<List<MeetUp>>>
+
+    /**
+     * Get all meetup from the list of ids [meetUpIds].
+     */
+    suspend fun getMeetUpsData(meetUpIds: List<String>): List<MeetUp>?
 }

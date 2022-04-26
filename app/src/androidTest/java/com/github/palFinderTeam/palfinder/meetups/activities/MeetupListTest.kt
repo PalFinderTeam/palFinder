@@ -396,10 +396,6 @@ class MeetUpListTest {
         }, navHostController = navController)
 
         scenario!!.use {
-            scenario.onHiltFragment<MeetupListFragment> {
-                it.viewModel.setSearchParamAndFetch(location = searchLocation)
-                it.viewModel.fetchMeetUps()
-            }
 
             val joinedMeetUps = meetUpList.filter { it.participantsId.contains(loggedUserId) }
                 .map { withText(it.name) }

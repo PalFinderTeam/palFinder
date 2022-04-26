@@ -63,8 +63,14 @@ class MockMeetUpRepository : MeetUpRepository {
         loggedUser: String?
     ): Flow<Response<List<MeetUp>>> {
         return flow {
-            val meetUps = db.values.filter { meetUp ->
+            var meetUps = db.values.filter { meetUp ->
                 meetUp.location.distanceInKm(location) <= radiusInKm
+            }
+            if (currentDate != null) {
+                meetUps = meetUps.filter { !it.isFinished(currentDate) }
+            }
+            if (loggedUser != null) {
+                meetUps = meetUps.filter { it.isParticipating(loggedUser) }
             }
 
             emit(Response.Success(meetUps))
@@ -74,7 +80,14 @@ class MockMeetUpRepository : MeetUpRepository {
     @ExperimentalCoroutinesApi
     override fun getAllMeetUps(currentDate: Calendar?, loggedUser: String?): Flow<List<MeetUp>> {
         return flow {
-            emit(db.values.toList())
+            var meetUps = db.values.toList()
+            if (currentDate != null) {
+                meetUps = meetUps.filter { !it.isFinished(currentDate) }
+            }
+            if (loggedUser != null) {
+                meetUps = meetUps.filter { it.isParticipating(loggedUser) }
+            }
+            emit(meetUps)
         }
     }
 
