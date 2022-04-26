@@ -96,7 +96,7 @@ interface MeetUpRepository {
      *
      * @return A flow of the form Fetching -> MeetUps or Fetching -> Failure.
      */
-    fun getUserMeetups(userId: String, currentDate: Calendar?): Flow<Response<List<MeetUp>>>
+    fun getUserMeetups(userId: String, currentDate: Calendar? = null): Flow<Response<List<MeetUp>>>
 
     /**
      * Get all meetup from the list of ids [meetUpIds].

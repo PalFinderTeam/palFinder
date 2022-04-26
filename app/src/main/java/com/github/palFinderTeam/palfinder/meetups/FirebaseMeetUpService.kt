@@ -3,9 +3,9 @@ package com.github.palFinderTeam.palfinder.meetups
 import android.icu.util.Calendar
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
+import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.END_DATE
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.GEOHASH
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.PARTICIPANTS
-import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.START_DATE
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
@@ -231,7 +231,7 @@ class FirebaseMeetUpService @Inject constructor(
     override fun getAllMeetUps(currentDate: Calendar?): Flow<List<MeetUp>> {
         var query: Query = db.collection(MEETUP_COLL)
         if (currentDate != null) {
-            query = query.whereGreaterThan(START_DATE, currentDate)
+            query = query.whereGreaterThan(END_DATE, currentDate.time)
         }
 
         return callbackFlow {
