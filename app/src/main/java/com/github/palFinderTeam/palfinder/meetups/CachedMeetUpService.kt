@@ -5,6 +5,8 @@ import com.github.palFinderTeam.palfinder.PalFinderApplication
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.cache.FileCache
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.isBefore
+import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -12,9 +14,18 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class CachedMeetUpService @Inject constructor(
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val time: TimeService
 ): FirebaseMeetUpService(db) {
-    private var cache = DictionaryCache("meetup", MeetUp::class.java, false, PalFinderApplication.instance)
+    private var cache = DictionaryCache("meetup", MeetUp::class.java, false, PalFinderApplication.instance){
+        val expirationDate = time.now()
+        expirationDate.add(Calendar.MINUTE, -10)
+
+        val date = time.now()
+        date.timeInMillis = it.lastModified()
+
+        date.isBefore(expirationDate)
+    }
     private var cacheJoined = FileCache("meetup_joined", JoinedMeetupListWrapper::class.java, true, PalFinderApplication.instance)
 
     private fun addJoinedMeetupToCache(meetUpId: String){

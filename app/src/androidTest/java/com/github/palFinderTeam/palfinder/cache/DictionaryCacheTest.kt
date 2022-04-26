@@ -70,10 +70,12 @@ class DictionaryCacheTest {
         val scenario = ActivityScenario.launch<MeetupListActivity>(intent)
         scenario.use {
             val dummy = Dummy("dummy", 0)
-            val cache = DictionaryCache("test", Dummy::class.java, false, context)
+            val cache = DictionaryCache("test", Dummy::class.java, false, context){
+                true
+            }
 
             cache.store("dummy", dummy)
-            cache.evict { true }
+            cache.evict()
 
             assertThat(cache.contains("dummy"), `is`(false))
         }

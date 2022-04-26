@@ -46,10 +46,10 @@ class FirebaseMeetUpServiceTest {
             .build()
         db.firestoreSettings = settings
 
-        firebaseMeetUpService = CachedMeetUpService(db)
-        firebaseProfileService = CachedProfileService(db,
-            UIMockTimeServiceModule.UIMockTimeService().setDate(Calendar.getInstance().apply { time = Date(0) })
-        )
+        val timeService = UIMockTimeServiceModule.UIMockTimeService().setDate(Calendar.getInstance().apply { time = Date(0) })
+
+        firebaseMeetUpService = CachedMeetUpService(db, timeService)
+        firebaseProfileService = CachedProfileService(db, timeService)
 
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }
