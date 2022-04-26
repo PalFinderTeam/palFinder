@@ -84,9 +84,9 @@ class MapsFragmentTest {
         val long = -15.0
 
         val date1 = Calendar.getInstance()
-        date1!!.set(2022, 2, 1, 0, 0, 0)
+        date1!!.set(2024, 2, 1, 0, 0, 0)
         val date2 = Calendar.getInstance()
-        date2!!.set(2022, 2, 1, 1, 0, 0)
+        date2!!.set(2025, 2, 1, 1, 0, 0)
 
         val meetup = MeetUp(
             "",

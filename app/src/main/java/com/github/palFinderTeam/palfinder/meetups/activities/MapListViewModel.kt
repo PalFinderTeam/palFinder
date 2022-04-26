@@ -15,7 +15,7 @@ import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
-import com.github.palFinderTeam.palfinder.utils.time.RealTimeService
+import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,7 +28,7 @@ import javax.inject.Inject
 class MapListViewModel @Inject constructor(
     val meetUpRepository: MeetUpRepository,
     val profileService: ProfileService,
-    val timeService: RealTimeService,
+    val timeService: TimeService,
     application: Application
 ) : AndroidViewModel(application) {
     private val _listOfMeetUpResponse: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
