@@ -1,17 +1,26 @@
 package com.github.palFinderTeam.palfinder.navigation
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.ui.login.IS_NO_ACCOUNT_USER
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
+import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -74,23 +83,41 @@ class MainNavActivity : AppCompatActivity() {
 
                 when (item.itemId) {
                     R.id.nav_bar_create -> {
-                        navController.popBackStack()
-                        navController.navigate(
-                            R.id.creation_fragment,
-                            args = null,
-                            navOptions = options
-                        )
+                        if(IS_NO_ACCOUNT_USER){
+                            createPopUp(this,
+                                findViewById(R.id.nav_bar_find),
+                                { startActivity(Intent(this, LoginActivity::class.java)) },
+                                textId = R.string.no_account_create,
+                                continueButtonTextId = R.string.login
+                            )
+                        }else {
+                            navController.popBackStack()
+                            navController.navigate(
+                                R.id.creation_fragment,
+                                args = null,
+                                navOptions = options
+                            )
+                        }
                     }
                     R.id.nav_bar_groups -> {
-                        navController.popBackStack()
-                        val args = Bundle().apply {
-                            putBoolean("ShowOnlyJoined", true)
+                        if(IS_NO_ACCOUNT_USER){
+                            createPopUp(this,
+                                findViewById(R.id.nav_bar_find),
+                                { startActivity(Intent(this, LoginActivity::class.java)) },
+                                textId = R.string.no_account_groups,
+                                continueButtonTextId = R.string.login
+                            )
+                        }else {
+                            navController.popBackStack()
+                            val args = Bundle().apply {
+                                putBoolean("ShowOnlyJoined", true)
+                            }
+                            navController.navigate(
+                                R.id.list_fragment,
+                                args = args,
+                                navOptions = options
+                            )
                         }
-                        navController.navigate(
-                            R.id.list_fragment,
-                            args = args,
-                            navOptions = options
-                        )
                     }
                     R.id.nav_bar_find -> {
                         navController.popBackStack()
@@ -152,4 +179,5 @@ class MainNavActivity : AppCompatActivity() {
             else -> -1
         }
     }
+
 }

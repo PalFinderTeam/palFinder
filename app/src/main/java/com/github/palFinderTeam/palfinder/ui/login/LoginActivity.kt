@@ -14,10 +14,10 @@ import android.icu.util.Calendar
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
@@ -34,6 +34,7 @@ import com.google.firebase.auth.ktx.auth
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
+import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.ktx.firestore
 //import com.google.firebase.firestore.SetOptions
@@ -42,6 +43,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 const val CREATE_ACCOUNT_PROFILE = "com.github.palFinderTeam.palFinder.CREATE_ACCOUNT_PROFILE"
+var IS_NO_ACCOUNT_USER = false
 
 class LoginActivity : AppCompatActivity() {
 
@@ -81,6 +83,8 @@ class LoginActivity : AppCompatActivity() {
 
         val signInButton = findViewById<SignInButton>(R.id.signInButton)
         val signInOrRegister = findViewById<Button>(R.id.login)
+        val noAccountButton = findViewById<Button>(R.id.noAccountButton)
+
         auth = Firebase.auth
         oneTapClient = Identity.getSignInClient(this)
         signInRequest= beginSignInRequest()
@@ -93,6 +97,7 @@ class LoginActivity : AppCompatActivity() {
         }
         configureGoogleSignIn(signInButton)
         configurePasswordSignIn(signInOrRegister)
+        configureNoAccountButton(noAccountButton)
     }
 
     private fun configurePasswordSignIn(signInOrRegister: Button) {
@@ -386,5 +391,20 @@ class LoginActivity : AppCompatActivity() {
     /*private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
     }*/
+
+    private fun configureNoAccountButton(noAccount: Button){
+        noAccount.setOnClickListener {
+
+            createPopUp(this,
+                findViewById(R.id.container),
+                {
+                    IS_NO_ACCOUNT_USER = true
+                    startActivity(Intent(this, MainNavActivity::class.java))
+                    finish()
+                }
+            )
+
+        }
+    }
 }
 
