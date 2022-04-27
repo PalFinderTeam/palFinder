@@ -9,17 +9,12 @@ import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
-import com.github.palFinderTeam.palfinder.utils.Location
-import com.github.palFinderTeam.palfinder.utils.Response
-import com.github.palFinderTeam.palfinder.utils.UIMockContextServiceModule
-import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
+import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.*
@@ -68,7 +63,7 @@ class CachedMeetUpServiceTest {
 
         meetUp = MeetUp(
             "dummy",
-            "userId",
+            "userIdxc3",
             null,
             "dummy",
             "dummy",
@@ -78,7 +73,9 @@ class CachedMeetUpServiceTest {
             setOf(Category.DRINKING),
             true,
             3,
-            listOf("userId2")
+            listOf("userIdxc"),
+            Pair(null, null),
+            CriterionGender.ALL
         )
     }
 
