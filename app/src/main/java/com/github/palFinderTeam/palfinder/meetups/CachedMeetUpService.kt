@@ -28,12 +28,16 @@ class CachedMeetUpService @Inject constructor(
         } else {
             JoinedMeetupListWrapper(mutableListOf())
         }
-        jml.lst.add(meetUpId)
-        cacheJoined.store(jml)
+        if (!jml.lst.contains(meetUpId)) {
+            jml.lst.add(meetUpId)
+            cacheJoined.store(jml)
+        }
     }
     private fun removeJoinedMeetupFromCache(meetUpId: String){
         val jml = cacheJoined.get()
-        jml.lst.remove(meetUpId)
+        while (jml.lst.contains(meetUpId)) {
+            jml.lst.remove(meetUpId)
+        }
         cacheJoined.store(jml)
     }
     private fun clearJoinedMeetupToCache(meetUpId: String){
