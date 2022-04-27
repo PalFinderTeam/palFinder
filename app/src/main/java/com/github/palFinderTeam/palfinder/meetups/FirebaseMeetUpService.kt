@@ -3,9 +3,14 @@ package com.github.palFinderTeam.palfinder.meetups
 import android.icu.util.Calendar
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
+import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.END_DATE
+import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.GEOHASH
+import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.PARTICIPANTS
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOINED_MEETUPS_KEY
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.Response.*
@@ -15,7 +20,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -37,9 +42,21 @@ class FirebaseMeetUpService @Inject constructor(
         }
     }
 
+    override suspend fun getMeetUpsData(meetUpIds: List<String>): List<MeetUp>? {
+        return try {
+            db.collection(MEETUP_COLL).whereIn(FieldPath.documentId(), meetUpIds)
+                .get().await().mapNotNull { it.toMeetUp() }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     override suspend fun createMeetUp(newMeetUp: MeetUp): String? {
         return try {
-            db.collection(MEETUP_COLL).add(newMeetUp.toFirestoreData()).await().id
+            val id = db.collection(MEETUP_COLL).add(newMeetUp.toFirestoreData()).await().id
+            db.collection(PROFILE_COLL).document(newMeetUp.creatorId)
+                .update(JOINED_MEETUPS_KEY, FieldValue.arrayUnion(id)).await()
+            id
         } catch (e: Exception) {
             null
         }
@@ -70,27 +87,27 @@ class FirebaseMeetUpService @Inject constructor(
 
     override fun getMeetUpsAroundLocation(
         location: Location,
-        radiusInKm: Double
+        radiusInKm: Double,
+        currentDate: Calendar?,
     ): Flow<Response<List<MeetUp>>> {
 
         val geoLocation = GeoLocation(location.latitude, location.longitude)
         val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInKm * 1000.0)
         val tasks = bounds.map {
             db.collection(MEETUP_COLL)
-                .orderBy("geohash")
+                .orderBy(GEOHASH)
                 .startAt(it.startHash)
                 .endAt(it.endHash)
         }
         var remaining = tasks.size
-
 
         return callbackFlow {
             trySend(Loading())
 
             val result = mutableSetOf<MeetUp>()
 
-            val listeners = tasks.map { task ->
-                task.addSnapshotListener { value, error ->
+            val listeners = tasks.map { query ->
+                query.addSnapshotListener { value, error ->
                     if (error != null) {
                         trySend(Failure(error.message.orEmpty()))
                         cancel(
@@ -100,7 +117,7 @@ class FirebaseMeetUpService @Inject constructor(
                         return@addSnapshotListener
                     }
 
-                    val meetups = value?.documents
+                    var meetups = value?.documents
                         ?.mapNotNull { it.toMeetUp() }
                         ?.filter {
                             // Filter the last false positive
@@ -109,6 +126,10 @@ class FirebaseMeetUpService @Inject constructor(
                                 docLocation.distanceInKm(location)
                             distanceInKm <= radiusInKm
                         }
+                    // Cannot combine queries, so perform things locally instead.
+                    if (currentDate != null) {
+                        meetups = meetups?.filter { !it.isFinished(currentDate) }
+                    }
 
                     val deletedMeetups = value?.documentChanges
                         ?.filter {
@@ -165,12 +186,12 @@ class FirebaseMeetUpService @Inject constructor(
             val batch = db.batch()
             batch.update(
                 db.collection(MEETUP_COLL).document(meetUpId),
-                "participants",
+                PARTICIPANTS,
                 FieldValue.arrayUnion(userId)
             )
             batch.update(
                 db.collection(PROFILE_COLL).document(userId),
-                "joined_meetups", FieldValue.arrayUnion(meetUpId)
+                JOINED_MEETUPS_KEY, FieldValue.arrayUnion(meetUpId)
             )
             batch.commit().await()
             Success(Unit)
@@ -192,12 +213,12 @@ class FirebaseMeetUpService @Inject constructor(
             val batch = db.batch()
             batch.update(
                 db.collection(MEETUP_COLL).document(meetUpId),
-                "participants",
+                PARTICIPANTS,
                 FieldValue.arrayRemove(userId)
             )
             batch.update(
                 db.collection(PROFILE_COLL).document(userId),
-                "joined_meetups", FieldValue.arrayRemove(meetUpId)
+                JOINED_MEETUPS_KEY, FieldValue.arrayRemove(meetUpId)
             )
             batch.commit().await()
             Success(Unit)
@@ -207,9 +228,14 @@ class FirebaseMeetUpService @Inject constructor(
     }
 
     @ExperimentalCoroutinesApi
-    override fun getAllMeetUps(): Flow<List<MeetUp>> {
+    override fun getAllMeetUps(currentDate: Calendar?): Flow<List<MeetUp>> {
+        var query: Query = db.collection(MEETUP_COLL)
+        if (currentDate != null) {
+            query = query.whereGreaterThan(END_DATE, currentDate.time)
+        }
+
         return callbackFlow {
-            val listenerRegistration = db.collection(MEETUP_COLL)
+            val listenerRegistration = query
                 .addSnapshotListener { querySnapshot: QuerySnapshot?, firebaseFirestoreException: FirebaseFirestoreException? ->
                     if (firebaseFirestoreException != null) {
                         cancel(
@@ -230,10 +256,30 @@ class FirebaseMeetUpService @Inject constructor(
         }
     }
 
-    @ExperimentalCoroutinesApi
-    override fun getAllMeetUpsResponse(): Flow<Response<List<MeetUp>>> {
-        return getAllMeetUps().map {
-            Success(it)
+    override fun getUserMeetups(
+        userId: String,
+        currentDate: Calendar?
+    ): Flow<Response<List<MeetUp>>> {
+        val query = db.collection(PROFILE_COLL).document(userId)
+
+        return flow {
+            emit(Loading())
+            val profile = query.get().await().toProfileUser()
+            if (profile == null) {
+                emit(Failure("Could not fetch profile."))
+            } else {
+                val meetUps = getMeetUpsData(profile.joinedMeetUps)
+                if (meetUps == null) {
+                    emit(Failure("Could not fetch meetups."))
+                } else {
+                    if (currentDate != null) {
+                        val filtered = meetUps.filter { !it.isFinished(currentDate) }
+                        emit(Success(filtered))
+                    } else {
+                        emit(Success(meetUps))
+                    }
+                }
+            }
         }
     }
 

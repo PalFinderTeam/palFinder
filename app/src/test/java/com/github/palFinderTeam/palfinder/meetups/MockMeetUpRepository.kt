@@ -29,7 +29,7 @@ class MockMeetUpRepository : MeetUpRepository {
     override suspend fun editMeetUp(meetUpId: String, field: String, value: Any): String? {
         if (db.containsKey(meetUpId)) {
             val oldVal = db[meetUpId]!!
-            db[meetUpId] = when(field) {
+            db[meetUpId] = when (field) {
                 "name" -> oldVal.copy(name = value as String)
                 "capacity" -> oldVal.copy(capacity = value as Int)
                 "creator" -> oldVal.copy(creatorId = value as String)
@@ -59,11 +59,15 @@ class MockMeetUpRepository : MeetUpRepository {
 
     override fun getMeetUpsAroundLocation(
         location: Location,
-        radiusInKm: Double
+        radiusInKm: Double,
+        currentDate: Calendar?,
     ): Flow<Response<List<MeetUp>>> {
         return flow {
-            val meetUps = db.values.filter { meetUp ->
+            var meetUps = db.values.filter { meetUp ->
                 meetUp.location.distanceInKm(location) <= radiusInKm
+            }
+            if (currentDate != null) {
+                meetUps = meetUps.filter { !it.isFinished(currentDate) }
             }
 
             emit(Response.Success(meetUps))
@@ -71,16 +75,13 @@ class MockMeetUpRepository : MeetUpRepository {
     }
 
     @ExperimentalCoroutinesApi
-    override fun getAllMeetUps(): Flow<List<MeetUp>> {
+    override fun getAllMeetUps(currentDate: Calendar?): Flow<List<MeetUp>> {
         return flow {
-            emit(db.values.toList())
-        }
-    }
-
-    @ExperimentalCoroutinesApi
-    override fun getAllMeetUpsResponse(): Flow<Response<List<MeetUp>>> {
-        return getAllMeetUps().map {
-            Response.Success(it)
+            var meetUps = db.values.toList()
+            if (currentDate != null) {
+                meetUps = meetUps.filter { !it.isFinished(currentDate) }
+            }
+            emit(meetUps)
         }
     }
 
@@ -88,7 +89,7 @@ class MockMeetUpRepository : MeetUpRepository {
         meetUpId: String,
         userId: String,
         now: Calendar,
-        profileUser: ProfileUser
+        profile: ProfileUser
     ): Response<Unit> {
         return if (db.containsKey(meetUpId)) {
             val meetUp = db[meetUpId] ?: return Response.Failure("Could not find meetup")
@@ -112,7 +113,8 @@ class MockMeetUpRepository : MeetUpRepository {
 
     override suspend fun leaveMeetUp(meetUpId: String, userId: String): Response<Unit> {
         return try {
-            val meetUp = getMeetUpData(meetUpId) ?: return Response.Failure("Could not find meetup.")
+            val meetUp =
+                getMeetUpData(meetUpId) ?: return Response.Failure("Could not find meetup.")
             if (!meetUp.isParticipating(userId)) {
                 return Response.Failure("Cannot leave a meetup which was not joined before")
             }
@@ -121,6 +123,22 @@ class MockMeetUpRepository : MeetUpRepository {
         } catch (e: Exception) {
             Response.Failure(e.message.orEmpty())
         }
+    }
+
+    override fun getUserMeetups(
+        userId: String,
+        currentDate: Calendar?
+    ): Flow<Response<List<MeetUp>>> {
+        val userMeetUps = getAllMeetUps().map { Response.Success(it.filter { it.isParticipating(userId) }) }
+        if (currentDate != null) {
+            return userMeetUps.map { Response.Success(it.data.filter { !it.isFinished(currentDate) }) }
+        } else {
+            return userMeetUps
+        }
+    }
+
+    override suspend fun getMeetUpsData(meetUpIds: List<String>): List<MeetUp>? {
+        return meetUpIds.mapNotNull { db[it] }
     }
 
     fun clearDB() {
