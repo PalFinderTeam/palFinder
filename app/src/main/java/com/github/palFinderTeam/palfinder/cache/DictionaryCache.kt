@@ -87,7 +87,13 @@ class DictionaryCache<T> (
      */
     fun getAll():List<T>{
         loadMetaCache()
-        return keylist.filter { contains(it) }.map { get(it) }.toList()
+        return keylist.filter { contains(it) }.mapNotNull {
+            try{
+                get(it)
+            } catch (e: Exception){
+                null
+            }
+        }.toList()
     }
 
     private fun storeMetaCache(){
