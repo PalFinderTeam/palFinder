@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.getLastBit
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -31,10 +32,13 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        if (intent.hasExtra(USER_ID)) {
-            val userId = intent.getStringExtra(USER_ID)!!
-            viewModel.fetchProfile(userId)
+        val userId = if (intent.hasExtra(USER_ID)) {
+            intent.getStringExtra(USER_ID)!!
+        }else{
+            getLastBit(intent.data.toString())
         }
+        viewModel.fetchProfile(userId)
+
         viewModel.profile.observe(this) {
             when(it) {
                 is Response.Success -> injectUserInfo(it.data)

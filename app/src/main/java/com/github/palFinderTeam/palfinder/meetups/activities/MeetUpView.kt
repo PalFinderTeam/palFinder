@@ -2,10 +2,12 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.github.palFinderTeam.palfinder.R
@@ -17,6 +19,7 @@ import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
+import com.github.palFinderTeam.palfinder.utils.getLastBit
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -29,11 +32,16 @@ class MeetUpView : AppCompatActivity() {
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     private lateinit var tagsViewModel: TagsViewModel<Category>
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_view)
 
-        val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
+        val meetupId = if (intent.hasExtra(MEETUP_SHOWN)) {
+            intent.getSerializableExtra(MEETUP_SHOWN) as String
+        }else{
+            getLastBit(intent.data.toString())
+        }
         viewModel.loadMeetUp(meetupId)
         val button = findViewById<Button>(R.id.show_profile_list_button)
         button.setOnClickListener { showProfileList() }
