@@ -56,7 +56,17 @@ class DictionaryCache<T> (
             evict()//Optimisation
         }
         val file = File(getDir(), "${directory}_${uuid}")
-        return file.exists()
+        return if (file.exists()){
+            try{
+                get(uuid, ignorePolicy)
+                true
+            } catch (e: Exception){
+                file.delete()
+                false
+            }
+        } else{
+            false
+        }
     }
 
     /**
