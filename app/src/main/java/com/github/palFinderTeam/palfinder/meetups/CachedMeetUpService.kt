@@ -95,6 +95,7 @@ class CachedMeetUpService @Inject constructor(
         return when(val ret = super.joinMeetUp(meetUpId, userId, now, profile)){
             is Response.Success -> {
                 addJoinedMeetupToCache(meetUpId)
+                cache.delete(meetUpId)
                 ret
             }
             else -> ret
@@ -105,6 +106,7 @@ class CachedMeetUpService @Inject constructor(
         return when(val ret = super.leaveMeetUp(meetUpId, userId)){
             is Response.Success -> {
                 removeJoinedMeetupFromCache(meetUpId)
+                cache.delete(meetUpId)
                 ret
             }
             else -> ret
