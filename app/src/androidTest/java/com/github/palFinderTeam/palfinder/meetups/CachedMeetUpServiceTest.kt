@@ -214,6 +214,7 @@ class CachedMeetUpServiceTest {
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
         id!!.let {
+            firebaseMeetUpService.joinMeetUp(it, userId!!, meetUp.startDate, user1)
             val result = firebaseMeetUpService.leaveMeetUp(it, userId!!)
             assertThat(result, instanceOf(Response.Success::class.java))
             val meetUp = firebaseMeetUpService.getMeetUpData(it)
