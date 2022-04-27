@@ -12,16 +12,29 @@ import java.io.File
  * @param directory: name of the pseudo directory (it is in fact a prefix)
  * @param clazz: Class to store
  * @param permanent: Prevent Android from randomly deleting the data
- * @param contextService: Context Provider
  */
 class DictionaryCache<T> (
     private val directory: String,
     private val clazz: Class<T>,
     private val permanent: Boolean,
-    private val context: Context
+    private val context: Context,
+    private val policy: ((File) -> Boolean)? = null
 ){
+    companion object{
+        fun clearAllTempCaches(context: Context){
+            context.cacheDir.listFiles()?.filterNotNull()?.map{ it.delete() }
+        }
+    }
+
+    init {
+        if (policy!=null){
+            setEvictPolicy(policy)
+        }
+    }
 
     private var wasLoaded = false
+    private var hasEvictPolicy = false
+    private lateinit var evictPolicy: (File)->Boolean
     var keylist = HashSet<String>()
 
     private val gson = Gson()
@@ -38,7 +51,10 @@ class DictionaryCache<T> (
     /**
      * Return if true if the cache contains the object with key [uuid]
      */
-    fun contains(uuid: String): Boolean{
+    fun contains(uuid: String, ignorePolicy: Boolean = false): Boolean{
+        if (!ignorePolicy) {
+            evict()//Optimisation
+        }
         val file = File(getDir(), "${directory}_${uuid}")
         return file.exists()
     }
@@ -46,7 +62,10 @@ class DictionaryCache<T> (
     /**
      * Return if the cached object with key [uuid]
      */
-    fun get(uuid: String): T {
+    fun get(uuid: String, ignorePolicy: Boolean = false): T {
+        if (!ignorePolicy) {
+            evict()//Optimisation
+        }
         val file = File(getDir(), "${directory}_${uuid}")
         val content = file.readText()
 
@@ -56,7 +75,10 @@ class DictionaryCache<T> (
     /**
      * Store the object [obj] with key [uuid]
      */
-    fun store(uuid: String, obj: T){
+    fun store(uuid: String, obj: T, ignorePolicy: Boolean = false){
+        if (!ignorePolicy) {
+            evict()//Optimisation
+        }
         val file = File(getDir(), "${directory}_${uuid}")
         file.writeText(gson.toJson(obj))
 
@@ -70,7 +92,10 @@ class DictionaryCache<T> (
     /**
      * Delete the cached version of object with key [uuid]
      */
-    fun delete(uuid: String){
+    fun delete(uuid: String, ignorePolicy: Boolean = false){
+        if (!ignorePolicy) {
+            evict()//Optimisation
+        }
         val file = File(getDir(), "${directory}_${uuid}")
         if (file.exists()) {
             file.delete()
@@ -94,6 +119,17 @@ class DictionaryCache<T> (
                 null
             }
         }.toList()
+    }
+    fun evict(){
+        if (hasEvictPolicy){
+            keylist.filter { contains(it, true) }
+                .filter { evictPolicy(File(getDir(), "${directory}_${it}")) }
+                .map{ delete(it, true) }
+        }
+    }
+    fun setEvictPolicy(policy: (File)->Boolean){
+        evictPolicy = policy
+        hasEvictPolicy = true
     }
 
     private fun storeMetaCache(){

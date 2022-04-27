@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -62,7 +63,7 @@ interface MeetUpRepository {
      * @param meetUpId Id of the meetup to join.
      * @param userId Id of user that joins.
      */
-    suspend fun joinMeetUp(meetUpId: String, userId: String, now: Calendar): Response<Unit>
+    suspend fun joinMeetUp(meetUpId: String, userId: String, now: Calendar, profile : ProfileUser): Response<Unit>
 
     /**
      * Try to leave a meetup.
