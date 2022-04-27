@@ -2,19 +2,16 @@ package com.github.palFinderTeam.palfinder
 
 import android.content.Intent
 import android.icu.util.Calendar
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.notification.NotificationHandler
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
-import com.github.palFinderTeam.palfinder.utils.EndlessService
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -99,12 +96,8 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, UserSettingsActivity::class.java).apply {  }
         startActivity(intent)
     }
-    var test = false
+
     fun notif(view: View){
-        if (!test){
-            EndlessService.scheduleJob(this)
-            test = true
-        }
         NotificationHandler(this).schedule(Calendar.getInstance(),"test", "content", R.drawable.icon_beer)
     }
     

@@ -1,7 +1,7 @@
 package com.github.palFinderTeam.palfinder
 
 import android.app.Application
-import android.content.Context
+import com.github.palFinderTeam.palfinder.utils.EndlessService
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -13,6 +13,8 @@ class PalFinderApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+
+        EndlessService.scheduleJob(this)
     }
 
 }
