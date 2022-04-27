@@ -6,6 +6,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
+import com.github.palFinderTeam.palfinder.chat.CachedChatService
+import com.github.palFinderTeam.palfinder.chat.ChatService
 import com.github.palFinderTeam.palfinder.di.FirestoreModule
 import com.github.palFinderTeam.palfinder.meetups.CachedMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
@@ -20,12 +22,19 @@ import javax.inject.Inject
 
 class NotificationService @Inject constructor(
     var timeService: TimeService,
-    var meetupService: MeetUpRepository
+    var meetupService: MeetUpRepository,
+    var chatService: ChatService
     ): JobService() {
 
-    constructor() : this(RealTimeService(), CachedMeetUpService(FirestoreModule.provideFirestore(), RealTimeService(), AppContextService()))
+    constructor() : this(
+        RealTimeService(),
+        CachedMeetUpService(FirestoreModule.provideFirestore(), RealTimeService(), AppContextService()),
+        CachedChatService(FirestoreModule.provideFirestore(), AppContextService())
+    )
+
 
     private val notifications = DictionaryCache("notification", CachedNotification::class.java, false, this)
+    private val meetups = DictionaryCache("meetup_meta", MeetupMetaData::class.java, false, this)
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun action() {
@@ -39,17 +48,22 @@ class NotificationService @Inject constructor(
         runBlocking {
             for (m in (meetupService as CachedMeetUpService).getAllJoinedMeetupID()) {
                 var meetup = meetupService.getMeetUpData(m)
+                val meta = if (meetups.contains(m)) {
+                    meetups.get(m)
+                }else{
+                    val ret = MeetupMetaData(m, false, "")
+                    meetups.store(m, ret)
+                    ret
+                }
                 if (meetup != null){
-                    NotificationHandler(context).schedule(
-                        meetup.startDate,
-                        meetup.name,
-                        meetup.description,
-                        R.drawable.icon_beer
-                    )
+                    if (!meta.sendStartNotification && meetup.startDate.isBefore(timeService.now())) {
+                        NotificationHandler(context).post(meetup.name, meetup.description, R.drawable.icon_beer)
+                        meta.sendStartNotification = true
+                        meetups.store(m, meta)
+                    }
                 }
             }
         }
-        NotificationHandler(this).post("test","test",R.drawable.icon_beer)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -62,4 +76,6 @@ class NotificationService @Inject constructor(
     override fun onStopJob(params: JobParameters?): Boolean {
         return true
     }
+
+    data class MeetupMetaData(var uuid: String, var sendStartNotification: Boolean, var lastMessageNotification: String)
 }
