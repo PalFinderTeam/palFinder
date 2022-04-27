@@ -48,6 +48,14 @@ class CachedMeetUpService @Inject constructor(
         cacheJoined.store(JoinedMeetupListWrapper(mutableListOf()))
     }
 
+    override suspend fun createMeetUp(newMeetUp: MeetUp): String? {
+        val ret = super.createMeetUp(newMeetUp)
+        if (ret != null){
+            addJoinedMeetupToCache(ret)
+            getMeetUpData(ret) // Cache it
+        }
+        return ret
+    }
 
     /**
      * Return List of all joined Meetup ID
