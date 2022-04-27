@@ -24,7 +24,7 @@ class NotificationService @Inject constructor(
     var timeService: TimeService,
     var meetupService: MeetUpRepository,
     var chatService: ChatService
-    ): JobService() {
+): JobService() {
 
     constructor() : this(
         RealTimeService(),
@@ -37,7 +37,7 @@ class NotificationService @Inject constructor(
     private val meetups = DictionaryCache("meetup_meta", MeetupMetaData::class.java, false, this)
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun action() {
+    fun action(){
         for (notif in notifications.getAll()){
             if (notif.time.isBefore(timeService.now())){
                 NotificationHandler(this).post(notif.title, notif.content, notif.icon)
@@ -50,17 +50,39 @@ class NotificationService @Inject constructor(
                 var meetup = meetupService.getMeetUpData(m)
                 val meta = if (meetups.contains(m)) {
                     meetups.get(m)
-                }else{
+                } else {
                     val ret = MeetupMetaData(m, false, "")
                     meetups.store(m, ret)
                     ret
                 }
-                if (meetup != null){
+                if (meetup != null) {
                     if (!meta.sendStartNotification && meetup.startDate.isBefore(timeService.now())) {
-                        NotificationHandler(context).post(meetup.name, meetup.description, R.drawable.icon_beer)
+                        NotificationHandler(context).post(
+                            meetup.name,
+                            meetup.description,
+                            R.drawable.icon_beer
+                        )
                         meta.sendStartNotification = true
                         meetups.store(m, meta)
                     }
+                    /*chatService.getAllMessageFromChat(m).first {
+                        if (it.isNotEmpty()) {
+                            val meta = meetups.get(m)
+                            val last = it.takeLast(1)[0]
+                            val hash = last.hashCode().toString()
+
+                            if (hash != meta.lastMessageNotification) {
+                                NotificationHandler(context).post(
+                                    last.sentBy,
+                                    last.content,
+                                    R.drawable.icon_beer
+                                )
+
+                                meta.lastMessageNotification = hash
+                                meetups.store(m, meta)
+                            }
+                        }
+                    }*/
                 }
             }
         }
