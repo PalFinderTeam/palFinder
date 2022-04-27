@@ -6,7 +6,7 @@ import com.github.palFinderTeam.palfinder.cache.FileCache
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.context.ContextService
-import com.github.palFinderTeam.palfinder.utils.isBefore
+import com.github.palFinderTeam.palfinder.utils.evictAfterXMinutes
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,15 +19,7 @@ class CachedMeetUpService @Inject constructor(
     private val time: TimeService,
     private val contextProvider: ContextService
 ): FirebaseMeetUpService(db) {
-    private var cache = DictionaryCache("meetup", MeetUp::class.java, false, contextProvider.get()){
-        val expirationDate = time.now()
-        expirationDate.add(Calendar.MINUTE, -10)
-
-        val date = time.now()
-        date.timeInMillis = it.lastModified()
-
-        date.isBefore(expirationDate)
-    }
+    private var cache = DictionaryCache("meetup", MeetUp::class.java, false, contextProvider.get(), evictAfterXMinutes(10, time))
     private var cacheJoined = FileCache("meetup_joined", JoinedMeetupListWrapper::class.java, true, contextProvider.get())
 
     private fun addJoinedMeetupToCache(meetUpId: String){
@@ -48,6 +40,14 @@ class CachedMeetUpService @Inject constructor(
         cacheJoined.store(JoinedMeetupListWrapper(mutableListOf()))
     }
 
+    override suspend fun createMeetUp(newMeetUp: MeetUp): String? {
+        val ret = super.createMeetUp(newMeetUp)
+        if (ret != null){
+            addJoinedMeetupToCache(ret)
+            getMeetUpData(ret) // Cache it
+        }
+        return ret
+    }
 
     /**
      * Return List of all joined Meetup ID

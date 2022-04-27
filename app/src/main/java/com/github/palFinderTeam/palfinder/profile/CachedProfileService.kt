@@ -1,10 +1,9 @@
 package com.github.palFinderTeam.palfinder.profile
 
-import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.context.ContextService
-import com.github.palFinderTeam.palfinder.utils.isBefore
+import com.github.palFinderTeam.palfinder.utils.evictAfterXMinutes
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
@@ -16,15 +15,7 @@ class CachedProfileService @Inject constructor(
     private val time: TimeService,
     private val contextProvider: ContextService
 ) : FirebaseProfileService(db) {
-    private var cache = DictionaryCache("profile", ProfileUser::class.java, false, contextProvider.get()){
-        val expirationDate = time.now()
-        expirationDate.add(Calendar.MINUTE, -10)
-
-        val date = time.now()
-        date.timeInMillis = it.lastModified()
-
-        date.isBefore(expirationDate)
-    }
+    private var cache = DictionaryCache("profile", ProfileUser::class.java, false, contextProvider.get(), evictAfterXMinutes(10, time))
 
     override suspend fun fetchUserProfile(userId: String): ProfileUser? {
         return if (cache.contains(userId)){
