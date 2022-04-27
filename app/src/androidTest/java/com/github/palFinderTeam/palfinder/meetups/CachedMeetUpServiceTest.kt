@@ -227,60 +227,6 @@ class CachedMeetUpServiceTest {
     }
 
     @Test
-    fun joinAlreadyJoinedMeetUpReturnsSuccess() = runTest {
-
-        val id = firebaseMeetUpService.createMeetUp(meetUp)
-        assertThat(id, notNullValue())
-        id!!.let {
-            val result = firebaseMeetUpService.joinMeetUp(it, "userId2", meetUp.startDate, user1)
-            assertThat(result, instanceOf(Response.Success::class.java))
-            assertThat(firebaseMeetUpService.getAllJoinedMeetupID(), hasItem(id))
-            // Make sure to clean for next tests
-            db.collection(MEETUP_COLL).document(it).delete().await()
-        }
-    }
-
-    @Test
-    fun joinMeetUpAfterItEndedReturnFailure() = runTest {
-        val id = firebaseMeetUpService.createMeetUp(meetUp)
-        assertThat(id, notNullValue())
-        id!!.let {
-            val dateAfter = Calendar.getInstance()
-            dateAfter.time = meetUp.endDate.time
-            dateAfter.add(Calendar.YEAR, 2)
-            val result = firebaseMeetUpService.joinMeetUp(it, "MichelId", dateAfter,user1)
-            assertThat(result, instanceOf(Response.Failure::class.java))
-            // Make sure to clean for next tests
-            db.collection(MEETUP_COLL).document(it).delete().await()
-        }
-    }
-
-    @Test
-    fun joinFullMeetUpReturnsFailure() = runTest {
-        val smallMeetUp = meetUp.copy(capacity = 2)
-        val id = firebaseMeetUpService.createMeetUp(smallMeetUp)
-        assertThat(id, notNullValue())
-        id!!.let {
-            val result = firebaseMeetUpService.joinMeetUp(it, "MichelId", smallMeetUp.startDate,user1)
-            assertThat(result, instanceOf(Response.Failure::class.java))
-            // Make sure to clean for next tests
-            db.collection(MEETUP_COLL).document(it).delete().await()
-        }
-    }
-
-    @Test
-    fun leaveMeetUpYouCreatedReturnsFailure() = runTest {
-        val id = firebaseMeetUpService.createMeetUp(meetUp)
-        assertThat(id, notNullValue())
-        id!!.let {
-            val result = firebaseMeetUpService.leaveMeetUp(it, "userId")
-            assertThat(result, instanceOf(Response.Failure::class.java))
-            // Make sure to clean for next tests
-            db.collection(MEETUP_COLL).document(it).delete().await()
-        }
-    }
-
-    @Test
     fun joinNonExistingMeetUpReturnsFailure() = runTest {
         val result = firebaseMeetUpService.joinMeetUp("UWU", "Whatever", Calendar.getInstance(),user1)
         assertThat(result, instanceOf(Response.Failure::class.java))
