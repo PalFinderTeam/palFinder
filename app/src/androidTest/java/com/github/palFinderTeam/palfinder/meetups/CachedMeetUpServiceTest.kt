@@ -81,6 +81,7 @@ class CachedMeetUpServiceTest {
 
     @Test
     fun inserting_new_meetup_insert_in_DB() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
         id!!.let {
@@ -93,6 +94,7 @@ class CachedMeetUpServiceTest {
 
     @Test
     fun editingMeetupEditInDB() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
         id!!.let {
@@ -110,6 +112,7 @@ class CachedMeetUpServiceTest {
 
     @Test
     fun editingOneFieldEditInDb() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
         id!!.let {
@@ -127,6 +130,7 @@ class CachedMeetUpServiceTest {
 
     @Test
     fun getMeetUpDataGetRightInfo() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
         id!!.let {
@@ -140,6 +144,7 @@ class CachedMeetUpServiceTest {
 
     @Test
     fun getMeetUpDataTwiceGetRightInfo() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
         id!!.let {
@@ -157,33 +162,8 @@ class CachedMeetUpServiceTest {
     }
 
     @Test
-    fun getAllMeetUpReturnsAllMeetUps() = runTest {
-        val meetUp2 = meetUp.copy(creatorId = "michel")
-        val meetUp3 = meetUp.copy(creatorId = "jp")
-        val id = firebaseMeetUpService.createMeetUp(meetUp)
-        val id2 = firebaseMeetUpService.createMeetUp(meetUp2)
-        val id3 = firebaseMeetUpService.createMeetUp(meetUp3)
-        assertThat(id, notNullValue())
-        assertThat(id2, notNullValue())
-        assertThat(id3, notNullValue())
-        if (id != null && id2 != null && id3 != null) {
-            val fetchedMeetups = firebaseMeetUpService.getAllMeetUps().first()
-            assertThat(
-                fetchedMeetups, hasItems(
-                    meetUp.copy(uuid = id),
-                    meetUp2.copy(uuid = id2),
-                    meetUp3.copy(uuid = id3)
-                )
-            )
-            // Make sure to clean for next tests
-            db.collection(MEETUP_COLL).document(id).delete().await()
-            db.collection(MEETUP_COLL).document(id2).delete().await()
-            db.collection(MEETUP_COLL).document(id3).delete().await()
-        }
-    }
-
-    @Test
     fun getNonExistentMeetUpReturnsNull() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
         val fetchedMeetup = firebaseMeetUpService.getMeetUpData("DuGrandNimporteQuoi")
         assertThat(fetchedMeetup, nullValue())
     }
@@ -208,6 +188,7 @@ class CachedMeetUpServiceTest {
 
     @Test
     fun leaveMeetUpLeaveInDb() = runTest {
+        val userId2 = firebaseProfileService.createProfile(user1)
         val userId = firebaseProfileService.createProfile(user2)
         assertThat(userId, notNullValue())
         val id = firebaseMeetUpService.createMeetUp(meetUp)
@@ -225,18 +206,21 @@ class CachedMeetUpServiceTest {
 
     @Test
     fun joinNonExistingMeetUpReturnsFailure() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
         val result = firebaseMeetUpService.joinMeetUp("UWU", "Whatever", Calendar.getInstance(),user1)
         assertThat(result, instanceOf(Response.Failure::class.java))
     }
 
     @Test
     fun leaveNonExistingMeetUpReturnsFailure() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
         val result = firebaseMeetUpService.leaveMeetUp("UWU", "Whatever")
         assertThat(result, instanceOf(Response.Failure::class.java))
     }
 
     @Test
     fun leaveMeetUpWithoutJoiningBeforeReturnsFailure() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
         id!!.let {
@@ -249,12 +233,14 @@ class CachedMeetUpServiceTest {
 
     @Test
     fun editNonExistingMeetUpReturnsNull() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
         val id = firebaseMeetUpService.editMeetUp("EncoreNimporteQuoi", meetUp)
         assertThat(id, nullValue())
     }
 
     @Test
     fun editNonExistingFieldReturnsNull() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
         val id = firebaseMeetUpService.createMeetUp(meetUp)
         assertThat(id, notNullValue())
         id!!.let {
