@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
  */
 open class MeetupListRootAdapter(
     private val dataSet: List<MeetUp>,
-    private val currentDataSet: MutableList<MeetUp>,
+    open val currentDataSet: MutableList<MeetUp>,
     private val onItemClicked: (position: Int) -> Unit
 ) : RecyclerView.Adapter<MeetupListRootAdapter.ViewHolder>() {
 

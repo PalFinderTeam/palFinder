@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
@@ -7,7 +8,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.LifecycleRegistryOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
+import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,6 +30,8 @@ import kotlinx.coroutines.launch
  */
 @AndroidEntryPoint
 class ProfileActivity : AppCompatActivity() {
+
+    private lateinit var meetupList: RecyclerView
 
     private val viewModel: ProfileViewModel by viewModels()
     companion object{
@@ -34,7 +46,21 @@ class ProfileActivity : AppCompatActivity() {
         if (intent.hasExtra(USER_ID)) {
             val userId = intent.getStringExtra(USER_ID)!!
             viewModel.fetchProfile(userId)
+
+            // Fetch last Meetups list through adapter
+            meetupList = this.findViewById(R.id.meetup_list_recycler)
+            meetupList.layoutManager = LinearLayoutManager(this)
+
+            //TODO: Skipping layout, adapter not initialized at start, only later at async?
+            viewModel.createAdapter(userId, ::onListItemClick)
+
+            // Bind the adapter to the RecyclerView
+            viewModel.adapter.observe(this) {
+                meetupList.adapter = it
+            }
+
         }
+
         viewModel.profile.observe(this) {
             when(it) {
                 is Response.Success -> injectUserInfo(it.data)
@@ -90,6 +116,21 @@ class ProfileActivity : AppCompatActivity() {
         overflow.visibility = GONE
         val desc = findViewById<TextView>(R.id.userProfileDescription)
         desc.maxLines = Integer.MAX_VALUE
+    }
+
+
+    /**
+     * When clicking on a meetup list element
+     */
+    private fun onListItemClick(position: Int) {
+//        val intent = Intent(this, MeetUpView::class.java)
+//            .apply {
+//                putExtra(
+//                    MEETUP_SHOWN,
+//                    (viewModel.adapter.value!!.currentDataSet as Response.Success<MutableList<MeetUp>>).data[position].uuid
+//                )
+//            }
+//        startActivity(intent)
     }
 
 }
