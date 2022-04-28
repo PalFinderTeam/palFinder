@@ -24,12 +24,15 @@ import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.*
+import com.google.android.material.slider.Slider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlin.math.max
+import kotlin.math.min
 
 
 const val SHOW_JOINED_ONLY = "com.github.palFinderTeam.palFinder.meetup_list_view.SHOW_JOINED_ONLY"
-const val BASE_RADIUS = 500.0
+const val BASE_RADIUS = 50f
 const val LOCATION_RESULT = "location"
 
 @ExperimentalCoroutinesApi
@@ -39,6 +42,7 @@ class MeetupListFragment : Fragment() {
     lateinit var adapter: MeetupListAdapter
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     private lateinit var tagsViewModel: TagsViewModel<Category>
+    private lateinit var radiusSlider: Slider
 
     val viewModel: MapListViewModel by activityViewModels()
 
@@ -61,6 +65,16 @@ class MeetupListFragment : Fragment() {
         val searchField = view.findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
 
+        radiusSlider = view.findViewById(R.id.distance_slider)
+
+        radiusSlider.value = max(radiusSlider.valueFrom, min(radiusSlider.valueTo, viewModel.searchRadius.value!!.toFloat()))
+
+        radiusSlider.addOnChangeListener { _, value, _ ->
+            viewModel.setSearchParamAndFetch(radiusInKm = value.toDouble())
+        }
+        viewModel.setSearchParamAndFetch(radiusInKm = radiusSlider.value.toDouble())
+
+
         viewModel.listOfMeetUpResponse.observe(requireActivity()) { it ->
             if (it is Response.Success && viewModel.searchLocation.value != null) {
                 val meetups = it.data
@@ -77,6 +91,7 @@ class MeetupListFragment : Fragment() {
                 meetupList.adapter = adapter
                 SearchedFilter.setupSearchField(searchField, adapter.filter)
             }
+
         }
 
 //        viewModel.searchLocation.observe(requireActivity()) {
@@ -101,6 +116,8 @@ class MeetupListFragment : Fragment() {
 
         view.findViewById<Button>(R.id.sort_list).setOnClickListener { showMenu(it) }
         view.findViewById<ImageButton>(R.id.search_place).setOnClickListener { searchOnMap() }
+
+        var value = viewModel.searchRadius.value
 
         viewModel.setSearchParamAndFetch(showOnlyJoined = args.showOnlyJoined, showOnlyAvailable = true)
     }
