@@ -1,22 +1,13 @@
 package com.github.palFinderTeam.palfinder.navigation
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.PopupWindow
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
-import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.ui.login.IS_NO_ACCOUNT_USER
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
@@ -54,7 +45,7 @@ class MainNavActivity : AppCompatActivity() {
 
         // Make sure that selected item is the one displayed to the user
         navController.currentDestination?.let {
-            when(it.id) {
+            when (it.id) {
                 R.id.find_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_find
                 R.id.list_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_groups
                 R.id.creation_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_create
@@ -84,15 +75,16 @@ class MainNavActivity : AppCompatActivity() {
 
                 when (item.itemId) {
                     R.id.nav_bar_create -> {
-                        if(IS_NO_ACCOUNT_USER){
-                            createPopUp(this,
+                        if (IS_NO_ACCOUNT_USER) {
+                            createPopUp(
+                                this,
                                 findViewById(R.id.nav_bar_find),
                                 { startActivity(Intent(this, LoginActivity::class.java)) },
                                 textId = R.string.no_account_create,
                                 continueButtonTextId = R.string.login
                             )
                             return@setOnItemSelectedListener false
-                        }else {
+                        } else {
                             navController.popBackStack()
                             navController.navigate(
                                 R.id.creation_fragment,
@@ -102,15 +94,16 @@ class MainNavActivity : AppCompatActivity() {
                         }
                     }
                     R.id.nav_bar_groups -> {
-                        if(IS_NO_ACCOUNT_USER){
-                            createPopUp(this,
+                        if (IS_NO_ACCOUNT_USER) {
+                            createPopUp(
+                                this,
                                 findViewById(R.id.nav_bar_find),
                                 { startActivity(Intent(this, LoginActivity::class.java)) },
                                 textId = R.string.no_account_groups,
                                 continueButtonTextId = R.string.login
                             )
                             return@setOnItemSelectedListener false
-                        }else {
+                        } else {
                             navController.popBackStack()
                             val args = Bundle().apply {
                                 putBoolean("ShowOnlyJoined", true)
@@ -148,7 +141,7 @@ class MainNavActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.miLogout -> {
                 //Logout the user
                 auth.signOut()
@@ -160,7 +153,8 @@ class MainNavActivity : AppCompatActivity() {
                 val client = GoogleSignIn.getClient(this, gso)
                 client.signOut()
                 val logoutIntent = Intent(this, LoginActivity::class.java)
-                logoutIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                logoutIntent.flags =
+                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(logoutIntent)
                 return true
             }
@@ -168,16 +162,17 @@ class MainNavActivity : AppCompatActivity() {
                 startActivity(Intent(this, SettingsActivity::class.java))
                 return true
             }
-            R.id.miUserSettings ->{
-                return if(IS_NO_ACCOUNT_USER) {
-                    createPopUp(this,
+            R.id.miUserSettings -> {
+                return if (IS_NO_ACCOUNT_USER) {
+                    createPopUp(
+                        this,
                         findViewById(R.id.nav_bar_find),
                         { startActivity(Intent(this, LoginActivity::class.java)) },
                         textId = R.string.no_account_profile,
                         continueButtonTextId = R.string.login
                     )
                     true
-                }else{
+                } else {
                     super.onOptionsItemSelected(item)
                 }
             }

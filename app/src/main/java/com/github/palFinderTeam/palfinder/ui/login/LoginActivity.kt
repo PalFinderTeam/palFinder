@@ -366,6 +366,7 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
+        IS_NO_ACCOUNT_USER = false
         if (firebaseProfileService.doesUserIDExist(user.uid)) {
             startActivity(Intent(this, MainNavActivity::class.java))
             finish()
