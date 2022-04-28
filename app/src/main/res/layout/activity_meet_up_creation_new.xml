@@ -159,6 +159,45 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/linearLayout_marker"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bt_locationSelect">
+
+                <Button
+                    android:id="@+id/bt_markerType"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/theme_primary"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:text="@string/select_marker" />
+
+                <TextView
+                    android:id="@+id/tv_markerHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/fredoka_normal"
+                    android:text="Tap to chose your marker"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </LinearLayout>
+
+
             <TextView
                 android:id="@+id/mu_title_date"
                 android:layout_width="match_parent"
@@ -174,7 +213,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bt_locationSelect" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout_marker" />
 
 
             <TextView
