@@ -57,8 +57,8 @@
 
 
     <!-- Strings used for meetup view -->
-    <string name="meetup_view_meetup_start_at">Start At</string>
-    <string name="meetup_view_meetup_end_at">End At</string>
+    <string name="meetup_view_meetup_start_at">Starts</string>
+    <string name="meetup_view_meetup_end_at">Ends</string>
     <string name="meetup_view_creator">Created by @%1$s</string>
     <string name="meetup_view_join">Join</string>
     <string name="meetup_view_leave">Leave</string>
