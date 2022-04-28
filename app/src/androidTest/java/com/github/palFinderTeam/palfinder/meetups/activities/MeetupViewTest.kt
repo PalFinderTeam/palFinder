@@ -316,11 +316,11 @@ class MeetupViewTest {
     @Test
     fun userClickableInFragment() = runTest {
         val userid = profileRepository.createProfile(user)
-
+        val id2 = profileRepository.createProfile(user2)
         val userListFactory = object : FragmentFactory() {
             override fun instantiate(classLoader: ClassLoader, className: String): Fragment =
                 when (loadFragmentClass(classLoader, className)) {
-                    ProfileListFragment::class.java -> ProfileListFragment(listOf(userid!!))
+                    ProfileListFragment::class.java -> ProfileListFragment(listOf(userid!!, id2!!))
                     else -> super.instantiate(classLoader, className)
                 }
         }
@@ -348,9 +348,28 @@ class MeetupViewTest {
         val scenario =
             launchFragmentInHiltContainer<ProfileListFragment>(fragmentFactory = userListFactory)
         scenario!!.use {
+
+            assert(!profileRepository.fetchUserProfile(userid)!!.following.contains(id2))
+            assert(!profileRepository.fetchUserProfile(id2!!)!!.followed.contains(userid))
             onView(
                 RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
-                    0,
+                    1,
+                    R.id.followButton
+                )
+            ).perform(click())
+            assert(profileRepository.fetchUserProfile(userid)!!.following.contains(id2))
+            assert(profileRepository.fetchUserProfile(id2!!)!!.followed.contains(userid))
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    1,
+                    R.id.followButton
+                )
+            ).perform(click())
+            assert(!profileRepository.fetchUserProfile(userid)!!.following.contains(id2))
+            assert(!profileRepository.fetchUserProfile(id2!!)!!.followed.contains(userid))
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    1,
                     R.id.profile_name
                 )
             )
