@@ -96,6 +96,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/criterion_select" />
+
+                        <Button
+                            android:id="@+id/bt_SelectMarker"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/select_marker" />
                 </LinearLayout>
             </LinearLayout>
 

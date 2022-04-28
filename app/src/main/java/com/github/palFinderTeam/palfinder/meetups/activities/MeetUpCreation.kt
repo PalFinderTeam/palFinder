@@ -21,6 +21,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navOptions
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.github.palFinderTeam.palfinder.PalFinderApplication
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
 import com.github.palFinderTeam.palfinder.tag.Category
@@ -32,13 +33,18 @@ import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.pickProfileImage
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
+import com.maltaisn.icondialog.IconDialog
+import com.maltaisn.icondialog.IconDialogSettings
+import com.maltaisn.icondialog.data.Icon
+import com.maltaisn.icondialog.pack.IconPack
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.internal.aggregatedroot.codegen._com_github_palFinderTeam_palfinder_PalFinderApplication
 import kotlinx.coroutines.launch
 
 
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 @AndroidEntryPoint
-class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new) {
+class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDialog.Callback {
 
     val viewModel: MeetUpCreationViewModel by activityViewModels()
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
@@ -54,7 +60,9 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new) {
     private lateinit var nameEditText: EditText
     private lateinit var descriptionEditText: EditText
     private lateinit var changeIconButton: LinearLayout
+    private lateinit var changeMarkerButton: Button
     private lateinit var icon: ImageView
+    private lateinit var iconDialog: IconDialog
     private lateinit var startDateField: TextView
     private lateinit var endDateField: TextView
     private lateinit var selectLocationButton: LinearLayout
@@ -97,6 +105,9 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new) {
             // Make sure to consume the value
             removeNavigationResult<Location>(LOCATION_RESULT)
         }
+
+        iconDialog = childFragmentManager.findFragmentByTag(ICON_DIALOG_TAG) as IconDialog?
+            ?: IconDialog.newInstance(IconDialogSettings())
     }
 
     private fun initiateFieldRefs() {
@@ -105,6 +116,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new) {
         nameEditText = rootView.findViewById(R.id.et_EventName)
         descriptionEditText = rootView.findViewById(R.id.et_Description)
         changeIconButton = rootView.findViewById(R.id.bt_SelectIcon)
+        changeMarkerButton = rootView.findViewById(R.id.bt_markerType)
         icon = rootView.findViewById(R.id.iv_Icon)
         startDateField = rootView.findViewById(R.id.tv_StartDate)
         endDateField = rootView.findViewById(R.id.tv_EndDate)
@@ -148,6 +160,11 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new) {
                 registerForImagePickerResult::launch
             )
         }
+
+        changeMarkerButton.setOnClickListener {
+            iconDialog.show(childFragmentManager, ICON_DIALOG_TAG)
+        }
+
         icon.setOnClickListener {
             pickProfileImage(requireActivity(), registerForImagePickerResult::launch)
         }
@@ -338,4 +355,19 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new) {
                 }
             }
         }
+
+
+
+    override val iconDialogIconPack: IconPack?
+        get() = (requireActivity().application as PalFinderApplication).iconPack
+
+    override fun onIconDialogIconsSelected(dialog: IconDialog, icons: List<Icon>) {
+        if(icons.isNotEmpty()){
+            viewModel.setMarker(icons.first().id)
+        }
+    }
+
+    companion object {
+        private const val ICON_DIALOG_TAG = "icon-dialog"
+    }
 }
