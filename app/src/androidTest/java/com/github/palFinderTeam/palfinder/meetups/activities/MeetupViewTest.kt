@@ -4,25 +4,28 @@ import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.view.View
-import android.widget.DatePicker
-import android.widget.SeekBar
-import android.widget.TimePicker
+import android.view.ViewParent
+import android.widget.*
 import androidx.core.os.bundleOf
+import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.ViewModelStore
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.PerformException
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
+import androidx.test.espresso.action.ScrollToAction
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.util.HumanReadables
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
@@ -542,14 +545,15 @@ class MeetupViewTest {
         val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
             putExtra(MEETUP_SHOWN, mid)
         }
+
         ActivityScenario.launch<MeetUpView>(intent)
 
         // Join
-        onView(withId(R.id.bt_JoinMeetup)).perform(click())
+        onView(withId(R.id.bt_JoinMeetup)).perform(betterScrollTo()).perform(click())
         assertThat(meetUpRepository.getMeetUpData(mid!!)!!.isParticipating(uid!!), `is`(true))
 
         // Leave
-        onView(withId(R.id.bt_JoinMeetup)).perform(click())
+        onView(withId(R.id.bt_JoinMeetup)).perform(betterScrollTo()).perform(click())
         assertThat(meetUpRepository.getMeetUpData(mid)!!.isParticipating(uid), `is`(false))
     }
 
@@ -585,4 +589,26 @@ class ClickCloseIconAction : ViewAction {
     }
 
 
+}
+
+
+
+// scroll-to action that also works with NestedScrollViews
+class BetterScrollToAction:ViewAction by ScrollToAction()
+{
+    override fun getConstraints():Matcher<View>
+    {
+        return allOf(
+            withEffectiveVisibility(Visibility.VISIBLE),
+            isDescendantOfA(anyOf(
+                isAssignableFrom(ScrollView::class.java),
+                isAssignableFrom(HorizontalScrollView::class.java),
+                isAssignableFrom(NestedScrollView::class.java))))
+    }
+}
+
+// convenience method
+fun betterScrollTo():ViewAction
+{
+    return ViewActions.actionWithAssertions(BetterScrollToAction())
 }
