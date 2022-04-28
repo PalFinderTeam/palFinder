@@ -19,6 +19,7 @@ import com.google.firebase.firestore.GeoPoint
  * @param uuid: Unique Identifier of the meetup
  * @param creatorId: Creator of the meetup
  * @param iconImage: The meetup's image (can be null)
+ * @param markerId: id of the marker icon
  * @param name: Name of the Meetup
  * @param description: Description of the meetup
  * @param startDate: Date & Time of the begin of the meetup
@@ -44,6 +45,7 @@ data class MeetUp(
     val participantsId: List<String>,
     val criterionAge: Pair<Int?, Int?>? = null,
     val criterionGender: CriterionGender? = null,
+    val markerId: Int? = null,
 ) : java.io.Serializable {
 
     /**
@@ -131,6 +133,7 @@ data class MeetUp(
             HAS_CAPACITY to hasMaxCapacity,
             CAPACITY to capacity.toLong(),
             ICON to iconImage?.imgURL,
+            MARKER to markerId,
             LOCATION to GeoPoint(location.latitude, location.longitude),
             GEOHASH to GeoFireUtils.getGeoHashForLocation(
                 GeoLocation(
@@ -156,6 +159,7 @@ data class MeetUp(
         const val HAS_CAPACITY = "hasMaxCapacity"
         const val CAPACITY = "capacity"
         const val ICON = "icon"
+        const val MARKER = "marker"
         const val LOCATION = "location"
         const val GEOHASH = "geohash"
         const val NAME = "name"
@@ -172,6 +176,7 @@ data class MeetUp(
             try {
                 val uuid = id
                 val iconUrl = getString(ICON)
+                val markerId = getLong(MARKER)
                 val iconImage =
                     if (iconUrl == null) null else ImageInstance(iconUrl) // Now this field can be null, because meetups with no image made it crash
                 val creator = getString(CREATOR)!!
@@ -209,7 +214,8 @@ data class MeetUp(
                     capacity.toInt(),
                     participantsId,
                     criterionAge,
-                    criterionGender
+                    criterionGender,
+                    markerId?.toInt()
                 )
             } catch (e: Exception) {
                 Log.e("Meetup", "Error deserializing meetup", e)

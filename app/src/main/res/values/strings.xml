@@ -161,5 +161,6 @@
     <string name="hint_username">username</string>
     <string name="hint_password">password</string>
     <string name="select_icon">Select Icon</string>
+    <string name="select_marker">Select Marker</string>
 
 </resources>
