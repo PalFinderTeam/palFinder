@@ -10,11 +10,13 @@ import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.RootMatchers
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
+import com.github.palFinderTeam.palfinder.ui.login.IS_NO_ACCOUNT_USER
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -43,29 +45,15 @@ class NoAccountWarningTest {
 
         init()
         scenario.use {
+            IS_NO_ACCOUNT_USER = true
+
             onView(withId(R.id.noAccountButton)).perform(click())
-            onView(withId(R.id.continue_warning_button)).perform(click())
+            onView(withId(R.id.continue_warning_button))
+                .inRoot(RootMatchers.isPlatformPopup())
+                .perform(click())
         }
 
         intended(hasComponent(MainNavActivity::class.java.name))
-        release()
-    }
-
-    @Test
-    fun testProfilePopup(){
-
-        val intent = Intent(getApplicationContext(), MainNavActivity::class.java)
-
-        val scenario = ActivityScenario.launch<LoginActivity>(intent)
-
-        init()
-        scenario.use {
-            openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext);
-            onView(withId(R.id.miUserSettings)).perform(click())
-            onView(withId(R.id.continue_warning_button)).perform(click())
-        }
-
-        intended(hasComponent(LoginActivity::class.java.name))
         release()
     }
 
@@ -78,8 +66,12 @@ class NoAccountWarningTest {
 
         init()
         scenario.use {
+            IS_NO_ACCOUNT_USER = true
+
             onView(withId(R.id.nav_bar_groups)).perform(click())
-            onView(withId(R.id.continue_warning_button)).perform(click())
+            onView(withId(R.id.continue_warning_button))
+                .inRoot(RootMatchers.isPlatformPopup())
+                .perform(click())
         }
 
         intended(hasComponent(LoginActivity::class.java.name))
@@ -95,8 +87,12 @@ class NoAccountWarningTest {
 
         init()
         scenario.use {
+            IS_NO_ACCOUNT_USER = true
+
             onView(withId(R.id.nav_bar_create)).perform(click())
-            onView(withId(R.id.continue_warning_button)).perform(click())
+            onView(withId(R.id.continue_warning_button))
+                .inRoot(RootMatchers.isPlatformPopup())
+                .perform(click())
         }
 
         intended(hasComponent(LoginActivity::class.java.name))
