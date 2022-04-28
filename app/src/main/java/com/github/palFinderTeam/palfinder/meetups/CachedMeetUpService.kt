@@ -118,20 +118,10 @@ class CachedMeetUpService @Inject constructor(
     }
 
     @ExperimentalCoroutinesApi
-    override fun getAllMeetUps(): Flow<List<MeetUp>> {
-        return super.getAllMeetUps().map {
+    override fun getAllMeetUps(currentDate: Calendar?): Flow<List<MeetUp>> {
+        return super.getAllMeetUps(currentDate).map {
             it.ifEmpty {
                 cache.getAll()
-            }
-        }
-    }
-
-    @ExperimentalCoroutinesApi
-    override fun getAllMeetUpsResponse(): Flow<Response<List<MeetUp>>> {
-        return super.getAllMeetUpsResponse().map {
-            when(it){
-                is Response.Success -> it
-                else -> Response.Success(cache.getAll())
             }
         }
     }
