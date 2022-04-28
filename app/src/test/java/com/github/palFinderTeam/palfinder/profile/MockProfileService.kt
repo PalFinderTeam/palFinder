@@ -21,6 +21,31 @@ class MockProfileService : ProfileService {
         return db.containsKey(userId)
     }
 
+    override suspend fun followUser(user: ProfileUser, targetId: String): Response<Unit> {
+        return try {
+            if (!user.canFollow(targetId)) {
+                return Response.Failure("Cannot follow this user.")
+            }
+            db[user.uuid] = user.copy(following = user.following.plus(targetId))
+            db[targetId] = db[targetId]!!.copy(followed = user.followed.plus(user.uuid))
+            Response.Success(Unit)
+        } catch (e: Exception) {
+            Response.Failure(e.message.orEmpty())
+        }
+    }
+
+    override suspend fun unfollowUser(user: ProfileUser, targetId: String): Response<Unit> {
+        return try {
+            if (!user.canUnFollow(targetId)) {
+                return Response.Failure("Cannot unfollow this user.")
+            }
+            db[user.uuid] = user.copy(following = user.following.minus(targetId))
+            db[targetId] = db[targetId]!!.copy(followed = user.followed.minus(user.uuid))
+            Response.Success(Unit)
+        } catch (e: Exception) {
+            Response.Failure(e.message.orEmpty())
+        }
+
     override suspend fun fetchUserProfile(userId: String): ProfileUser? {
         return db[userId]
     }
