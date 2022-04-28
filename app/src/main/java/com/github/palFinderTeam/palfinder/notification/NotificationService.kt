@@ -74,7 +74,7 @@ class NotificationService @Inject constructor(
                         val last = messages.takeLast(1)[0]
                         val hash = last.hashCode().toString()
 
-                        if (hash != meta.lastMessageNotification/* && last.sentBy != profileService.getLoggedInUserID()*/) {
+                        if (hash != meta.lastMessageNotification && last.sentBy != profileService.getLoggedInUserID()) {
                             val name = profileService.fetchUserProfile(last.sentBy)?.username?:""
                             NotificationHandler(context).post(name, last.content, R.drawable.icon_beer)
                             meta.lastMessageNotification = hash
