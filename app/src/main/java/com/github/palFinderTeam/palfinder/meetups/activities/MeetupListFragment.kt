@@ -103,7 +103,7 @@ class MeetupListFragment : Fragment() {
         view.findViewById<Button>(R.id.sort_list).setOnClickListener { showMenu(it) }
         view.findViewById<ImageButton>(R.id.search_place).setOnClickListener { searchOnMap() }
 
-        viewModel.setSearchParamAndFetch(showOnlyJoined = args.showOnlyJoined)
+        viewModel.setSearchParamAndFetch(showOnlyJoined = args.showOnlyJoined, showOnlyAvailable = true)
     }
 
     private fun filterTags(meetup: MeetUp): Boolean {
