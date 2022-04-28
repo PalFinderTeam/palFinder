@@ -11,6 +11,8 @@ import com.github.palFinderTeam.palfinder.chat.ChatService
 import com.github.palFinderTeam.palfinder.di.FirestoreModule
 import com.github.palFinderTeam.palfinder.meetups.CachedMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.CachedProfileService
+import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.utils.EndlessService
 import com.github.palFinderTeam.palfinder.utils.context.AppContextService
 import com.github.palFinderTeam.palfinder.utils.isBefore
@@ -23,12 +25,14 @@ import javax.inject.Inject
 class NotificationService @Inject constructor(
     var timeService: TimeService,
     var meetupService: MeetUpRepository,
+    var profileService: ProfileService,
     var chatService: ChatService
 ): JobService() {
 
     constructor() : this(
         RealTimeService(),
         CachedMeetUpService(FirestoreModule.provideFirestore(), RealTimeService(), AppContextService()),
+        CachedProfileService(FirestoreModule.provideFirestore(), RealTimeService(), AppContextService()),
         CachedChatService(FirestoreModule.provideFirestore(), AppContextService())
     )
 
@@ -56,33 +60,27 @@ class NotificationService @Inject constructor(
                     ret
                 }
                 if (meetup != null) {
+                    // Check if meetup started and notification not sent
                     if (!meta.sendStartNotification && meetup.startDate.isBefore(timeService.now())) {
-                        NotificationHandler(context).post(
-                            meetup.name,
-                            meetup.description,
-                            R.drawable.icon_beer
-                        )
+                        NotificationHandler(context).post(meetup.name, meetup.description, R.drawable.icon_beer)
                         meta.sendStartNotification = true
                         meetups.store(m, meta)
                     }
-                    /*chatService.getAllMessageFromChat(m).first {
-                        if (it.isNotEmpty()) {
-                            val meta = meetups.get(m)
-                            val last = it.takeLast(1)[0]
-                            val hash = last.hashCode().toString()
 
-                            if (hash != meta.lastMessageNotification) {
-                                NotificationHandler(context).post(
-                                    last.sentBy,
-                                    last.content,
-                                    R.drawable.icon_beer
-                                )
+                    // Look for message of that meetup
+                    val messages = chatService.fetchMessages(m)
+                    if (messages!= null && messages.isNotEmpty()) {
+                        val meta = meetups.get(m)
+                        val last = messages.takeLast(1)[0]
+                        val hash = last.hashCode().toString()
 
-                                meta.lastMessageNotification = hash
-                                meetups.store(m, meta)
-                            }
+                        if (hash != meta.lastMessageNotification/* && last.sentBy != profileService.getLoggedInUserID()*/) {
+                            val name = profileService.fetchUserProfile(last.sentBy)?.username?:""
+                            NotificationHandler(context).post(name, last.content, R.drawable.icon_beer)
+                            meta.lastMessageNotification = hash
+                            meetups.store(m, meta)
                         }
-                    }*/
+                    }
                 }
             }
         }

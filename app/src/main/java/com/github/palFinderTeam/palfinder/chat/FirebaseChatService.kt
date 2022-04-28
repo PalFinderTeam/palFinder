@@ -40,6 +40,20 @@ open class FirebaseChatService @Inject constructor(
         }
     }
 
+    override suspend fun fetchMessages(chatId: String): List<ChatMessage>? {
+        return try {
+            db.collection(CONVERSATION_COLL)
+                .document(chatId)
+                .collection(MSG_COLL)
+                .get()
+                .await()
+                ?.documents
+                ?.mapNotNull { it.toChatMessage() }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     override suspend fun postMessage(chatId: String, message: ChatMessage): String? {
         return try {
             db.collection(CONVERSATION_COLL)
