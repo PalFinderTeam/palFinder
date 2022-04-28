@@ -45,7 +45,7 @@ class MockProfileService : ProfileService {
         } catch (e: Exception) {
             Response.Failure(e.message.orEmpty())
         }
-
+    }
     override suspend fun fetchUserProfile(userId: String): ProfileUser? {
         return db[userId]
     }
