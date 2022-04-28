@@ -124,7 +124,6 @@ class ProfileActivity : AppCompatActivity() {
         desc.maxLines = Integer.MAX_VALUE
     }
 
-
     /**
      * When clicking on a meetup list element
      */
