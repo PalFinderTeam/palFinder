@@ -13,12 +13,14 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.USERNAME
 import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.google.firebase.firestore.FieldValue
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Singleton
 
 @Module
@@ -112,6 +114,32 @@ object UIMockProfileServiceModule {
 
         override suspend fun doesUserIDExist(userId: String): Boolean {
             return db.containsKey(userId)
+        }
+
+        override suspend fun followUser(user: ProfileUser, targetId: String): Response<Unit> {
+            return try {
+                if (!user.canFollow(targetId)) {
+                    return Response.Failure("Cannot follow this user.")
+                }
+                db[user.uuid] = user.copy(following = user.following.plus(targetId))
+                db[targetId] = db[targetId]!!.copy(followed = user.followed.plus(user.uuid))
+                Response.Success(Unit)
+            } catch (e: Exception) {
+                Response.Failure(e.message.orEmpty())
+            }
+        }
+
+        override suspend fun unfollowUser(user: ProfileUser, targetId: String): Response<Unit> {
+            return try {
+                if (!user.canUnFollow(targetId)) {
+                    return Response.Failure("Cannot unfollow this user.")
+                }
+                db[user.uuid] = user.copy(following = user.following.minus(targetId))
+                db[targetId] = db[targetId]!!.copy(followed = user.followed.minus(user.uuid))
+                Response.Success(Unit)
+            } catch (e: Exception) {
+                Response.Failure(e.message.orEmpty())
+            }
         }
 
         fun setLoggedInUserID(value: String?){

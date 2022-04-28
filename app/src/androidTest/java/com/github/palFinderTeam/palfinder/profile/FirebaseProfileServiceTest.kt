@@ -180,4 +180,15 @@ class FirebaseProfileServiceTest {
         val id = firebaseProfileService.createProfile(profile)
         assertThat(id, `is`(profile.uuid))
     }
+
+    @Test
+    fun followUserWorks() = runTest {
+        val id = firebaseProfileService.createProfile(profile)
+        val id2 = firebaseProfileService.createProfile(profile2)
+        assert(!db.collection(PROFILE_COLL).document(id!!).get().await().toProfileUser()!!.following.contains(id2))
+        assert(!db.collection(PROFILE_COLL).document(id2!!).get().await().toProfileUser()!!.following.contains(id))
+        firebaseProfileService.followUser(profile, id2)
+        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.following.contains(id2))
+        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.following.contains(id))
+    }
 }
