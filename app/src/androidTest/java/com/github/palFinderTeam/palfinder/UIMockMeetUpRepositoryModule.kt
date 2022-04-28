@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder
 
 import android.icu.util.Calendar
-import android.util.Log
 import com.github.palFinderTeam.palfinder.di.MeetUpModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
@@ -16,6 +15,7 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Singleton
@@ -90,12 +90,16 @@ object UIMockMeetUpRepositoryModule {
 
         override fun getMeetUpsAroundLocation(
             location: Location,
-            radiusInKm: Double
+            radiusInKm: Double,
+            currentDate: Calendar?,
         ): Flow<Response<List<MeetUp>>> {
             return flow {
-                println("location " + location.toString())
-                val meetUps = db.values.filter { meetUp ->
+                emit(Response.Loading())
+                var meetUps = db.values.filter { meetUp ->
                     meetUp.location.distanceInKm(location) <= radiusInKm
+                }
+                if (currentDate != null) {
+                    meetUps = meetUps.filter { !it.isFinished(currentDate) }
                 }
 
                 emit(Response.Success(meetUps))
@@ -145,17 +149,32 @@ object UIMockMeetUpRepositoryModule {
         }
 
         @ExperimentalCoroutinesApi
-        override fun getAllMeetUps(): Flow<List<MeetUp>> {
+        override fun getAllMeetUps(
+            currentDate: Calendar?,
+        ): Flow<List<MeetUp>> {
             return flow {
-                emit(db.values.toList())
+                var meetUps = db.values.toList()
+                if (currentDate != null) {
+                    meetUps = meetUps.filter { !it.isFinished(currentDate) }
+                }
+                emit(meetUps)
             }
         }
 
-        @ExperimentalCoroutinesApi
-        override fun getAllMeetUpsResponse(): Flow<Response<List<MeetUp>>> {
-            return getAllMeetUps().map {
-                Response.Success(it)
+        override fun getUserMeetups(
+            userId: String,
+            currentDate: Calendar?
+        ): Flow<Response<List<MeetUp>>> {
+            val userMeetUps = getAllMeetUps().map { Response.Success(it.filter { it.isParticipating(userId) }) }
+            if (currentDate != null) {
+                return userMeetUps.map { Response.Success(it.data.filter { !it.isFinished(currentDate) }) }
+            } else {
+                return userMeetUps
             }
+        }
+
+        override suspend fun getMeetUpsData(meetUpIds: List<String>): List<MeetUp>? {
+            return meetUpIds.mapNotNull { db[it] }
         }
 
         fun clearDB() {
