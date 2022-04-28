@@ -1,11 +1,14 @@
 package com.github.palFinderTeam.palfinder.chat
 
+import android.app.Application
 import android.icu.util.Calendar
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.palFinderTeam.palfinder.PalFinderApplication
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
@@ -17,8 +20,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     var chatService: ChatService,
-    val profileService: ProfileService
-    ): ViewModel() {
+    val profileService: ProfileService,
+    application: Application
+    ): AndroidViewModel(application) {
 
     val listOfMessage: MutableLiveData<MutableList<ChatMessage>> = MutableLiveData()
     val profilesData = HashMap<String, ProfileUser>()
@@ -86,6 +90,6 @@ class ChatViewModel @Inject constructor(
 
     private suspend fun loadCachedUser(userId: String, pictureBox: ImageView, nameBox: TextView){
         nameBox.text = profilesData[userId]!!.username
-        profilesData[userId]!!.pfp.loadImageInto(pictureBox)
+        profilesData[userId]!!.pfp.loadImageInto(pictureBox, getApplication<Application>().applicationContext)
     }
 }

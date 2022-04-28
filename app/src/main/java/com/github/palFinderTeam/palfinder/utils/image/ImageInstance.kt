@@ -1,9 +1,12 @@
 package com.github.palFinderTeam.palfinder.utils.image
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.ViewModel
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.cache.FileCache
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
 import java.io.Serializable
 import java.lang.Exception
@@ -16,8 +19,8 @@ import java.lang.Exception
  * return an empty image file.
  */
 data class ImageInstance(
-    val imgURL : String, var imgFetch : ImageFetcher? = null
-) : Serializable, ViewModel(){
+    val imgURL : String, val imgFetch : ImageFetcher? = null
+) : Serializable, ViewModel() {
 
     companion object{
         const val NOT_LOADED = 0
@@ -35,8 +38,7 @@ data class ImageInstance(
      * Loads the image asynchronously into the desired Image View
      * @param view ImageView that needs to be change.
      */
-    suspend fun loadImageInto(view : ImageView){
-        // Is image cached?
+    suspend fun loadImageInto(view : ImageView, context: Context? = null){
         if (isCached) {
             view.setImageBitmap(bitmapCache)
         } else {
@@ -46,7 +48,7 @@ data class ImageInstance(
                     view.setImageResource(android.R.color.background_dark)
                     view.alpha = 0.3f
 
-                    bitmapCache = fetchFromDB()
+                    bitmapCache = fetchFromDB(context)
                     isCached = true
 
                     imgStatus = CACHED
@@ -81,13 +83,13 @@ data class ImageInstance(
     /**
      * Load the online image with the correct tools
      */
-    private suspend fun fetchFromDB(): Bitmap?{
+    private suspend fun fetchFromDB(context: Context?): Bitmap?{
         if (imgFetch!=null) {
-            return imgFetch!!.fetchImage()
+            return imgFetch.fetchImage()
         }
         // Select corresponding fetcher
         val fetcher : ImageFetcher = if (UrlFormat.getUrlType(imgURL) == UrlFormat.URL_IS_FIREBASE) {
-            ImageFetcherFirebase(imgURL)
+            ImageFetcherFirebase(imgURL, context = context)
         } else {
             ImageFetcherHttp(imgURL)
         }

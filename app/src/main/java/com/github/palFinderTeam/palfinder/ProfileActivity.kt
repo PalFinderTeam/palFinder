@@ -93,7 +93,7 @@ class ProfileActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.following).text = String.format(FOLLOWING, user.following.size)
         injectBio(user.description)
         lifecycleScope.launch {
-            user.pfp.loadImageInto(findViewById(R.id.userProfileImage))
+            user.pfp.loadImageInto(findViewById(R.id.userProfileImage), applicationContext)
         }
     }
 
