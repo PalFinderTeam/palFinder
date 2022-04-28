@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 class MeetupListAdapter(private val dataSet: List<MeetUp>, val currentDataSet: MutableList<MeetUp>,
                         private var filter: SearchedFilter<MeetUp>, private var currentLocation: Location,
                         private val onItemClicked: (position: Int) -> Unit) :
-    MeetupListRootAdapter(dataSet,currentDataSet, onItemClicked), Filterable {
+    MeetupListRootAdapter(dataSet, currentDataSet, onItemClicked), Filterable {
 
 //    companion object {
 //        const val PARTICIPANTS_RATIO: String = "%d / %d"
