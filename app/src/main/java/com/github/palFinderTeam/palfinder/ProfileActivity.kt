@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.widget.TextView
@@ -38,6 +39,8 @@ class ProfileActivity : AppCompatActivity() {
     companion object{
         const val EMPTY_FIELD = ""
         const val MAX_SHORT_BIO_DISPLAY_LINES = 2
+        const val FOLLOWERS: String = "%d followers"
+        const val FOLLOWING: String = "following %d"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,6 +89,8 @@ class ProfileActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.userProfileName).text = user.fullName()
         findViewById<TextView>(R.id.userProfileUsername).text = user.atUsername()
         findViewById<TextView>(R.id.userProfileJoinDate).apply { text = user.prettyJoinTime() }
+        findViewById<TextView>(R.id.followers).text = String.format(FOLLOWERS, user.followed.size)
+        findViewById<TextView>(R.id.following).text = String.format(FOLLOWING, user.following.size)
         injectBio(user.description)
         lifecycleScope.launch {
             user.pfp.loadImageInto(findViewById(R.id.userProfileImage))
