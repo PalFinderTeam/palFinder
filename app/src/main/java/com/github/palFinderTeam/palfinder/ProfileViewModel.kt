@@ -29,7 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val profileService: ProfileService,
+    val profileService: ProfileService,
     private val meetUpService: MeetUpRepository
 ) : ViewModel() {
 
