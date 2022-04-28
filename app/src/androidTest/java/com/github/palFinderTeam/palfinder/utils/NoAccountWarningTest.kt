@@ -52,23 +52,6 @@ class NoAccountWarningTest {
     }
 
     @Test
-    fun testLoginPopup(){
-
-        val intent = Intent(getApplicationContext(), LoginActivity::class.java)
-
-        val scenario = ActivityScenario.launch<LoginActivity>(intent)
-
-        init()
-        scenario.use {
-            onView(withId(R.id.noAccountButton)).perform(click())
-            onView(withId(R.id.continue_warning_button)).perform(click())
-        }
-
-        intended(hasComponent(MainNavActivity::class.java.name))
-        release()
-    }
-
-    @Test
     fun testProfilePopup(){
 
         val intent = Intent(getApplicationContext(), MainNavActivity::class.java)
@@ -119,6 +102,6 @@ class NoAccountWarningTest {
         intended(hasComponent(LoginActivity::class.java.name))
         release()
     }
-    
+
 
 }
