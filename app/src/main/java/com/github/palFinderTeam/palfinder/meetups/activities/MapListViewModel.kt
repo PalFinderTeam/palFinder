@@ -1,5 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
+import android.graphics.Bitmap
+import androidx.core.graphics.drawable.toBitmap
 import android.Manifest
 import android.app.Application
 import android.content.pm.PackageManager
@@ -15,9 +17,14 @@ import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.*
+import com.maltaisn.icondialog.pack.IconPack
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.internal.aggregatedroot.codegen._com_github_palFinderTeam_palfinder_PalFinderApplication
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -36,6 +43,7 @@ class MapListViewModel @Inject constructor(
 
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
     val tags: LiveData<Set<Category>> = _tags
+
 
     private val locationClient =
         LocationServices.getFusedLocationProviderClient(getApplication<Application>().applicationContext)
