@@ -13,6 +13,7 @@ import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.log
 
@@ -69,7 +70,7 @@ class ProfileAdapter(private val dataSet: List<ProfileUser>, private var loggedU
         val fullName = holder.fullName
         fullName.text = currentDataSet[position].fullName()
         name.text = currentDataSet[position].username
-        //CoroutineScope(Dispatchers.IO).launch { currentDataSet[position].pfp.loadImageInto(holder.pic) }
+        CoroutineScope(Dispatchers.IO).launch { currentDataSet[position].pfp.loadImageInto(holder.pic) }
         if (currentDataSet[position].uuid == loggedUser.uuid) {
             holder.followButton.visibility = INVISIBLE
         }

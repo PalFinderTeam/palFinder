@@ -62,7 +62,7 @@ class MeetUpViewViewModelTest {
         val dummyMeetUp = MeetUp(
             "",
             "user",
-            "icon",
+            null,
             "name",
             "description",
             testStartDate,

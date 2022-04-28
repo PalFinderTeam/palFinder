@@ -43,10 +43,10 @@
     <string name="meetup_creation_meetup_tags">Tags</string>
     <string name="meetup_creation_meetup_no_tags">No Tags Selected</string>
     <string name="meetup_creation_meetup_tags_bt">Add Tags</string>
-    <string name="meetup_creation_meetup_entries">Limit Entries</string>
+    <string name="meetup_creation_meetup_entries">participants</string>
     <string name="meetup_creation_meetup_done">Done</string>
-    <string name="meetup_creation_meetup_select_location">Select Location</string>
-    <string name="meetup_creation_meetup_location_not_selected">Location Not Selected</string>
+    <string name="meetup_creation_meetup_select_location">Pick Location</string>
+    <string name="meetup_creation_meetup_location_not_selected">Location not selected</string>
 
     <string name="list_sort_by_alphabetical_order">Sort by Alph.</string>
     <string name="list_sort_by_capacity">Sort by Cap.</string>
@@ -87,13 +87,13 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="limit_people">limit people</string>
+    <string name="limit_people">Limit participation to</string>
     <string name="DB_error_msg">Cannot contact database</string>
 
     <string name="criterions_age_title">age selection</string>
     <string name="criterions_age_min">13</string>
     <string name="criterions_age_max">66+</string>
-    <string name="criterion_select">select criterions</string>
+    <string name="criterion_select">Select criteria</string>
 
     <string name="follow_button">follow</string>
     <string name="unfollow_button">unfollow</string>
@@ -157,10 +157,14 @@
 
     <string name="testNotifTitle">title</string>
     <string name="testNotifContent">content</string>
+    <string name="map">map</string>
+    <string name="list">list</string>
+    <string name="show_profiles">show profiles</string>
 
     <string name="theme">theme</string>
 
     <string name="hint_username">username</string>
     <string name="hint_password">password</string>
+    <string name="select_icon">Select Icon</string>
 
 </resources>

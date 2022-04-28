@@ -50,8 +50,8 @@ class MeetupViewFragment : Fragment() {
         setTextView(R.id.tv_ViewEventDescritpion,meetUp.description)
 
         model.viewModelScope.launch {
-            meetUp.iconId?.let {
-                ImageInstance(it).loadImageInto(requireView().findViewById(R.id.iv_MeetupImage))
+            meetUp.iconImage?.let {
+                it.loadImageInto(requireView().findViewById(R.id.iv_MeetupImage))
             }
         }
         model.getUsernameOf(meetUp.creatorId){
