@@ -1,18 +1,19 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.util.Log
-import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWED_BY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWING_PROFILES
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -50,14 +51,15 @@ class FirebaseProfileService @Inject constructor(
         }
     }
 
-    override suspend fun fetchUsersProfile(userIds: List<String>): List<ProfileUser> =
-        withContext(Dispatchers.Main) {
-            userIds.map {
-                async {
-                    fetchUserProfile(it)
-                }
-            }.awaitAll().filterNotNull().toList()
+    override suspend fun fetchUsersProfile(userIds: List<String>): List<ProfileUser> {
+        // Firebase don't support more than 10 ids in query.
+        val chunked = userIds.chunked(10)
+        val queries = chunked.map {
+            db.collection(PROFILE_COLL).whereIn(FieldPath.documentId(), it).get()
         }
+        val result = Tasks.whenAllSuccess<QuerySnapshot>(queries).await()
+        return result.flatMap { it.documents.mapNotNull { it.toProfileUser() } }
+    }
 
     override suspend fun editUserProfile(userId: String, field: String, value: Any): String? {
         return try {
