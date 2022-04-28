@@ -16,6 +16,7 @@ import androidx.core.view.isVisible
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
+import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.ui.login.IS_NO_ACCOUNT_USER
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
@@ -164,6 +165,19 @@ class MainNavActivity : AppCompatActivity() {
             R.id.miSettings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
                 return true
+            }
+            R.id.miUserSettings ->{
+                return if(IS_NO_ACCOUNT_USER) {
+                    createPopUp(this,
+                        findViewById(R.id.nav_bar_find),
+                        { startActivity(Intent(this, LoginActivity::class.java)) },
+                        textId = R.string.no_account_profile,
+                        continueButtonTextId = R.string.login
+                    )
+                    true
+                }else{
+                    super.onOptionsItemSelected(item)
+                }
             }
             else -> {
                 return super.onOptionsItemSelected(item)
