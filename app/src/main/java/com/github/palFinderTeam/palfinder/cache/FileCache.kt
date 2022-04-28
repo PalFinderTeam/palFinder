@@ -1,7 +1,10 @@
 package com.github.palFinderTeam.palfinder.cache
 
 import android.content.Context
+import android.graphics.Bitmap
+import com.github.palFinderTeam.palfinder.utils.image.BitmapJsonConverter
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import java.io.File
 
@@ -16,10 +19,11 @@ class FileCache<T> (
     private val name: String,
     private val clazz: Class<T>,
     private val permanent: Boolean,
-    private val context: Context
+    private val context: Context,
 ){
 
-    private val gson = Gson()
+    private val bitmapJsonConverter = BitmapJsonConverter()
+    private val gson = GsonBuilder().registerTypeAdapter(Bitmap::class.java, bitmapJsonConverter).create()
 
     private fun getDir(): File? {
         return if (permanent){
