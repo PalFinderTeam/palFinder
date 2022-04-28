@@ -16,7 +16,6 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
-import com.github.palFinderTeam.palfinder.ui.login.IS_NO_ACCOUNT_USER
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -45,8 +44,6 @@ class NoAccountWarningTest {
 
         init()
         scenario.use {
-            IS_NO_ACCOUNT_USER = true
-
             onView(withId(R.id.noAccountButton)).perform(click())
             onView(withId(R.id.continue_warning_button))
                 .inRoot(RootMatchers.isPlatformPopup())
@@ -66,8 +63,6 @@ class NoAccountWarningTest {
 
         init()
         scenario.use {
-            IS_NO_ACCOUNT_USER = true
-
             onView(withId(R.id.nav_bar_groups)).perform(click())
             onView(withId(R.id.continue_warning_button))
                 .inRoot(RootMatchers.isPlatformPopup())
@@ -87,8 +82,6 @@ class NoAccountWarningTest {
 
         init()
         scenario.use {
-            IS_NO_ACCOUNT_USER = true
-
             onView(withId(R.id.nav_bar_create)).perform(click())
             onView(withId(R.id.continue_warning_button))
                 .inRoot(RootMatchers.isPlatformPopup())

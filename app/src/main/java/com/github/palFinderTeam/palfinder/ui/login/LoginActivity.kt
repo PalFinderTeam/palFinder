@@ -43,7 +43,6 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 const val CREATE_ACCOUNT_PROFILE = "com.github.palFinderTeam.palFinder.CREATE_ACCOUNT_PROFILE"
-var IS_NO_ACCOUNT_USER = false
 
 class LoginActivity : AppCompatActivity() {
 
@@ -366,7 +365,6 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        IS_NO_ACCOUNT_USER = false
         if (firebaseProfileService.doesUserIDExist(user.uid)) {
             startActivity(Intent(this, MainNavActivity::class.java))
             finish()
@@ -399,7 +397,6 @@ class LoginActivity : AppCompatActivity() {
             createPopUp(this,
                 findViewById(R.id.container),
                 {
-                    IS_NO_ACCOUNT_USER = true
                     startActivity(Intent(this, MainNavActivity::class.java))
                     finish()
                 }

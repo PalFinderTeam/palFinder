@@ -13,16 +13,17 @@ import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.databinding.NoAccountWarningBinding
 import com.github.palFinderTeam.palfinder.profile.ProfileListFragment
+import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
-import com.github.palFinderTeam.palfinder.ui.login.IS_NO_ACCOUNT_USER
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 
 const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_SHOWN"
@@ -33,6 +34,9 @@ class MeetUpView : AppCompatActivity() {
     private val viewModel: MeetUpViewViewModel by viewModels()
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     private lateinit var tagsViewModel: TagsViewModel<Category>
+
+    @Inject
+    lateinit var profileService: ProfileService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,7 +106,7 @@ class MeetUpView : AppCompatActivity() {
     }
 
     fun onJoinOrLeave(v: View){
-        if(IS_NO_ACCOUNT_USER){
+        if(profileService.getLoggedInUserID() == null){
             createPopUp(this,
                 findViewById(R.id.linearLayout2),
                 { startActivity(Intent(this, LoginActivity::class.java)) },

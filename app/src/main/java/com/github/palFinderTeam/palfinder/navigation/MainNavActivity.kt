@@ -9,7 +9,7 @@ import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.ui.login.IS_NO_ACCOUNT_USER
+import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.github.palFinderTeam.palfinder.utils.createPopUp
@@ -20,12 +20,15 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainNavActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var bottomNavigationView: BottomNavigationView
+    @Inject
+    lateinit var profileService: ProfileService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +78,7 @@ class MainNavActivity : AppCompatActivity() {
 
                 when (item.itemId) {
                     R.id.nav_bar_create -> {
-                        if (IS_NO_ACCOUNT_USER) {
+                        if (profileService.getLoggedInUserID() == null) {
                             createPopUp(
                                 this,
                                 findViewById(R.id.nav_bar_find),
@@ -94,7 +97,7 @@ class MainNavActivity : AppCompatActivity() {
                         }
                     }
                     R.id.nav_bar_groups -> {
-                        if (IS_NO_ACCOUNT_USER) {
+                        if (profileService.getLoggedInUserID() == null) {
                             createPopUp(
                                 this,
                                 findViewById(R.id.nav_bar_find),
@@ -163,7 +166,7 @@ class MainNavActivity : AppCompatActivity() {
                 return true
             }
             R.id.miUserSettings -> {
-                return if (IS_NO_ACCOUNT_USER) {
+                return if (profileService.getLoggedInUserID() == null) {
                     createPopUp(
                         this,
                         findViewById(R.id.nav_bar_find),
