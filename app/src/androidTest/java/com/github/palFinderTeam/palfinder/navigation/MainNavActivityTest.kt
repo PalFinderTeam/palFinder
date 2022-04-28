@@ -11,6 +11,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -123,9 +124,9 @@ class MainNavActivityTest {
                 val fragment = hostFragment.childFragmentManager.fragments[0] as FindFragment
                 navController = (fragment.childFragmentManager.findFragmentById(R.id.find_content) as NavHostFragment).navController
             }
-            onView(withText(R.string.list)).perform(click())
+            onView(withText(R.string.list)).perform(scrollTo(), click())
             assertThat(navController?.currentDestination?.id, `is`(R.id.list_fragment))
-            onView(withText(R.string.map)).perform(click())
+            onView(withText(R.string.map)).perform(scrollTo(), click())
             assertThat(navController?.currentDestination?.id, `is`(R.id.maps_fragment))
         }
     }
