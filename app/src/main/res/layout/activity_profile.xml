@@ -57,7 +57,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/fredoka_normal"
                         android:text="@string/placeholder_username"
-                        android:textColor="@color/primaryDefault"
+                        android:textColor="@color/theme_primary"
                         android:textSize="22sp" />
 
                     <View
@@ -118,7 +118,7 @@
                         android:orientation="horizontal"
                         android:text="@string/read_more"
                         android:textAlignment="center"
-                        android:textColor="@color/primaryDefault"
+                        android:textColor="@color/theme_primary"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"

@@ -32,6 +32,7 @@ import kotlinx.coroutines.launch
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var meetupList: RecyclerView
+    private lateinit var adapter: MeetupListRootAdapter
 
     private val viewModel: ProfileViewModel by viewModels()
     companion object{
@@ -55,10 +56,15 @@ class ProfileActivity : AppCompatActivity() {
             viewModel.createAdapter(userId, ::onListItemClick)
 
             // Bind the adapter to the RecyclerView
-            viewModel.adapter.observe(this) {
-                meetupList.adapter = it
+            viewModel.meetupDataSet.observe(this) {
+                if (viewModel.meetupDataSet != null) {
+                    adapter = MeetupListRootAdapter(
+                        viewModel.meetupDataSet.value!!,
+                        viewModel.meetupDataSet.value!!.toMutableList(),
+                    ) { onListItemClick(it) }
+                }
+                meetupList.adapter = adapter
             }
-
         }
 
         viewModel.profile.observe(this) {
@@ -123,14 +129,14 @@ class ProfileActivity : AppCompatActivity() {
      * When clicking on a meetup list element
      */
     private fun onListItemClick(position: Int) {
-//        val intent = Intent(this, MeetUpView::class.java)
-//            .apply {
-//                putExtra(
-//                    MEETUP_SHOWN,
-//                    (viewModel.adapter.value!!.currentDataSet as Response.Success<MutableList<MeetUp>>).data[position].uuid
-//                )
-//            }
-//        startActivity(intent)
+        val intent = Intent(this, MeetUpView::class.java)
+            .apply {
+                putExtra(
+                    MEETUP_SHOWN,
+                    (viewModel.adapter.value!!.currentDataSet as Response.Success<MutableList<MeetUp>>).data[position].uuid
+                )
+            }
+        startActivity(intent)
     }
 
 }
