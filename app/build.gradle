@@ -74,6 +74,9 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2'
 
+    implementation 'com.maltaisn:icondialog:3.3.0'
+    implementation "com.maltaisn:iconpack-default:1.1.0"
+
     implementation platform('com.google.firebase:firebase-bom:29.2.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-auth-ktx'

@@ -21,6 +21,7 @@ open class MapListSuperActivity: AppCompatActivity() {
     lateinit var map: GoogleMap
     private lateinit var lastLocation: Location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     val viewModel : MapListViewModel by viewModels()
 
     companion object {

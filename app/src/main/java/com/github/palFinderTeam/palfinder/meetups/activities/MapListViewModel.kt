@@ -1,5 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
+import android.graphics.Bitmap
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.*
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
@@ -10,10 +12,10 @@ import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
+import com.maltaisn.icondialog.pack.IconPack
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.internal.aggregatedroot.codegen._com_github_palFinderTeam_palfinder_PalFinderApplication
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,7 +26,7 @@ import kotlin.math.pow
 @HiltViewModel
 class MapListViewModel @Inject constructor(
     val meetUpRepository: MeetUpRepository,
-    val profileService: ProfileService
+    val profileService: ProfileService,
 ) : ViewModel() {
     private val _listOfMeetUpResponse: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
     val listOfMeetUpResponse: LiveData<Response<List<MeetUp>>> = _listOfMeetUpResponse
@@ -40,6 +42,8 @@ class MapListViewModel @Inject constructor(
     var mapReady = false
     private var markers = HashMap<String, Marker>()
 
+    private lateinit var iconPack: IconPack
+
 
     /**
      * get the Marker in this utils memory corresponding to this id
@@ -50,6 +54,7 @@ class MapListViewModel @Inject constructor(
         return markers[id]
     }
 
+
     /**
      * set the map to which utils functions will be applied
      * @param map: GoogleMap
@@ -58,6 +63,10 @@ class MapListViewModel @Inject constructor(
         this.map = map
         this.mapReady = true
         setPositionAndZoom(startingCameraPosition, startingZoom)
+    }
+
+    fun setIconPack(iconPack: IconPack){
+        this.iconPack = IconPack()
     }
 
     fun update(){
@@ -151,8 +160,16 @@ class MapListViewModel @Inject constructor(
 
         meetupList.forEach{ meetUp ->
             val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
-            val marker = map.addMarker(MarkerOptions().position(position).title(meetUp.uuid))
+            val options = MarkerOptions().position(position).title(meetUp.uuid)
+
+            if(meetUp.markerId != null){
+                val icon = iconPack.getIcon(meetUp.markerId)
+                val bitmap = icon?.drawable?.toBitmap(64, 64)
+                if(bitmap != null) options.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+            }
+            val marker = map.addMarker(options)
                 ?.let { markers[meetUp.uuid] = it }
+
         }
     }
 

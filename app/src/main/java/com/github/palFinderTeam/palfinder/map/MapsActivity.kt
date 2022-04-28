@@ -10,8 +10,10 @@ import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
+import com.github.palFinderTeam.palfinder.PalFinderApplication
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.databinding.ActivityMapsBinding
+import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListSuperActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
@@ -24,6 +26,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.maltaisn.icondialog.IconDialog
+import com.maltaisn.icondialog.data.Icon
+import com.maltaisn.icondialog.pack.IconPack
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOException
 
@@ -34,7 +39,7 @@ const val CONTEXT = "com.github.palFinderTeam.palFinder.MAP.CONTEXT"
 
 @AndroidEntryPoint
 class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
-    GoogleMap.OnCameraMoveCanceledListener, SearchView.OnQueryTextListener {
+    GoogleMap.OnCameraMoveCanceledListener, SearchView.OnQueryTextListener, IconDialog.Callback  {
 
     private lateinit var binding: ActivityMapsBinding
     private lateinit var selectLocationButton: FloatingActionButton
@@ -97,6 +102,10 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         val searchLocation = findViewById<SearchView>(R.id.search_on_map)
         searchLocation.imeOptions = EditorInfo.IME_ACTION_DONE
         searchLocation.setOnQueryTextListener(this)
+
+        (application as PalFinderApplication).loadIconPack()
+
+        viewModel.setIconPack((application as PalFinderApplication).iconPack!!)
         }
         
 
@@ -229,4 +238,12 @@ class MapsActivity : MapListSuperActivity(), OnMapReadyCallback, GoogleMap.OnMar
         if(map.mapType == GoogleMap.MAP_TYPE_NORMAL) map.mapType = GoogleMap.MAP_TYPE_HYBRID
         else map.mapType = GoogleMap.MAP_TYPE_NORMAL
     }
+
+    override val iconDialogIconPack: IconPack?
+        get() = (application as PalFinderApplication).iconPack
+
+    override fun onIconDialogIconsSelected(dialog: IconDialog, icons: List<Icon>) {
+
+    }
+
 }

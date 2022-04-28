@@ -39,6 +39,7 @@ class MeetUpCreationViewModel @Inject constructor(
     private val _name: MutableLiveData<String> = MutableLiveData()
     private val _description: MutableLiveData<String> = MutableLiveData()
     private val _icon: MutableLiveData<String?> = MutableLiveData()
+    private val _marker: MutableLiveData<Int?> = MutableLiveData()
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData()
     private val _participantsId: MutableLiveData<List<String>> = MutableLiveData(emptyList())
     private val _location: MutableLiveData<Location> = MutableLiveData()
@@ -54,6 +55,7 @@ class MeetUpCreationViewModel @Inject constructor(
     val name: LiveData<String> = _name
     val description: LiveData<String> = _description
     val icon: LiveData<String?> = _icon
+    val marker: LiveData<Int?> = _marker
     val sendSuccess: LiveData<Boolean> = _sendSuccess
     val tags: LiveData<Set<Category>> = _tags
     val participantsId: LiveData<List<String>> = _participantsId
@@ -128,6 +130,10 @@ class MeetUpCreationViewModel @Inject constructor(
         _iconUri.value = iconUri
     }
 
+    fun setMarker(markerId: Int){
+        _marker.value = markerId
+    }
+
     /**
      * Load asynchronously a meetUp and update liveData on success.
      *
@@ -140,6 +146,7 @@ class MeetUpCreationViewModel @Inject constructor(
                 uuid = meetUp.uuid
                 _name.postValue(meetUp.name)
                 _icon.postValue(meetUp.iconId)
+                _marker.postValue(meetUp.markerId)
                 _description.postValue(meetUp.description)
                 _startDate.postValue(meetUp.startDate)
                 _endDate.postValue(meetUp.endDate)
@@ -181,6 +188,7 @@ class MeetUpCreationViewModel @Inject constructor(
                 // TODO Get ID
                 owner,
                 iconPath,
+                marker.value,
                 name.value!!,
                 description.value!!,
                 startDate.value!!,

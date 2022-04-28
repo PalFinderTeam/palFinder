@@ -17,6 +17,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.github.palFinderTeam.palfinder.PalFinderApplication
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.map.CONTEXT
 import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
@@ -31,7 +32,12 @@ import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.pickProfileImage
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
+import com.maltaisn.icondialog.IconDialog
+import com.maltaisn.icondialog.IconDialogSettings
+import com.maltaisn.icondialog.data.Icon
+import com.maltaisn.icondialog.pack.IconPack
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.internal.aggregatedroot.codegen._com_github_palFinderTeam_palfinder_PalFinderApplication
 import kotlinx.coroutines.launch
 
 const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
@@ -39,7 +45,7 @@ const val defaultTimeDelta = 1000 * 60 * 60
 
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 @AndroidEntryPoint
-class MeetUpCreation : AppCompatActivity() {
+class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
 
     private val viewModel: MeetUpCreationViewModel by viewModels()
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
@@ -53,7 +59,9 @@ class MeetUpCreation : AppCompatActivity() {
     private lateinit var nameEditText: EditText
     private lateinit var descriptionEditText: EditText
     private lateinit var changeIconButton: Button
+    private lateinit var changeMarkerButton: Button
     private lateinit var icon: ImageView
+    private lateinit var iconDialog: IconDialog
     private lateinit var startDateField: TextView
     private lateinit var endDateField: TextView
 
@@ -87,6 +95,10 @@ class MeetUpCreation : AppCompatActivity() {
         viewModel.tags.observe(this) {
             tagsViewModel.refreshTags()
         }
+
+        iconDialog = supportFragmentManager.findFragmentByTag(ICON_DIALOG_TAG) as IconDialog?
+            ?: IconDialog.newInstance(IconDialogSettings())
+
     }
 
     private fun initiateFieldRefs() {
@@ -95,6 +107,7 @@ class MeetUpCreation : AppCompatActivity() {
         nameEditText = findViewById(R.id.et_EventName)
         descriptionEditText = findViewById(R.id.et_Description)
         changeIconButton = findViewById(R.id.bt_SelectIcon)
+        changeMarkerButton = findViewById(R.id.bt_SelectMarker)
         icon = findViewById(R.id.iv_Icon)
         startDateField = findViewById(R.id.tv_StartDate)
         endDateField = findViewById(R.id.tv_EndDate)
@@ -135,6 +148,11 @@ class MeetUpCreation : AppCompatActivity() {
                 registerForImagePickerResult::launch
             )
         }
+
+        changeMarkerButton.setOnClickListener {
+            iconDialog.show(supportFragmentManager, ICON_DIALOG_TAG)
+        }
+
         icon.setOnClickListener {
             pickProfileImage(this, registerForImagePickerResult::launch)
         }
@@ -312,4 +330,19 @@ class MeetUpCreation : AppCompatActivity() {
                 }
             }
         }
+
+
+
+    override val iconDialogIconPack: IconPack?
+        get() = (application as PalFinderApplication).iconPack
+
+    override fun onIconDialogIconsSelected(dialog: IconDialog, icons: List<Icon>) {
+        if(icons.isNotEmpty()){
+            viewModel.setMarker(icons.first().id)
+        }
+    }
+
+    companion object {
+        private const val ICON_DIALOG_TAG = "icon-dialog"
+    }
 }

@@ -15,6 +15,7 @@ import com.google.firebase.firestore.GeoPoint
  * @param uuid: Unique Identifier of the meetup
  * @param creatorId: Creator of the meetup
  * @param iconId: Path to the Icon
+ * @param markerId: id of the marker icon
  * @param name: Name of the Meetup
  * @param description: Description of the meetup
  * @param startDate: Date & Time of the begin of the meetup
@@ -29,6 +30,7 @@ data class MeetUp(
     val uuid: String,
     val creatorId: String,
     val iconId: String?,
+    val markerId: Int?,
     val name: String,
     val description: String,
     val startDate: Calendar,
@@ -106,6 +108,7 @@ data class MeetUp(
             "hasMaxCapacity" to hasMaxCapacity,
             "capacity" to capacity.toLong(),
             "icon" to iconId,
+            "marker" to markerId,
             "location" to GeoPoint(location.latitude, location.longitude),
             "geohash" to GeoFireUtils.getGeoHashForLocation(
                 GeoLocation(
@@ -128,6 +131,7 @@ data class MeetUp(
             try {
                 val uuid = id
                 val iconId = getString("icon")!!
+                val markerId = getLong("marker")!!
                 val creator = getString("creator")!!
                 val capacity = getLong("capacity")!!
                 val description = getString("description")!!
@@ -147,6 +151,7 @@ data class MeetUp(
                     uuid,
                     creator,
                     iconId,
+                    markerId.toInt(),
                     name,
                     description,
                     startDateCal,
