@@ -44,9 +44,6 @@ class MapListViewModel @Inject constructor(
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
     val tags: LiveData<Set<Category>> = _tags
 
-    fun setIconPack(iconPack: IconPack){
-      this.iconPack = IconPack()
-    }
 
     private val locationClient =
         LocationServices.getFusedLocationProviderClient(getApplication<Application>().applicationContext)

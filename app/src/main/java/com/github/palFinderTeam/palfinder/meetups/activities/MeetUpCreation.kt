@@ -106,7 +106,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
             removeNavigationResult<Location>(LOCATION_RESULT)
         }
 
-        iconDialog = supportFragmentManager.findFragmentByTag(ICON_DIALOG_TAG) as IconDialog?
+        iconDialog = childFragmentManager.findFragmentByTag(ICON_DIALOG_TAG) as IconDialog?
             ?: IconDialog.newInstance(IconDialogSettings())
     }
 
@@ -116,6 +116,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         nameEditText = rootView.findViewById(R.id.et_EventName)
         descriptionEditText = rootView.findViewById(R.id.et_Description)
         changeIconButton = rootView.findViewById(R.id.bt_SelectIcon)
+        changeMarkerButton = rootView.findViewById(R.id.bt_markerType)
         icon = rootView.findViewById(R.id.iv_Icon)
         startDateField = rootView.findViewById(R.id.tv_StartDate)
         endDateField = rootView.findViewById(R.id.tv_EndDate)
@@ -161,7 +162,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         }
 
         changeMarkerButton.setOnClickListener {
-            iconDialog.show(supportFragmentManager, ICON_DIALOG_TAG)
+            iconDialog.show(childFragmentManager, ICON_DIALOG_TAG)
         }
 
         icon.setOnClickListener {
@@ -358,7 +359,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
 
 
     override val iconDialogIconPack: IconPack?
-        get() = (application as PalFinderApplication).iconPack
+        get() = (requireActivity().application as PalFinderApplication).iconPack
 
     override fun onIconDialogIconsSelected(dialog: IconDialog, icons: List<Icon>) {
         if(icons.isNotEmpty()){

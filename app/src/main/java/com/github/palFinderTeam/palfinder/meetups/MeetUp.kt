@@ -34,7 +34,7 @@ data class MeetUp(
     val uuid: String,
     val creatorId: String,
     val iconImage: ImageInstance?,
-    val markerId: Int?,
+    val markerId: Int? = null,
     val name: String,
     val description: String,
     val startDate: Calendar,
@@ -176,7 +176,7 @@ data class MeetUp(
             try {
                 val uuid = id
                 val iconUrl = getString(ICON)
-                val markerId = getLong(MARKER)!!
+                val markerId = getLong(MARKER)
                 val iconImage =
                     if (iconUrl == null) null else ImageInstance(iconUrl) // Now this field can be null, because meetups with no image made it crash
                 val creator = getString(CREATOR)!!
@@ -204,7 +204,7 @@ data class MeetUp(
                     uuid,
                     creator,
                     iconImage,
-                    markerId.toInt(),
+                    markerId?.toInt(),
                     name,
                     description,
                     startDateCal,
