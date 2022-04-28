@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.util.Log
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.END_DATE
@@ -14,6 +15,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfil
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.Response.*
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
@@ -44,9 +46,15 @@ class FirebaseMeetUpService @Inject constructor(
 
     override suspend fun getMeetUpsData(meetUpIds: List<String>): List<MeetUp>? {
         return try {
-            db.collection(MEETUP_COLL).whereIn(FieldPath.documentId(), meetUpIds)
-                .get().await().mapNotNull { it.toMeetUp() }
+            // Firebase don't support more than 10 ids in query.
+            val chunked = meetUpIds.chunked(10)
+            val queries = chunked.map {
+                db.collection(MEETUP_COLL).whereIn(FieldPath.documentId(), it).get()
+            }
+            val result = Tasks.whenAllSuccess<QuerySnapshot>(queries).await()
+            return result.flatMap { it.documents.mapNotNull { it.toMeetUp() } }
         } catch (e: Exception) {
+            Log.e("FirebaseMeetUp", e.message.orEmpty())
             null
         }
     }
