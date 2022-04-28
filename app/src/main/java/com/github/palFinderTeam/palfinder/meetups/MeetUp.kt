@@ -34,7 +34,6 @@ data class MeetUp(
     val uuid: String,
     val creatorId: String,
     val iconImage: ImageInstance?,
-    val markerId: Int? = null,
     val name: String,
     val description: String,
     val startDate: Calendar,
@@ -46,6 +45,7 @@ data class MeetUp(
     val participantsId: List<String>,
     val criterionAge: Pair<Int?, Int?>? = null,
     val criterionGender: CriterionGender? = null,
+    val markerId: Int? = null,
 ) : java.io.Serializable {
 
     /**
@@ -204,7 +204,6 @@ data class MeetUp(
                     uuid,
                     creator,
                     iconImage,
-                    markerId?.toInt(),
                     name,
                     description,
                     startDateCal,
@@ -215,7 +214,8 @@ data class MeetUp(
                     capacity.toInt(),
                     participantsId,
                     criterionAge,
-                    criterionGender
+                    criterionGender,
+                    markerId?.toInt()
                 )
             } catch (e: Exception) {
                 Log.e("Meetup", "Error deserializing meetup", e)

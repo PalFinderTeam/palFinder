@@ -52,7 +52,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     private lateinit var selectMapTypeButton: FloatingActionButton
     private lateinit var context: Context
     private lateinit var map: GoogleMap
-    private lateinit var iconPack: IconPack
+    private var iconPack: IconPack? = null
 
     val viewModel: MapListViewModel by activityViewModels()
     private val args: MapsFragmentArgs by navArgs()
@@ -112,8 +112,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         searchLocation.imeOptions = EditorInfo.IME_ACTION_DONE
         searchLocation.setOnQueryTextListener(this)
 
-        (requireActivity().application as PalFinderApplication).loadIconPack()
-        iconPack = (requireActivity().application as PalFinderApplication).iconPack!!
+        val app = requireActivity().application
+        if(app is PalFinderApplication){
+            app.loadIconPack()
+            iconPack = app.iconPack
+        }
     }
 
 
@@ -269,8 +272,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
             val options = MarkerOptions().position(position).title(meetUp.uuid)
 
-            if(meetUp.markerId != null){
-                val icon = iconPack.getIcon(meetUp.markerId)
+            if(meetUp.markerId != null && iconPack!= null){
+                val icon = iconPack!!.getIcon(meetUp.markerId)
                 val bitmap = icon?.drawable?.toBitmap(64, 64)
                 if(bitmap != null) options.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
             }

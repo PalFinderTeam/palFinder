@@ -235,7 +235,6 @@ class MeetUpCreationViewModel @Inject constructor(
                 uuid.orEmpty(),
                 owner,
                 imgInst,
-                marker.value,
                 name.value!!,
                 description.value!!,
                 startDate.value!!,
@@ -246,7 +245,8 @@ class MeetUpCreationViewModel @Inject constructor(
                 capacity.value!!,
                 participantsId.value!!,
                 criterionAge.value,
-                criterionGender.value
+                criterionGender.value,
+                marker.value
             )
             if (uuid == null) {
                 // create new meetup
