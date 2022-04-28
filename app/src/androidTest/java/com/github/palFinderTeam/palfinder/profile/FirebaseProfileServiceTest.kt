@@ -189,6 +189,6 @@ class FirebaseProfileServiceTest {
         assert(!db.collection(PROFILE_COLL).document(id2!!).get().await().toProfileUser()!!.following.contains(id))
         firebaseProfileService.followUser(profile, id2)
         assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.following.contains(id2))
-        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.following.contains(id))
+        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.following.contains(profile.uuid))
     }
 }
