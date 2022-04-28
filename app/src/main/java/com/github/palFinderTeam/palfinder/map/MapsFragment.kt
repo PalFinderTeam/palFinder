@@ -11,10 +11,12 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.github.palFinderTeam.palfinder.PalFinderApplication
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.activities.LOCATION_RESULT
@@ -29,10 +31,12 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.maltaisn.icondialog.pack.IconPack
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.IOException
@@ -48,6 +52,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     private lateinit var selectMapTypeButton: FloatingActionButton
     private lateinit var context: Context
     private lateinit var map: GoogleMap
+    private var iconPack: IconPack? = null
 
     val viewModel: MapListViewModel by activityViewModels()
     private val args: MapsFragmentArgs by navArgs()
@@ -77,7 +82,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         selectLocationButton = view.findViewById(R.id.bt_locationSelection)
         selectMapTypeButton = view.findViewById(R.id.bt_changeMapType)
 
-        viewModel.setSearchParameters(showOnlyJoined = args.showOnlyJoined)
+        viewModel.setSearchParameters(showOnlyJoined = args.showOnlyJoined, showOnlyAvailable = true)
         if (args.startOnUserLocation) {
             viewModel.userLocation.observe(requireActivity()) { location ->
                 viewModel.setSearchParameters(location = location)
@@ -107,6 +112,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         searchLocation.imeOptions = EditorInfo.IME_ACTION_DONE
         searchLocation.setOnQueryTextListener(this)
 
+        val app = requireActivity().application
+        if(app is PalFinderApplication){
+            app.loadIconPack()
+            iconPack = app.iconPack
+        }
     }
 
 
@@ -260,7 +270,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         deletedMarkers.forEach { markers[it.uuid]?.remove() }
         addedMarkers.forEach { meetUp ->
             val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
-            map.addMarker(MarkerOptions().position(position).title(meetUp.uuid))
+            val options = MarkerOptions().position(position).title(meetUp.uuid)
+
+            if(meetUp.markerId != null && iconPack!= null){
+                val icon = iconPack!!.getIcon(meetUp.markerId)
+                val bitmap = icon?.drawable?.toBitmap(64, 64)
+                if(bitmap != null) options.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+            }
+            val marker = map.addMarker(options)
                 ?.let { markers[meetUp.uuid] = it }
         }
     }

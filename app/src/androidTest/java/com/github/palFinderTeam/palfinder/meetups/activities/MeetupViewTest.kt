@@ -232,7 +232,7 @@ class MeetupViewTest {
             Pair("MeetUpId", null)
         ), navHostController = navController)
         scenario!!.use {
-            onView(withId(R.id.criterionsSelectButton)).perform(click())
+            onView(withId(R.id.criterionsSelectButton)).perform(scrollTo(), click())
             onView(withId(R.id.radioMaleAndFemale)).check(matches(isChecked()))
             onView(withId(R.id.radioMale)).check(matches(isNotChecked()))
             onView(withId(R.id.maxValueAge)).check(matches(withText("66+")))
