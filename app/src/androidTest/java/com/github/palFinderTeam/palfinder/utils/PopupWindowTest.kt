@@ -42,24 +42,6 @@ class PopupWindowTest {
         (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(null)
     }
 
-    /*@Test
-    fun testLoginPopup(){
-
-        val intent = Intent(getApplicationContext(), LoginActivity::class.java)
-
-        val scenario = ActivityScenario.launch<LoginActivity>(intent)
-
-        init()
-        onView(withId(R.id.noAccountButton)).perform(click())
-        onView(withId(R.id.continue_warning_button))
-                .inRoot(RootMatchers.isPlatformPopup())
-                .perform(click())
-        
-
-        intended(hasComponent(MainNavActivity::class.java.name))
-        release()
-    }*/
-
     @Test
     fun testGroupPopup(){
 
