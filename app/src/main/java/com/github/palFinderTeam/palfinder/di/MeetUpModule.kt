@@ -1,6 +1,6 @@
 package com.github.palFinderTeam.palfinder.di
 
-import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
+import com.github.palFinderTeam.palfinder.meetups.CachedMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import dagger.Binds
 import dagger.Module
@@ -15,6 +15,6 @@ abstract class MeetUpModule {
     @Singleton
     @Binds
     abstract fun bindMeetUpService(
-        meetUpService: FirebaseMeetUpService
+        meetUpService: CachedMeetUpService
     ): MeetUpRepository
 }

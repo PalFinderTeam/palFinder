@@ -14,7 +14,6 @@ import java.io.File
  * @param name: name of the file
  * @param clazz: Class to store
  * @param permanent: Prevent Android from randomly deleting the data
- * @param contextService: Context Provider
  */
 class FileCache<T> (
     private val name: String,

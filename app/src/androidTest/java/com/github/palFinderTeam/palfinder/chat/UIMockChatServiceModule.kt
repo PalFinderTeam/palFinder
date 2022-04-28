@@ -36,6 +36,10 @@ object UIMockChatServiceModule {
             }
         }
 
+        override suspend fun fetchMessages(chatId: String): List<ChatMessage>? {
+            return db[chatId]
+        }
+
         override suspend fun editMessage(groupId: String, msgId: String, newContent: String): String? {
             val msg = db[groupId]?.get(msgId.toInt())
             return if (msg != null) {

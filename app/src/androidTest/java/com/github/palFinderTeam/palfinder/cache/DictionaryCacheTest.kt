@@ -1,10 +1,8 @@
 package com.github.palFinderTeam.palfinder.cache
 
 import android.content.Context
-import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import com.github.palFinderTeam.palfinder.chat.ChatService
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -55,6 +53,21 @@ class DictionaryCacheTest {
         assertThat(result.field2, `is`(dummy.field2))
 
         cache.delete("dummy")
+        assertThat(cache.contains("dummy"), `is`(false))
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun evictTest() = runTest {
+        val context: Context = ApplicationProvider.getApplicationContext()
+        val dummy = Dummy("dummy", 0)
+        val cache = DictionaryCache("test", Dummy::class.java, false, context){
+            true
+        }
+
+        cache.store("dummy", dummy)
+        cache.evict()
+
         assertThat(cache.contains("dummy"), `is`(false))
     }
 

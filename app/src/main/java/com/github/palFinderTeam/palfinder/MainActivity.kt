@@ -1,13 +1,12 @@
 package com.github.palFinderTeam.palfinder
 
 import android.content.Intent
-import android.os.Build
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.notification.NotificationHandler
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
@@ -98,9 +97,8 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun notif(view: View){
-        NotificationHandler(this).post("test", "content", R.drawable.icon_beer)
+        NotificationHandler(this).schedule(Calendar.getInstance(),"test", "content", R.drawable.icon_beer)
     }
     
 }

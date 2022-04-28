@@ -21,7 +21,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class FirebaseProfileService @Inject constructor(
+open class FirebaseProfileService @Inject constructor(
     private val db: FirebaseFirestore
 ) : ProfileService {
 
