@@ -4,10 +4,14 @@ import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.view.View
-import android.view.ViewParent
-import android.widget.*
+import android.widget.DatePicker
+import android.widget.HorizontalScrollView
+import android.widget.ScrollView
+import android.widget.TimePicker
 import androidx.core.os.bundleOf
 import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModelStore
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.core.app.ActivityScenario
@@ -33,6 +37,7 @@ import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.ProfileListFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
@@ -149,7 +154,9 @@ class MeetupViewTest {
             navController.setGraph(R.navigation.main_nav_graph)
             navController.setCurrentDestination(R.id.creation_fragment)
         }
-        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(user2.uuid)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            user2.uuid
+        )
     }
 
     @After
@@ -163,9 +170,11 @@ class MeetupViewTest {
         val id = meetUpRepository.createMeetUp(meetup)
         assertThat(id, notNullValue())
 
-        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
-            Pair("MeetUpId", id)
-        ), navHostController = navController)
+        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
+            bundleOf(
+                Pair("MeetUpId", id)
+            ), navHostController = navController
+        )
         scenario.use {
             onView(withId(R.id.et_EventName)).check(matches(withText(eventName)))
             onView(withId(R.id.et_Description)).check(matches(withText(eventDescription)))
@@ -181,9 +190,11 @@ class MeetupViewTest {
         val id = meetUpRepository.createMeetUp(meetup)
         assertThat(id, notNullValue())
 
-        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
-            Pair("MeetUpId", id)
-        ), navHostController = navController)
+        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
+            bundleOf(
+                Pair("MeetUpId", id)
+            ), navHostController = navController
+        )
 
         scenario.use {
             onView(withId(R.id.bt_locationSelect)).perform(click())
@@ -198,9 +209,11 @@ class MeetupViewTest {
         val id = meetUpRepository.createMeetUp(meetup)
         assertThat(id, notNullValue())
 
-        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
-            Pair("MeetUpId", id)
-        ), navHostController = navController)
+        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
+            bundleOf(
+                Pair("MeetUpId", id)
+            ), navHostController = navController
+        )
         scenario.use {
 
             Intents.init()
@@ -218,9 +231,11 @@ class MeetupViewTest {
 
     @Test
     fun createMeetUpDisplayBlankInfo() = runTest {
-        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
-            Pair("MeetUpId", null)
-        ), navHostController = navController)
+        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
+            bundleOf(
+                Pair("MeetUpId", null)
+            ), navHostController = navController
+        )
         scenario.use {
             onView(withId(R.id.et_EventName)).check(matches(withText("")))
             onView(withId(R.id.et_Description)).check(matches(withText("")))
@@ -231,9 +246,11 @@ class MeetupViewTest {
 
     @Test
     fun criterionFragmentWorksCorrectly() = runTest {
-        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
-            Pair("MeetUpId", null)
-        ), navHostController = navController)
+        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
+            bundleOf(
+                Pair("MeetUpId", null)
+            ), navHostController = navController
+        )
         scenario!!.use {
             onView(withId(R.id.criterionsSelectButton)).perform(scrollTo(), click())
             onView(withId(R.id.radioMaleAndFemale)).check(matches(isChecked()))
@@ -241,8 +258,10 @@ class MeetupViewTest {
             onView(withId(R.id.maxValueAge)).check(matches(withText("66+")))
             onView(withId(R.id.minValueAge)).check(matches(withText("13")))
             onView(withId(R.id.criterionButtonDone)).perform(click())
-            scenario.onHiltFragment<MeetUpCreation>{ it.viewModel.setCriterionAge(Pair(15, 54))
-                it.viewModel.setCriterionGender(CriterionGender.MALE)}
+            scenario.onHiltFragment<MeetUpCreation> {
+                it.viewModel.setCriterionAge(Pair(15, 54))
+                it.viewModel.setCriterionGender(CriterionGender.MALE)
+            }
             onView(withId(R.id.criterionsSelectButton)).perform(click())
             onView(withId(R.id.radioMaleAndFemale)).check(matches(isNotChecked()))
             onView(withId(R.id.radioMale)).check(matches(isChecked()))
@@ -254,9 +273,11 @@ class MeetupViewTest {
     @Test
     fun capacityFieldMatchesCapacityCheckBox() = runTest {
 
-        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
-            Pair("MeetUpId", null)
-        ), navHostController = navController)
+        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
+            bundleOf(
+                Pair("MeetUpId", null)
+            ), navHostController = navController
+        )
         scenario.use {
             onView(withId(R.id.hasCapacityButton)).perform(scrollTo())
 
@@ -277,9 +298,11 @@ class MeetupViewTest {
 
     @Test
     fun createMeetUpThenDisplayRightInfo() = runTest {
-        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
-            Pair("MeetUpId", null)
-        ), navHostController = navController)
+        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
+            bundleOf(
+                Pair("MeetUpId", null)
+            ), navHostController = navController
+        )
         scenario.use {
             Intents.init()
 
@@ -297,14 +320,25 @@ class MeetupViewTest {
     }
 
 
-    /*@Test
+    @Test
     fun userClickableInFragment() = runTest {
         val userid = profileRepository.createProfile(user)
+        val id2 = profileRepository.createProfile(user2)
+        val userListFactory = object : FragmentFactory() {
+            override fun instantiate(classLoader: ClassLoader, className: String): Fragment =
+                when (loadFragmentClass(classLoader, className)) {
+                    ProfileListFragment::class.java -> ProfileListFragment(listOf(userid!!, id2!!))
+                    else -> super.instantiate(classLoader, className)
+                }
+        }
+
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userid!!)
+
         assertThat(userid, notNullValue())
         newMeetup = MeetUp(
             "dummy",
             userid!!,
-            "",
+            null,
             eventName,
             eventDescription,
             date1,
@@ -317,28 +351,46 @@ class MeetupViewTest {
         )
         val id = meetUpRepository.createMeetUp(newMeetup)
         assertThat(id, notNullValue())
-        val intent = Intent(getApplicationContext(), MeetUpView::class.java)
-            .apply{putExtra(MEETUP_SHOWN, id)}
-        val scenario = ActivityScenario.launch<MeetUpView>(intent)
-        scenario.use {
-            init()
-            onView(withId(R.id.show_profile_list_button)).perform(click())
+
+        val scenario =
+            launchFragmentInHiltContainer<ProfileListFragment>(fragmentFactory = userListFactory)
+        scenario!!.use {
+
+            assert(!profileRepository.fetchUserProfile(userid)!!.following.contains(id2))
+            assert(!profileRepository.fetchUserProfile(id2!!)!!.followed.contains(userid))
             onView(
                 RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
-                    0,
+                    1,
+                    R.id.followButton
+                )
+            ).perform(click())
+            assert(profileRepository.fetchUserProfile(userid)!!.following.contains(id2))
+            assert(profileRepository.fetchUserProfile(id2!!)!!.followed.contains(userid))
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    1,
+                    R.id.followButton
+                )
+            ).perform(click())
+            assert(!profileRepository.fetchUserProfile(userid)!!.following.contains(id2))
+            assert(!profileRepository.fetchUserProfile(id2!!)!!.followed.contains(userid))
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    1,
                     R.id.profile_name
                 )
             )
                 .perform(click())
         }
-
-    }*/
+    }
 
     @Test
     fun addTagAddToDb() = runTest {
-        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
-            Pair("MeetUpId", null)
-        ), navHostController = navController)
+        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
+            bundleOf(
+                Pair("MeetUpId", null)
+            ), navHostController = navController
+        )
         scenario.use {
             Intents.init()
 
@@ -375,9 +427,11 @@ class MeetupViewTest {
 
     @Test
     fun addTagAndRemoveAddsNothing() = runTest {
-        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
-            Pair("MeetUpId", null)
-        ), navHostController = navController)
+        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
+            bundleOf(
+                Pair("MeetUpId", null)
+            ), navHostController = navController
+        )
         scenario.use {
             Intents.init()
 
@@ -424,9 +478,11 @@ class MeetupViewTest {
         val id = meetUpRepository.createMeetUp(meetup)
         assertThat(id, notNullValue())
 
-        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
-            Pair("MeetUpId", null)
-        ), navHostController = navController)
+        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
+            bundleOf(
+                Pair("MeetUpId", null)
+            ), navHostController = navController
+        )
         scenario.use {
             onView(withId(R.id.bt_Done)).perform(scrollTo(), click())
             onView(withText(R.string.meetup_creation_missing_name_desc_title)).check(
@@ -496,9 +552,11 @@ class MeetupViewTest {
 
     @Test
     fun checkPickers() = runTest {
-        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(bundleOf(
-            Pair("MeetUpId", null)
-        ), navHostController = navController)
+        val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
+            bundleOf(
+                Pair("MeetUpId", null)
+            ), navHostController = navController
+        )
         scenario.use {
             onView(withId(R.id.tv_StartDate)).perform(scrollTo(), click())
 

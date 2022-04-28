@@ -82,6 +82,8 @@
     <string name="placeholder_name">someone</string>
     <string name="placeholder_username">\@username</string>
     <string name="placeholder_date">yyyy/mm/dd</string>
+    <string name="placeholder_following">following dddd</string>
+    <string name="placeholder_follower">dddd followers</string>
     <string name="desc_name">— About me</string>
     <string name="placeholder_desc">Hello, I am a placeholder description. I am long enough so that I break onto another line, hopefully, but if not then I will add some extra text.</string>
     <string name="no_desc">No bio provided...</string>
@@ -102,6 +104,9 @@
     <string name="criterions_age_min">13</string>
     <string name="criterions_age_max">66+</string>
     <string name="criterion_select">Select criteria</string>
+
+    <string name="follow_button">follow</string>
+    <string name="unfollow_button">unfollow</string>
 
     <string name="criterions_gender_title">gender selection</string>
     <string name="radio_male">Male</string>
