@@ -8,47 +8,15 @@
 
 
     <Button
-        android:id="@+id/mainGoButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="seeList"
-        android:text="MeetupList"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/accessImgLoader2" />
-
-    <Button
-        android:id="@+id/mainGoButton3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:onClick="openMeetupCreationPage"
-        android:text="Create"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
         android:id="@+id/notifbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="384dp"
         android:onClick="notif"
         android:text="Notif"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.506"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/mapGoButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="accessMap"
-        android:text="Map"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainGoButton" />
+        app:layout_constraintTop_toBottomOf="@+id/mapGoButton3" />
 
     <Button
         android:id="@+id/mapGoButton2"
@@ -58,7 +26,7 @@
         android:text="setup logged account"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mapGoButton" />
+        app:layout_constraintTop_toBottomOf="@+id/accessImgLoader2" />
 
     <Button
         android:id="@+id/mapGoButton3"
@@ -74,11 +42,12 @@
         android:id="@+id/accessImgLoader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="160dp"
         android:onClick="goToProfileLouca"
         android:text="Profile Louca"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainGoButton3" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/accessImgLoader2"

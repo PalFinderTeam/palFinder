@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder
 
 import android.icu.util.Calendar
-import android.util.Log
 import com.github.palFinderTeam.palfinder.di.MeetUpModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
@@ -9,12 +8,14 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Singleton
@@ -66,7 +67,7 @@ object UIMockMeetUpRepositoryModule {
                     "startDate" -> oldVal.copy(startDate = value as Calendar)
                     "endDate" -> oldVal.copy(endDate = value as Calendar)
                     "hasMaxCapacity" -> oldVal.copy(hasMaxCapacity = value as Boolean)
-                    "icon" -> oldVal.copy(iconId = value as String)
+                    "icon" -> oldVal.copy(iconImage = value as ImageInstance)
                     "location" -> oldVal.copy(location = value as Location)
                     "participants" -> oldVal.copy(participantsId = value as List<String>)
                     "tags" -> oldVal.copy(tags = value as Set<Category>)
@@ -89,12 +90,16 @@ object UIMockMeetUpRepositoryModule {
 
         override fun getMeetUpsAroundLocation(
             location: Location,
-            radiusInKm: Double
+            radiusInKm: Double,
+            currentDate: Calendar?,
         ): Flow<Response<List<MeetUp>>> {
             return flow {
-                println("location " + location.toString())
-                val meetUps = db.values.filter { meetUp ->
+                emit(Response.Loading())
+                var meetUps = db.values.filter { meetUp ->
                     meetUp.location.distanceInKm(location) <= radiusInKm
+                }
+                if (currentDate != null) {
+                    meetUps = meetUps.filter { !it.isFinished(currentDate) }
                 }
 
                 emit(Response.Success(meetUps))
@@ -144,17 +149,32 @@ object UIMockMeetUpRepositoryModule {
         }
 
         @ExperimentalCoroutinesApi
-        override fun getAllMeetUps(): Flow<List<MeetUp>> {
+        override fun getAllMeetUps(
+            currentDate: Calendar?,
+        ): Flow<List<MeetUp>> {
             return flow {
-                emit(db.values.toList())
+                var meetUps = db.values.toList()
+                if (currentDate != null) {
+                    meetUps = meetUps.filter { !it.isFinished(currentDate) }
+                }
+                emit(meetUps)
             }
         }
 
-        @ExperimentalCoroutinesApi
-        override fun getAllMeetUpsResponse(): Flow<Response<List<MeetUp>>> {
-            return getAllMeetUps().map {
-                Response.Success(it)
+        override fun getUserMeetups(
+            userId: String,
+            currentDate: Calendar?
+        ): Flow<Response<List<MeetUp>>> {
+            val userMeetUps = getAllMeetUps().map { Response.Success(it.filter { it.isParticipating(userId) }) }
+            if (currentDate != null) {
+                return userMeetUps.map { Response.Success(it.data.filter { !it.isFinished(currentDate) }) }
+            } else {
+                return userMeetUps
             }
+        }
+
+        override suspend fun getMeetUpsData(meetUpIds: List<String>): List<MeetUp>? {
+            return meetUpIds.mapNotNull { db[it] }
         }
 
         fun clearDB() {
