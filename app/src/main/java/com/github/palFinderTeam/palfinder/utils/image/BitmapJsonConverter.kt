@@ -11,7 +11,7 @@ import java.lang.reflect.Type
 class BitmapJsonConverter : JsonSerializer<Bitmap>, JsonDeserializer<Bitmap> {
 
     companion object {
-        private const val COMPRESSION_QUALITY = 100
+        const val COMPRESSION_QUALITY = 100
     }
     override fun serialize(
         src: Bitmap?,
