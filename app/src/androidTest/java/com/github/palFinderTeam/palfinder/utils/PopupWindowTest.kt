@@ -25,7 +25,7 @@ import org.junit.Rule
 import org.junit.Test
 
 @HiltAndroidTest
-class NoAccountWarningTest {
+class PopupWindowTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -43,12 +43,11 @@ class NoAccountWarningTest {
         val scenario = ActivityScenario.launch<LoginActivity>(intent)
 
         init()
-        scenario.use {
-            onView(withId(R.id.noAccountButton)).perform(click())
-            onView(withId(R.id.continue_warning_button))
+        onView(withId(R.id.noAccountButton)).perform(click())
+        onView(withId(R.id.continue_warning_button))
                 .inRoot(RootMatchers.isPlatformPopup())
                 .perform(click())
-        }
+        
 
         intended(hasComponent(MainNavActivity::class.java.name))
         release()
@@ -62,12 +61,11 @@ class NoAccountWarningTest {
         val scenario = ActivityScenario.launch<LoginActivity>(intent)
 
         init()
-        scenario.use {
-            onView(withId(R.id.nav_bar_groups)).perform(click())
-            onView(withId(R.id.continue_warning_button))
+        onView(withId(R.id.nav_bar_groups)).perform(click())
+        onView(withId(R.id.continue_warning_button))
                 .inRoot(RootMatchers.isPlatformPopup())
                 .perform(click())
-        }
+
 
         intended(hasComponent(LoginActivity::class.java.name))
         release()
@@ -81,12 +79,10 @@ class NoAccountWarningTest {
         val scenario = ActivityScenario.launch<LoginActivity>(intent)
 
         init()
-        scenario.use {
-            onView(withId(R.id.nav_bar_create)).perform(click())
-            onView(withId(R.id.continue_warning_button))
+        onView(withId(R.id.nav_bar_create)).perform(click())
+        onView(withId(R.id.continue_warning_button))
                 .inRoot(RootMatchers.isPlatformPopup())
                 .perform(click())
-        }
 
         intended(hasComponent(LoginActivity::class.java.name))
         release()

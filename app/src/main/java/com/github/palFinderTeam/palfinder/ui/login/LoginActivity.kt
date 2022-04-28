@@ -395,7 +395,6 @@ class LoginActivity : AppCompatActivity() {
         noAccount.setOnClickListener {
 
             createPopUp(this,
-                findViewById(R.id.container),
                 {
                     startActivity(Intent(this, MainNavActivity::class.java))
                     finish()

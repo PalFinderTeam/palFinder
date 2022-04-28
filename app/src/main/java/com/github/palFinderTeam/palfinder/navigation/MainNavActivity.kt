@@ -81,7 +81,6 @@ class MainNavActivity : AppCompatActivity() {
                         if (profileService.getLoggedInUserID() == null) {
                             createPopUp(
                                 this,
-                                findViewById(R.id.nav_bar_find),
                                 { startActivity(Intent(this, LoginActivity::class.java)) },
                                 textId = R.string.no_account_create,
                                 continueButtonTextId = R.string.login
@@ -100,7 +99,6 @@ class MainNavActivity : AppCompatActivity() {
                         if (profileService.getLoggedInUserID() == null) {
                             createPopUp(
                                 this,
-                                findViewById(R.id.nav_bar_find),
                                 { startActivity(Intent(this, LoginActivity::class.java)) },
                                 textId = R.string.no_account_groups,
                                 continueButtonTextId = R.string.login
@@ -169,7 +167,6 @@ class MainNavActivity : AppCompatActivity() {
                 return if (profileService.getLoggedInUserID() == null) {
                     createPopUp(
                         this,
-                        findViewById(R.id.nav_bar_find),
                         { startActivity(Intent(this, LoginActivity::class.java)) },
                         textId = R.string.no_account_profile,
                         continueButtonTextId = R.string.login

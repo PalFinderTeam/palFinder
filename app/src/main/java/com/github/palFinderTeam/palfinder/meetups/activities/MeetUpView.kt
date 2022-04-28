@@ -108,7 +108,6 @@ class MeetUpView : AppCompatActivity() {
     fun onJoinOrLeave(v: View){
         if(profileService.getLoggedInUserID() == null){
             createPopUp(this,
-                findViewById(R.id.linearLayout2),
                 { startActivity(Intent(this, LoginActivity::class.java)) },
                 textId = R.string.no_account_join,
                 continueButtonTextId = R.string.login

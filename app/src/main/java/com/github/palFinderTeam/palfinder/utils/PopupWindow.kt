@@ -22,7 +22,6 @@ import com.github.palFinderTeam.palfinder.R
  */
 fun createPopUp(
     context: Context,
-    view: View,
     function: ()-> Unit,
     textId: Int = R.string.no_account_warning,
     continueButtonTextId: Int = R.string.continu,
