@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 open class MeetupListRootAdapter(
     private val dataSet: List<MeetUp>,
     open val currentDataSet: MutableList<MeetUp>,
+    private val context: Context? = null,
     private val onItemClicked: (position: Int) -> Unit
 ) : RecyclerView.Adapter<MeetupListRootAdapter.ViewHolder>() {
 
@@ -88,7 +89,7 @@ open class MeetupListRootAdapter(
         if (currentDataSet[position].iconImage != null) {
             CoroutineScope(Dispatchers.Main).launch {
                 currentDataSet[position].iconImage?.let {
-                    it.loadImageInto(meetupPicture)
+                    it.loadImageInto(meetupPicture, context)
                 }
             }
         } else {

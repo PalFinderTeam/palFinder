@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.content.Context
-import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
@@ -15,7 +14,6 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,8 +21,9 @@ import kotlinx.coroutines.launch
 
 class MeetupListAdapter(private val dataSet: List<MeetUp>, override val currentDataSet: MutableList<MeetUp>,
                         private var filter: SearchedFilter<MeetUp>, private var currentLocation: Location,
+                        private val context: Context,
                         private val onItemClicked: (position: Int) -> Unit) :
-    MeetupListRootAdapter(dataSet, currentDataSet, onItemClicked), Filterable {
+    MeetupListRootAdapter(dataSet, currentDataSet, context, onItemClicked), Filterable {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
