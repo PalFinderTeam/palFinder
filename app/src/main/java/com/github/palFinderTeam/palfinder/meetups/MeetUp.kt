@@ -1,14 +1,9 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
-import android.os.Build
-import android.provider.ContactsContract
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.fragment.app.viewModels
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
-import com.github.palFinderTeam.palfinder.ProfileViewModel
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
@@ -62,7 +57,7 @@ data class MeetUp(
     /**
      * @return the number of participants currently in the meetup
      */
-    fun numberOfParticipants() : Int {
+    fun numberOfParticipants(): Int {
         return participantsId.size
     }
 
@@ -89,8 +84,9 @@ data class MeetUp(
         if (criterionAge == Pair(null, null) || criterionAge == null) {
             return true
         }
-        return (criterionAge!!.first!! <= age && criterionAge.second!! >= age)
+        return (criterionAge.first!! <= age && criterionAge.second!! >= age)
     }
+
     private fun genderFulfilled(profile: ProfileUser): Boolean {
         return when (criterionGender) {
             CriterionGender.ALL -> true
@@ -128,31 +124,46 @@ data class MeetUp(
      */
     fun toFirestoreData(): HashMap<String, Any?> {
         return hashMapOf(
-            "capacity" to capacity,
-            "creator" to creatorId,
-            "description" to description,
-            "startDate" to startDate.time,
-            "endDate" to endDate.time,
-            "hasMaxCapacity" to hasMaxCapacity,
-            "capacity" to capacity.toLong(),
-            "icon" to iconImage?.imgURL,
-            "location" to GeoPoint(location.latitude, location.longitude),
-            "geohash" to GeoFireUtils.getGeoHashForLocation(
+            CREATOR to creatorId,
+            DESCRIPTION to description,
+            START_DATE to startDate.time,
+            END_DATE to endDate.time,
+            HAS_CAPACITY to hasMaxCapacity,
+            CAPACITY to capacity.toLong(),
+            ICON to iconImage?.imgURL,
+            LOCATION to GeoPoint(location.latitude, location.longitude),
+            GEOHASH to GeoFireUtils.getGeoHashForLocation(
                 GeoLocation(
                     location.latitude,
                     location.longitude
                 )
             ),
-            "name" to name,
-            "participants" to participantsId.toList(),
-            "tags" to tags.map { it.toString() },
-            "criterionAgeFirst" to criterionAge?.first?.toLong(),
-            "criterionAgeSecond" to criterionAge?.second?.toLong(),
-            "criterionGender" to criterionGender?.genderName,
+            NAME to name,
+            PARTICIPANTS to participantsId.toList(),
+            TAGS to tags.map { it.toString() },
+            CRITERION_AGE_FIRST to criterionAge?.first?.toLong(),
+            CRITERION_AGE_SECOND to criterionAge?.second?.toLong(),
+            CRITERION_GENDER to criterionGender?.genderName,
         )
     }
 
     companion object {
+
+        const val CREATOR = "creator"
+        const val DESCRIPTION = "description"
+        const val START_DATE = "startDate"
+        const val END_DATE = "endDate"
+        const val HAS_CAPACITY = "hasMaxCapacity"
+        const val CAPACITY = "capacity"
+        const val ICON = "icon"
+        const val LOCATION = "location"
+        const val GEOHASH = "geohash"
+        const val NAME = "name"
+        const val PARTICIPANTS = "participants"
+        const val TAGS = "tags"
+        const val CRITERION_AGE_FIRST = "criterionAgeFirst"
+        const val CRITERION_AGE_SECOND = "criterionAgeSecond"
+        const val CRITERION_GENDER = "criterionGender"
 
         /**
          * Provide a way to convert a Firestore query result, in a MeetUp
@@ -160,25 +171,30 @@ data class MeetUp(
         fun DocumentSnapshot.toMeetUp(): MeetUp? {
             try {
                 val uuid = id
-                val iconUrl = getString("icon")
-                val iconImage = if(iconUrl == null) { null } else { ImageInstance(iconUrl) } // Now this field can be null, because meetups with no image made it crash
-                val creator = getString("creator")!!
-                val capacity = getLong("capacity")!!
-                val description = getString("description")!!
-                val startDate = getDate("startDate")!!
-                val endDate = getDate("endDate")!!
-                val geoPoint = getGeoPoint("location")!!
-                val name = getString("name")!!
-                val tags = get("tags")!! as List<String>
-                val hasMaxCapacity = getBoolean("hasMaxCapacity")!!
-                val participantsId = get("participants")!! as List<String>
+                val iconUrl = getString(ICON)
+                val iconImage =
+                    if (iconUrl == null) null else ImageInstance(iconUrl) // Now this field can be null, because meetups with no image made it crash
+                val creator = getString(CREATOR)!!
+                val capacity = getLong(CAPACITY)!!
+                val description = getString(DESCRIPTION)!!
+                val startDate = getDate(START_DATE)!!
+                val endDate = getDate(END_DATE)!!
+                val geoPoint = getGeoPoint(LOCATION)!!
+                val name = getString(NAME)!!
+                val tags = get(TAGS)!! as List<String>
+                val hasMaxCapacity = getBoolean(HAS_CAPACITY)!!
+                val participantsId = get(PARTICIPANTS)!! as List<String>
                 // Convert Date to calendar
                 val startDateCal = Calendar.getInstance()
                 val endDateCal = Calendar.getInstance()
                 startDateCal.time = startDate
                 endDateCal.time = endDate
-                var criterionGender = CriterionGender.from(getString("criterionGender"))
-                val criterionAge = Pair(getLong("criterionAgeFirst")?.toInt(), getLong("criterionAgeSecond")?.toInt())
+                val criterionGender = CriterionGender.from(getString(CRITERION_GENDER))
+                val criterionAge = Pair(
+                    getLong(CRITERION_AGE_FIRST)?.toInt(), getLong(
+                        CRITERION_AGE_SECOND
+                    )?.toInt()
+                )
                 return MeetUp(
                     uuid,
                     creator,
@@ -200,5 +216,6 @@ data class MeetUp(
                 return null
             }
         }
+
     }
 }
