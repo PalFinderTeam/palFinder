@@ -2,6 +2,8 @@ package com.github.palFinderTeam.palfinder.profile
 
 import android.util.Log
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWED_BY
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWING_PROFILES
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.firebase.auth.ktx.auth
@@ -94,11 +96,11 @@ class FirebaseProfileService @Inject constructor(
             val batch = db.batch()
             batch.update(
                 db.collection(PROFILE_COLL).document(user.uuid),
-                "following", FieldValue.arrayUnion(targetId)
+                FOLLOWING_PROFILES, FieldValue.arrayUnion(targetId)
             )
             batch.update(
                 db.collection(PROFILE_COLL).document(targetId),
-                "followed", FieldValue.arrayUnion(user.uuid)
+                FOLLOWED_BY, FieldValue.arrayUnion(user.uuid)
             )
             batch.commit().await()
             Response.Success(Unit)
@@ -115,11 +117,11 @@ class FirebaseProfileService @Inject constructor(
             val batch = db.batch()
             batch.update(
                 db.collection(PROFILE_COLL).document(user.uuid),
-                "following", FieldValue.arrayRemove(targetId)
+                FOLLOWING_PROFILES, FieldValue.arrayRemove(targetId)
             )
             batch.update(
                 db.collection(PROFILE_COLL).document(targetId),
-                "followed", FieldValue.arrayRemove(user.uuid)
+                FOLLOWED_BY, FieldValue.arrayRemove(user.uuid)
             )
             batch.commit().await()
             Response.Success(Unit)

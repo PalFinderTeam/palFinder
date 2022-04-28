@@ -77,7 +77,7 @@ data class ProfileUser(
                     gender = Gender.from(getString(GENDER))
                 }
                 val following = (get(FOLLOWING_PROFILES) as? List<String>).orEmpty()
-                val followed = (get(FOLLOWING_PROFILES) as? List<String>).orEmpty()
+                val followed = (get(FOLLOWED_BY) as? List<String>).orEmpty()
                 ProfileUser(uuid, username, name, surname,
                     joinDateCal, ImageInstance(picture), description,
                     birthdayCal, joinedMeetUp, gender, following, followed)
