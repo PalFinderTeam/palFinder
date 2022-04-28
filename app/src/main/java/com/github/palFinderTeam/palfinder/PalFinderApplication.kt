@@ -14,7 +14,7 @@ class PalFinderApplication : Application() {
     var iconPack: IconPack? = null
 
     companion object {
-        lateinit var instance: PalFinderApplication private set
+        lateinit var instance: PalFinderApplication public set
     }
 
     override fun onCreate() {

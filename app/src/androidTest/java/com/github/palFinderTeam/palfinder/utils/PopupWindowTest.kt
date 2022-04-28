@@ -14,6 +14,7 @@ import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import com.github.palFinderTeam.palfinder.PalFinderApplication
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileService
@@ -62,7 +63,7 @@ class PopupWindowTest {
 
     @Test
     fun testCreatePopup(){
-
+        PalFinderApplication.instance = getApplicationContext()
         val intent = Intent(getApplicationContext(), MainNavActivity::class.java)
 
         val scenario = ActivityScenario.launch<MainNavActivity>(intent)
