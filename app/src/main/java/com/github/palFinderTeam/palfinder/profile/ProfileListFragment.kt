@@ -16,6 +16,7 @@ import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.ProfileViewModel
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.USER_ID
+import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -54,11 +55,16 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
     }
 
     private fun changeAdapter(list : List<ProfileUser>, v: View) {
-        val adapter = ProfileAdapter(list) { onListItemClick(it) }
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = adapter
-        val searchField = v.findViewById<SearchView>(R.id.profile_list_search)
-        searchField.imeOptions = EditorInfo.IME_ACTION_DONE
-        SearchedFilter.setupSearchField(searchField, adapter.filter )
+        viewModel.fetchProfile(viewModel.profileService.getLoggedInUserID()!!)
+        viewModel.profile.observe(this) {
+            if (it is Response.Success) {
+                val adapter = ProfileAdapter(list, it.data, viewModel.profileService) { onListItemClick(it) }
+                recyclerView.layoutManager = LinearLayoutManager(context)
+                recyclerView.adapter = adapter
+                val searchField = v.findViewById<SearchView>(R.id.profile_list_search)
+                searchField.imeOptions = EditorInfo.IME_ACTION_DONE
+                SearchedFilter.setupSearchField(searchField, adapter.filter)
+            }
+        }
     }
 }

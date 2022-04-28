@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val profileService: ProfileService
+    val profileService: ProfileService
 ) : ViewModel() {
 
     private val _profile: MutableLiveData<Response<ProfileUser>> = MutableLiveData()
