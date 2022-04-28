@@ -52,18 +52,18 @@ class ProfileActivity : AppCompatActivity() {
             meetupList = this.findViewById(R.id.meetup_list_recycler)
             meetupList.layoutManager = LinearLayoutManager(this)
 
-            //TODO: Skipping layout, adapter not initialized at start, only later at async?
-            viewModel.createAdapter(userId, ::onListItemClick)
+            viewModel.createAdapter(userId)
 
             // Bind the adapter to the RecyclerView
-            viewModel.meetupDataSet.observe(this) {
-                if (viewModel.meetupDataSet != null) {
+            viewModel.meetupDataSet.observe(this) { dataResp ->
+                if (dataResp is Response.Success) {
+                    val meetups = dataResp.data
                     adapter = MeetupListRootAdapter(
-                        viewModel.meetupDataSet.value!!,
-                        viewModel.meetupDataSet.value!!.toMutableList(),
+                        meetups,
+                        meetups.toMutableList(),
                     ) { onListItemClick(it) }
+                    meetupList.adapter = adapter
                 }
-                meetupList.adapter = adapter
             }
         }
 
@@ -133,7 +133,7 @@ class ProfileActivity : AppCompatActivity() {
             .apply {
                 putExtra(
                     MEETUP_SHOWN,
-                    (viewModel.adapter.value!!.currentDataSet as Response.Success<MutableList<MeetUp>>).data[position].uuid
+                    (viewModel.meetupDataSet.value as Response.Success).data[position].uuid
                 )
             }
         startActivity(intent)

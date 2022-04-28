@@ -47,8 +47,8 @@ class ProfileViewModel @Inject constructor(
     var adapter: LiveData<MeetupListRootAdapter> = _adapter
 
     // Meetups data
-    private var _meetupDataSet: MutableLiveData<List<MeetUp>> = MutableLiveData()
-    var meetupDataSet: LiveData<List<MeetUp>> = _meetupDataSet
+    private var _meetupDataSet: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
+    var meetupDataSet: LiveData<Response<List<MeetUp>>> = _meetupDataSet
 
     /**
      * Fetch user profile and post its value
@@ -76,18 +76,14 @@ class ProfileViewModel @Inject constructor(
     /**
      * Get the list of meetups of a user and put it into the adapter
      * @param userId The ID of a user
-     * @return adapter
      */
-    fun createAdapter(userId: String, onItemClicked: (position: Int) -> Unit) {
+    fun createAdapter(userId: String) {
         viewModelScope.launch {
             // TODO: change to user list when Zac implements it
             meetUpService.getUserMeetups(userId).collect{ resp ->
-
                 if (resp is Response.Success) {
-                    val userMeetups = resp.data
-                    _meetupDataSet.postValue(userMeetups)
+                    _meetupDataSet.postValue(resp)
                 }
-
             }
         }
     }
