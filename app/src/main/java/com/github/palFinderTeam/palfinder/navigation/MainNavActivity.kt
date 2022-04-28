@@ -91,6 +91,7 @@ class MainNavActivity : AppCompatActivity() {
                                 textId = R.string.no_account_create,
                                 continueButtonTextId = R.string.login
                             )
+                            return@setOnItemSelectedListener false
                         }else {
                             navController.popBackStack()
                             navController.navigate(
@@ -108,6 +109,7 @@ class MainNavActivity : AppCompatActivity() {
                                 textId = R.string.no_account_groups,
                                 continueButtonTextId = R.string.login
                             )
+                            return@setOnItemSelectedListener false
                         }else {
                             navController.popBackStack()
                             val args = Bundle().apply {
