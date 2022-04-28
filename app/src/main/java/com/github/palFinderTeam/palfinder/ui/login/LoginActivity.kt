@@ -7,6 +7,7 @@ package com.github.palFinderTeam.palfinder.ui.login
 //import androidx.annotation.StringRes
 
 //import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.icu.util.Calendar
@@ -19,7 +20,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.github.palFinderTeam.palfinder.MainActivity
+import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.R
 import com.google.android.gms.auth.api.identity.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -39,7 +40,6 @@ import com.google.firebase.firestore.ktx.firestore
 //import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
-import java.util.*
 
 const val CREATE_ACCOUNT_PROFILE = "com.github.palFinderTeam.palFinder.CREATE_ACCOUNT_PROFILE"
 
@@ -73,6 +73,9 @@ class LoginActivity : AppCompatActivity() {
 
     // onCreate One Tap version
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPref = getPreferences(Context.MODE_PRIVATE) ?: return
+        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
+        setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
@@ -359,7 +362,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         if (firebaseProfileService.doesUserIDExist(user.uid)) {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, MainNavActivity::class.java))
             finish()
         } else {
             val profileUser = ProfileUser(

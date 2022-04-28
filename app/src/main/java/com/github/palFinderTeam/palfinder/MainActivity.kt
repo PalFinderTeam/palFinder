@@ -9,9 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.github.palFinderTeam.palfinder.map.MapsActivity
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.notification.NotificationHandler
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
@@ -75,12 +72,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun openMeetupCreationPage(view: View?) {
-        val intent = Intent(this, MeetUpCreation::class.java).apply {
-        }
-        startActivity(intent)
-    }
-
     fun goToProfileLouca(view: View?) {
         val intent = Intent(this, ProfileActivity::class.java).apply {
             putExtra(USER_ID, "VqcgAHtrm7hmPmSqfC5eGayy1jY2")
@@ -92,17 +83,6 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, ProfileActivity::class.java).apply {
             putExtra(USER_ID, "Ze3Wyf0qgVaR1xb9BmOqPmDJsYd2")
         }
-        startActivity(intent)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun seeList(view: View?) {
-        val intent = Intent(this, MeetupListActivity::class.java)
-        startActivity(intent)
-    }
-
-    fun accessMap(view: View?) {
-        val intent = Intent(this, MapsActivity::class.java).apply {  }
         startActivity(intent)
     }
 

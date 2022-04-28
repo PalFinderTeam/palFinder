@@ -11,18 +11,19 @@ import android.view.View
 import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.navigation.navOptions
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.palFinderTeam.palfinder.PalFinderApplication
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.map.CONTEXT
-import com.github.palFinderTeam.palfinder.map.LOCATION_SELECT
-import com.github.palFinderTeam.palfinder.map.LOCATION_SELECTED
-import com.github.palFinderTeam.palfinder.map.MapsActivity
+import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
@@ -40,17 +41,17 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.internal.aggregatedroot.codegen._com_github_palFinderTeam_palfinder_PalFinderApplication
 import kotlinx.coroutines.launch
 
-const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
-const val defaultTimeDelta = 1000 * 60 * 60
 
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 @AndroidEntryPoint
-class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
+class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDialog.Callback {
 
-    private val viewModel: MeetUpCreationViewModel by viewModels()
+    val viewModel: MeetUpCreationViewModel by activityViewModels()
     private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
     private lateinit var tagsViewModel: TagsViewModel<Category>
+    private val args: MeetUpCreationArgs by navArgs()
 
+    private lateinit var rootView: View
 
     private var dateFormat = SimpleDateFormat()
 
@@ -58,30 +59,32 @@ class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
     private lateinit var limitEditText: EditText
     private lateinit var nameEditText: EditText
     private lateinit var descriptionEditText: EditText
-    private lateinit var changeIconButton: Button
+    private lateinit var changeIconButton: LinearLayout
     private lateinit var changeMarkerButton: Button
     private lateinit var icon: ImageView
     private lateinit var iconDialog: IconDialog
     private lateinit var startDateField: TextView
     private lateinit var endDateField: TextView
+    private lateinit var selectLocationButton: LinearLayout
+    private lateinit var doneButton: Button
+    private lateinit var criterionsSelectButton: Button
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_meet_up_creation)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        rootView = view
 
         dateFormat = SimpleDateFormat(getString(R.string.date_long_format))
 
         initiateFieldRefs()
         bindUI()
 
-        // Load meetup or start from scratch
-        if (intent.hasExtra(MEETUP_EDIT)) {
-            val meetupId = intent.getStringExtra(MEETUP_EDIT)
-            if (meetupId != null) {
-                viewModel.loadMeetUp(meetupId)
+        if (savedInstanceState == null) {
+            if (args.meetUpId != null) {
+                viewModel.loadMeetUp(args.meetUpId!!)
+            } else {
+                viewModel.fillWithDefaultValues()
             }
-        } else {
-            viewModel.fillWithDefaultValues()
         }
 
         // Create tag fragment
@@ -89,28 +92,36 @@ class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
         tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
 
         if (savedInstanceState == null) {
-            addTagsToFragmentManager(supportFragmentManager, R.id.fc_tags)
+            addTagsToFragmentManager(childFragmentManager, R.id.fc_tags)
         }
         // Make sure tags are refreshed once when fetching from DB
-        viewModel.tags.observe(this) {
+        viewModel.tags.observe(viewLifecycleOwner) {
             tagsViewModel.refreshTags()
+        }
+
+        // Observe map result
+        getNavigationResultLiveData<Location>(LOCATION_RESULT)?.observe(viewLifecycleOwner) { result ->
+            onLocationSelected(result.toLatLng())
+            // Make sure to consume the value
+            removeNavigationResult<Location>(LOCATION_RESULT)
         }
 
         iconDialog = supportFragmentManager.findFragmentByTag(ICON_DIALOG_TAG) as IconDialog?
             ?: IconDialog.newInstance(IconDialogSettings())
-
     }
 
     private fun initiateFieldRefs() {
-        hasLimitCheckBox = findViewById(R.id.hasCapacityButton)
-        limitEditText = findViewById(R.id.et_Capacity)
-        nameEditText = findViewById(R.id.et_EventName)
-        descriptionEditText = findViewById(R.id.et_Description)
-        changeIconButton = findViewById(R.id.bt_SelectIcon)
-        changeMarkerButton = findViewById(R.id.bt_SelectMarker)
-        icon = findViewById(R.id.iv_Icon)
-        startDateField = findViewById(R.id.tv_StartDate)
-        endDateField = findViewById(R.id.tv_EndDate)
+        hasLimitCheckBox = rootView.findViewById(R.id.hasCapacityButton)
+        limitEditText = rootView.findViewById(R.id.et_Capacity)
+        nameEditText = rootView.findViewById(R.id.et_EventName)
+        descriptionEditText = rootView.findViewById(R.id.et_Description)
+        changeIconButton = rootView.findViewById(R.id.bt_SelectIcon)
+        icon = rootView.findViewById(R.id.iv_Icon)
+        startDateField = rootView.findViewById(R.id.tv_StartDate)
+        endDateField = rootView.findViewById(R.id.tv_EndDate)
+        selectLocationButton = rootView.findViewById(R.id.bt_locationSelect)
+        doneButton = rootView.findViewById(R.id.bt_Done)
+        criterionsSelectButton = rootView.findViewById(R.id.criterionsSelectButton)
     }
 
     private fun bindUI() {
@@ -118,7 +129,7 @@ class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
         backwardBind()
     }
 
-    // Bind fields to viewModel
+    // Bind fields to viewModel and button to actions
     private fun forwardBind() {
         nameEditText.doAfterTextChanged { text ->
             viewModel.setName(text.toString())
@@ -144,7 +155,7 @@ class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
 
         changeIconButton.setOnClickListener {
             pickProfileImage(
-                this,
+                requireActivity(),
                 registerForImagePickerResult::launch
             )
         }
@@ -154,7 +165,23 @@ class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
         }
 
         icon.setOnClickListener {
-            pickProfileImage(this, registerForImagePickerResult::launch)
+            pickProfileImage(requireActivity(), registerForImagePickerResult::launch)
+        }
+        selectLocationButton.setOnClickListener {
+            selectLocation()
+        }
+        startDateField.setOnClickListener {
+            onStartTimeSelectButton()
+        }
+        endDateField.setOnClickListener {
+            onEndTimeSelectButton()
+        }
+        doneButton.setOnClickListener {
+            onDone(it)
+        }
+
+        criterionsSelectButton.setOnClickListener {
+            CriterionsFragment(viewModel).show(childFragmentManager, "criterions")
         }
     }
 
@@ -163,10 +190,10 @@ class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
         viewModel.description.observeOnce(this) {
             setTextView(R.id.et_Description, it)
         }
-        viewModel.startDate.observe(this) { newDate ->
+        viewModel.startDate.observe(viewLifecycleOwner) { newDate ->
             setTextView(R.id.tv_StartDate, dateFormat.format(newDate))
         }
-        viewModel.endDate.observe(this) { newDate ->
+        viewModel.endDate.observe(viewLifecycleOwner) { newDate ->
             setTextView(R.id.tv_EndDate, dateFormat.format(newDate))
         }
 
@@ -183,20 +210,28 @@ class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
         }
         viewModel.iconUrl.observeOnce(this) {
             lifecycleScope.launch {
-                ImageInstance(it).loadImageInto(icon)
+                if (it == null) {
+                    rootView.findViewById<ImageView>(R.id.iv_Icon)
+                        .setImageDrawable(getDrawable(requireContext(), R.drawable.icon_group))
+                } else {
+                    ImageInstance(it).loadImageInto(icon)
+                }
             }
         }
 
-        viewModel.canEditStartDate.observe(this) {
+        viewModel.canEditStartDate.observe(viewLifecycleOwner) {
             startDateField.isClickable = it
         }
-        viewModel.canEditEndDate.observe(this) {
+        viewModel.canEditEndDate.observe(viewLifecycleOwner) {
             endDateField.isClickable = it
         }
-        viewModel.icon.observe(this) {
+        viewModel.icon.observe(viewLifecycleOwner) {
             viewModel.viewModelScope.launch {
                 if (it != null) {
-                    ImageInstance(it).loadImageInto(findViewById(R.id.iv_Icon))
+                    ImageInstance(it).loadImageInto(rootView.findViewById(R.id.iv_Icon))
+                } else {
+                    rootView.findViewById<ImageView>(R.id.iv_Icon)
+                        .setImageDrawable(getDrawable(requireContext(), R.drawable.icon_group))
                 }
             }
         }
@@ -212,12 +247,12 @@ class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
     }
 
     private fun setTextView(id: Int, value: String) {
-        findViewById<TextView>(id).apply { this.text = value }
+        rootView.findViewById<TextView>(id).apply { this.text = value }
     }
 
-    fun onStartTimeSelectButton(v: View) {
+    private fun onStartTimeSelectButton() {
         askTime(
-            supportFragmentManager,
+            childFragmentManager,
             viewModel.startDate.value?.toSimpleDate(),
             viewModel.startDate.value?.toSimpleTime(),
             Calendar.getInstance(),
@@ -227,9 +262,9 @@ class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
         }
     }
 
-    fun onEndTimeSelectButton(v: View) {
+    private fun onEndTimeSelectButton() {
         askTime(
-            supportFragmentManager,
+            childFragmentManager,
             viewModel.endDate.value?.toSimpleDate(),
             viewModel.endDate.value?.toSimpleTime(),
             viewModel.startDate.value,
@@ -254,16 +289,16 @@ class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
         return true
     }
 
-    fun onDone(v: View) {
+    private fun onDone(v: View) {
         // Check field validity
         val name = nameEditText.text.toString()
         val description = descriptionEditText.text.toString()
         if (!checkFieldValid(name, description)) return
 
         // Listen on DB response to move forward.
-        viewModel.sendSuccess.observe(this) { isSuccessFull ->
+        viewModel.sendSuccess.observe(viewLifecycleOwner) { isSuccessFull ->
             if (isSuccessFull) {
-                val intent = Intent(this, MeetUpView::class.java).apply {
+                val intent = Intent(requireContext(), MeetUpView::class.java).apply {
                     putExtra(MEETUP_SHOWN, viewModel.getMeetUpId())
                 }
                 startActivity(intent)
@@ -279,7 +314,7 @@ class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
      * Show [message] with [title] in an alert box
      */
     private fun showMessage(message: Int, title: Int) {
-        val dlgAlert = AlertDialog.Builder(this)
+        val dlgAlert = AlertDialog.Builder(requireContext())
         dlgAlert.setMessage(message)
         dlgAlert.setTitle(title)
         dlgAlert.setPositiveButton(R.string.ok, null)
@@ -287,25 +322,13 @@ class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
         dlgAlert.create().show()
     }
 
-    fun onSelectLocation(v: View) {
-        val intent = Intent(this, MapsActivity::class.java)
-        val extras = Bundle().apply {
-            putSerializable(CONTEXT, MapsActivity.Companion.SELECT_LOCATION)
-            putParcelable(LOCATION_SELECT, LatLng(0.0, 0.0))
-        }
-        intent.putExtras(extras)
-        registerForLocationResult.launch(intent)
+    private fun selectLocation() {
+        val action = MeetUpCreationDirections.actionCreationPickLocation()
+        action.startSelection = viewModel.location.value
+        findNavController().navigate(action, navOptions {
+            this.restoreState = true
+        })
     }
-
-    private val registerForLocationResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                if (data != null) {
-                    onLocationSelected(data.getParcelableExtra(LOCATION_SELECTED)!!)
-                }
-            }
-        }
 
     private fun onLocationSelected(p0: LatLng) {
         viewModel.setLatLng(p0)
@@ -326,7 +349,8 @@ class MeetUpCreation : AppCompatActivity(), IconDialog.Callback {
                     icon.setImageURI(fileUri)
                 }
                 ImagePicker.RESULT_ERROR -> {
-                    Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }
