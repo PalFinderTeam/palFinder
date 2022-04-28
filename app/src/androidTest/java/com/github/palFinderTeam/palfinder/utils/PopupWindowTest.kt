@@ -37,6 +37,9 @@ class PopupWindowTest {
     @Inject
     lateinit var profileService: ProfileService
 
+    @Inject
+    lateinit var contextService: UIMockProfileServiceModule.UIMockProfileService
+
     @Before
     fun init_() {
         hiltRule.inject()
@@ -63,7 +66,6 @@ class PopupWindowTest {
 
     @Test
     fun testCreatePopup(){
-        PalFinderApplication.instance = getApplicationContext()
         val intent = Intent(getApplicationContext(), MainNavActivity::class.java)
 
         val scenario = ActivityScenario.launch<MainNavActivity>(intent)
