@@ -109,9 +109,6 @@ class NotificationTest {
         val handler = NotificationHandler(context)
         handler.schedule(Calendar.getInstance(), R.string.testNotifTitle,R.string.testNotifContent, R.drawable.icon_beer)
 
-        val cache = DictionaryCache("notification", CachedNotification::class.java, false, context)
-        assertTrue(cache.getAll().any { it.content == expectedContent && it.title == expectedTitle })
-
         notificationService.action()
     }
 }
