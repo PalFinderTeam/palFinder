@@ -38,7 +38,7 @@ class PopupWindowTest {
     lateinit var profileService: ProfileService
 
     @Inject
-    lateinit var contextService: UIMockProfileServiceModule.UIMockProfileService
+    lateinit var contextService: UIMockContextServiceModule.UIMockContextService
 
     @Before
     fun init_() {
