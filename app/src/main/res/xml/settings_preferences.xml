@@ -3,14 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:iconSpaceReserved="false">
 
-    <SwitchPreference
-        android:layout_width="match_parent"
-        android:defaultValue="true"
-        android:key="switch"
-        android:summary="Click to switch on or off"
-        android:title="Switch Preference"
-        app:iconSpaceReserved="false" />
-
     <ListPreference
         app:dialogTitle="Select colors"
         app:entries="@array/settings_list_colors_titles"
