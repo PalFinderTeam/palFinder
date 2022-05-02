@@ -64,6 +64,7 @@ class ProfileActivity : AppCompatActivity() {
                     adapter = MeetupListRootAdapter(
                         meetups,
                         meetups.toMutableList(),
+                        context = applicationContext
                     ) { onListItemClick(it) }
                     meetupList.adapter = adapter
                 }

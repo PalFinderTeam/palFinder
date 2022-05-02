@@ -90,16 +90,18 @@ class ProfileAdapter(
             } else {
                 unfollow(position, holder)
             }
-            CoroutineScope(Dispatchers.IO).launch {
-                loggedUser = profileService.fetchUserProfile(loggedUser.uuid)!!
-            }
+        }
 
-            CoroutineScope(Dispatchers.Main).launch {
-                currentDataSet[position].pfp.loadImageInto(
-                    holder.pic,
-                    context
-                )
-            }
+        CoroutineScope(Dispatchers.IO).launch {
+            loggedUser = profileService.fetchUserProfile(loggedUser.uuid)!!
+        }
+
+        CoroutineScope(Dispatchers.Main).launch {
+            currentDataSet[position].pfp.loadImageInto(
+                holder.pic,
+                context
+            )
+            holder.pic.visibility = View.VISIBLE
         }
     }
 
