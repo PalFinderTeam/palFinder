@@ -114,7 +114,7 @@ data class ProfileUser(
 
     fun getAge(): Int {
         return if (birthday == null) {
-            1
+            -1
         } else {
             Period.between(
                 LocalDate.of(birthday.get(Calendar.YEAR), birthday.get(Calendar.MONTH), birthday.get(Calendar.DAY_OF_MONTH)),

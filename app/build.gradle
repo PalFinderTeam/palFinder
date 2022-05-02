@@ -59,6 +59,7 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.3.0'
     implementation "androidx.fragment:fragment-ktx:1.4.1"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.github.zend10:OverlapImageListView:v1.0.1'
 
     def nav_version = "2.4.2"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"

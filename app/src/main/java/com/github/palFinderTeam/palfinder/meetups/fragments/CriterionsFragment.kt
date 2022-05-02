@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreationViewModel
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
+import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import org.florescu.android.rangeseekbar.RangeSeekBar
 import org.w3c.dom.Text
 
@@ -29,7 +30,7 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
         val textMin= v.findViewById<TextView>(R.id.minValueAge)
         val textMax = v.findViewById<TextView>(R.id.maxValueAge)
         // Set the range
-        rangeSeekBar.setRangeValues(13, 66)
+        rangeSeekBar.setRangeValues(PrettyDate.MIN_AGE, PrettyDate.MAX_AGE)
         rangeSeekBar.selectedMinValue = viewModel.criterionAge.value!!.first
         rangeSeekBar.selectedMaxValue = viewModel.criterionAge.value!!.second
         textMin.text = rangeSeekBar.selectedMinValue.toString()

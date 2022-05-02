@@ -21,6 +21,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/profileRoundEdge" />
 
+    <com.zen.overlapimagelistview.OverlapImageListView
+        android:id="@+id/overlapImage"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        app:circleCount="5"
+        app:fillColor="#000000"
+        app:strokeColor="#FFFFFF"
+        app:strokeWidth="4dp"
+        tools:layout_editor_absoluteX="218dp"
+        tools:layout_editor_absoluteY="381dp" />
+
     <TextView
         android:id="@+id/userProfileName"
         android:layout_width="wrap_content"
@@ -125,7 +136,8 @@
         android:id="@+id/following"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="40dp"
         android:text="@string/placeholder_following"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userProfileDescOverflow" />
