@@ -55,6 +55,13 @@
     <string name="meetup_creation_missing_name_desc">Please add an Event Name and an Event Description</string>
     <string name="meetup_creation_missing_name_desc_title">Missing Data</string>
 
+    <!-- Strings used for meetupList -->
+    <string name="show_all">all meetups</string>
+    <string name="only_participating">pal taking part</string>
+    <string name="only_creators">created by pal</string>
+    <string name="only_joined">joined</string>
+
+
 
     <!-- Strings used for meetup view -->
     <string name="meetup_view_meetup_start_at">Starts</string>

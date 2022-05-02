@@ -10,6 +10,8 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.meetups.activities.SHOW_JOINED_ONLY
+import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -84,7 +86,7 @@ class MainNavActivity : AppCompatActivity() {
                     R.id.nav_bar_groups -> {
                         navController.popBackStack()
                         val args = Bundle().apply {
-                            putBoolean("ShowOnlyJoined", true)
+                            putSerializable("showParam", ShowParam.ONLY_JOINED)
                         }
                         navController.navigate(
                             R.id.list_fragment,

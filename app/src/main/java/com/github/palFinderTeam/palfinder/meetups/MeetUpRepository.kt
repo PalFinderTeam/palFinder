@@ -1,6 +1,8 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.util.Log
+import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
@@ -57,6 +59,8 @@ interface MeetUpRepository {
         location: Location,
         radiusInKm: Double,
         currentDate: Calendar? = null,
+        showParam: ShowParam? = ShowParam.ALL,
+        profile: ProfileUser? = null
     ): Flow<Response<List<MeetUp>>>
 
     /**
@@ -102,4 +106,16 @@ interface MeetUpRepository {
      * Get all meetup from the list of ids [meetUpIds].
      */
     suspend fun getMeetUpsData(meetUpIds: List<String>): List<MeetUp>?
+
+    /**
+     * provide additional filter for the getMeetupAroundLocation function, depending
+     */
+    fun additionalFilter(profile: ProfileUser?, meetUp: MeetUp, showParam: ShowParam?): Boolean {
+        Log.d("ceace", showParam.toString())
+        return when (showParam) {
+            ShowParam.PAL_PARTCIPATING -> profile!!.following.any { meetUp.isParticipating(it) }
+            ShowParam.PAL_CREATOR -> profile!!.following.any{meetUp.creatorId == it}
+            else -> true
+        }
+    }
 }

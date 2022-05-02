@@ -7,10 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.PopupMenu
-import android.widget.SearchView
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -72,7 +69,19 @@ class MeetupListFragment : Fragment() {
         radiusSlider.addOnChangeListener { _, value, _ ->
             viewModel.setSearchParamAndFetch(radiusInKm = value.toDouble())
         }
-        viewModel.setSearchParamAndFetch(radiusInKm = radiusSlider.value.toDouble())
+
+        val followerOptions: RadioGroup = view.findViewById(R.id.follower_options_group)
+        view.findViewById<RadioButton>(R.id.button_all).isChecked = true
+        followerOptions.setOnCheckedChangeListener { _, checkedId ->
+            val radio: RadioButton = view.findViewById(checkedId)
+            val index = followerOptions.indexOfChild(radio)
+            when (index) {
+                0 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ALL)
+                1 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_PARTCIPATING)
+                2 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_CREATOR)
+                3 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ONLY_JOINED)
+            }
+        }
 
 
         viewModel.listOfMeetUpResponse.observe(requireActivity()) { it ->
@@ -119,7 +128,7 @@ class MeetupListFragment : Fragment() {
 
         var value = viewModel.searchRadius.value
 
-        viewModel.setSearchParamAndFetch(showOnlyJoined = args.showOnlyJoined, showOnlyAvailable = true)
+        viewModel.setSearchParamAndFetch(showParam = args.showParam, showOnlyAvailable = true)
     }
 
     private fun filterTags(meetup: MeetUp): Boolean {

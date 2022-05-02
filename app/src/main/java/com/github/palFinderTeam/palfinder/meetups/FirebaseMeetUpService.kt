@@ -8,6 +8,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.END_DATE
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.GEOHASH
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.PARTICIPANTS
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
+import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOINED_MEETUPS_KEY
@@ -97,8 +98,9 @@ class FirebaseMeetUpService @Inject constructor(
         location: Location,
         radiusInKm: Double,
         currentDate: Calendar?,
+        showParam: ShowParam?,
+        profile: ProfileUser?
     ): Flow<Response<List<MeetUp>>> {
-
         val geoLocation = GeoLocation(location.latitude, location.longitude)
         val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInKm * 1000.0)
         val tasks = bounds.map {
@@ -124,7 +126,6 @@ class FirebaseMeetUpService @Inject constructor(
                         )
                         return@addSnapshotListener
                     }
-
                     var meetups = value?.documents
                         ?.mapNotNull { it.toMeetUp() }
                         ?.filter {
@@ -132,7 +133,7 @@ class FirebaseMeetUpService @Inject constructor(
                             val docLocation = it.location
                             val distanceInKm =
                                 docLocation.distanceInKm(location)
-                            distanceInKm <= radiusInKm
+                            distanceInKm <= radiusInKm && additionalFilter(profile, it, showParam)
                         }
                     // Cannot combine queries, so perform things locally instead.
                     if (currentDate != null) {
