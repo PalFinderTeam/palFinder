@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder
 
 import android.app.Application
+import com.github.palFinderTeam.palfinder.utils.EndlessService
 import android.content.Context
 import com.maltaisn.icondialog.pack.IconPack
 import com.maltaisn.icondialog.pack.IconPackLoader
@@ -19,6 +20,9 @@ class PalFinderApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+
+        EndlessService.scheduleJob(this)
+
         loadIconPack()
     }
 

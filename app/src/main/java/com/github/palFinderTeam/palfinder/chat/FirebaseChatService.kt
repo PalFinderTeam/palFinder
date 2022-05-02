@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FirebaseChatService @Inject constructor(
+open class FirebaseChatService @Inject constructor(
     private val db: FirebaseFirestore
 ) : ChatService {
 
@@ -37,6 +37,20 @@ class FirebaseChatService @Inject constructor(
             awaitClose {
                 listenerRegistration.remove()
             }
+        }
+    }
+
+    override suspend fun fetchMessages(chatId: String): List<ChatMessage>? {
+        return try {
+            db.collection(CONVERSATION_COLL)
+                .document(chatId)
+                .collection(MSG_COLL)
+                .get()
+                .await()
+                ?.documents
+                ?.mapNotNull { it.toChatMessage() }
+        } catch (e: Exception) {
+            null
         }
     }
 

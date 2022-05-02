@@ -31,7 +31,7 @@ import javax.inject.Inject
 /**
  * Object containing methods to query the database about MeetUps.
  */
-class FirebaseMeetUpService @Inject constructor(
+open class FirebaseMeetUpService @Inject constructor(
     private val db: FirebaseFirestore
 ) : MeetUpRepository {
 

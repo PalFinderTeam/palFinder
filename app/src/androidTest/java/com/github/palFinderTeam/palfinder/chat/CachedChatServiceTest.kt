@@ -1,10 +1,12 @@
 package com.github.palFinderTeam.palfinder.chat
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.chat.ChatMessage.Companion.toChatMessage
 import com.github.palFinderTeam.palfinder.chat.FirebaseChatService.Companion.CONVERSATION_COLL
 import com.github.palFinderTeam.palfinder.chat.FirebaseChatService.Companion.MSG_COLL
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
+import com.github.palFinderTeam.palfinder.utils.UIMockContextServiceModule
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,7 +20,7 @@ import org.junit.Test
 import java.util.*
 
 @ExperimentalCoroutinesApi
-class FirebaseChatServiceTest {
+class CachedChatServiceTest {
 
     private lateinit var firebaseChatService: FirebaseChatService
     private lateinit var db: FirebaseFirestore
@@ -37,7 +39,10 @@ class FirebaseChatServiceTest {
             .build()
         db.firestoreSettings = settings
 
-        firebaseChatService = FirebaseChatService(db)
+        val context = UIMockContextServiceModule.UIMockContextService()
+
+        firebaseChatService = CachedChatService(db, context)
+        DictionaryCache.clearAllTempCaches(context.get())
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }
         message1 = ChatMessage(

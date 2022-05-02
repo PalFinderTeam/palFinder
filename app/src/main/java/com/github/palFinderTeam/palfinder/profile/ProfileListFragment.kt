@@ -58,7 +58,7 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
         viewModel.fetchProfile(viewModel.profileService.getLoggedInUserID()!!)
         viewModel.profile.observe(this) {
             if (it is Response.Success) {
-                val adapter = ProfileAdapter(list, it.data, viewModel.profileService) { onListItemClick(it) }
+                val adapter = ProfileAdapter(list, it.data, viewModel.profileService, requireContext()) { onListItemClick(it) }
                 recyclerView.layoutManager = LinearLayoutManager(context)
                 recyclerView.adapter = adapter
                 val searchField = v.findViewById<SearchView>(R.id.profile_list_search)

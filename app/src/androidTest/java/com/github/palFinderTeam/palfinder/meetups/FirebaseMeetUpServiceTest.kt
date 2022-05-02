@@ -153,6 +153,24 @@ class FirebaseMeetUpServiceTest {
     }
 
     @Test
+    fun getMeetUpDataTwiceGetRightInfo() = runTest {
+        val id = firebaseMeetUpService.createMeetUp(meetUp)
+        assertThat(id, notNullValue())
+        id!!.let {
+            var fetchedMeetup = firebaseMeetUpService.getMeetUpData(it)
+            assertThat(fetchedMeetup, notNullValue())
+            assertThat(fetchedMeetup, `is`(meetUp.copy(uuid = it)))
+
+            fetchedMeetup = firebaseMeetUpService.getMeetUpData(it)
+            assertThat(fetchedMeetup, notNullValue())
+            assertThat(fetchedMeetup, `is`(meetUp.copy(uuid = it)))
+
+            // Make sure to clean for next tests
+            db.collection(MEETUP_COLL).document(it).delete().await()
+        }
+    }
+
+    @Test
     fun getAllMeetUpReturnsAllMeetUps() = runTest {
         val userId = firebaseProfileService.createProfile(user1)
         val meetUp2 = meetUp.copy(description = "michel")

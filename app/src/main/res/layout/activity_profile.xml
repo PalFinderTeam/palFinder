@@ -2,145 +2,171 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@color/theme_bright"
-    android:padding="30dp">
-
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/userProfileImage"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
-
-        android:adjustViewBounds="true"
-        android:background="@color/theme_primary"
-        android:scaleType="fitCenter"
-        android:src="@drawable/icon_user_female"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearanceOverlay="@style/profileRoundEdge" />
-
-    <com.zen.overlapimagelistview.OverlapImageListView
-        android:id="@+id/overlapImage"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        app:circleCount="5"
-        app:fillColor="#000000"
-        app:strokeColor="#FFFFFF"
-        app:strokeWidth="4dp"
-        tools:layout_editor_absoluteX="218dp"
-        tools:layout_editor_absoluteY="381dp" />
-
-    <TextView
-        android:id="@+id/userProfileName"
-        android:layout_width="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:fontFamily="@font/fredoka_bold"
-        android:text="@string/placeholder_name"
-        android:textColor="@color/theme_darker"
-        android:textSize="40sp"
-        app:layout_constraintStart_toStartOf="@+id/userProfileImage"
-        app:layout_constraintTop_toBottomOf="@+id/userProfileImage" />
-
-    <TextView
-        android:id="@+id/userProfileJoinDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:fontFamily="@font/fredoka_normal"
-        android:text="@string/placeholder_date"
-        android:textColor="@color/theme_darker"
-        app:layout_constraintBottom_toBottomOf="@+id/userProfileSeparator"
-        app:layout_constraintStart_toEndOf="@+id/userProfileSeparator"
-        app:layout_constraintTop_toTopOf="@+id/userProfileSeparator" />
-
-    <TextView
-        android:id="@+id/userProfileUsername"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/fredoka_normal"
-        android:text="@string/placeholder_username"
-        android:textColor="@color/theme_primary_default"
-        android:textSize="22sp"
-        app:layout_constraintStart_toStartOf="@+id/userProfileName"
-        app:layout_constraintTop_toBottomOf="@+id/userProfileName" />
-
-    <View
-        android:id="@+id/userProfileSeparator"
-        android:layout_width="5dp"
-        android:layout_height="5dp"
-        android:layout_marginStart="12dp"
-        android:background="@drawable/circle_shape"
-        app:layout_constraintBottom_toBottomOf="@+id/userProfileUsername"
-        app:layout_constraintStart_toEndOf="@+id/userProfileUsername"
-        app:layout_constraintTop_toTopOf="@+id/userProfileUsername" />
-
-    <TextView
-        android:id="@+id/userProfileDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="7dp"
-        android:ellipsize="end"
-        android:fontFamily="@font/fredoka_bold"
-        android:maxLines="2"
-        android:text="@string/placeholder_desc"
-        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/userProfileAboutTitle"
-        app:layout_constraintTop_toBottomOf="@+id/userProfileAboutTitle" />
-
-    <TextView
-        android:id="@+id/userProfileDescOverflow"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/grad_fade"
-        android:fontFamily="@font/fredoka_bold"
-        android:gravity="bottom|center"
-        android:maxLines="2"
-        android:onClick="showFullDesc"
-        android:orientation="horizontal"
-        android:text="@string/read_more"
-        android:textAlignment="center"
-        android:textColor="@color/theme_primary_default"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/userProfileDescription" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/userProfileAboutTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:alpha="0.5"
-        android:fontFamily="@font/fredoka_bold"
-        android:text="@string/desc_name"
-        app:layout_constraintStart_toStartOf="@+id/userProfileUsername"
-        app:layout_constraintTop_toBottomOf="@+id/userProfileUsername" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/followers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="@string/placeholder_follower"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userProfileDescOverflow" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/theme_bright"
+                android:orientation="vertical"
+                android:padding="22dp">
 
-    <TextView
-        android:id="@+id/following"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="40dp"
-        android:text="@string/placeholder_following"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userProfileDescOverflow" />
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/userProfileImage"
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
 
+                    android:adjustViewBounds="true"
+                    android:background="@color/theme_primary"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icon_user_female"
+                    app:shapeAppearanceOverlay="@style/profileRoundEdge" />
+
+                <TextView
+                    android:id="@+id/userProfileName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:fontFamily="@font/fredoka_bold"
+                    android:text="@string/placeholder_name"
+                    android:textColor="@color/theme_darker"
+                    android:textSize="40sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|start"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/userProfileUsername"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/fredoka_normal"
+                        android:text="@string/placeholder_username"
+                        android:textColor="@color/theme_primary"
+                        android:textSize="22sp" />
+
+                    <View
+                        android:id="@+id/userProfileSeparator"
+                        android:layout_width="5dp"
+                        android:layout_height="5dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/circle_shape" />
+
+                    <TextView
+                        android:id="@+id/userProfileJoinDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:fontFamily="@font/fredoka_normal"
+                        android:text="@string/placeholder_date"
+                        android:textColor="@color/theme_darker" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/userProfileAboutTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:alpha="0.5"
+                    android:fontFamily="@font/fredoka_bold"
+                    android:text="@string/desc_name" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/userProfileDescription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="7dp"
+                        android:ellipsize="end"
+                        android:fontFamily="@font/fredoka_bold"
+                        android:maxLines="2"
+                        android:text="@string/placeholder_desc"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="parent" />
+
+                    <TextView
+                        android:id="@+id/userProfileDescOverflow"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/grad_fade"
+                        android:fontFamily="@font/fredoka_bold"
+                        android:gravity="bottom|center"
+                        android:maxLines="2"
+                        android:onClick="showFullDesc"
+                        android:orientation="horizontal"
+                        android:text="@string/read_more"
+                        android:textAlignment="center"
+                        android:textColor="@color/theme_primary"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/userProfileDescription" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp">
+
+                    <TextView
+                        android:id="@+id/followers"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/placeholder_follower"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/userProfileDescOverflow" />
+
+                    <TextView
+                        android:id="@+id/following"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="@string/placeholder_following"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/userProfileDescOverflow" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/meetup_list_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent">
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

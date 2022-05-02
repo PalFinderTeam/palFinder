@@ -33,8 +33,9 @@ object UIMockTimeServiceModule {
         override fun now(): Calendar {
             return date
         }
-        fun setDate(now: Calendar){
+        fun setDate(now: Calendar):TimeService{
             date = now
+            return this
         }
     }
 }

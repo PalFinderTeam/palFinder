@@ -1,3 +1,4 @@
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
@@ -59,7 +60,6 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.3.0'
     implementation "androidx.fragment:fragment-ktx:1.4.1"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.github.zend10:OverlapImageListView:v1.0.1'
 
     def nav_version = "2.4.2"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
@@ -89,6 +89,10 @@ dependencies {
     implementation 'com.firebase:geofire-android-common:3.1.0'
 
     implementation 'com.google.dagger:hilt-android:2.41'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
+    implementation 'com.github.kittinunf.fuel:fuel:2.1.0'
+    implementation 'com.github.kittinunf.fuel:fuel-android:2.1.0'
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
     implementation 'com.github.dhaval2404:imagepicker:2.1'

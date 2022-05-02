@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
+import android.os.Bundle
 import android.widget.TextView
 import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ActivityScenario
@@ -17,15 +18,20 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
+import com.github.palFinderTeam.palfinder.meetups.activities.RecyclerViewMatcher
+import com.github.palFinderTeam.palfinder.meetups.activities.recyclerViewSizeMatcher
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.github.palFinderTeam.palfinder.utils.launchFragmentInHiltContainer
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.hamcrest.CoreMatchers
 import org.junit.*
 import javax.inject.Inject
 
@@ -198,7 +204,6 @@ class ProfileActivityTest {
             Assert.assertEquals(ImageInstance.NOT_LOADED, userCat.pfp.imgStatus)
         }
     }
-
 
     private fun getResourceString(id: Int): String? {
         val targetContext: Context = InstrumentationRegistry.getTargetContext()

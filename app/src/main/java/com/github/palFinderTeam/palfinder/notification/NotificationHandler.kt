@@ -1,16 +1,19 @@
 package com.github.palFinderTeam.palfinder.notification
 
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.icu.util.Calendar
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.cache.FileCache
-import java.util.*
 
 private const val CHANNEL_ID = "PalFinder"
 private const val NOTIFICATION = "notification"
@@ -22,6 +25,7 @@ class NotificationHandler (
     private var data = MetaData(0)
 
     private var cache = FileCache("NotificationHandlerMetadata", MetaData::class.java, true, context)
+    private val notifications = DictionaryCache("notification", CachedNotification::class.java, false, context)
 
     private fun initChannel(){
         if (!hasCreateChannel){
@@ -42,6 +46,15 @@ class NotificationHandler (
         }
     }
 
+    private fun getNotificationUUID():Int{
+        if (cache.exist()){
+            data = cache.get()
+        }
+        val ret = data.notificationId++
+        cache.store(data)
+        return ret
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotification(title: String, content: String, icon: Int): Notification{
         return Notification.Builder(context, CHANNEL_ID)
@@ -55,11 +68,7 @@ class NotificationHandler (
     private fun post(notification: Notification){
         initChannel()
         with(NotificationManagerCompat.from(context)) {
-            if (cache.exist()){
-                data = cache.get()
-            }
-            notify(data.notificationId++, notification)
-            cache.store(data)
+            notify(getNotificationUUID(), notification)
         }
     }
 
@@ -89,20 +98,8 @@ class NotificationHandler (
         )
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
-    private fun schedule(date: Calendar, notification: Notification){
-        val notificationIntent = Intent(context, this::class.java).apply {
-            putExtra(NOTIFICATION, notification)
-        }
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            0,
-            notificationIntent,
-            PendingIntent.FLAG_MUTABLE
-        )
-
-        val alarmManager = getSystemService(context, AlarmManager::class.java)
-        alarmManager!![AlarmManager.ELAPSED_REALTIME_WAKEUP, date.timeInMillis] = pendingIntent
+    private fun schedule(notification: CachedNotification){
+        notifications.store(notification.uuid, notification)
     }
 
     /**
@@ -112,9 +109,8 @@ class NotificationHandler (
      * @param content: Content of the notification
      * @param icon: Icon of the notification
      */
-    @RequiresApi(Build.VERSION_CODES.S)
     fun schedule(date: Calendar, title: String, content: String, icon: Int){
-        schedule(date, createNotification(title,content, icon))
+        schedule(CachedNotification(getNotificationUUID().toString(), date, title,content, icon))
     }
 
     /**
@@ -124,7 +120,6 @@ class NotificationHandler (
      * @param content: Content of the notification
      * @param icon: Icon of the notification
      */
-    @RequiresApi(Build.VERSION_CODES.S)
     fun schedule(date: Calendar, title: Int, content: Int, icon: Int){
         schedule(
             date,
@@ -132,6 +127,30 @@ class NotificationHandler (
             context.getString(content),
             icon
         )
+    }
+
+    /**
+     * Schedule a Notification for the [date]
+     * @param date: Date to post the notification
+     * @param uuid: UUID of the notification (Create new notification if new uuid otherwise override previous)
+     * @param title: Title of the notification
+     * @param content: Content of the notification
+     * @param icon: Icon of the notification
+     */
+    fun schedule(date: Calendar, uuid: String,title: String, content: String, icon: Int){
+        schedule(CachedNotification(uuid, date, title,content, icon))
+    }
+
+    /**
+     * Schedule a Notification for the [date]
+     * @param date: Date to post the notification
+     * @param uuid: UUID of the notification (Create new notification if new uuid otherwise override previous)
+     * @param title: Title of the notification
+     * @param content: Content of the notification
+     * @param icon: Icon of the notification
+     */
+    fun schedule(date: Calendar, uuid: String,title: Int, content: Int, icon: Int){
+        schedule(CachedNotification(uuid, date, context.getString(title), context.getString(content), icon))
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {

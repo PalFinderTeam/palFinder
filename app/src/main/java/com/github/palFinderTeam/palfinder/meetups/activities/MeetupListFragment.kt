@@ -94,7 +94,8 @@ class MeetupListFragment : Fragment() {
                     ) {
                         adapter.notifyDataSetChanged()
                     },
-                    viewModel.searchLocation.value!!
+                    viewModel.searchLocation.value!!,
+                    requireContext()
                 )
                 { onListItemClick(it) }
                 meetupList.adapter = adapter
