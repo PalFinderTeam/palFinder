@@ -111,7 +111,6 @@ interface MeetUpRepository {
      * provide additional filter for the getMeetupAroundLocation function, depending
      */
     fun additionalFilter(profile: ProfileUser?, meetUp: MeetUp, showParam: ShowParam?): Boolean {
-        Log.d("ceace", showParam.toString())
         return when (showParam) {
             ShowParam.PAL_PARTCIPATING -> profile!!.following.any { meetUp.isParticipating(it) }
             ShowParam.PAL_CREATOR -> profile!!.following.any{meetUp.creatorId == it}
