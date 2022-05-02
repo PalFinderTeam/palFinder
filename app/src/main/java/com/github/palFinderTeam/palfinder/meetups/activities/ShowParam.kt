@@ -11,6 +11,6 @@ enum class ShowParam(val param: String) {
     PAL_PARTCIPATING("pals are participating"),
     PAL_CREATOR("pal has created it");
     companion object{
-        fun from(type: String?): Gender = Gender.values().find { it.stringGender == type } ?: Gender.NON_SPEC
+        fun from(type: String?): ShowParam = ShowParam.values().find { it.param == type } ?: ALL
     }
 }
