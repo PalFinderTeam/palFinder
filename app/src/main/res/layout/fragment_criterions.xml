@@ -7,10 +7,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,6 +23,7 @@
             android:fontFamily="@font/fredoka_bold"
             android:textColor="@color/theme_dark"
             android:textSize="30sp"
+
             android:gravity="center"
             android:layout_marginBottom="18dp" />
 
@@ -55,7 +56,8 @@
 
             <TextView
                 android:id="@+id/minValueAge"
-                android:layout_width="wrap_content"
+                android:layout_width="45dp"
+                android:gravity="right"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/fredoka_normal"
                 android:text="@string/criterions_age_min"
@@ -63,11 +65,12 @@
 
             <com.google.android.material.slider.RangeSlider
                 android:id="@+id/rangeAgeSelector"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
+                android:stepSize="1.0"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:valueFrom="13"
                 android:valueTo="66"
                 app:values="@array/initial_values">
@@ -76,9 +79,10 @@
 
             <TextView
                 android:id="@+id/maxValueAge"
-                android:layout_width="wrap_content"
+                android:layout_width="45dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/fredoka_normal"
+                android:gravity="left"
                 android:text="@string/criterions_age_max_plus"
                 android:textSize="20sp" />
 
@@ -87,8 +91,9 @@
         <TextView
             android:id="@+id/gender_selection_title"
             android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="2dp"
             android:fontFamily="@font/fredoka_normal"
             android:gravity="center"
             android:text="@string/criterions_gender_title"
@@ -141,7 +146,7 @@
             android:id="@+id/criterionButtonDone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:padding="12dp"
             android:text="@string/criterion_confirm" />
 

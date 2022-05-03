@@ -114,7 +114,7 @@
     <string name="criterions_gender_title">Select gender</string>
     <string name="radio_male">Male</string>
     <string name="radio_female">Female</string>
-    <string name="radio_male_and_female">Male and Female</string>
+    <string name="radio_male_and_female">Any</string>
 
     <string name="criterion_confirm">Confirm criteria</string>
 
