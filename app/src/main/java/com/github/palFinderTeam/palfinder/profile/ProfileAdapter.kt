@@ -101,7 +101,6 @@ class ProfileAdapter(
                 holder.pic,
                 context
             )
-            holder.pic.visibility = View.VISIBLE
         }
     }
 
