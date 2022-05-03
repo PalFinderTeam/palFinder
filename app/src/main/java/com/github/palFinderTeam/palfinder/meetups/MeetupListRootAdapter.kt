@@ -91,9 +91,6 @@ open class MeetupListRootAdapter(
             CoroutineScope(Dispatchers.Main).launch {
                 currentDataSet[position].iconImage?.let {
                     it.loadImageInto(meetupPicture, context)
-                    // Don't ask me why it works, but you have manually reset the imageView to
-                    // visible otherwise it randomly disappear.
-                    meetupPicture.visibility = View.VISIBLE
                 }
             }
         } else {
