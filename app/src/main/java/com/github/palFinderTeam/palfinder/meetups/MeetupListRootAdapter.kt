@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -90,6 +91,9 @@ open class MeetupListRootAdapter(
             CoroutineScope(Dispatchers.Main).launch {
                 currentDataSet[position].iconImage?.let {
                     it.loadImageInto(meetupPicture, context)
+                    // Don't ask me why it works, but you have manually reset the imageView to
+                    // visible otherwise it randomly disappear.
+                    meetupPicture.visibility = View.VISIBLE
                 }
             }
         } else {

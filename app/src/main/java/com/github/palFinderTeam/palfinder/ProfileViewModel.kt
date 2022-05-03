@@ -1,29 +1,16 @@
 package com.github.palFinderTeam.palfinder
 
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.util.Log
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.github.palFinderTeam.palfinder.meetups.*
-import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
-import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
+import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
-import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -60,30 +47,48 @@ class ProfileViewModel @Inject constructor(
                 _profile.postValue(it)
             }
         }
-        profile.value
     }
 
     /**
      * Fetch user profiles and post the values in the list
      * @param usersIds list of IDs
      */
-    fun fetchUsersProfile(usersIds : List<String>) {
+    fun fetchUsersProfile(usersIds: List<String>) {
         viewModelScope.launch {
             _profilesList.postValue(profileService.fetchUsersProfile(usersIds))
         }
     }
 
     /**
-     * Get the list of meetups of a user and put it into the adapter
+     * Get the list of meetups of a user expose it through [meetupDataSet]
      * @param userId The ID of a user
      */
-    fun createAdapter(userId: String) {
+    fun fetchUserMeetups(userId: String) {
         viewModelScope.launch {
-            // TODO: change to user list when Zac implements it
-            meetUpService.getUserMeetups(userId).collect{ resp ->
+            meetUpService.getUserMeetups(userId).collect { resp ->
                 if (resp is Response.Success) {
                     _meetupDataSet.postValue(resp)
                 }
+            }
+        }
+    }
+
+    /**
+     * We handle the follow/unfollow logic here to avoid handling coroutines in
+     * the adapter. Notice that we need to fetch again the user who wants to follow,
+     * that's because we need to have the more up to date info.
+     */
+    fun follow(userId: String, otherId: String) {
+        viewModelScope.launch {
+            profileService.fetchUserProfile(userId)?.let {
+                profileService.followUser(it, otherId)
+            }
+        }
+    }
+    fun unFollow(userId: String, otherId: String) {
+        viewModelScope.launch {
+            profileService.fetchUserProfile(userId)?.let {
+                profileService.unfollowUser(it, otherId)
             }
         }
     }
