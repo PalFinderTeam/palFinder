@@ -11,7 +11,6 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreationViewModel
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.google.android.material.slider.RangeSlider
-import org.florescu.android.rangeseekbar.RangeSeekBar
 
 const val MIN_AGE_DIST = 1.0f
 
@@ -30,19 +29,11 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
         val v: View = inflater.inflate(R.layout.fragment_criterions, container, false)
 
         // Setup the new range seek bar
-        //val rangeSeekBar: RangeSeekBar<Int> = RangeSeekBar(v.context)
         textMin = v.findViewById<TextView>(R.id.minValueAge)
         textMax = v.findViewById<TextView>(R.id.maxValueAge)
 
         // Set the new range
         radiusSlider = v.findViewById(R.id.rangeAgeSelector)
-        // radiusSlider.value = max(radiusSlider.valueFrom, min(radiusSlider.valueTo, viewModel.searchRadius.value!!.toFloat()))
-//        radiusSlider
-//
-//        radiusSlider.addOnChangeListener { _, value, _ ->
-//            viewModel.setSearchParamAndFetch(radiusInKm = value.toDouble())
-//        }
-//        viewModel.setSearchParamAndFetch(radiusInKm = radiusSlider.value.toDouble())
 
         radiusSlider.setMinSeparationValue(MIN_AGE_DIST)
         radiusSlider.setValues(
@@ -54,33 +45,13 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
             }
         )
 
-
-        // Set the range
-//        rangeSeekBar.setRangeValues(13, 66)
-//        rangeSeekBar.selectedMinValue = viewModel.criterionAge.value!!.first
-//        rangeSeekBar.selectedMaxValue = viewModel.criterionAge.value!!.second
-
-        // Set initial values
+        // Set initial text values
         updateAgeText(radiusSlider)
-//        textMin.text = rangeSeekBar.selectedMinValue.toString()
-//        if (rangeSeekBar.selectedMaxValue == rangeSeekBar.absoluteMaxValue) {
-//            textMax.text = getString(R.string.criterions_age_max_plus)
-//        } else {
-//            textMax.text = rangeSeekBar.selectedMaxValue.toString()
-//        }
 
         // Bind listener on Slider
         radiusSlider.addOnChangeListener { rs, _, _ ->
             updateAgeText(rs)
         }
-
-//        rangeSeekBar.setOnRangeSeekBarChangeListener { _, minValue, maxValue ->
-//            textMin.text = minValue.toString()
-//            if (maxValue == rangeSeekBar.absoluteMaxValue) {
-//                textMax.text = getString(R.string.criterions_age_max)
-//            } else {
-//                textMax.text = maxValue.toString()
-//            }}
 
         val sexGroup: RadioGroup = v.findViewById(R.id.radioSex)
         when (viewModel.criterionGender.value) {
@@ -88,10 +59,6 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
             CriterionGender.FEMALE -> sexGroup.check(R.id.radioFemale)
             CriterionGender.ALL -> sexGroup.check(R.id.radioMaleAndFemale)
         }
-
-//        // Add to layout
-//        val layout = v.findViewById(R.id.ageSeekBar) as FrameLayout
-//        layout.addView(rangeSeekBar)
 
         val button: Button = v.findViewById(R.id.criterionButtonDone)
 
