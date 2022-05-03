@@ -62,7 +62,7 @@
     <string name="list_sort_by_capacity">Sort by Cap.</string>
     <string name="list_sort_by_location">Sort by Dist.</string>
     <string name="list_sort_menu">Sort</string>
-    <string name="meetup_creation_missing_name_desc">Please add an Event Name and an Event Description</string>
+    <string name="meetup_creation_missing_name_desc">Please add an Event Name, an Event Description and a location</string>
     <string name="meetup_creation_missing_name_desc_title">Missing Data</string>
 
 

@@ -16,9 +16,10 @@ import kotlinx.coroutines.launch
 class ProfileAdapter(
     private val dataSet: List<ProfileUser>,
     private var loggedUser: ProfileUser,
-    private val profileService: ProfileService,
     private val context: Context,
-    private val onItemClicked: (position: Int) -> Unit
+    private val onItemClicked: (position: Int) -> Unit,
+    private val onFollow: (uuid: String) -> Unit,
+    private val onUnFollow: (uuid: String) -> Unit,
 ) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(),
     Filterable {
     val currentDataSet = dataSet.toMutableList()
@@ -43,9 +44,7 @@ class ProfileAdapter(
     }
 
     private fun follow(position: Int, holder: ViewHolder) {
-        CoroutineScope(Dispatchers.IO).launch {
-            profileService.followUser(loggedUser, currentDataSet[position].uuid)
-        }
+        onFollow(currentDataSet[position].uuid)
         holder.followButton.text = holder.view.resources.getString(R.string.unfollow_button)
     }
 
@@ -54,9 +53,7 @@ class ProfileAdapter(
     }
 
     private fun unfollow(position: Int, holder: ViewHolder) {
-        CoroutineScope(Dispatchers.IO).launch {
-            profileService.unfollowUser(loggedUser, currentDataSet[position].uuid)
-        }
+        onUnFollow(currentDataSet[position].uuid)
         holder.followButton.text = holder.view.resources.getString(R.string.follow_button)
     }
 
@@ -76,13 +73,16 @@ class ProfileAdapter(
         val fullName = holder.fullName
         fullName.text = currentDataSet[position].fullName()
         name.text = currentDataSet[position].username
-        CoroutineScope(Dispatchers.IO).launch { currentDataSet[position].pfp.loadImageInto(holder.pic) }
-        if (currentDataSet[position].uuid == loggedUser.uuid) {
-            holder.followButton.visibility = INVISIBLE
-        } else if (canFollow(position)) {
-            holder.followButton.text = holder.view.resources.getString(R.string.follow_button)
-        } else {
-            holder.followButton.text = holder.view.resources.getString(R.string.unfollow_button)
+        when {
+            currentDataSet[position].uuid == loggedUser.uuid -> {
+                holder.followButton.visibility = INVISIBLE
+            }
+            canFollow(position) -> {
+                holder.followButton.text = holder.view.resources.getString(R.string.follow_button)
+            }
+            else -> {
+                holder.followButton.text = holder.view.resources.getString(R.string.unfollow_button)
+            }
         }
         holder.followButton.setOnClickListener {
             if (holder.followButton.text.equals(holder.view.resources.getString(R.string.follow_button))) {
@@ -90,16 +90,13 @@ class ProfileAdapter(
             } else {
                 unfollow(position, holder)
             }
-            CoroutineScope(Dispatchers.IO).launch {
-                loggedUser = profileService.fetchUserProfile(loggedUser.uuid)!!
-            }
+        }
 
-            CoroutineScope(Dispatchers.Main).launch {
-                currentDataSet[position].pfp.loadImageInto(
-                    holder.pic,
-                    context
-                )
-            }
+        CoroutineScope(Dispatchers.Main).launch {
+            currentDataSet[position].pfp.loadImageInto(
+                holder.pic,
+                context
+            )
         }
     }
 
