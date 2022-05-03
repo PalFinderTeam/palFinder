@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,30 +10,54 @@ import androidx.fragment.app.DialogFragment
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreationViewModel
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
+import com.google.android.material.slider.RangeSlider
 import org.florescu.android.rangeseekbar.RangeSeekBar
-import org.w3c.dom.Text
 
+const val MIN_AGE_DIST = 1.0f
 
 class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragment() {
+
+    private lateinit var radiusSlider: RangeSlider
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        //inflate layout with recycler view
+        // Inflate layout with recycler view
         val v: View = inflater.inflate(R.layout.fragment_criterions, container, false)
+
         // Setup the new range seek bar
         val rangeSeekBar: RangeSeekBar<Int> = RangeSeekBar(v.context)
         val textMin= v.findViewById<TextView>(R.id.minValueAge)
         val textMax = v.findViewById<TextView>(R.id.maxValueAge)
+
+        // Set the new range
+        radiusSlider = v.findViewById(R.id.rangeAgeSelector)
+        // radiusSlider.value = max(radiusSlider.valueFrom, min(radiusSlider.valueTo, viewModel.searchRadius.value!!.toFloat()))
+//        radiusSlider
+//
+//        radiusSlider.addOnChangeListener { _, value, _ ->
+//            viewModel.setSearchParamAndFetch(radiusInKm = value.toDouble())
+//        }
+//        viewModel.setSearchParamAndFetch(radiusInKm = radiusSlider.value.toDouble())
+
+        radiusSlider.setMinSeparationValue(MIN_AGE_DIST)
+        radiusSlider.setValues(
+            viewModel.criterionAge.value!!.first as Float,
+            viewModel.criterionAge.value!!.second as Float
+        )
+
+
         // Set the range
-        rangeSeekBar.setRangeValues(13, 66)
-        rangeSeekBar.selectedMinValue = viewModel.criterionAge.value!!.first
-        rangeSeekBar.selectedMaxValue = viewModel.criterionAge.value!!.second
+//        rangeSeekBar.setRangeValues(13, 66)
+//        rangeSeekBar.selectedMinValue = viewModel.criterionAge.value!!.first
+//        rangeSeekBar.selectedMaxValue = viewModel.criterionAge.value!!.second
+
+        // Set initial values
         textMin.text = rangeSeekBar.selectedMinValue.toString()
         if (rangeSeekBar.selectedMaxValue == rangeSeekBar.absoluteMaxValue) {
-            textMax.text = getString(R.string.criterions_age_max)
+            textMax.text = getString(R.string.criterions_age_max_plus)
         } else {
             textMax.text = rangeSeekBar.selectedMaxValue.toString()
         }
