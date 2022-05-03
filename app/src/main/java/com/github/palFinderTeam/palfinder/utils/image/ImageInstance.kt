@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.utils.image
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import androidx.lifecycle.ViewModel
 import com.github.palFinderTeam.palfinder.R
@@ -20,7 +21,7 @@ import java.lang.Exception
  */
 data class ImageInstance(
     val imgURL : String, val imgFetch : ImageFetcher? = null
-) : Serializable, ViewModel() {
+) : Serializable {
 
     companion object{
         const val NOT_LOADED = 0
@@ -43,7 +44,6 @@ data class ImageInstance(
             view.setImageBitmap(bitmapCache)
         } else {
             if(imgURL != "") {
-                EspressoIdlingResource.increment()
                 try {
                     view.setImageResource(android.R.color.background_dark)
                     view.alpha = 0.3f
@@ -58,8 +58,8 @@ data class ImageInstance(
                     imgStatus = FILE_NOT_FOUND
                     isCached = false
                 } finally {
+                    view.visibility = View.VISIBLE
                     view.alpha = 1.0f
-                    EspressoIdlingResource.decrement()
                 }
             } else {
                 view.setImageResource(R.drawable.not_found)
