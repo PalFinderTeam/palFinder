@@ -18,6 +18,11 @@ import org.w3c.dom.Text
 
 class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragment() {
 
+    companion object {
+        const val MIN_AGE = 13
+        const val MAX_AGE = 66
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -30,7 +35,7 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
         val textMin= v.findViewById<TextView>(R.id.minValueAge)
         val textMax = v.findViewById<TextView>(R.id.maxValueAge)
         // Set the range
-        rangeSeekBar.setRangeValues(PrettyDate.MIN_AGE, PrettyDate.MAX_AGE)
+        rangeSeekBar.setRangeValues(MIN_AGE, MAX_AGE)
         rangeSeekBar.selectedMinValue = viewModel.criterionAge.value!!.first
         rangeSeekBar.selectedMaxValue = viewModel.criterionAge.value!!.second
         textMin.text = rangeSeekBar.selectedMinValue.toString()

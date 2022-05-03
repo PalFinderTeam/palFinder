@@ -20,6 +20,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.Response
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

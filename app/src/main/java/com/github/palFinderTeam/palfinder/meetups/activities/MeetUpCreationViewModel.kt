@@ -26,6 +26,12 @@ import javax.inject.Inject
 
 const val defaultTimeDelta = 1000 * 60 * 60
 
+/**
+ * ViewModel companion for the MeetupCreationFragment
+ * @param meetUpRepository meetUp database
+ * @param imageUploader service to allow the user to upload an image
+ * @param profileService profileUsers database
+ */
 @HiltViewModel
 class MeetUpCreationViewModel @Inject constructor(
     private val meetUpRepository: MeetUpRepository,
@@ -95,7 +101,7 @@ class MeetUpCreationViewModel @Inject constructor(
 
 
     /**
-     * Fill every field with default value (in case of meetup creation)
+     * Fill every field with default values (in case of meetup creation)
      */
     fun fillWithDefaultValues() {
         _capacity.value = 1
@@ -148,7 +154,7 @@ class MeetUpCreationViewModel @Inject constructor(
         _criterionGender.value = gender
     }
 
-    fun setMarker(markerId: Int){
+    fun setMarker(markerId: Int) {
         _marker.value = markerId
     }
 
@@ -202,7 +208,7 @@ class MeetUpCreationViewModel @Inject constructor(
      */
     fun sendMeetUp() {
         viewModelScope.launch {
-            val iconPath = iconUri.value?.let { uri ->
+            iconUri.value?.let { uri ->
                 val newPath = imageUploader.uploadImage(uri)
                 if (newPath != null) {
                     // Also remove the previous icon from DB to avoid garbage.
@@ -275,13 +281,8 @@ class MeetUpCreationViewModel @Inject constructor(
         if (startDate.value == null || endDate.value == null) {
             return
         }
-        val startDateVal = startDate.value!!
         val endDateVal = endDate.value!!
-//        // Check that startDate is not too much in the future
-//        if (!startDateVal.isBefore(maxStartDate)) {
-//            _startDate.value = maxStartDate
-//        }
-//        // Check that endDate is not too much in the future
+        // Check that endDate is not too much in the future
         if (!endDateVal.isBefore(maxEndDate)) {
             _endDate.value = maxEndDate
         }

@@ -35,25 +35,40 @@ import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
+/**
+ * A ViewModel for the MapsFragment and the MeetUpListFragment,
+ * that fetches the list of meetups displayed around a location.
+ * It also works with the geolocation to get the current phone location,
+ * and with tags to filter the dataset
+ * @param meetUpRepository the database for the meetups, from which we fetch
+ * @param profileService the database for the profiles, mainly to get the currentLoggedUser
+ * @param timeService database to retrieve the current time, so we don't display outdated meetups
+ */
 class MapListViewModel @Inject constructor(
     val meetUpRepository: MeetUpRepository,
     val profileService: ProfileService,
     val timeService: TimeService,
     application: Application
 ) : AndroidViewModel(application) {
+    companion object {
+        const val INITIAL_RADIUS: Double = 400.0
+        val START_LOCATION = Location(45.0, 45.0)
+    }
+    //store the fetched meetups in real time, separated in 2 to be immutable
     private val _listOfMeetUpResponse: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
     val listOfMeetUpResponse: LiveData<Response<List<MeetUp>>> = _listOfMeetUpResponse
 
+    //store the current tags filtering the data, separated in 2 as well
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
     val tags: LiveData<Set<Category>> = _tags
 
-
+    //stores the current user location and the client
     private val locationClient =
         LocationServices.getFusedLocationProviderClient(getApplication<Application>().applicationContext)
-
     private val _userLocation: MutableLiveData<Location> = MutableLiveData()
     val userLocation: LiveData<Location> = _userLocation
 
+    //allows delay for the permission answer
     private val _requestPermissions = MutableLiveData(false)
     val requestPermissions: LiveData<Boolean> = _requestPermissions
 
@@ -65,6 +80,7 @@ class MapListViewModel @Inject constructor(
     var showParam: ShowParam = ShowParam.ALL
     private var showOnlyAvailableInTime = true
 
+    //updates the userLocation
     init {
         if (ActivityCompat.checkSelfPermission(
                 getApplication<Application>().applicationContext,
@@ -227,11 +243,5 @@ class MapListViewModel @Inject constructor(
                 true
             }
         }
-    }
-
-
-    companion object {
-        const val INITIAL_RADIUS: Double = 400.0
-        val START_LOCATION = Location(45.0, 45.0)
     }
 }

@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.ProfileViewModel
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.USER_ID
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import dagger.hilt.android.AndroidEntryPoint

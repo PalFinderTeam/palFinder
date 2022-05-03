@@ -38,23 +38,31 @@ import com.maltaisn.icondialog.IconDialogSettings
 import com.maltaisn.icondialog.data.Icon
 import com.maltaisn.icondialog.pack.IconPack
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.internal.aggregatedroot.codegen._com_github_palFinderTeam_palfinder_PalFinderApplication
 import kotlinx.coroutines.launch
 
 
 @SuppressLint("SimpleDateFormat") // Apps Crash with the alternative to SimpleDateFormat
 @AndroidEntryPoint
+/**
+ * MeetupCreation activity, that allows the user to create a brand new activity
+ */
 class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDialog.Callback {
 
+    //viewModel to store the current entered data
     val viewModel: MeetUpCreationViewModel by activityViewModels()
-    private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
+
+    //set up the tagViewModel
     private lateinit var tagsViewModel: TagsViewModel<Category>
+
+    //meetupId argument, to be able to edit a already existing meetup
     private val args: MeetUpCreationArgs by navArgs()
 
+    //stores the parent view
     private lateinit var rootView: View
 
     private var dateFormat = SimpleDateFormat()
 
+    //all parameters of a meetUp
     private lateinit var hasLimitCheckBox: CheckBox
     private lateinit var limitEditText: EditText
     private lateinit var nameEditText: EditText
@@ -67,13 +75,14 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
     private lateinit var endDateField: TextView
     private lateinit var selectLocationButton: LinearLayout
     private lateinit var doneButton: Button
-    private lateinit var criterionsSelectButton: Button
+    private lateinit var criteriaSelectButton: Button
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         rootView = view
 
+        //pretty date display
         dateFormat = SimpleDateFormat(getString(R.string.date_long_format))
 
         initiateFieldRefs()
@@ -88,8 +97,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         }
 
         // Create tag fragment
-        tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
-        tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
+        tagsViewModel = createTagFragmentModel(this, TagsViewModelFactory(viewModel.tagRepository))
 
         if (savedInstanceState == null) {
             addTagsToFragmentManager(childFragmentManager, R.id.fc_tags)
@@ -106,10 +114,14 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
             removeNavigationResult<Location>(LOCATION_RESULT)
         }
 
+        //allows user to set a custom image for his meetup
         iconDialog = childFragmentManager.findFragmentByTag(ICON_DIALOG_TAG) as IconDialog?
             ?: IconDialog.newInstance(IconDialogSettings())
     }
 
+    /**
+     * find in view all the editable meetups parameters
+     */
     private fun initiateFieldRefs() {
         hasLimitCheckBox = rootView.findViewById(R.id.hasCapacityButton)
         limitEditText = rootView.findViewById(R.id.et_Capacity)
@@ -122,9 +134,10 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         endDateField = rootView.findViewById(R.id.tv_EndDate)
         selectLocationButton = rootView.findViewById(R.id.bt_locationSelect)
         doneButton = rootView.findViewById(R.id.bt_Done)
-        criterionsSelectButton = rootView.findViewById(R.id.criterionsSelectButton)
+        criteriaSelectButton = rootView.findViewById(R.id.criterionsSelectButton)
     }
 
+    //bind the UI elements to the viewModel, in both ways
     private fun bindUI() {
         forwardBind()
         backwardBind()
@@ -148,8 +161,9 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
             if (parsed != null) {
                 viewModel.setCapacity(parsed)
             } else {
-                // TODO find something meaningful to do
+                //no max capacity if the string provided do not resolved to an Int
                 viewModel.setCapacity(1)
+                hasLimitCheckBox.isChecked = false
             }
         }
         limitEditText.isEnabled = hasLimitCheckBox.isChecked
@@ -181,8 +195,8 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
             onDone(it)
         }
 
-        criterionsSelectButton.setOnClickListener {
-            CriterionsFragment(viewModel).show(childFragmentManager, "criterions")
+        criteriaSelectButton.setOnClickListener {
+            CriterionsFragment(viewModel).show(childFragmentManager, getString(R.string.criteria))
         }
     }
 
@@ -229,7 +243,10 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         viewModel.icon.observe(viewLifecycleOwner) {
             viewModel.viewModelScope.launch {
                 if (it != null) {
-                    ImageInstance(it).loadImageInto(rootView.findViewById(R.id.iv_Icon), requireContext())
+                    ImageInstance(it).loadImageInto(
+                        rootView.findViewById(R.id.iv_Icon),
+                        requireContext()
+                    )
                 } else {
                     rootView.findViewById<ImageView>(R.id.iv_Icon)
                         .setImageDrawable(getDrawable(requireContext(), R.drawable.icon_group))
@@ -238,6 +255,10 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         }
     }
 
+    /**
+     * user cannot edit the capcityField if the meetup has no max capacity
+     * @param isEditable value of the hasLimit Checkbox
+     */
     private fun setCapacityField(isEditable: Boolean) {
         if (isEditable) {
             limitEditText.isEnabled = true
@@ -251,6 +272,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         rootView.findViewById<TextView>(id).apply { this.text = value }
     }
 
+    //button to select the start Date of meetup
     private fun onStartTimeSelectButton() {
         askTime(
             childFragmentManager,
@@ -263,6 +285,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         }
     }
 
+    //button to select the end Date of meetup
     private fun onEndTimeSelectButton() {
         askTime(
             childFragmentManager,
@@ -290,6 +313,10 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         return true
     }
 
+    /**
+     * button to validate the created meetup, send it to the viewModel and then to the database,
+     * and change the view to the new created meetup
+     */
     private fun onDone(v: View) {
         // Check field validity
         val name = nameEditText.text.toString()
@@ -323,6 +350,10 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         dlgAlert.create().show()
     }
 
+    /**
+     * select the location of the new meetup
+     * opens the map selection
+     */
     private fun selectLocation() {
         val action = MeetUpCreationDirections.actionCreationPickLocation()
         action.startSelection = viewModel.location.value
@@ -331,6 +362,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         })
     }
 
+    //prints the selected location in LatLng format
     private fun onLocationSelected(p0: LatLng) {
         viewModel.setLatLng(p0)
         setTextView(R.id.tv_location, p0.toString())
@@ -357,12 +389,11 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         }
 
 
-
     override val iconDialogIconPack: IconPack?
         get() = (requireActivity().application as PalFinderApplication).iconPack
 
     override fun onIconDialogIconsSelected(dialog: IconDialog, icons: List<Icon>) {
-        if(icons.isNotEmpty()){
+        if (icons.isNotEmpty()) {
             viewModel.setMarker(icons.first().id)
         }
     }
