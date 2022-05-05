@@ -46,7 +46,16 @@ open class FirebaseMeetUpService @Inject constructor(
 
     override suspend fun edit(uuid: String, obj: MeetUp): String? = wrapper.edit(uuid, obj)
 
-    override suspend fun create(obj: MeetUp): String? = wrapper.create(obj)
+    override suspend fun create(obj: MeetUp): String? {
+        return try {
+            val id = db.collection(MEETUP_COLL).add(obj.toFirestoreData()).await().id
+            db.collection(PROFILE_COLL).document(obj.creatorId)
+                .update(JOINED_MEETUPS_KEY, FieldValue.arrayUnion(id)).await()
+            id
+        } catch (e: Exception) {
+            null
+        }
+    }
 
     override fun fetchAll(currentDate: Calendar?): Flow<List<MeetUp>> = wrapper.fetchAll(currentDate)
 
