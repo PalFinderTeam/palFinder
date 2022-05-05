@@ -6,6 +6,7 @@ check_android_task:
     ARCH: x86
     CC_TEST_REPORTER_ID: ENCRYPTED[3a99cb0c75cb20d9de9d526573567f55129807df6ee2bbd27b77917b33eeedacfe6f14f40c9108471bf64bd676d153b9]
     FIREBASE_TOKEN: ENCRYPTED[ad3a8cfccc5bd6aabdda5f1b5cd6679c61d28f7f1004d53aa4f41dd7685b670eea0f65c30bb213039cbe930d285b38d8]
+    MAPS_API_KEY: ENCRYPTED[!9fa25bc91fe8ffc3a01da8daae075ad219fb8b2b93938aa6a54d0879b79f31ef0af8487a441b39ba3860cad5c4799f10!]
   container:
     image: reactivecircus/android-emulator-$API_LEVEL:latest
     kvm: true
@@ -19,6 +20,7 @@ check_android_task:
     curl -Lo ./firebase_bin https://firebase.tools/bin/linux/latest
   build_script: |
     chmod +x gradlew
+    echo MAPS_API_KEY=$MAPS_API_KEY >> local.properties
     ./gradlew assembleDebugAndroidTest
   wait_for_emulator_script: |
     adb wait-for-device

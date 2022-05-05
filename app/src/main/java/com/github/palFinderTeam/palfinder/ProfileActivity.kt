@@ -2,20 +2,15 @@ package com.github.palFinderTeam.palfinder
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.lifecycle.LifecycleRegistryOwner
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
@@ -56,7 +51,7 @@ class ProfileActivity : AppCompatActivity() {
             meetupList = this.findViewById(R.id.meetup_list_recycler)
             meetupList.layoutManager = LinearLayoutManager(this)
 
-            viewModel.createAdapter(userId)
+            viewModel.fetchUserMeetups(userId)
 
             // Bind the adapter to the RecyclerView
             viewModel.meetupDataSet.observe(this) { dataResp ->
@@ -65,6 +60,7 @@ class ProfileActivity : AppCompatActivity() {
                     adapter = MeetupListRootAdapter(
                         meetups,
                         meetups.toMutableList(),
+                        context = applicationContext
                     ) { onListItemClick(it) }
                     meetupList.adapter = adapter
                 }

@@ -233,6 +233,10 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
                 }
             }
         }
+        viewModel.location.observeOnce(this) {
+            // We convert for visual consistency.
+            setTextView(R.id.tv_location, it.toLatLng().toString())
+        }
 
         viewModel.canEditStartDate.observe(viewLifecycleOwner) {
             startDateField.isClickable = it
@@ -302,8 +306,8 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
     /**
      * Check Name and Description are present
      */
-    private fun checkFieldValid(name: String, description: String): Boolean {
-        if (name == "" || description == "") {
+    private fun checkFieldValid(name: String, description: String, location: Location?): Boolean {
+        if (name == "" || description == "" || location == null) {
             showMessage(
                 R.string.meetup_creation_missing_name_desc,
                 R.string.meetup_creation_missing_name_desc_title
@@ -321,7 +325,8 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         // Check field validity
         val name = nameEditText.text.toString()
         val description = descriptionEditText.text.toString()
-        if (!checkFieldValid(name, description)) return
+        val location = viewModel.location.value
+        if (!checkFieldValid(name, description, location)) return
 
         // Listen on DB response to move forward.
         viewModel.sendSuccess.observe(viewLifecycleOwner) { isSuccessFull ->

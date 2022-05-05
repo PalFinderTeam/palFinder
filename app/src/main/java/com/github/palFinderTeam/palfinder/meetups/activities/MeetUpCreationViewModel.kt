@@ -110,7 +110,6 @@ class MeetUpCreationViewModel @Inject constructor(
         _description.value = ""
         _tags.value = emptySet()
         _participantsId.value = listOf(profileService.getLoggedInUserID()!!)
-        _location.value = Location(0.0, 0.0)
         _criterionAge.value = Pair(13, 66)
     }
 
@@ -323,14 +322,6 @@ class MeetUpCreationViewModel @Inject constructor(
                 _tags.value = tags.plus(tag)
                 true
             }
-        }
-    }
-
-    fun getLatLng(): LatLng? {
-        return if (location.value != null) {
-            LatLng(location.value!!.latitude, location.value!!.longitude)
-        } else {
-            null
         }
     }
 
