@@ -3,10 +3,12 @@ package com.github.palFinderTeam.palfinder.meetups
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.cache.FileCache
+import com.github.palFinderTeam.palfinder.notification.NotificationService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.context.ContextService
 import com.github.palFinderTeam.palfinder.utils.evictAfterXMinutes
+import com.github.palFinderTeam.palfinder.utils.isBefore
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,10 +21,11 @@ class CachedMeetUpService @Inject constructor(
     private val time: TimeService,
     private val contextProvider: ContextService
 ): FirebaseMeetUpService(db) {
+    private val meetupsMeta = DictionaryCache("meetup_meta", NotificationService.MeetupMetaData::class.java, false, contextProvider.get())
     private var cache = DictionaryCache("meetup", MeetUp::class.java, false, contextProvider.get(), evictAfterXMinutes(10, time))
     private var cacheJoined = FileCache("meetup_joined", JoinedMeetupListWrapper::class.java, true, contextProvider.get())
 
-    private fun addJoinedMeetupToCache(meetUpId: String){
+    private suspend fun addJoinedMeetupToCache(meetUpId: String){
         val jml = if (cacheJoined.exist()){
             cacheJoined.get()
         } else {
@@ -31,6 +34,10 @@ class CachedMeetUpService @Inject constructor(
         if (!jml.lst.contains(meetUpId)) {
             jml.lst.add(meetUpId)
             cacheJoined.store(jml)
+        }
+        if (getMeetUpData(meetUpId)?.startDate?.isBefore(time.now()) == true) {
+            val ret = NotificationService.MeetupMetaData(meetUpId, true, "")
+            meetupsMeta.store(meetUpId, ret)
         }
     }
     private fun removeJoinedMeetupFromCache(meetUpId: String){
