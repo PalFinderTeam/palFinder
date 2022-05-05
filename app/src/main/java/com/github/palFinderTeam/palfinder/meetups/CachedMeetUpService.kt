@@ -1,25 +1,47 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
-import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.cache.FileCache
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.context.ContextService
-import com.github.palFinderTeam.palfinder.utils.evictAfterXMinutes
+import com.github.palFinderTeam.palfinder.utils.generics.CachedRepository
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class CachedMeetUpService @Inject constructor(
-    private val db: FirebaseFirestore,
+    private val db: FirebaseMeetUpService,
     private val time: TimeService,
     private val contextProvider: ContextService
-): FirebaseMeetUpService(db) {
-    private var cache = DictionaryCache("meetup", MeetUp::class.java, false, contextProvider.get(), evictAfterXMinutes(10, time))
+): MeetUpRepository{
     private var cacheJoined = FileCache("meetup_joined", JoinedMeetupListWrapper::class.java, true, contextProvider.get())
+
+    private var cache = CachedRepository("meetup", MeetUp::class.java, db, time, contextProvider)
+
+    override suspend fun create(obj: MeetUp): String? {
+        val ret = cache.create(obj)
+        if (ret != null){
+            addJoinedMeetupToCache(ret)
+            fetch(ret)
+        }
+        return ret
+    }
+
+    override suspend fun fetch(uuid: String): MeetUp? = cache.fetch(uuid)
+
+    override suspend fun fetch(uuids: List<String>): List<MeetUp> = cache.fetch(uuids)
+
+    override fun fetchAll(currentDate: Calendar?): Flow<List<MeetUp>> = cache.fetchAll(currentDate)
+
+    override fun fetchFlow(uuid: String): Flow<Response<MeetUp>> = cache.fetchFlow(uuid)
+
+    override suspend fun edit(uuid: String, obj: MeetUp): String? = cache.edit(uuid, obj)
+
+    override suspend fun edit(uuid: String, field: String, value: Any): String? = cache.edit(uuid, field, value)
+
+    override suspend fun exists(uuid: String): Boolean = cache.exists(uuid)
 
     private fun addJoinedMeetupToCache(meetUpId: String){
         val jml = if (cacheJoined.exist()){
@@ -43,15 +65,6 @@ class CachedMeetUpService @Inject constructor(
         cacheJoined.store(JoinedMeetupListWrapper(mutableListOf()))
     }
 
-    override suspend fun create(obj: MeetUp): String? {
-        val ret = super.create(obj)
-        if (ret != null){
-            addJoinedMeetupToCache(ret)
-            fetch(ret) // Cache it
-        }
-        return ret
-    }
-
     /**
      * Return List of all joined Meetup ID
      */
@@ -63,42 +76,19 @@ class CachedMeetUpService @Inject constructor(
         }
     }
 
-    override suspend fun fetch(uuid: String): MeetUp? {
-        return if (cache.contains(uuid)){
-            cache.get(uuid)
-        }
-        else{
-            super.fetch(uuid)
-        }
+    override fun getMeetUpsAroundLocation(
+        location: Location,
+        radiusInKm: Double,
+        currentDate: Calendar?
+    ): Flow<Response<List<MeetUp>>> {
+        return db.getMeetUpsAroundLocation(location, radiusInKm, currentDate)
     }
 
-    override suspend fun edit(uuid: String, field: String, value: Any): String? {
-        val id = super.edit(uuid, field, value)
-        return if (id != null){
-            cache.store(uuid, super.fetch(uuid)!!)
-            id
-        }
-        else{
-            null
-        }
-    }
-
-    override suspend fun edit(uuid: String, obj: MeetUp): String? {
-        val id = super.edit(uuid, obj)
-        return if(id != null){
-            cache.store(uuid, obj)
-            id
-        }
-        else{
-            null
-        }
-    }
 
     override suspend fun joinMeetUp(meetUpId: String, userId: String, now: Calendar, profile: ProfileUser): Response<Unit> {
-        return when(val ret = super.joinMeetUp(meetUpId, userId, now, profile)){
+        return when(val ret = db.joinMeetUp(meetUpId, userId, now, profile)){
             is Response.Success -> {
                 addJoinedMeetupToCache(meetUpId)
-                cache.delete(meetUpId)
                 ret
             }
             else -> ret
@@ -106,22 +96,20 @@ class CachedMeetUpService @Inject constructor(
     }
 
     override suspend fun leaveMeetUp(meetUpId: String, userId: String): Response<Unit> {
-        return when(val ret = super.leaveMeetUp(meetUpId, userId)){
+        return when(val ret = db.leaveMeetUp(meetUpId, userId)){
             is Response.Success -> {
                 removeJoinedMeetupFromCache(meetUpId)
-                cache.delete(meetUpId)
                 ret
             }
             else -> ret
         }
     }
 
-    override fun fetchAll(currentDate: Calendar?): Flow<List<MeetUp>> {
-        return super.fetchAll(currentDate).map {
-            it.ifEmpty {
-                cache.getAll()
-            }
-        }
+    override fun getUserMeetups(
+        userId: String,
+        currentDate: Calendar?
+    ): Flow<Response<List<MeetUp>>> {
+        return db.getUserMeetups(userId, currentDate)
     }
 
     private data class JoinedMeetupListWrapper(val lst: MutableList<String>)
