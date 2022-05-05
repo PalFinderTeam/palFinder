@@ -4,6 +4,7 @@ import android.icu.util.Calendar
 import android.util.Log
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
+import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment.Companion.MIN_AGE
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.*
@@ -80,7 +81,7 @@ data class MeetUp(
     }
 
     private fun ageFulfilled(age: Int): Boolean {
-        if (criterionAge == Pair(null, null) || criterionAge == null || criterionAge == Pair(PrettyDate.MIN_AGE, Int.MAX_VALUE)) {
+        if (criterionAge == Pair(null, null) || criterionAge == null || criterionAge == Pair(MIN_AGE, Int.MAX_VALUE)) {
             return true
         }
         return (criterionAge.first!! <= age && criterionAge.second!! >= age)

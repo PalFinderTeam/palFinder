@@ -103,6 +103,7 @@ open class FirebaseMeetUpService @Inject constructor(
     ): Flow<Response<List<MeetUp>>> {
         val geoLocation = GeoLocation(location.latitude, location.longitude)
         val bounds = GeoFireUtils.getGeoHashQueryBounds(geoLocation, radiusInKm * 1000.0)
+        //set bounds depending on the location
         val tasks = bounds.map {
             db.collection(MEETUP_COLL)
                 .orderBy(GEOHASH)
@@ -126,6 +127,7 @@ open class FirebaseMeetUpService @Inject constructor(
                         )
                         return@addSnapshotListener
                     }
+                    //filter fetched meetups by location and showParam
                     var meetups = value?.documents
                         ?.mapNotNull { it.toMeetUp() }
                         ?.filter {

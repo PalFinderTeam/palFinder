@@ -15,9 +15,13 @@ import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import org.florescu.android.rangeseekbar.RangeSeekBar
 import org.w3c.dom.Text
 
-
+/**
+ * fragment that allows user to select the criteria for a meetup
+ * @param viewModel viewModel to from which we load the current criteria and in which we store the select ones
+ */
 class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragment() {
 
+    //minimum and maximum ages available in the rangeSeekBar
     companion object {
         const val MIN_AGE = 13
         const val MAX_AGE = 66
@@ -39,6 +43,7 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
         rangeSeekBar.selectedMinValue = viewModel.criterionAge.value!!.first
         rangeSeekBar.selectedMaxValue = viewModel.criterionAge.value!!.second
         textMin.text = rangeSeekBar.selectedMinValue.toString()
+        //as the bar does not go after the maxage, we add a '+' to the text
         if (rangeSeekBar.selectedMaxValue == rangeSeekBar.absoluteMaxValue) {
             textMax.text = getString(R.string.criterions_age_max)
         } else {
@@ -68,6 +73,7 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
 
         val button: Button = v.findViewById(R.id.criterionButtonDone)
 
+        //validates the selected criteria
         button.setOnClickListener {
             val selectedOptionId = sexGroup.checkedRadioButtonId
             val sex = v.findViewById<RadioButton>(selectedOptionId).text
@@ -78,6 +84,7 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
                 getString(R.string.radio_male_and_female) -> viewModel.setCriterionGender(CriterionGender.ALL)
             }
 
+            // set max value to criterionAge if selected is '66+'
             if (rangeSeekBar.selectedMaxValue == rangeSeekBar.absoluteMaxValue) {
                 viewModel.setCriterionAge(Pair(rangeSeekBar.selectedMinValue, Int.MAX_VALUE))
             } else {
