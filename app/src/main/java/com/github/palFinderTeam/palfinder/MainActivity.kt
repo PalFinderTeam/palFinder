@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.github.palFinderTeam.palfinder.notification.NotificationHandler
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
@@ -20,8 +21,8 @@ import com.google.firebase.ktx.Firebase
 
 const val EXTRA_MESSAGE = "com.github.palFinderTeam.palFinder.MESSAGE"
 
-class MainActivity : AppCompatActivity()
-/*
+class MainActivity : AppCompatActivity() {
+
     private companion object {
         private const val TAG = "MainActivity"
         private const val PROFILE_DESC = "Hello this is the Cat, but you can call me Kitty. I like to lay around and do nothing. Also you can see that my profile picture looks cure but in real life I am a real biach. Enjoy!"
@@ -31,7 +32,6 @@ class MainActivity : AppCompatActivity()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
         auth = Firebase.auth
     }
@@ -100,4 +100,4 @@ class MainActivity : AppCompatActivity()
         NotificationHandler(this).schedule(Calendar.getInstance(),"test", "content", R.drawable.icon_beer)
     }
     
-}*/
+}
