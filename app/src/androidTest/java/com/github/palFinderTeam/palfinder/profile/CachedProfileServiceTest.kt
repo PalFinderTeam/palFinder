@@ -25,7 +25,7 @@ import java.util.*
 
 @ExperimentalCoroutinesApi
 class CachedProfileServiceTest {
-    private lateinit var firebaseProfileService: FirebaseProfileService
+    private lateinit var firebaseProfileService: CachedProfileService
     private lateinit var db: FirebaseFirestore
     private lateinit var profile: ProfileUser
     private lateinit var profile2: ProfileUser
@@ -46,7 +46,7 @@ class CachedProfileServiceTest {
 
         DictionaryCache.clearAllTempCaches(context.get())
 
-        firebaseProfileService = CachedProfileService(db, timeService, context)
+        firebaseProfileService = CachedProfileService(FirebaseProfileService(db), timeService, context)
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }
         val date2 = Calendar.getInstance().apply { time = Date(1) }

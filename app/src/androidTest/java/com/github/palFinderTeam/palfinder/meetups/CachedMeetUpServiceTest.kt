@@ -24,7 +24,8 @@ import java.util.*
 
 @ExperimentalCoroutinesApi
 class CachedMeetUpServiceTest {
-    private lateinit var firebaseProfileService: FirebaseProfileService
+
+    private lateinit var firebaseProfileService: CachedProfileService
     private lateinit var firebaseMeetUpService: CachedMeetUpService
     private lateinit var db: FirebaseFirestore
     private lateinit var meetUp: MeetUp
@@ -47,8 +48,8 @@ class CachedMeetUpServiceTest {
 
         DictionaryCache.clearAllTempCaches(context.get())
 
-        firebaseMeetUpService = CachedMeetUpService(db, timeService, context)
-        firebaseProfileService = CachedProfileService(db, timeService, context)
+        firebaseMeetUpService = CachedMeetUpService(FirebaseMeetUpService(db), timeService, context)
+        firebaseProfileService = CachedProfileService(FirebaseProfileService(db), timeService, context)
 
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }
