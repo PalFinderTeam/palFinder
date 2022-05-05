@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.chat.CachedChatService
+import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.chat.ChatService
 import com.github.palFinderTeam.palfinder.di.FirestoreModule
 import com.github.palFinderTeam.palfinder.meetups.CachedMeetUpService
@@ -76,7 +77,9 @@ class NotificationService @Inject constructor(
 
                         if (hash != meta.lastMessageNotification && last.sentBy != profileService.getLoggedInUserID()) {
                             val name = profileService.fetchUserProfile(last.sentBy)?.username?:""
-                            NotificationHandler(context).post(name, last.content, R.drawable.icon_beer)
+                            if (ChatActivity.currentlyViewChat != m) {
+                                NotificationHandler(context).post(name, last.content, R.drawable.icon_beer)
+                            }
                             meta.lastMessageNotification = hash
                             meetups.store(m, meta)
                         }
