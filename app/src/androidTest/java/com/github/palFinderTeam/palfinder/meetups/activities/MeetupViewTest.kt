@@ -41,6 +41,7 @@ import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.chip.Chip
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -143,7 +144,6 @@ class MeetupViewTest {
             null,
             null
         )
-
 
         UiThreadStatement.runOnUiThread {
             navController = TestNavHostController(getApplicationContext())
@@ -300,9 +300,12 @@ class MeetupViewTest {
                 Pair("MeetUpId", null)
             ), navHostController = navController
         )
-        scenario.use {
+        scenario!!.use {
             Intents.init()
 
+            scenario.onHiltFragment<MeetUpCreation> {
+                it.viewModel.setLatLng(LatLng(0.0,0.0))
+            }
             onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
             onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
             closeSoftKeyboard()
@@ -388,8 +391,12 @@ class MeetupViewTest {
                 Pair("MeetUpId", null)
             ), navHostController = navController
         )
-        scenario.use {
+        scenario!!.use {
             Intents.init()
+
+            scenario.onHiltFragment<MeetUpCreation> {
+                it.viewModel.setLatLng(LatLng(0.0,0.0))
+            }
 
             onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
             onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
@@ -429,9 +436,12 @@ class MeetupViewTest {
                 Pair("MeetUpId", null)
             ), navHostController = navController
         )
-        scenario.use {
+        scenario!!.use {
             Intents.init()
 
+            scenario.onHiltFragment<MeetUpCreation> {
+                it.viewModel.setLatLng(LatLng(0.0,0.0))
+            }
             onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
             onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
             closeSoftKeyboard()
