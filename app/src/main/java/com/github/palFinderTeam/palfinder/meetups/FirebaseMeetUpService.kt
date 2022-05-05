@@ -42,7 +42,8 @@ open class FirebaseMeetUpService @Inject constructor(
 
     override suspend fun fetch(uuids: List<String>): List<MeetUp> = wrapper.fetch(uuids)
 
-    override suspend fun edit(uuid: String, field: String, value: Any): String? = wrapper.edit(uuid, field, value)
+    override suspend fun edit(uuid: String, field: String, value: Any): String? =
+        wrapper.edit(uuid, field, value)
 
     override suspend fun edit(uuid: String, obj: MeetUp): String? = wrapper.edit(uuid, obj)
 
@@ -57,7 +58,8 @@ open class FirebaseMeetUpService @Inject constructor(
         }
     }
 
-    override fun fetchAll(currentDate: Calendar?): Flow<List<MeetUp>> = wrapper.fetchAll(currentDate)
+    override fun fetchAll(currentDate: Calendar?): Flow<List<MeetUp>> =
+        wrapper.fetchAll(currentDate)
 
     override suspend fun exists(uuid: String): Boolean = wrapper.exists(uuid)
 

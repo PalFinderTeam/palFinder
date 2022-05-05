@@ -72,9 +72,11 @@ data class ProfileUser(
                 }
                 val following = (get(FOLLOWING_PROFILES) as? List<String>).orEmpty()
                 val followed = (get(FOLLOWED_BY) as? List<String>).orEmpty()
-                ProfileUser(uuid, username, name, surname,
+                ProfileUser(
+                    uuid, username, name, surname,
                     joinDateCal, ImageInstance(picture), description,
-                    birthdayCal, joinedMeetUp, gender, following, followed)
+                    birthdayCal, joinedMeetUp, gender, following, followed
+                )
 
             } catch (e: Exception) {
                 Log.e("ProfileUser", "Error deserializing user", e)
@@ -113,7 +115,11 @@ data class ProfileUser(
             1
         } else {
             Period.between(
-                LocalDate.of(birthday.get(Calendar.YEAR), birthday.get(Calendar.MONTH), birthday.get(Calendar.DAY_OF_MONTH)),
+                LocalDate.of(
+                    birthday.get(Calendar.YEAR),
+                    birthday.get(Calendar.MONTH),
+                    birthday.get(Calendar.DAY_OF_MONTH)
+                ),
                 LocalDate.now()
             ).years
         }
@@ -123,7 +129,7 @@ data class ProfileUser(
         return "@$username"
     }
 
-    fun canFollow(profileId : String): Boolean {
+    fun canFollow(profileId: String): Boolean {
         return profileId != uuid && !following.contains(profileId)
     }
 

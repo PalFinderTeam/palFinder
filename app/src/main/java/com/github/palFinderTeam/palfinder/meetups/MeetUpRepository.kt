@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
  *
  * It is implemented by our concrete database service and can be easily mocked in tests.
  */
-interface MeetUpRepository: Repository<MeetUp> {
+interface MeetUpRepository : Repository<MeetUp> {
     /**
      * Return a list of meetups around a certain location.
      *

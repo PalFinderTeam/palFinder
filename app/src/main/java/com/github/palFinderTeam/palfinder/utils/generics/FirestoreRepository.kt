@@ -13,11 +13,18 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
-class FirestoreRepository<T: FirebaseObject>(val db: FirebaseFirestore, private val column: String, private val timeField: String?, val converter: (DocumentSnapshot)->T?): Repository<T> {
+class FirestoreRepository<T : FirebaseObject>(
+    val db: FirebaseFirestore,
+    private val column: String,
+    private val timeField: String?,
+    val converter: (DocumentSnapshot) -> T?
+) : Repository<T> {
     override suspend fun fetch(uuid: String): T? {
         return try {
-            converter(db.collection(column)
-                .document(uuid).get().await())
+            converter(
+                db.collection(column)
+                    .document(uuid).get().await()
+            )
         } catch (e: Exception) {
             Log.d("db obj", "failed safely")
             null
@@ -85,7 +92,7 @@ class FirestoreRepository<T: FirebaseObject>(val db: FirebaseFirestore, private 
         }
     }
 
-    override fun fetchAll(currentDate: Calendar?, ): Flow<List<T>> {
+    override fun fetchAll(currentDate: Calendar?): Flow<List<T>> {
         var query: Query = db.collection(column)
 
         if (currentDate != null && timeField != null) {

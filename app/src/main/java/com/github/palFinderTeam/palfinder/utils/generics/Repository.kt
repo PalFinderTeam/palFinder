@@ -4,7 +4,7 @@ import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.utils.Response
 import kotlinx.coroutines.flow.Flow
 
-interface Repository<T>{
+interface Repository<T> {
     suspend fun exists(uuid: String): Boolean
 
     /**
