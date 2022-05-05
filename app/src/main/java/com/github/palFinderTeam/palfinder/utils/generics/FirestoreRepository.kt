@@ -51,6 +51,7 @@ class FirestoreRepository<T: FirebaseObject>(val db: FirebaseFirestore, private 
     }
 
     override suspend fun edit(uuid: String, field: String, value: Any): String? {
+        if (!exists(uuid)) return null
         return try {
             db.collection(column).document(uuid).update(field, value).await()
             uuid
