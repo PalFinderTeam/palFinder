@@ -1,21 +1,15 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
+import com.github.palFinderTeam.palfinder.utils.generics.FirebaseObject
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.ktx.getField
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.Period
-import java.time.Year
-import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * A class to hold the data for a user to be displayed on the profile activity
@@ -34,7 +28,7 @@ data class ProfileUser(
     val gender: Gender? = Gender.NON_SPEC,
     val following: List<String> = emptyList(),
     val followed: List<String> = emptyList()
-) : Serializable {
+) : Serializable, FirebaseObject {
 
     companion object {
         const val JOIN_FORMAT = "Joined %s"
@@ -92,7 +86,7 @@ data class ProfileUser(
     /**
      * @return a representation which is Firestore friendly of the UserProfile.
      */
-    fun toFirestoreData(): HashMap<String, Any?> {
+    override fun toFirestoreData(): HashMap<String, Any?> {
         return hashMapOf(
             NAME_KEY to name,
             SURNAME_KEY to surname,
@@ -107,6 +101,8 @@ data class ProfileUser(
             FOLLOWED_BY to followed
         )
     }
+
+    override fun getUUID(): String = uuid
 
     fun fullName(): String {
         return "$name $surname"

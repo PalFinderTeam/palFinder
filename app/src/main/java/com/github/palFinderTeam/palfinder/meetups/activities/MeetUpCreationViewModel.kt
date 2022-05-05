@@ -163,7 +163,7 @@ class MeetUpCreationViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val meetUp = meetUpRepository.getMeetUpData(meetUpId)
+            val meetUp = meetUpRepository.fetch(meetUpId)
             if (meetUp != null) {
                 uuid = meetUp.uuid
                 _name.postValue(meetUp.name)
@@ -256,12 +256,12 @@ class MeetUpCreationViewModel @Inject constructor(
                     checkDateIntegrity()
                     meetUp = meetUp.copy(startDate = startDate.value!!, endDate = endDate.value!!)
                 }
-                uuid = meetUpRepository.createMeetUp(meetUp)
+                uuid = meetUpRepository.create(meetUp)
                 // Notify sending result
                 _sendSuccess.postValue(uuid != null)
             } else {
                 // Edit existing one
-                meetUpRepository.editMeetUp(uuid!!, meetUp)
+                meetUpRepository.edit(uuid!!, meetUp)
                 // Notify sending result
                 _sendSuccess.postValue(true)
             }

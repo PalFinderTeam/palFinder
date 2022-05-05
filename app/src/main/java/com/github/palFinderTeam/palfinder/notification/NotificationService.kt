@@ -48,10 +48,10 @@ class NotificationService @Inject constructor(
                 notifications.delete(notif.uuid)
             }
         }
-        var context = this
+        val context = this
         runBlocking {
             for (m in (meetupService as CachedMeetUpService).getAllJoinedMeetupID()) {
-                var meetup = meetupService.getMeetUpData(m)
+                var meetup = meetupService.fetch(m)
                 val meta = if (meetups.contains(m)) {
                     meetups.get(m)
                 } else {
@@ -75,7 +75,7 @@ class NotificationService @Inject constructor(
                         val hash = last.hashCode().toString()
 
                         if (hash != meta.lastMessageNotification && last.sentBy != profileService.getLoggedInUserID()) {
-                            val name = profileService.fetchUserProfile(last.sentBy)?.username?:""
+                            val name = profileService.fetch(last.sentBy)?.username?:""
                             NotificationHandler(context).post(name, last.content, R.drawable.icon_beer)
                             meta.lastMessageNotification = hash
                             meetups.store(m, meta)

@@ -1,10 +1,10 @@
 package com.github.palFinderTeam.palfinder.meetups
 
+import Repository
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -12,38 +12,7 @@ import kotlinx.coroutines.flow.Flow
  *
  * It is implemented by our concrete database service and can be easily mocked in tests.
  */
-interface MeetUpRepository {
-    /**
-     * Return meetup data from database.
-     *
-     * @param meetUpId Id of the meetup in the db.
-     */
-    suspend fun getMeetUpData(meetUpId: String): MeetUp?
-
-    /**
-     * Create a new meetUp in db.
-     *
-     * @param newMeetUp MeetUp to create.
-     */
-    suspend fun createMeetUp(newMeetUp: MeetUp): String?
-
-    /**
-     * Edit an existing meetUp in db.
-     *
-     * @param meetUpId id of MeetUp.
-     * @param field String key of field to update.
-     * @param value new value.
-     */
-    suspend fun editMeetUp(meetUpId: String, field: String, value: Any): String?
-
-    /**
-     * Edit an existing meetUp in db.
-     *
-     * @param meetUpId id of MeetUp.
-     * @param meetUp meetUp that will overwrite the existing one.
-     */
-    suspend fun editMeetUp(meetUpId: String, meetUp: MeetUp): String?
-
+interface MeetUpRepository: Repository<MeetUp> {
     /**
      * Return a list of meetups around a certain location.
      *
@@ -80,15 +49,6 @@ interface MeetUpRepository {
      */
     suspend fun leaveMeetUp(meetUpId: String, userId: String): Response<Unit>
 
-    /**
-     * Fetches every meetups from DB. It will be removed later but is useful for development.
-     *
-     * @param currentDate If not null, will fetch only meetups that are available.
-     */
-    @ExperimentalCoroutinesApi
-    fun getAllMeetUps(
-        currentDate: Calendar? = null,
-    ): Flow<List<MeetUp>>
 
     /**
      * Get all meetup the user, with id [userId], is taking part of.
@@ -97,9 +57,4 @@ interface MeetUpRepository {
      * @return A flow of the form Fetching -> MeetUps or Fetching -> Failure.
      */
     fun getUserMeetups(userId: String, currentDate: Calendar? = null): Flow<Response<List<MeetUp>>>
-
-    /**
-     * Get all meetup from the list of ids [meetUpIds].
-     */
-    suspend fun getMeetUpsData(meetUpIds: List<String>): List<MeetUp>?
 }

@@ -12,7 +12,6 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.image.UrlFormat
-import com.github.palFinderTeam.palfinder.utils.time.RealTimeService
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -133,8 +132,8 @@ class UserSettingsViewModel @Inject constructor(
         } else {
             viewModelScope.launch {
                 // User exists in DB
-                if (profileService.doesUserIDExist(loggedUID)) {
-                    val user = profileService.fetchUserProfile(loggedUID)!!
+                if (profileService.exists(loggedUID)) {
+                    val user = profileService.fetch(loggedUID)!!
                     setFieldsWithUserValues(user)
                 } else {
                     // No intent and user not found, reset everything
@@ -240,18 +239,18 @@ class UserSettingsViewModel @Inject constructor(
             if (_isNewUser) {
 
                 // Notify result
-                if (profileService.createProfile(newUser) != null) {
+                if (profileService.create(newUser) != null) {
                     _updateStatus.postValue(CREATE_SUCCESS)
                 } else {
                     _updateStatus.postValue(UPDATE_ERROR)
                 }
             } else {
-                val oldUser = profileService.fetchUserProfile(loggedUID)
+                val oldUser = profileService.fetch(loggedUID)
 
                 // If user not found for some reason, fall back to adding new join date
                 val joinDate = oldUser?.joinDate ?: timeService.now()
                 // Notify result
-                if (profileService.editUserProfile(loggedUID, newUser.copy(joinDate = joinDate)) != null) {
+                if (profileService.edit(loggedUID, newUser.copy(joinDate = joinDate)) != null) {
                     _updateStatus.postValue(UPDATE_SUCCESS)
                 } else {
                     _updateStatus.postValue(UPDATE_ERROR)

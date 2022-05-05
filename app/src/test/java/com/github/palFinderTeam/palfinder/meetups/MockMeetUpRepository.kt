@@ -6,7 +6,6 @@ import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -15,21 +14,21 @@ class MockMeetUpRepository : MeetUpRepository {
     val db: HashMap<String, MeetUp> = hashMapOf()
     private var counter = 0
 
-    override suspend fun getMeetUpData(meetUpId: String): MeetUp? {
-        return db[meetUpId]
+    override suspend fun fetch(uuid: String): MeetUp? {
+        return db[uuid]
     }
 
-    override suspend fun createMeetUp(newMeetUp: MeetUp): String? {
+    override suspend fun create(obj: MeetUp): String {
         val key = counter.toString()
-        db[key] = newMeetUp.copy(uuid = key)
+        db[key] = obj.copy(uuid = key)
         counter.inc()
         return key
     }
 
-    override suspend fun editMeetUp(meetUpId: String, field: String, value: Any): String? {
-        if (db.containsKey(meetUpId)) {
-            val oldVal = db[meetUpId]!!
-            db[meetUpId] = when (field) {
+    override suspend fun edit(uuid: String, field: String, value: Any): String? {
+        if (db.containsKey(uuid)) {
+            val oldVal = db[uuid]!!
+            db[uuid] = when (field) {
                 "name" -> oldVal.copy(name = value as String)
                 "capacity" -> oldVal.copy(capacity = value as Int)
                 "creator" -> oldVal.copy(creatorId = value as String)
@@ -43,15 +42,25 @@ class MockMeetUpRepository : MeetUpRepository {
                 "tags" -> oldVal.copy(tags = value as Set<Category>)
                 else -> oldVal
             }
-            return meetUpId
+            return uuid
         }
         return null
     }
 
-    override suspend fun editMeetUp(meetUpId: String, meetUp: MeetUp): String? {
-        return if (db.containsKey(meetUpId)) {
-            db[meetUpId] = meetUp
-            meetUpId
+    override fun fetchFlow(uuid: String): Flow<Response<MeetUp>> {
+        return flow{
+            if (db.containsKey(uuid)){
+                emit(Response.Success(db[uuid]!!))
+            } else {
+                emit(Response.Failure("Could not find obj."))
+            }
+        }
+    }
+
+    override suspend fun edit(uuid: String, obj: MeetUp): String? {
+        return if (db.containsKey(uuid)) {
+            db[uuid] = obj
+            uuid
         } else {
             null
         }
@@ -74,8 +83,7 @@ class MockMeetUpRepository : MeetUpRepository {
         }
     }
 
-    @ExperimentalCoroutinesApi
-    override fun getAllMeetUps(currentDate: Calendar?): Flow<List<MeetUp>> {
+    override fun fetchAll(currentDate: Calendar?): Flow<List<MeetUp>> {
         return flow {
             var meetUps = db.values.toList()
             if (currentDate != null) {
@@ -114,7 +122,7 @@ class MockMeetUpRepository : MeetUpRepository {
     override suspend fun leaveMeetUp(meetUpId: String, userId: String): Response<Unit> {
         return try {
             val meetUp =
-                getMeetUpData(meetUpId) ?: return Response.Failure("Could not find meetup.")
+                fetch(meetUpId) ?: return Response.Failure("Could not find meetup.")
             if (!meetUp.isParticipating(userId)) {
                 return Response.Failure("Cannot leave a meetup which was not joined before")
             }
@@ -129,7 +137,7 @@ class MockMeetUpRepository : MeetUpRepository {
         userId: String,
         currentDate: Calendar?
     ): Flow<Response<List<MeetUp>>> {
-        val userMeetUps = getAllMeetUps().map { Response.Success(it.filter { it.isParticipating(userId) }) }
+        val userMeetUps = fetchAll(currentDate).map { Response.Success(it.filter { it.isParticipating(userId) }) }
         if (currentDate != null) {
             return userMeetUps.map { Response.Success(it.data.filter { !it.isFinished(currentDate) }) }
         } else {
@@ -137,8 +145,12 @@ class MockMeetUpRepository : MeetUpRepository {
         }
     }
 
-    override suspend fun getMeetUpsData(meetUpIds: List<String>): List<MeetUp>? {
-        return meetUpIds.mapNotNull { db[it] }
+    override suspend fun exists(uuid: String): Boolean {
+        return db.containsKey(uuid)
+    }
+
+    override suspend fun fetch(uuids: List<String>): List<MeetUp> {
+        return uuids.mapNotNull { db[it] }
     }
 
     fun clearDB() {

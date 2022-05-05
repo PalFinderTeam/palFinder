@@ -35,7 +35,7 @@ class MeetUpViewViewModel @Inject constructor(
      */
     fun loadMeetUp(meetUpId: String) {
         viewModelScope.launch {
-            val fetchedMeetUp = meetUpRepository.getMeetUpData(meetUpId)
+            val fetchedMeetUp = meetUpRepository.fetch(meetUpId)
             // TODO do something on error
             fetchedMeetUp?.let { _meetUp.value = it }
         }
@@ -47,7 +47,7 @@ class MeetUpViewViewModel @Inject constructor(
 
     fun getUsernameOf(uuid: String, callback: (String?)->Unit){
         viewModelScope.launch {
-            val user = profileService.fetchUserProfile(uuid)?.username
+            val user = profileService.fetch(uuid)?.username
             callback(user)
         }
     }
@@ -82,7 +82,7 @@ class MeetUpViewViewModel @Inject constructor(
                     }
                 } else {
                     when(val ret = meetUpRepository.joinMeetUp(meetUp.value!!.uuid, uuid, timeService.now(),
-                        profileService.fetchUserProfile(profileService.getLoggedInUserID()!!)!!)){
+                        profileService.fetch(profileService.getLoggedInUserID()!!)!!)){
                         is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
                         else -> Toast.makeText(context, R.string.meetup_view_joined, Toast.LENGTH_SHORT).show()
                     }

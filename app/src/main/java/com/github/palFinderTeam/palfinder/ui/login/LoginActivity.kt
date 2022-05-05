@@ -7,21 +7,27 @@ package com.github.palFinderTeam.palfinder.ui.login
 //import androidx.annotation.StringRes
 
 //import android.app.Activity
+//import com.google.firebase.firestore.SetOptions
+//import com.google.firebase.firestore.ktx.firestore
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.icu.util.Calendar
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
+import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
+import com.github.palFinderTeam.palfinder.utils.createPopUp
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.android.gms.auth.api.identity.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -31,14 +37,7 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
-import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
-import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
-import com.github.palFinderTeam.palfinder.utils.createPopUp
-import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.ktx.firestore
-//import com.google.firebase.firestore.SetOptions
-//import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
@@ -90,10 +89,7 @@ class LoginActivity : AppCompatActivity() {
         displayOneTap()
 
         //disable auto fill to enable onetap save password, work only with API >= 26
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            window
-                .decorView.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
-        }
+        window.decorView.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
         configureGoogleSignIn(signInButton)
         configurePasswordSignIn(signInOrRegister)
         configureNoAccountButton(noAccountButton)
@@ -365,7 +361,7 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        if (firebaseProfileService.doesUserIDExist(user.uid)) {
+        if (firebaseProfileService.exists(user.uid)) {
             startActivity(Intent(this, MainNavActivity::class.java))
             finish()
         } else {

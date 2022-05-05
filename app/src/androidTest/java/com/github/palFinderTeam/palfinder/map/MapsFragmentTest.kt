@@ -103,7 +103,7 @@ class MapsFragmentTest {
             listOf("user2")
         )
 
-        val id = meetUpRepository.createMeetUp(meetup)
+        val id = meetUpRepository.create(meetup)
         assertThat(id, `is`(notNullValue()))
 
         val scenario = launchFragmentInHiltContainer<MapsFragment>(Bundle().apply {

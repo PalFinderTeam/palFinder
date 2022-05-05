@@ -28,7 +28,6 @@ import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
 import com.github.palFinderTeam.palfinder.utils.launchFragmentInHiltContainer
 import com.github.palFinderTeam.palfinder.utils.onHiltFragment
-import com.github.palFinderTeam.palfinder.utils.time.RealTimeService
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -214,7 +213,7 @@ class MeetUpListTest {
 
     @Test
     fun testDisplayActivities() = runTest {
-        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        meetUpList.forEach { meetUpRepository.create(it) }
 
         val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
             putBoolean("ShowOnlyJoined", false)
@@ -245,7 +244,7 @@ class MeetUpListTest {
 
     @Test
     fun sortWorks() = runTest {
-        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        meetUpList.forEach { meetUpRepository.create(it) }
 
         val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
             putBoolean("ShowOnlyJoined", false)
@@ -294,7 +293,7 @@ class MeetUpListTest {
 
     @Test
     fun filterWorks() = runTest {
-        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        meetUpList.forEach { meetUpRepository.create(it) }
 
         val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
             putBoolean("ShowOnlyJoined", false)
@@ -318,7 +317,7 @@ class MeetUpListTest {
 
     @Test
     fun filterWorksAddTag() = runTest {
-        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        meetUpList.forEach { meetUpRepository.create(it) }
 
         val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
             putBoolean("ShowOnlyJoined", false)
@@ -346,7 +345,7 @@ class MeetUpListTest {
 
     @Test
     fun clickItem() = runTest {
-        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        meetUpList.forEach { meetUpRepository.create(it) }
 
         val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
             putBoolean("ShowOnlyJoined", false)
@@ -389,7 +388,7 @@ class MeetUpListTest {
 
     @Test
     fun showJoinedMeetupsOnlyShowJoinedMeetUps() = runTest {
-        meetUpList.forEach { meetUpRepository.createMeetUp(it) }
+        meetUpList.forEach { meetUpRepository.create(it) }
 
         val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
             putBoolean("ShowOnlyJoined", true)

@@ -17,28 +17,28 @@ class CachedProfileService @Inject constructor(
 ) : FirebaseProfileService(db) {
     private var cache = DictionaryCache("profile", ProfileUser::class.java, false, contextProvider.get(), evictAfterXMinutes(10, time))
 
-    override suspend fun fetchUserProfile(userId: String): ProfileUser? {
-        return if (cache.contains(userId)){
-            cache.get(userId)
+    override suspend fun fetch(uuid: String): ProfileUser? {
+        return if (cache.contains(uuid)){
+            cache.get(uuid)
         }else{
-            super.fetchUserProfile(userId)
+            super.fetch(uuid)
         }
     }
 
-    override fun fetchProfileFlow(userId: String): Flow<Response<ProfileUser>> {
-        return if (cache.contains(userId)){
+    override fun fetchFlow(uuid: String): Flow<Response<ProfileUser>> {
+        return if (cache.contains(uuid)){
             flow {
-                emit(Response.Success(cache.get(userId)))
+                emit(Response.Success(cache.get(uuid)))
             }
         }else{
-            super.fetchProfileFlow(userId)
+            super.fetchFlow(uuid)
         }
     }
 
-    override suspend fun editUserProfile(userId: String, field: String, value: Any): String? {
-        val id = super.editUserProfile(userId, field, value)
+    override suspend fun edit(uuid: String, field: String, value: Any): String? {
+        val id = super.edit(uuid, field, value)
         return if (id != null){
-            cache.store(userId, super.fetchUserProfile(userId)!!)
+            cache.store(uuid, super.fetch(uuid)!!)
             id
         }
         else{
@@ -46,10 +46,10 @@ class CachedProfileService @Inject constructor(
         }
     }
 
-    override suspend fun editUserProfile(userId: String, userProfile: ProfileUser): String? {
-        val id = super.editUserProfile(userId, userProfile)
+    override suspend fun edit(uuid: String, obj: ProfileUser): String? {
+        val id = super.edit(uuid, obj)
         return if(id != null){
-            cache.store(userId, userProfile)
+            cache.store(uuid, obj)
             id
         }
         else{

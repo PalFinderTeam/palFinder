@@ -9,7 +9,6 @@ import com.github.palFinderTeam.palfinder.utils.context.ContextService
 import com.github.palFinderTeam.palfinder.utils.evictAfterXMinutes
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -44,11 +43,11 @@ class CachedMeetUpService @Inject constructor(
         cacheJoined.store(JoinedMeetupListWrapper(mutableListOf()))
     }
 
-    override suspend fun createMeetUp(newMeetUp: MeetUp): String? {
-        val ret = super.createMeetUp(newMeetUp)
+    override suspend fun create(obj: MeetUp): String? {
+        val ret = super.create(obj)
         if (ret != null){
             addJoinedMeetupToCache(ret)
-            getMeetUpData(ret) // Cache it
+            fetch(ret) // Cache it
         }
         return ret
     }
@@ -64,19 +63,19 @@ class CachedMeetUpService @Inject constructor(
         }
     }
 
-    override suspend fun getMeetUpData(meetUpId: String): MeetUp? {
-        return if (cache.contains(meetUpId)){
-            cache.get(meetUpId)
+    override suspend fun fetch(uuid: String): MeetUp? {
+        return if (cache.contains(uuid)){
+            cache.get(uuid)
         }
         else{
-            super.getMeetUpData(meetUpId)
+            super.fetch(uuid)
         }
     }
 
-    override suspend fun editMeetUp(meetUpId: String, field: String, value: Any): String? {
-        val id = super.editMeetUp(meetUpId, field, value)
+    override suspend fun edit(uuid: String, field: String, value: Any): String? {
+        val id = super.edit(uuid, field, value)
         return if (id != null){
-            cache.store(meetUpId, super.getMeetUpData(meetUpId)!!)
+            cache.store(uuid, super.fetch(uuid)!!)
             id
         }
         else{
@@ -84,10 +83,10 @@ class CachedMeetUpService @Inject constructor(
         }
     }
 
-    override suspend fun editMeetUp(meetUpId: String, meetUp: MeetUp): String? {
-        val id = super.editMeetUp(meetUpId, meetUp)
+    override suspend fun edit(uuid: String, obj: MeetUp): String? {
+        val id = super.edit(uuid, obj)
         return if(id != null){
-            cache.store(meetUpId, meetUp)
+            cache.store(uuid, obj)
             id
         }
         else{
@@ -117,9 +116,8 @@ class CachedMeetUpService @Inject constructor(
         }
     }
 
-    @ExperimentalCoroutinesApi
-    override fun getAllMeetUps(currentDate: Calendar?): Flow<List<MeetUp>> {
-        return super.getAllMeetUps(currentDate).map {
+    override fun fetchAll(currentDate: Calendar?): Flow<List<MeetUp>> {
+        return super.fetchAll(currentDate).map {
             it.ifEmpty {
                 cache.getAll()
             }
