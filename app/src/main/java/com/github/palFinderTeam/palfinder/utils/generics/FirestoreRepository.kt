@@ -2,7 +2,6 @@ package com.github.palFinderTeam.palfinder.utils.generics
 
 import android.icu.util.Calendar
 import android.util.Log
-import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.*
@@ -45,7 +44,7 @@ class FirestoreRepository<T: FirebaseObject>(val db: FirebaseFirestore, private 
         // Firebase don't support more than 10 ids in query.
         val chunked = uuids.chunked(10)
         val queries = chunked.map {
-            db.collection(FirebaseProfileService.PROFILE_COLL).whereIn(FieldPath.documentId(), it).get()
+            db.collection(column).whereIn(FieldPath.documentId(), it).get()
         }
         val result = Tasks.whenAllSuccess<QuerySnapshot>(queries).await()
         return result.flatMap { it.documents.mapNotNull { converter(it) } }
@@ -62,7 +61,7 @@ class FirestoreRepository<T: FirebaseObject>(val db: FirebaseFirestore, private 
 
     override suspend fun edit(uuid: String, obj: T): String? {
         return try {
-            db.collection(FirebaseProfileService.PROFILE_COLL).document(uuid).update(obj.toFirestoreData())
+            db.collection(column).document(uuid).update(obj.toFirestoreData())
                 .await()
             uuid
         } catch (e: Exception) {
@@ -72,7 +71,7 @@ class FirestoreRepository<T: FirebaseObject>(val db: FirebaseFirestore, private 
 
     override suspend fun create(obj: T): String? {
         return try {
-            db.collection(FirebaseProfileService.PROFILE_COLL).document(obj.getUUID())
+            db.collection(column).document(obj.getUUID())
                 .set(obj.toFirestoreData()).await()
             obj.getUUID()
         } catch (e: Exception) {
