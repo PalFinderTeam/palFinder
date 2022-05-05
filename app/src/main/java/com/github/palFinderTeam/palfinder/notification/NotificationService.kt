@@ -10,8 +10,10 @@ import com.github.palFinderTeam.palfinder.chat.CachedChatService
 import com.github.palFinderTeam.palfinder.chat.ChatService
 import com.github.palFinderTeam.palfinder.di.FirestoreModule
 import com.github.palFinderTeam.palfinder.meetups.CachedMeetUpService
+import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.CachedProfileService
+import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.utils.EndlessService
 import com.github.palFinderTeam.palfinder.utils.context.AppContextService
@@ -31,8 +33,8 @@ class NotificationService @Inject constructor(
 
     constructor() : this(
         RealTimeService(),
-        CachedMeetUpService(FirestoreModule.provideFirestore(), RealTimeService(), AppContextService()),
-        CachedProfileService(FirestoreModule.provideFirestore(), RealTimeService(), AppContextService()),
+        CachedMeetUpService(FirebaseMeetUpService(FirestoreModule.provideFirestore()), RealTimeService(), AppContextService()),
+        CachedProfileService(FirebaseProfileService(FirestoreModule.provideFirestore()), RealTimeService(), AppContextService()),
         CachedChatService(FirestoreModule.provideFirestore(), AppContextService())
     )
 

@@ -1,6 +1,5 @@
 package com.github.palFinderTeam.palfinder.utils.generics
 
-import Repository
 import android.icu.util.Calendar
 import android.util.Log
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
