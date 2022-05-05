@@ -13,7 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
  * It will be removed later.
  */
 @AndroidEntryPoint
-class MeetUpEditCompat : AppCompatActivity() /*{
+class MeetUpEditCompat : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_edit_compat)
@@ -27,4 +27,3 @@ class MeetUpEditCompat : AppCompatActivity() /*{
         )
     }
 }
-"*/
