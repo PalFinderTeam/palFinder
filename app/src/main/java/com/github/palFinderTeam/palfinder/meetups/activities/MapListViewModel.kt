@@ -12,9 +12,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel.Companion.INITIAL_RADIUS
+import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel.Companion.START_LOCATION
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
+import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -32,25 +35,40 @@ import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 @HiltViewModel
+/**
+ * A ViewModel for the MapsFragment and the MeetUpListFragment,
+ * that fetches the list of meetups displayed around a location.
+ * It also works with the geolocation to get the current phone location,
+ * and with tags to filter the dataset
+ * @param meetUpRepository the database for the meetups, from which we fetch
+ * @param profileService the database for the profiles, mainly to get the currentLoggedUser
+ * @param timeService database to retrieve the current time, so we don't display outdated meetups
+ */
 class MapListViewModel @Inject constructor(
     val meetUpRepository: MeetUpRepository,
     val profileService: ProfileService,
     val timeService: TimeService,
     application: Application
 ) : AndroidViewModel(application) {
+    companion object {
+        const val INITIAL_RADIUS: Double = 400.0
+        val START_LOCATION = Location(45.0, 45.0)
+    }
+    //store the fetched meetups in real time, separated in 2 to be immutable
     private val _listOfMeetUpResponse: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
     val listOfMeetUpResponse: LiveData<Response<List<MeetUp>>> = _listOfMeetUpResponse
 
+    //store the current tags filtering the data, separated in 2 as well
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
     val tags: LiveData<Set<Category>> = _tags
 
-
+    //stores the current user location and the client
     private val locationClient =
         LocationServices.getFusedLocationProviderClient(getApplication<Application>().applicationContext)
-
     private val _userLocation: MutableLiveData<Location> = MutableLiveData()
     val userLocation: LiveData<Location> = _userLocation
 
+    //allows delay for the permission answer
     private val _requestPermissions = MutableLiveData(false)
     val requestPermissions: LiveData<Boolean> = _requestPermissions
 
@@ -59,9 +77,10 @@ class MapListViewModel @Inject constructor(
     private val _searchLocation = MutableLiveData(START_LOCATION)
     val searchLocation: LiveData<Location> = _searchLocation
     val searchRadius: LiveData<Double> = _searchRadius
-    private var showOnlyJoined = false
+    var showParam: ShowParam = ShowParam.ALL
     private var showOnlyAvailableInTime = true
 
+    //updates the userLocation
     init {
         if (ActivityCompat.checkSelfPermission(
                 getApplication<Application>().applicationContext,
@@ -86,13 +105,13 @@ class MapListViewModel @Inject constructor(
      *
      * @param location Location around which to search.
      * @param radiusInKm Radius of the search.
-     * @param showOnlyJoined If true, only show joined meetups, this will ignore the radius.
+     * @param showParam specify the meetUps to be displayed
      * @param showOnlyAvailable If true, only show meetup available at the current time.
      */
     fun setSearchParameters(
         location: Location? = null,
         radiusInKm: Double? = null,
-        showOnlyJoined: Boolean? = null,
+        showParam: ShowParam? = ShowParam.ALL,
         showOnlyAvailable: Boolean? = null
     ) {
         location?.let {
@@ -101,8 +120,8 @@ class MapListViewModel @Inject constructor(
         radiusInKm?.let {
             _searchRadius.value = it
         }
-        showOnlyJoined?.let {
-            this.showOnlyJoined = it
+        showParam?.let {
+            this.showParam = it
         }
         showOnlyAvailable?.let {
             showOnlyAvailableInTime = it
@@ -114,13 +133,13 @@ class MapListViewModel @Inject constructor(
      *
      * @param location Location around which to search.
      * @param radiusInKm Radius of the search.
-     * @param showOnlyJoined If true, only show joined meetups, this will ignore the radius.
+     * @param showParam specify the meetUps to be displayed
      * @param forceFetch If true, always fetch after assigning the params.
      */
     fun setSearchParamAndFetch(
         location: Location? = null,
         radiusInKm: Double? = null,
-        showOnlyJoined: Boolean? = null,
+        showParam: ShowParam? = ShowParam.ALL,
         showOnlyAvailable: Boolean? = null,
         forceFetch: Boolean = false
     ) {
@@ -129,13 +148,13 @@ class MapListViewModel @Inject constructor(
             (!forceFetch)
             && (location == null || searchLocation.value == location)
             && (radiusInKm == null || searchRadius.value == radiusInKm)
-            && (showOnlyJoined == null || this.showOnlyJoined == showOnlyJoined)
+            && (this.showParam == showParam)
             && (showOnlyAvailable == null || showOnlyAvailableInTime == showOnlyAvailable)
         ) {
             return
         }
 
-        setSearchParameters(location, radiusInKm, showOnlyJoined, showOnlyAvailable)
+        setSearchParameters(location, radiusInKm, showParam, showOnlyAvailable)
         fetchMeetUps()
     }
 
@@ -145,11 +164,9 @@ class MapListViewModel @Inject constructor(
      * call it by themself.
      */
     fun fetchMeetUps() {
-        if (showOnlyJoined) {
-            fetchUserMeetUps()
-        } else {
-            getMeetupAroundLocation(searchLocation.value!!, searchRadius.value ?: INITIAL_RADIUS)
-            //getMeetupAroundLocation(_searchLocation.value!!, 500.0)
+        when (showParam) {
+            ShowParam.ONLY_JOINED -> fetchUserMeetUps()
+            else -> getMeetupAroundLocation(searchLocation.value!!, searchRadius.value ?: INITIAL_RADIUS, showParam)
         }
     }
 
@@ -162,14 +179,17 @@ class MapListViewModel @Inject constructor(
      */
     private fun getMeetupAroundLocation(
         position: Location,
-        radiusInKm: Double
+        radiusInKm: Double,
+        showParam: ShowParam
     ) {
         val date = if (showOnlyAvailableInTime) timeService.now() else null
         viewModelScope.launch {
             meetUpRepository.getMeetUpsAroundLocation(
                 position,
                 radiusInKm,
-                currentDate = date
+                currentDate = date,
+                showParam,
+                profileService.fetchUserProfile(profileService.getLoggedInUserID()!!)
             ).collect {
                 _listOfMeetUpResponse.postValue(it)
             }
@@ -223,11 +243,5 @@ class MapListViewModel @Inject constructor(
                 true
             }
         }
-    }
-
-
-    companion object {
-        const val INITIAL_RADIUS: Double = 400.0
-        val START_LOCATION = Location(45.0, 45.0)
     }
 }

@@ -24,9 +24,9 @@
             app:argType="boolean"
             android:defaultValue="true" />
         <argument
-            android:name="ShowOnlyJoined"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            android:name="ShowParam"
+            app:argType="com.github.palFinderTeam.palfinder.meetups.activities.ShowParam"
+            android:defaultValue="ALL" />
         <argument
             android:name="StartOnUserLocation"
             app:argType="boolean"
@@ -58,9 +58,9 @@
                 android:defaultValue="false" />
         </action>
         <argument
-            android:name="ShowOnlyJoined"
-            app:argType="boolean"
-            android:defaultValue="true" />
+            android:name="ShowParam"
+            app:argType="com.github.palFinderTeam.palfinder.meetups.activities.ShowParam"
+            android:defaultValue="ALL" />
     </fragment>
     <fragment
         android:id="@+id/creation_fragment"

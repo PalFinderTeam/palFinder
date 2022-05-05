@@ -14,7 +14,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.USER_ID
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import kotlinx.coroutines.launch
 

@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
@@ -107,7 +108,7 @@ class MainNavActivity : AppCompatActivity() {
                         } else {
                             navController.popBackStack()
                             val args = Bundle().apply {
-                                putBoolean("ShowOnlyJoined", true)
+                                putSerializable("showParam", ShowParam.ONLY_JOINED)
                             }
                             navController.navigate(
                                 R.id.list_fragment,

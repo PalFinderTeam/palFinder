@@ -16,7 +16,6 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.map.MapsFragment
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
-import com.github.palFinderTeam.palfinder.meetups.activities.SHOW_JOINED_ONLY
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
