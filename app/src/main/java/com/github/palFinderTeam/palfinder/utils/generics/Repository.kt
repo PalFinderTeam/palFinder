@@ -1,3 +1,4 @@
+package com.github.palFinderTeam.palfinder.utils.generics
 
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.utils.Response

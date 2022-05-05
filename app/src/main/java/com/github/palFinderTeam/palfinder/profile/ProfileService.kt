@@ -1,7 +1,7 @@
 package com.github.palFinderTeam.palfinder.profile
 
-import Repository
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.generics.Repository
 
 interface ProfileService: Repository<ProfileUser> {
     /**

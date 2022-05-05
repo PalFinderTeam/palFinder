@@ -1,6 +1,5 @@
 package com.github.palFinderTeam.palfinder.utils.generics
 
-import Repository
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.utils.Response

@@ -1,10 +1,10 @@
 package com.github.palFinderTeam.palfinder.meetups
 
-import Repository
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.generics.Repository
 import kotlinx.coroutines.flow.Flow
 
 /**
