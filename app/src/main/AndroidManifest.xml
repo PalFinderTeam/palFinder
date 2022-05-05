@@ -41,9 +41,6 @@
             android:name=".chat.ChatActivity"
             android:exported="false" />
 
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAhnmWxAFDDb9pjgg4aKCI_mSGeVplrHxE" />
 
         <activity
             android:name=".meetups.activities.MeetUpView"
