@@ -19,6 +19,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+/**
+ * viewModel attached to the MeetupView, mainly to fetch the meetUp and fill the fields of the layout
+ * @param meetUpRepository the database for the meetups from which we fetch
+ * @param profileService the database for the profiles mainly to get the currentLoggedUser
+ * @param timeService database to retrieve the current time so we don't display outdated meetups
+ */
 @HiltViewModel
 class MeetUpViewViewModel @Inject constructor(
     private val meetUpRepository: MeetUpRepository,
@@ -45,6 +51,11 @@ class MeetUpViewViewModel @Inject constructor(
         return meetUp.value!!.uuid
     }
 
+    /**
+     * get username of a user profile and process a function on it
+     * @param uuid user unique identifier
+     * @param callback function to process on the user username
+     */
     fun getUsernameOf(uuid: String, callback: (String?)->Unit){
         viewModelScope.launch {
             val user = profileService.fetchUserProfile(uuid)?.username
@@ -52,6 +63,9 @@ class MeetUpViewViewModel @Inject constructor(
         }
     }
 
+    /**
+     * helper functions for the chat/edit/join buttons
+     */
     fun hasJoin(): Boolean {
         val uuid = profileService.getLoggedInUserID()
         return if (uuid != null){
@@ -71,6 +85,9 @@ class MeetUpViewViewModel @Inject constructor(
         }
     }
 
+    /**
+     * test if the user is participating in the meetup and propagate the join/leave to the database
+     */
     fun joinOrLeave(context: Context){
         val uuid = profileService.getLoggedInUserID()
         if (uuid != null){
@@ -81,7 +98,8 @@ class MeetUpViewViewModel @Inject constructor(
                         else -> Toast.makeText(context, R.string.meetup_view_left, Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    when(val ret = meetUpRepository.joinMeetUp(meetUp.value!!.uuid, uuid, timeService.now())){
+                    when(val ret = meetUpRepository.joinMeetUp(meetUp.value!!.uuid, uuid, timeService.now(),
+                        profileService.fetchUserProfile(profileService.getLoggedInUserID()!!)!!)){
                         is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
                         else -> Toast.makeText(context, R.string.meetup_view_joined, Toast.LENGTH_SHORT).show()
                     }

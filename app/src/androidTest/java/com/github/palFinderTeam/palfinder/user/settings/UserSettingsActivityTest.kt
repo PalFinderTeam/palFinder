@@ -9,24 +9,27 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.*
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
+import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.ui.login.CREATE_ACCOUNT_PROFILE
+import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
-import org.hamcrest.CoreMatchers.notNullValue
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
@@ -70,7 +73,8 @@ class UserSettingsActivityTest {
             Calendar.getInstance(),
             ImageInstance("null"),
             "The cato is backo...",
-            bDay
+            bDay,
+            gender = Gender.MALE
         )
 
         bdFormat = SimpleDateFormat("d/M/y")
@@ -135,6 +139,56 @@ class UserSettingsActivityTest {
     }
 
     @Test
+    fun loadSpecificUserProfileYieldsGenderCorrectly() = runTest {
+        val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
+            .apply{
+                putExtra(CREATE_ACCOUNT_PROFILE, user)
+            }
+
+        // Male
+        val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.radioMale))
+                .check(matches(isChecked()))
+            onView(withId(R.id.radioFemale))
+                .check(matches(not(isChecked())))
+            onView(withId(R.id.radioOther))
+                .check(matches(not(isChecked())))
+        }
+    }
+
+    @Test
+    fun selectingGendersModifiesRadios() = runTest {
+        val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
+            .apply{
+                putExtra(CREATE_ACCOUNT_PROFILE, user)
+            }
+
+        val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
+        scenario.use {
+            // Female
+            onView(withId(R.id.radioFemale))
+                .perform(scrollTo(), click())
+            onView(withId(R.id.radioMale))
+                .check(matches(not(isChecked())))
+            onView(withId(R.id.radioFemale))
+                .check(matches(isChecked()))
+            onView(withId(R.id.radioOther))
+                .check(matches(not(isChecked())))
+
+            // Other
+            onView(withId(R.id.radioOther))
+                .perform(scrollTo(), click())
+            onView(withId(R.id.radioMale))
+                .check(matches(not(isChecked())))
+            onView(withId(R.id.radioFemale))
+                .check(matches(not(isChecked())))
+            onView(withId(R.id.radioOther))
+                .check(matches(isChecked()))
+        }
+    }
+
+    @Test
     fun submittingCorrectDataSendsToMeetupListActivity() = runTest {
         val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
             .apply{
@@ -144,7 +198,7 @@ class UserSettingsActivityTest {
         ActivityScenario.launch<UserSettingsActivity>(intent)
         Intents.init()
         onView(withId(R.id.SettingsSubmitButton)).perform(ViewActions.scrollTo(), click())
-        Intents.intended(IntentMatchers.hasComponent(MeetupListActivity::class.java.name))
+        Intents.intended(IntentMatchers.hasComponent(MainNavActivity::class.java.name))
         Intents.release()
     }
 
@@ -197,5 +251,8 @@ class UserSettingsActivityTest {
                 .check(matches(withText("")))
         }
     }
+
+//    @Test
+//    fun changeGenderYields
 
 }

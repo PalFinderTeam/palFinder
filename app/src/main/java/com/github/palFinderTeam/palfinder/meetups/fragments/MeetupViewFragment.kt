@@ -17,7 +17,6 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpViewViewModel
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import kotlinx.coroutines.launch
 
-private const val ARG_MEETUP = "meetup"
 
 class MeetupViewFragment : Fragment() {
     private val model: MeetUpViewViewModel by activityViewModels()
@@ -33,7 +32,7 @@ class MeetupViewFragment : Fragment() {
 
         model.meetUp.observe(viewLifecycleOwner, meetupObs)
 
-        return inflater.inflate(R.layout.fragment_meetup_view, container, false)
+        return inflater.inflate(R.layout.fragment_meetup_view_new, container, false)
     }
 
     private fun setTextView(id: Int, value: String){
@@ -50,8 +49,8 @@ class MeetupViewFragment : Fragment() {
         setTextView(R.id.tv_ViewEventDescritpion,meetUp.description)
 
         model.viewModelScope.launch {
-            meetUp.iconId?.let {
-                ImageInstance(it).loadImageInto(requireView().findViewById(R.id.iv_MeetupImage))
+            meetUp.iconImage?.let {
+                it.loadImageInto(requireView().findViewById(R.id.iv_MeetupImage), requireContext())
             }
         }
         model.getUsernameOf(meetUp.creatorId){

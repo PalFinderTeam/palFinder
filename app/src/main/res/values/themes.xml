@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="palFinder.default_theme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/primaryDefault</item>
+        <item name="colorPrimary">@color/theme_primary_default</item>
         <item name="colorPrimaryVariant">@color/primaryVariantDefault</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->

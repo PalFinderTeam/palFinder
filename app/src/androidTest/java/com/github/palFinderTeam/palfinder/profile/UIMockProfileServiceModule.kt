@@ -1,22 +1,29 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
+import android.util.Log
 import com.github.palFinderTeam.palfinder.di.ProfileModule
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.DESCRIPTION_KEY
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWED_BY
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWING_PROFILES
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.GENDER
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOINED_MEETUPS_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOIN_DATE_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.NAME_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.PICTURE_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.SURNAME_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.USERNAME_KEY
+import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.google.firebase.firestore.FieldValue
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Singleton
 
 @Module
@@ -62,6 +69,9 @@ object UIMockProfileServiceModule {
                     PICTURE_KEY -> oldVal.copy(pfp = ImageInstance(value as String))
                     DESCRIPTION_KEY -> oldVal.copy(description = value as String)
                     JOINED_MEETUPS_KEY -> oldVal.copy(joinedMeetUps = value as List<String>)
+                    GENDER -> oldVal.copy(gender = value as Gender)
+                    FOLLOWING_PROFILES -> oldVal.copy(following = value as List<String>)
+                    FOLLOWED_BY -> oldVal.copy(followed = value as List<String>)
                     else -> oldVal
                 }
                 return userId
@@ -109,6 +119,32 @@ object UIMockProfileServiceModule {
 
         override suspend fun doesUserIDExist(userId: String): Boolean {
             return db.containsKey(userId)
+        }
+
+        override suspend fun followUser(user: ProfileUser, targetId: String): Response<Unit> {
+            return try {
+                if (!user.canFollow(targetId)) {
+                    return Response.Failure("Cannot follow this user.")
+                }
+                db[user.uuid] = user.copy(following = user.following.plus(targetId))
+                db[targetId] = db[targetId]!!.copy(followed = db[targetId]!!.followed.plus(user.uuid))
+                Response.Success(Unit)
+            } catch (e: Exception) {
+                Response.Failure(e.message.orEmpty())
+            }
+        }
+
+        override suspend fun unfollowUser(user: ProfileUser, targetId: String): Response<Unit> {
+            return try {
+                if (!user.canUnFollow(targetId)) {
+                    return Response.Failure("Cannot unfollow this user.")
+                }
+                db[user.uuid] = user.copy(following = user.following.minus(targetId))
+                db[targetId] = db[targetId]!!.copy(followed = db[targetId]!!.followed.minus(user.uuid))
+                Response.Success(Unit)
+            } catch (e: Exception) {
+                Response.Failure(e.message.orEmpty())
+            }
         }
 
         fun setLoggedInUserID(value: String?){

@@ -180,4 +180,36 @@ class FirebaseProfileServiceTest {
         val id = firebaseProfileService.createProfile(profile)
         assertThat(id, `is`(profile.uuid))
     }
+
+    @Test
+    fun followUserWorks() = runTest {
+        val id = firebaseProfileService.createProfile(profile)
+        val id2 = firebaseProfileService.createProfile(profile2)
+        assert(!db.collection(PROFILE_COLL).document(id!!).get().await().toProfileUser()!!.following.contains(id2))
+        assert(!db.collection(PROFILE_COLL).document(id2!!).get().await().toProfileUser()!!.followed.contains(id))
+        firebaseProfileService.followUser(profile, id2)
+        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.following.contains(id2))
+        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.followed.contains(id))
+        firebaseProfileService.followUser(profile, id)
+        assert(!db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.following.contains(id))
+        firebaseProfileService.followUser(profile, id2)
+        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.following.contains(id2))
+        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.followed.contains(id))
+    }
+
+    @Test
+    fun unfollowUserWorks() = runTest {
+        val id = firebaseProfileService.createProfile(profile)
+        val id2 = firebaseProfileService.createProfile(profile2)
+        firebaseProfileService.unfollowUser(profile, id2!!)
+        assert(!db.collection(PROFILE_COLL).document(id!!).get().await().toProfileUser()!!.following.contains(id2))
+        assert(!db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.followed.contains(id))
+        firebaseProfileService.followUser(firebaseProfileService.fetchUserProfile(id)!!, id2)
+        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.following.contains(id2))
+        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.followed.contains(id))
+        firebaseProfileService.unfollowUser(firebaseProfileService.fetchUserProfile(id)!!, id2)
+        println(db.collection(PROFILE_COLL).document(id!!).get().await().toProfileUser()!!.following)
+        assert(!db.collection(PROFILE_COLL).document(id!!).get().await().toProfileUser()!!.following.contains(id2))
+        assert(!db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.followed.contains(id))
+    }
 }

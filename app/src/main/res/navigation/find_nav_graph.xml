@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/find_nav_graph"
+    app:startDestination="@id/maps_fragment">
+
+    <fragment
+        android:id="@+id/list_fragment"
+        android:name="com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment"
+        tools:layout="@layout/activity_list"
+        android:label="MeetupListActivity">
+        <argument
+            android:name="ShowNavBar"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_list_pick_location"
+            app:destination="@id/maps_fragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_left">
+            <argument
+                android:name="Context"
+                android:defaultValue="SELECT_LOCATION"
+                app:argType="com.github.palFinderTeam.palfinder.map.MapsFragment$Context" />
+            <argument
+                android:name="ShowNavBar"
+                android:defaultValue="false" />
+            <argument
+                android:name="ShowFindTabs"
+                android:defaultValue="false" />
+        </action>
+        <argument
+            android:name="ShowParam"
+            android:defaultValue="ALL"
+            app:argType="com.github.palFinderTeam.palfinder.meetups.activities.ShowParam" />
+    </fragment>
+    <fragment
+        android:id="@+id/maps_fragment"
+        android:name="com.github.palFinderTeam.palfinder.map.MapsFragment"
+        tools:layout="@layout/activity_maps"
+        android:label="activity_maps">
+        <argument
+            android:name="Context"
+            android:defaultValue="MARKER"
+            app:argType="com.github.palFinderTeam.palfinder.map.MapsFragment$Context" />
+        <argument
+            android:name="StartSelection"
+            android:defaultValue="@null"
+            app:argType="com.github.palFinderTeam.palfinder.utils.Location"
+            app:nullable="true" />
+        <argument
+            android:name="ShowNavBar"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="ShowParam"
+            android:defaultValue="ALL"
+            app:argType="com.github.palFinderTeam.palfinder.meetups.activities.ShowParam" />
+        <argument
+            android:name="StartOnUserLocation"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
+</navigation>

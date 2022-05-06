@@ -12,6 +12,13 @@ interface ChatService {
     fun getAllMessageFromChat(chatId: String): Flow<List<ChatMessage>>
 
     /**
+     * Get all messages from a group.
+     *
+     * @param chatId id of the group, the same as the meetup id.
+     */
+    suspend fun fetchMessages(chatId: String): List<ChatMessage>?
+
+    /**
      * Post a message to a group, if the group does not exist, it creates it.
      *
      * @param chatId id of the group, the same as the meetup id.

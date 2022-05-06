@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.icu.util.Calendar
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,7 +12,10 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
+import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.isBefore
 import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
@@ -20,12 +24,19 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+const val defaultTimeDelta = 1000 * 60 * 60
+
+/**
+ * ViewModel companion for the MeetupCreationFragment
+ * @param meetUpRepository meetUp database
+ * @param imageUploader service to allow the user to upload an image
+ * @param profileService profileUsers database
+ */
 @HiltViewModel
 class MeetUpCreationViewModel @Inject constructor(
     private val meetUpRepository: MeetUpRepository,
     private val imageUploader: ImageUploader,
-    private val profileService: ProfileService,
-    private val calendar: Calendar
+    private val profileService: ProfileService
 ) : ViewModel() {
     private var uuid: String? = null
 
@@ -39,11 +50,14 @@ class MeetUpCreationViewModel @Inject constructor(
     private val _name: MutableLiveData<String> = MutableLiveData()
     private val _description: MutableLiveData<String> = MutableLiveData()
     private val _icon: MutableLiveData<String?> = MutableLiveData()
+    private val _marker: MutableLiveData<Int?> = MutableLiveData()
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData()
     private val _participantsId: MutableLiveData<List<String>> = MutableLiveData(emptyList())
     private val _location: MutableLiveData<Location> = MutableLiveData()
     private val _iconUri: MutableLiveData<Uri> = MutableLiveData()
     private val _iconUrl: MutableLiveData<String> = MutableLiveData()
+    private val _criterionAge: MutableLiveData<Pair<Int, Int>> = MutableLiveData()
+    private val _criterionGender: MutableLiveData<CriterionGender> = MutableLiveData()
 
     private val _sendSuccess: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -54,11 +68,14 @@ class MeetUpCreationViewModel @Inject constructor(
     val name: LiveData<String> = _name
     val description: LiveData<String> = _description
     val icon: LiveData<String?> = _icon
+    val marker: LiveData<Int?> = _marker
     val sendSuccess: LiveData<Boolean> = _sendSuccess
     val tags: LiveData<Set<Category>> = _tags
     val participantsId: LiveData<List<String>> = _participantsId
     val iconUri: LiveData<Uri> = _iconUri
     val iconUrl: LiveData<String> = _iconUrl
+    val criterionAge: LiveData<Pair<Int, Int>> = _criterionAge
+    val criterionGender = _criterionGender
 
     val maxStartDate: Calendar
         get() {
@@ -84,7 +101,7 @@ class MeetUpCreationViewModel @Inject constructor(
 
 
     /**
-     * Fill every field with default value (in case of meetup creation)
+     * Fill every field with default values (in case of meetup creation)
      */
     fun fillWithDefaultValues() {
         _capacity.value = 1
@@ -93,7 +110,7 @@ class MeetUpCreationViewModel @Inject constructor(
         _description.value = ""
         _tags.value = emptySet()
         _participantsId.value = listOf(profileService.getLoggedInUserID()!!)
-        _location.value = Location(0.0, 0.0)
+        _criterionAge.value = Pair(13, 66)
     }
 
     fun setStartDate(date: Calendar) {
@@ -128,18 +145,35 @@ class MeetUpCreationViewModel @Inject constructor(
         _iconUri.value = iconUri
     }
 
+    fun setCriterionAge(interval: Pair<Int, Int>) {
+        _criterionAge.value = interval
+    }
+
+    fun setCriterionGender(gender: CriterionGender) {
+        _criterionGender.value = gender
+    }
+
+    fun setMarker(markerId: Int) {
+        _marker.value = markerId
+    }
+
     /**
      * Load asynchronously a meetUp and update liveData on success.
      *
      * @param meetUpId Id of the meetUp to fetch
      */
     fun loadMeetUp(meetUpId: String) {
+        if (meetUpId == uuid) {
+            return
+        }
+
         viewModelScope.launch {
             val meetUp = meetUpRepository.getMeetUpData(meetUpId)
             if (meetUp != null) {
                 uuid = meetUp.uuid
                 _name.postValue(meetUp.name)
-                _icon.postValue(meetUp.iconId)
+                _icon.postValue(meetUp.iconImage?.imgURL)
+                _marker.postValue(meetUp.markerId)
                 _description.postValue(meetUp.description)
                 _startDate.postValue(meetUp.startDate)
                 _endDate.postValue(meetUp.endDate)
@@ -148,12 +182,18 @@ class MeetUpCreationViewModel @Inject constructor(
                 _tags.postValue(meetUp.tags)
                 _participantsId.postValue(meetUp.participantsId)
                 _location.postValue(meetUp.location)
-                meetUp.iconId?.let {
+                meetUp.iconImage?.imgURL.let {
                     _iconUrl.postValue(it)
                 }
 
                 _canEditStartDate.postValue(!meetUp.isStarted(Calendar.getInstance()))
                 _canEditEndDate.postValue(!meetUp.isFinished(Calendar.getInstance()))
+                meetUp.criterionAge?.let {
+                    _criterionAge.postValue(it as Pair<Int, Int>?)
+                }
+                meetUp.criterionGender?.let {
+                    _criterionGender.postValue(it)
+                }
             } else {
                 _canEditStartDate.postValue(true)
                 _canEditEndDate.postValue(true)
@@ -167,20 +207,39 @@ class MeetUpCreationViewModel @Inject constructor(
      */
     fun sendMeetUp() {
         viewModelScope.launch {
-            val iconPath = iconUri.value?.let { uri ->
-                val id = imageUploader.uploadImage(uri)
-                // Also remove the previous icon from DB to avoid garbage.
-                iconUrl.value?.let { url ->
-                    imageUploader.removeImage(url)
+            iconUri.value?.let { uri ->
+                val newPath = imageUploader.uploadImage(uri)
+                if (newPath != null) {
+                    // Also remove the previous icon from DB to avoid garbage.
+                    iconUrl.value?.let { url ->
+                        if (url.isNotEmpty()) {
+                            try {
+                                imageUploader.removeImage(url)
+                            } catch (e: Exception) {
+                                Log.e("UserSettings", e.message.orEmpty())
+                            }
+                        }
+                    }
+                    // We choose the new image only if not null
+                    _icon.value = newPath
+                    newPath
+                } else {
+                    null
                 }
-                id
             }
+
+            val iconUrl = _icon.value
+            val imgInst = if (iconUrl == null) {
+                null
+            } else {
+                ImageInstance(iconUrl)
+            }
+
             val owner = profileService.getLoggedInUserID()!!
             var meetUp = MeetUp(
                 uuid.orEmpty(),
-                // TODO Get ID
                 owner,
-                iconPath,
+                imgInst,
                 name.value!!,
                 description.value!!,
                 startDate.value!!,
@@ -189,10 +248,12 @@ class MeetUpCreationViewModel @Inject constructor(
                 tags.value.orEmpty(),
                 hasMaxCapacity.value!!,
                 capacity.value!!,
-                participantsId.value!!
+                participantsId.value!!,
+                criterionAge.value,
+                criterionGender.value,
+                marker.value
             )
             if (uuid == null) {
-                // create new meetup
                 // create new meetup
                 // Make sure the meetup start at least now when it is created
                 if (startDate.value!!.isBefore(Calendar.getInstance())) {
@@ -219,13 +280,8 @@ class MeetUpCreationViewModel @Inject constructor(
         if (startDate.value == null || endDate.value == null) {
             return
         }
-        val startDateVal = startDate.value!!
         val endDateVal = endDate.value!!
-//        // Check that startDate is not too much in the future
-//        if (!startDateVal.isBefore(maxStartDate)) {
-//            _startDate.value = maxStartDate
-//        }
-//        // Check that endDate is not too much in the future
+        // Check that endDate is not too far in the future
         if (!endDateVal.isBefore(maxEndDate)) {
             _endDate.value = maxEndDate
         }
@@ -269,15 +325,7 @@ class MeetUpCreationViewModel @Inject constructor(
         }
     }
 
-    fun getLatLng(): LatLng? {
-        return if (location.value != null) {
-            LatLng(location.value!!.latitude, location.value!!.longitude)
-        } else {
-            null
-        }
-    }
-
     fun setLatLng(p0: LatLng) {
-        _location.value = Location(p0.longitude, p0.latitude)
+        _location.value = p0.toLocation()
     }
 }

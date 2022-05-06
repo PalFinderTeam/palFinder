@@ -5,13 +5,9 @@ import android.app.Activity
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -19,11 +15,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.USER_ID
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.ui.login.CREATE_ACCOUNT_PROFILE
+import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import com.github.palFinderTeam.palfinder.utils.askDate
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
@@ -44,6 +41,7 @@ class UserSettingsActivity : AppCompatActivity() {
     private lateinit var birthdayField: EditText
     private lateinit var imageField: ImageView
     private lateinit var removeBirthdayButton: ImageView
+    private lateinit var genderRadio: RadioGroup
 
     private var dateFormat = SimpleDateFormat()
 
@@ -85,6 +83,7 @@ class UserSettingsActivity : AppCompatActivity() {
         imageField = findViewById(R.id.settingsPfp)
         birthdayField = findViewById(R.id.SettingsBirthdayText)
         removeBirthdayButton = findViewById(R.id.SettingsDeleteBDay)
+        genderRadio = findViewById(R.id.radioSex)
     }
 
     /**
@@ -115,6 +114,13 @@ class UserSettingsActivity : AppCompatActivity() {
         imageField.setOnClickListener {
             pickProfileImage(this, onResultFromIntent::launch)
         }
+        genderRadio.setOnCheckedChangeListener { _, checkedId ->
+            when (findViewById<RadioButton>(checkedId).text) {
+                getString(R.string.radio_male) -> viewModel.setGender(Gender.MALE)
+                getString(R.string.radio_female) -> viewModel.setGender(Gender.FEMALE)
+                getString(R.string.radio_other) -> viewModel.setGender(Gender.OTHER)
+            }
+        }
         // NOTE: We don't have an observer for the text changing because
         // it is triggered directly with other functions such as
         // openDatePickerFragment() or deletePickedBirthday()
@@ -136,11 +142,18 @@ class UserSettingsActivity : AppCompatActivity() {
         }
         viewModel.pfp.observeOnce(this) {
             lifecycleScope.launch {
-                ImageInstance(it).loadImageInto(imageField)
+                ImageInstance(it).loadImageInto(imageField, applicationContext)
             }
         }
         viewModel.birthday.observeOnce(this) {
             updateBDayField(it)
+        }
+        viewModel.gender.observeOnce(this) {
+            when (it) {
+                Gender.MALE -> genderRadio.check(R.id.radioMale)
+                Gender.FEMALE -> genderRadio.check(R.id.radioFemale)
+                Gender.OTHER -> genderRadio.check(R.id.radioOther)
+            }
         }
     }
 
@@ -187,7 +200,7 @@ class UserSettingsActivity : AppCompatActivity() {
             // Go to main activity
             if (status == UserSettingsViewModel.CREATE_SUCCESS) {
                 displayToastMsg(getString(R.string.userSettingsSaveCreate))
-                val intent = Intent(this, MeetupListActivity::class.java)
+                val intent = Intent(this, MainNavActivity::class.java)
                 startActivity(intent)
             }
         }

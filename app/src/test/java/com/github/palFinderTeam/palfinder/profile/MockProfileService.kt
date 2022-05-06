@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +21,31 @@ class MockProfileService : ProfileService {
         return db.containsKey(userId)
     }
 
+    override suspend fun followUser(user: ProfileUser, targetId: String): Response<Unit> {
+        return try {
+            if (!user.canFollow(targetId)) {
+                return Response.Failure("Cannot follow this user.")
+            }
+            db[user.uuid] = user.copy(following = user.following.plus(targetId))
+            db[targetId] = db[targetId]!!.copy(followed = user.followed.plus(user.uuid))
+            Response.Success(Unit)
+        } catch (e: Exception) {
+            Response.Failure(e.message.orEmpty())
+        }
+    }
+
+    override suspend fun unfollowUser(user: ProfileUser, targetId: String): Response<Unit> {
+        return try {
+            if (!user.canUnFollow(targetId)) {
+                return Response.Failure("Cannot unfollow this user.")
+            }
+            db[user.uuid] = user.copy(following = user.following.minus(targetId))
+            db[targetId] = db[targetId]!!.copy(followed = user.followed.minus(user.uuid))
+            Response.Success(Unit)
+        } catch (e: Exception) {
+            Response.Failure(e.message.orEmpty())
+        }
+    }
     override suspend fun fetchUserProfile(userId: String): ProfileUser? {
         return db[userId]
     }
@@ -39,6 +65,7 @@ class MockProfileService : ProfileService {
                 ProfileUser.PICTURE_KEY -> oldVal.copy(pfp = ImageInstance(value as String))
                 ProfileUser.DESCRIPTION_KEY -> oldVal.copy(description = value as String)
                 ProfileUser.JOINED_MEETUPS_KEY -> oldVal.copy(joinedMeetUps = value as List<String>)
+                ProfileUser.GENDER -> oldVal.copy(gender = value as Gender)
                 else -> oldVal
             }
             return userId

@@ -26,6 +26,16 @@
     <string name="search_no_location">Please provide a location</string>
     <string name="search_location_not_found">Location not found</string>
 
+    <!-- Strings used for no account user-->
+    <string name="skip_connection"> Skip connection </string>
+    <string name="cancel"> Cancel</string>
+    <string name="continu"> Continue</string>
+    <string name="login"> Login</string>
+    <string name="no_account_warning">Without connecting with an account, you won\'t be able to join meetup.</string>
+    <string name="no_account_create"> You need an account to create a meetup.</string>
+    <string name="no_account_groups"> You need an account to join groups.</string>
+    <string name="no_account_join"> You need an accout to join a meetUp.</string>
+    <string name="no_account_profile"> You need an account to have a profile.</string>
 
     <!-- Strings used for meetup creation -->
     <string name="meetup_creation_meetup_name">Event Name</string>
@@ -43,22 +53,29 @@
     <string name="meetup_creation_meetup_tags">Tags</string>
     <string name="meetup_creation_meetup_no_tags">No Tags Selected</string>
     <string name="meetup_creation_meetup_tags_bt">Add Tags</string>
-    <string name="meetup_creation_meetup_entries">Limit Entries</string>
+    <string name="meetup_creation_meetup_entries">participants</string>
     <string name="meetup_creation_meetup_done">Done</string>
-    <string name="meetup_creation_meetup_select_location">Select Location</string>
-    <string name="meetup_creation_meetup_location_not_selected">Location Not Selected</string>
-
+    <string name="meetup_creation_meetup_select_location">Pick Location</string>
+    <string name="meetup_creation_meetup_location_not_selected">Location not selected</string>
+    <string name="criteria">criteria</string>
     <string name="list_sort_by_alphabetical_order">Sort by Alph.</string>
     <string name="list_sort_by_capacity">Sort by Cap.</string>
     <string name="list_sort_by_location">Sort by Dist.</string>
     <string name="list_sort_menu">Sort</string>
-    <string name="meetup_creation_missing_name_desc">Please add an Event Name and an Event Description</string>
+    <string name="meetup_creation_missing_name_desc">Please add an Event Name, an Event Description and a location</string>
     <string name="meetup_creation_missing_name_desc_title">Missing Data</string>
+
+    <!-- Strings used for meetupList -->
+    <string name="show_all">all meetups</string>
+    <string name="only_participating">pal taking part</string>
+    <string name="only_creators">created by pal</string>
+    <string name="only_joined">joined</string>
+
 
 
     <!-- Strings used for meetup view -->
-    <string name="meetup_view_meetup_start_at">Start At</string>
-    <string name="meetup_view_meetup_end_at">End At</string>
+    <string name="meetup_view_meetup_start_at">Starts</string>
+    <string name="meetup_view_meetup_end_at">Ends</string>
     <string name="meetup_view_creator">Created by @%1$s</string>
     <string name="meetup_view_join">Join</string>
     <string name="meetup_view_leave">Leave</string>
@@ -72,6 +89,8 @@
     <string name="placeholder_name">someone</string>
     <string name="placeholder_username">\@username</string>
     <string name="placeholder_date">yyyy/mm/dd</string>
+    <string name="placeholder_following">following dddd</string>
+    <string name="placeholder_follower">dddd followers</string>
     <string name="desc_name">— About me</string>
     <string name="placeholder_desc">Hello, I am a placeholder description. I am long enough so that I break onto another line, hopefully, but if not then I will add some extra text.</string>
     <string name="no_desc">No bio provided...</string>
@@ -85,8 +104,26 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="limit_people">limit people</string>
+    <string name="limit_people">Limit participation to</string>
     <string name="DB_error_msg">Cannot contact database</string>
+
+    <string name="criterions_title">Meetup Criteria</string>
+    <string name="criterions_age_title">Select an age interval</string>
+    <string name="criterions_age_desc">If you wish to proceed with this setting, only people who entered their birthdays will be allowed to join the event</string>
+    <string name="criterions_age_min">13</string>
+    <string name="criterions_age_max">66</string>
+    <string name="criterions_age_max_plus">66+</string>
+    <string name="criterion_select">Select criteria</string>
+
+    <string name="follow_button">follow</string>
+    <string name="unfollow_button">unfollow</string>
+
+    <string name="criterions_gender_title">Select gender</string>
+    <string name="radio_male">Male</string>
+    <string name="radio_female">Female</string>
+    <string name="radio_male_and_female">Any</string>
+    <string name="radio_other">Other</string>
+    <string name="criterion_confirm">Confirm criteria</string>
 
     <string name="pretty_location_too_small">Here</string>
     <string name="pretty_location_m">%1$s m</string>
@@ -113,6 +150,7 @@
     <string name="userSettingsBirthday">Birthday (Optional)</string>
     <string name="working_out_tag">working out</string>
     <string name="title_activity_settings">SettingsActivity</string>
+
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
@@ -142,5 +180,15 @@
 
     <string name="testNotifTitle">title</string>
     <string name="testNotifContent">content</string>
+    <string name="map">map</string>
+    <string name="list">list</string>
+    <string name="show_profiles">show profiles</string>
+
     <string name="theme">theme</string>
+
+    <string name="hint_username">username</string>
+    <string name="hint_password">password</string>
+    <string name="select_icon">Select Icon</string>
+    <string name="select_marker">Select Marker</string>
+
 </resources>

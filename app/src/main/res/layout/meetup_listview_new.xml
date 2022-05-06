@@ -70,8 +70,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/settingsPfpHint"
                 app:layout_constraintTop_toTopOf="parent"
-                app:shapeAppearanceOverlay="@style/meetupRoundEdge"
-                app:srcCompat="@drawable/demo_pfp" />
+                app:shapeAppearanceOverlay="@style/meetupRoundEdge" />
 
         </LinearLayout>
 
@@ -92,7 +91,8 @@
                 android:fontFamily="@font/fredoka_bold"
                 android:gravity="bottom"
                 android:text="50.5 km"
-                android:textSize="18dp"></TextView>
+                android:textSize="18dp"
+                android:visibility="gone"></TextView>
 
             <TextView
                 android:id="@+id/meetup_participant"
@@ -112,7 +112,7 @@
                 android:fontFamily="@font/fredoka_bold"
                 android:gravity="bottom|end"
                 android:text="in 5 days"
-                android:textColor="@color/primaryDefault"
+                android:textColor="@color/theme_primary_default"
                 android:textSize="18dp"></TextView>
         </LinearLayout>
 

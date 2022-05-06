@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder.profile
 
+import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.utils.Response
 import kotlinx.coroutines.flow.Flow
 
@@ -74,4 +75,20 @@ interface ProfileService {
      * @return boolean
      */
     suspend fun doesUserIDExist(userId: String): Boolean
+
+    /**
+     * Try to follow a user
+     *
+     * @param user profile of user that ought to follow
+     * @param targetId Id of user to follow
+     */
+    suspend fun followUser(user: ProfileUser, targetId: String): Response<Unit>
+
+    /**
+     * Try to unfollow a user
+     *
+     * @param user profile of user that follows
+     * @param targetId Id of user to unfollow
+     */
+    suspend fun unfollowUser(user: ProfileUser, targetId: String): Response<Unit>
 }

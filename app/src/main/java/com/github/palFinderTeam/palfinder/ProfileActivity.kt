@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
@@ -8,7 +9,13 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
+import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.Response
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -21,10 +28,15 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class ProfileActivity : AppCompatActivity() {
 
+    private lateinit var meetupList: RecyclerView
+    private lateinit var adapter: MeetupListRootAdapter
+
     private val viewModel: ProfileViewModel by viewModels()
     companion object{
         const val EMPTY_FIELD = ""
         const val MAX_SHORT_BIO_DISPLAY_LINES = 2
+        const val FOLLOWERS: String = "%d followers"
+        const val FOLLOWING: String = "following %d"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +46,27 @@ class ProfileActivity : AppCompatActivity() {
         if (intent.hasExtra(USER_ID)) {
             val userId = intent.getStringExtra(USER_ID)!!
             viewModel.fetchProfile(userId)
+
+            // Fetch last Meetups list through adapter
+            meetupList = this.findViewById(R.id.meetup_list_recycler)
+            meetupList.layoutManager = LinearLayoutManager(this)
+
+            viewModel.fetchUserMeetups(userId)
+
+            // Bind the adapter to the RecyclerView
+            viewModel.meetupDataSet.observe(this) { dataResp ->
+                if (dataResp is Response.Success) {
+                    val meetups = dataResp.data
+                    adapter = MeetupListRootAdapter(
+                        meetups,
+                        meetups.toMutableList(),
+                        context = applicationContext
+                    ) { onListItemClick(it) }
+                    meetupList.adapter = adapter
+                }
+            }
         }
+
         viewModel.profile.observe(this) {
             when(it) {
                 is Response.Success -> injectUserInfo(it.data)
@@ -54,9 +86,11 @@ class ProfileActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.userProfileName).text = user.fullName()
         findViewById<TextView>(R.id.userProfileUsername).text = user.atUsername()
         findViewById<TextView>(R.id.userProfileJoinDate).apply { text = user.prettyJoinTime() }
+        findViewById<TextView>(R.id.followers).text = String.format(FOLLOWERS, user.followed.size)
+        findViewById<TextView>(R.id.following).text = String.format(FOLLOWING, user.following.size)
         injectBio(user.description)
         lifecycleScope.launch {
-            user.pfp.loadImageInto(findViewById(R.id.userProfileImage))
+            user.pfp.loadImageInto(findViewById(R.id.userProfileImage), applicationContext)
         }
     }
 
@@ -90,6 +124,20 @@ class ProfileActivity : AppCompatActivity() {
         overflow.visibility = GONE
         val desc = findViewById<TextView>(R.id.userProfileDescription)
         desc.maxLines = Integer.MAX_VALUE
+    }
+
+    /**
+     * When clicking on a meetup list element
+     */
+    private fun onListItemClick(position: Int) {
+        val intent = Intent(this, MeetUpView::class.java)
+            .apply {
+                putExtra(
+                    MEETUP_SHOWN,
+                    (viewModel.meetupDataSet.value as Response.Success).data[position].uuid
+                )
+            }
+        startActivity(intent)
     }
 
 }
