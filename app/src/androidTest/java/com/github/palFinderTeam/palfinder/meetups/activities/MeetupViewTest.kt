@@ -28,11 +28,15 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
+import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.espresso.util.HumanReadables
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement
+import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
+import com.github.palFinderTeam.palfinder.USER_ID
 import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
@@ -41,6 +45,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileListFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
+import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
@@ -623,6 +628,26 @@ class MeetupViewTest {
         // Leave
         onView(withId(R.id.bt_JoinMeetup)).perform(betterScrollTo()).perform(click())
         assertThat(meetUpRepository.getMeetUpData(mid)!!.isParticipating(uid), `is`(false))
+    }
+
+    @Test
+    fun clickOnCreator() = runTest {
+        val mid = meetUpRepository.createMeetUp(meetup)
+        val uid = profileRepository.createProfile(user)
+
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
+
+        Intents.init()
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+
+        ActivityScenario.launch<MeetUpView>(intent)
+        onView(withId(R.id.tv_ViewEventCreator)).perform(betterScrollTo()).perform(click())
+
+        Intents.intended(allOf(IntentMatchers.hasComponent(ProfileActivity::class.java.name), hasExtra(USER_ID, user.uuid)))
+        Intents.release()
     }
 
     @Test

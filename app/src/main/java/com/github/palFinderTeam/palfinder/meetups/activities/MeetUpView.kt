@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -44,7 +45,7 @@ class MeetUpView : AppCompatActivity() {
 
         val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
         viewModel.loadMeetUp(meetupId)
-        val button = findViewById<Button>(R.id.show_profile_list_button)
+        val button = findViewById<ImageView>(R.id.show_profile_list_button)
         button.setOnClickListener { showProfileList() }
 
         viewModel.meetUp.observe(this) { meetUp ->
