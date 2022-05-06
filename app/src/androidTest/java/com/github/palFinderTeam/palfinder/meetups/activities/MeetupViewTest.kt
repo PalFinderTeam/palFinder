@@ -245,8 +245,6 @@ class MeetupViewTest {
             Intents.release()
 
             onView(withId(R.id.tv_ViewEventName)).check(matches(withText("dummy1Manger des patates")))
-
-            Intents.release()
         }
     }
 
@@ -340,8 +338,6 @@ class MeetupViewTest {
 
             onView(withId(R.id.tv_ViewEventName)).check(matches(withText("Meetup name")))
             onView(withId(R.id.tv_ViewEventDescritpion)).check(matches(withText("Meetup description")))
-
-            Intents.release()
         }
     }
 
