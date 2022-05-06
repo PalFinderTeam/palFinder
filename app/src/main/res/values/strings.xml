@@ -57,13 +57,20 @@
     <string name="meetup_creation_meetup_done">Done</string>
     <string name="meetup_creation_meetup_select_location">Pick Location</string>
     <string name="meetup_creation_meetup_location_not_selected">Location not selected</string>
-
+    <string name="criteria">criteria</string>
     <string name="list_sort_by_alphabetical_order">Sort by Alph.</string>
     <string name="list_sort_by_capacity">Sort by Cap.</string>
     <string name="list_sort_by_location">Sort by Dist.</string>
     <string name="list_sort_menu">Sort</string>
     <string name="meetup_creation_missing_name_desc">Please add an Event Name, an Event Description and a location</string>
     <string name="meetup_creation_missing_name_desc_title">Missing Data</string>
+
+    <!-- Strings used for meetupList -->
+    <string name="show_all">all meetups</string>
+    <string name="only_participating">pal taking part</string>
+    <string name="only_creators">created by pal</string>
+    <string name="only_joined">joined</string>
+
 
 
     <!-- Strings used for meetup view -->

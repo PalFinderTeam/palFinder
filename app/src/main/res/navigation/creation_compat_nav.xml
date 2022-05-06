@@ -53,9 +53,9 @@
             android:defaultValue="true"
             app:argType="boolean" />
         <argument
-            android:name="ShowOnlyJoined"
-            android:defaultValue="false"
-            app:argType="boolean" />
+            android:name="ShowParam"
+            android:defaultValue="ALL"
+            app:argType="com.github.palFinderTeam.palfinder.meetups.activities.ShowParam" />
         <argument
             android:name="StartOnUserLocation"
             android:defaultValue="false"

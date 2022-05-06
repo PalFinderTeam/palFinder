@@ -17,7 +17,6 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpViewViewModel
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import kotlinx.coroutines.launch
 
-private const val ARG_MEETUP = "meetup"
 
 class MeetupViewFragment : Fragment() {
     private val model: MeetUpViewViewModel by activityViewModels()

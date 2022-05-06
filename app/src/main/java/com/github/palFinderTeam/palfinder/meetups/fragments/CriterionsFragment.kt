@@ -10,10 +10,15 @@ import androidx.fragment.app.DialogFragment
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreationViewModel
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
+
 import com.google.android.material.slider.RangeSlider
 
-
+/**
+ * fragment that allows user to select the criteria for a meetup
+ * @param viewModel viewModel to from which we load the current criteria and in which we store the select ones
+ */
 class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragment() {
+
 
     private lateinit var radiusSlider: RangeSlider
     private lateinit var textMin: TextView
@@ -21,6 +26,9 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
 
     companion object{
         const val MIN_AGE_DIST = 1.0f
+        //minimum and maximum ages available in the rangeSeekBar
+        const val MIN_AGE = 13
+        const val MAX_AGE = 66
     }
 
     override fun onCreateView(
@@ -31,7 +39,7 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
         // Inflate layout with recycler view
         val v: View = inflater.inflate(R.layout.fragment_criterions, container, false)
 
-        // Setup the new range seek bar
+
         textMin = v.findViewById<TextView>(R.id.minValueAge)
         textMax = v.findViewById<TextView>(R.id.maxValueAge)
 
@@ -75,6 +83,7 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
                 getString(R.string.radio_male) -> viewModel.setCriterionGender(CriterionGender.MALE)
                 getString(R.string.radio_male_and_female) -> viewModel.setCriterionGender(CriterionGender.ALL)
             }
+
 
             // 66+ means anything above
             if (radiusSlider.values[1] == radiusSlider.valueTo) {
