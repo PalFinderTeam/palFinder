@@ -158,10 +158,8 @@ class MainNavActivity : AppCompatActivity() {
         if (result.contents == null) {
             val originalIntent = result.originalIntent
             if (originalIntent == null) {
-                Log.d(this.toString(), getString(R.string.cancelled_scan))
                 Toast.makeText(applicationContext, getString(R.string.cancelled_scan), Toast.LENGTH_LONG).show()
             } else if (originalIntent.hasExtra(Intents.Scan.MISSING_CAMERA_PERMISSION)) {
-                Log.d(this.toString(), getString(R.string.no_camera_permission_message))
                 Toast.makeText(
                     applicationContext,
                     getString(R.string.no_camera_permission_message),
@@ -169,7 +167,6 @@ class MainNavActivity : AppCompatActivity() {
                 ).show()
             }
         } else {
-            Log.d(this.toString(), getString(R.string.scanned))
             Toast.makeText(
                 applicationContext,
                 getString(R.string.scanned)+ ": " + result.contents,
@@ -199,37 +196,34 @@ class MainNavActivity : AppCompatActivity() {
                 logoutIntent.flags =
                     Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(logoutIntent)
-                return true
+
             }
             R.id.miSettings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
-                return true
             }
             R.id.miUserSettings -> {
-                return if (profileService.getLoggedInUserID() == null) {
+                if (profileService.getLoggedInUserID() == null) {
                     createPopUp(
                         this,
                         { startActivity(Intent(this, LoginActivity::class.java)) },
                         textId = R.string.no_account_profile,
                         continueButtonTextId = R.string.login
                     )
-                    true
                 } else {
                     //super.onOptionsItemSelected(item)
                     startActivity(Intent(this, UserSettingsActivity::class.java))
-                    return true
                 }
             }
             R.id.miScanQR -> {
                 val options = ScanOptions()
                 options.setOrientationLocked(false);
                 barcodeLauncher!!.launch(options)
-                return true
             }
             else -> {
                 return super.onOptionsItemSelected(item)
             }
         }
+        return true
     }
 
     private fun navItemToPosition(itemId: Int): Int {
