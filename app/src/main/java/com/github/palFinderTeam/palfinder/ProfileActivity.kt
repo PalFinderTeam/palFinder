@@ -137,7 +137,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     /**
-     * Clicking on Generate QR will show QR code
+     * Clicking on QR Code icon will show QR code
      */
     fun showQR(view: View?) {
         //Initiate the barcode encoder
@@ -145,8 +145,12 @@ class ProfileActivity : AppCompatActivity() {
         //Encode text in editText into QRCode image into the specified size using barcodeEncoder
         val bitmap = barcodeEncoder.encodeBitmap(intent.getStringExtra(USER_ID), BarcodeFormat.QR_CODE, 512, 512)
 
+        //Set up the popup image
         val imagePopup = ImagePopup(this)
+        //Convert the bitmap(QR Code) into a drawable
         val d: Drawable = BitmapDrawable(resources, bitmap)
+
+        //Displays the popup image
         imagePopup.initiatePopup(d);
         imagePopup.viewPopup()
 
