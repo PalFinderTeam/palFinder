@@ -67,6 +67,7 @@ import javax.inject.Inject
 class MeetupViewTest {
 
     private lateinit var meetup: MeetUp
+    private lateinit var meetup2: MeetUp
     private lateinit var newMeetup: MeetUp
     private lateinit var user: ProfileUser
     private lateinit var user2: ProfileUser
@@ -149,6 +150,23 @@ class MeetupViewTest {
             null
         )
 
+        meetup2 = MeetUp(
+            "dummy",
+            "user",
+            null,
+            eventName,
+            eventDescription,
+            date1,
+            date2,
+            Location(0.0, 0.0),
+            emptySet(),
+            true,
+            2,
+            mutableListOf("user"),
+            Pair(13, Int.MAX_VALUE),
+            null
+        )
+
         UiThreadStatement.runOnUiThread {
             navController = TestNavHostController(getApplicationContext())
             navController.setViewModelStore(ViewModelStore())
@@ -227,6 +245,8 @@ class MeetupViewTest {
             Intents.release()
 
             onView(withId(R.id.tv_ViewEventName)).check(matches(withText("dummy1Manger des patates")))
+
+            Intents.release()
         }
     }
 
@@ -320,6 +340,8 @@ class MeetupViewTest {
 
             onView(withId(R.id.tv_ViewEventName)).check(matches(withText("Meetup name")))
             onView(withId(R.id.tv_ViewEventDescritpion)).check(matches(withText("Meetup description")))
+
+            Intents.release()
         }
     }
 
@@ -559,6 +581,18 @@ class MeetupViewTest {
 
         ActivityScenario.launch<MeetUpView>(intent)
         onView(withId(R.id.bt_ChatMeetup)).check(matches(isNotClickable()))
+    }
+
+    @Test
+    fun ageAboveMaxReturnsPlusText() = runTest {
+        val mid = meetUpRepository.createMeetUp(meetup2)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+
+        ActivityScenario.launch<MeetUpView>(intent)
+        onView(withId(R.id.tv_ViewAge)).check(matches(withText("13-66+ years")))
     }
 
     @Test

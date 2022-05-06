@@ -139,18 +139,8 @@ class MeetupViewFragment : Fragment() {
      * Onclick open profile user safely
      */
     private fun openProfile() {
-        if (viewModel.meetUp != null) {
-            openProfileExt(viewModel.meetUp.value!!.creatorId)
-        } else {
-            viewModel.meetUp.observeOnce(this) {
-                openProfileExt(it.creatorId)
-            }
-        }
-    }
-
-    private fun openProfileExt(userId: String) {
         val intent = Intent(requireContext(), ProfileActivity::class.java).apply {
-            putExtra(USER_ID, userId)
+            putExtra(USER_ID, viewModel.meetUp.value!!.creatorId)
         }
         startActivity(intent)
     }
