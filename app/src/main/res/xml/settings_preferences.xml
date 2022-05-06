@@ -14,16 +14,34 @@
 
     <Preference
         app:iconSpaceReserved="false"
-        app:key="feedback"
         app:summary="Report technical issues or suggest new features"
-        app:title="Send feedback" />
-
-    <EditTextPreference
+        app:title="Send feedback">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="mailto:palfinder@gmail.com">
+            <extra
+                android:name="android.intent.extra.SUBJECT"
+                android:value="Feedback"/>
+            <extra
+                android:name="android.intent.extra.TEXT"
+                android:value="Text of Feedback"/>
+        </intent>
+    </Preference>
+    <Preference
         app:iconSpaceReserved="false"
-        app:key="feedback"
-        app:summary="Report technical issues or suggest new features"
-        app:title="Send feedback"
-        />
-
+        app:summary="Check the website for more information"
+        app:title="Info">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://procatinator.com">
+            <extra
+                android:name="android.intent.extra.SUBJECT"
+                android:value="Feedback"/>
+            <extra
+                android:name="android.intent.extra.TEXT"
+                android:value="Text of Feedback"/>
+        </intent>
+    </Preference>
 
 </PreferenceScreen>
+
