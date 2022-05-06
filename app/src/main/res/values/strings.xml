@@ -119,6 +119,7 @@
     <string name="radio_male">Male</string>
     <string name="radio_female">Female</string>
     <string name="radio_male_and_female">Male and Female</string>
+    <string name="radio_other">Other</string>
 
     <string name="pretty_location_too_small">Here</string>
     <string name="pretty_location_m">%1$s m</string>
@@ -145,6 +146,7 @@
     <string name="userSettingsBirthday">Birthday (Optional)</string>
     <string name="working_out_tag">working out</string>
     <string name="title_activity_settings">SettingsActivity</string>
+
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
