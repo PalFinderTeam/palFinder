@@ -45,7 +45,7 @@ class ProfileAdapter(
 
     private fun follow(position: Int, holder: ViewHolder) {
         onFollow(currentDataSet[position].uuid)
-        holder.followButton.text = holder.view.resources.getString(R.string.unfollow_button)
+        holder.followButton.text = holder.view.resources.getString(R.string.unfollow)
     }
 
     private fun canFollow(position: Int): Boolean {
@@ -54,7 +54,7 @@ class ProfileAdapter(
 
     private fun unfollow(position: Int, holder: ViewHolder) {
         onUnFollow(currentDataSet[position].uuid)
-        holder.followButton.text = holder.view.resources.getString(R.string.follow_button)
+        holder.followButton.text = holder.view.resources.getString(R.string.follow)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfileAdapter.ViewHolder {
@@ -78,14 +78,14 @@ class ProfileAdapter(
                 holder.followButton.visibility = INVISIBLE
             }
             canFollow(position) -> {
-                holder.followButton.text = holder.view.resources.getString(R.string.follow_button)
+                holder.followButton.text = holder.view.resources.getString(R.string.follow)
             }
             else -> {
-                holder.followButton.text = holder.view.resources.getString(R.string.unfollow_button)
+                holder.followButton.text = holder.view.resources.getString(R.string.unfollow)
             }
         }
         holder.followButton.setOnClickListener {
-            if (holder.followButton.text.equals(holder.view.resources.getString(R.string.follow_button))) {
+            if (holder.followButton.text.equals(holder.view.resources.getString(R.string.follow))) {
                 follow(position, holder)
             } else {
                 unfollow(position, holder)

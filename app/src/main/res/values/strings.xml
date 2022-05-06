@@ -36,6 +36,7 @@
     <string name="no_account_groups"> You need an account to join groups.</string>
     <string name="no_account_join"> You need an accout to join a meetUp.</string>
     <string name="no_account_profile"> You need an account to have a profile.</string>
+    <string name="qr_scan_follow_account"> Do you want to follow this account?</string>
 
     <!-- Strings used for meetup creation -->
     <string name="meetup_creation_meetup_name">Event Name</string>
@@ -115,8 +116,8 @@
     <string name="criterions_age_max_plus">66+</string>
     <string name="criterion_select">Select criteria</string>
 
-    <string name="follow_button">follow</string>
-    <string name="unfollow_button">unfollow</string>
+    <string name="follow">follow</string>
+    <string name="unfollow">unfollow</string>
 
     <string name="criterions_gender_title">Select gender</string>
     <string name="radio_male">Male</string>

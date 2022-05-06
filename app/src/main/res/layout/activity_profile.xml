@@ -89,7 +89,7 @@
                         android:layout_marginStart="0dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/fredoka_bold"
-                        android:text="@string/follow_button"
+                        android:text="@string/follow"
                         android:textSize="14sp" />
 
                     <ImageView
