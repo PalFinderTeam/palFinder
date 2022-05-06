@@ -27,5 +27,3 @@ class MeetUpEditCompat : AppCompatActivity() {
         )
     }
 }
-
-const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"

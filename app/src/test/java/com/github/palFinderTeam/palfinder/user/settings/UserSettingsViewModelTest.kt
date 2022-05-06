@@ -9,6 +9,7 @@ import com.github.palFinderTeam.palfinder.user.settings.UserSettingsViewModel.Co
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsViewModel.Companion.FIELD_USERNAME
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsViewModel.Companion.MSG_FIELD_TOO_LONG
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsViewModel.Companion.MSG_FIELD_TOO_SHORT
+import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.MockTimeService
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.images.MockImageUploader
@@ -42,6 +43,7 @@ class UserSettingsViewModelTest {
     private lateinit var joinDate: Calendar
     private lateinit var birthday: Calendar
     private lateinit var imgInst: ImageInstance
+    private var genderUser: Gender = Gender.MALE
 
     private lateinit var user: ProfileUser
 
@@ -64,7 +66,8 @@ class UserSettingsViewModelTest {
             joinDate,
             imgInst,
             "The cato is backo...",
-            birthday
+            birthday,
+            gender = genderUser
         )
 
         // Create viewModel with mock profile service
@@ -88,6 +91,7 @@ class UserSettingsViewModelTest {
         assertThat(viewModel.userBio.value, `is`(""))
         assertThat(viewModel.username.value, `is`(""))
         assertThat(viewModel.name.value, `is`(""))
+        assertThat(viewModel.gender.value, `is`(Gender.OTHER))
     }
 
     @Test
@@ -97,6 +101,7 @@ class UserSettingsViewModelTest {
         assertThat(viewModel.username.value, `is`(user.username))
         assertThat(viewModel.name.value, `is`(user.name))
         assertThat(viewModel.birthday.value!!.time.toString(), `is`(user.birthday!!.time.toString()))
+        assertThat(viewModel.gender.value, `is`(genderUser))
     }
 
     @Test
@@ -193,6 +198,23 @@ class UserSettingsViewModelTest {
                 user.name.length
             )
         ))
+    }
+
+    @Test
+    fun `check setting gender is correct`() {
+        user = ProfileUser(
+            "1",
+            "cattalio_le_callico",
+            "tacooooooooooooooooooooooooooooooooooooooooooo", // Fails too long
+            "maco",
+            joinDate,
+            ImageInstance(""),
+            "The cato is backo...",
+            birthday,
+            gender = Gender.MALE
+        )
+        viewModel.setGender(Gender.FEMALE) // feeling female today uwu
+        assertThat(viewModel.gender.value, `is`(Gender.FEMALE))
     }
 
     @Test

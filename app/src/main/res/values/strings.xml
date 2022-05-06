@@ -57,13 +57,20 @@
     <string name="meetup_creation_meetup_done">Done</string>
     <string name="meetup_creation_meetup_select_location">Pick Location</string>
     <string name="meetup_creation_meetup_location_not_selected">Location not selected</string>
-
+    <string name="criteria">criteria</string>
     <string name="list_sort_by_alphabetical_order">Sort by Alph.</string>
     <string name="list_sort_by_capacity">Sort by Cap.</string>
     <string name="list_sort_by_location">Sort by Dist.</string>
     <string name="list_sort_menu">Sort</string>
-    <string name="meetup_creation_missing_name_desc">Please add an Event Name and an Event Description</string>
+    <string name="meetup_creation_missing_name_desc">Please add an Event Name, an Event Description and a location</string>
     <string name="meetup_creation_missing_name_desc_title">Missing Data</string>
+
+    <!-- Strings used for meetupList -->
+    <string name="show_all">all meetups</string>
+    <string name="only_participating">pal taking part</string>
+    <string name="only_creators">created by pal</string>
+    <string name="only_joined">joined</string>
+
 
 
     <!-- Strings used for meetup view -->
@@ -100,18 +107,23 @@
     <string name="limit_people">Limit participation to</string>
     <string name="DB_error_msg">Cannot contact database</string>
 
-    <string name="criterions_age_title">age selection</string>
+    <string name="criterions_title">Meetup Criteria</string>
+    <string name="criterions_age_title">Select an age interval</string>
+    <string name="criterions_age_desc">If you wish to proceed with this setting, only people who entered their birthdays will be allowed to join the event</string>
     <string name="criterions_age_min">13</string>
-    <string name="criterions_age_max">66+</string>
+    <string name="criterions_age_max">66</string>
+    <string name="criterions_age_max_plus">66+</string>
     <string name="criterion_select">Select criteria</string>
 
     <string name="follow_button">follow</string>
     <string name="unfollow_button">unfollow</string>
 
-    <string name="criterions_gender_title">gender selection</string>
+    <string name="criterions_gender_title">Select gender</string>
     <string name="radio_male">Male</string>
     <string name="radio_female">Female</string>
-    <string name="radio_male_and_female">Male and Female</string>
+    <string name="radio_male_and_female">Any</string>
+    <string name="radio_other">Other</string>
+    <string name="criterion_confirm">Confirm criteria</string>
 
     <string name="pretty_location_too_small">Here</string>
     <string name="pretty_location_m">%1$s m</string>
@@ -138,6 +150,7 @@
     <string name="userSettingsBirthday">Birthday (Optional)</string>
     <string name="working_out_tag">working out</string>
     <string name="title_activity_settings">SettingsActivity</string>
+
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

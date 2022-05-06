@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.ProfileViewModel
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.USER_ID
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,10 +32,10 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
         //inflate layout with recycler view
         val v: View = inflater.inflate(R.layout.fragment_profile_list, container, false)
         recyclerView = v.findViewById(R.id.profile_list_recycler)
-        viewModel.fetchUsersProfile(usersId)
         viewModel.profilesList.observe(this) {
             changeAdapter(it, v)
         }
+        viewModel.fetchUsersProfile(usersId)
         return v
     }
 
@@ -44,7 +43,10 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
         super.onStart()
 
         // Force the dialog to take whole width
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        );
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
@@ -54,11 +56,17 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
         startActivity(intent)
     }
 
-    private fun changeAdapter(list : List<ProfileUser>, v: View) {
+    private fun changeAdapter(list: List<ProfileUser>, v: View) {
         viewModel.fetchProfile(viewModel.profileService.getLoggedInUserID()!!)
         viewModel.profile.observe(this) {
             if (it is Response.Success) {
-                val adapter = ProfileAdapter(list, it.data, viewModel.profileService, requireContext()) { onListItemClick(it) }
+                val adapter = ProfileAdapter(
+                    list,
+                    it.data,
+                    requireContext(),
+                    ::onListItemClick,
+                    { id -> viewModel.follow(it.data.uuid, id) },
+                    { id -> viewModel.unFollow(it.data.uuid, id) })
                 recyclerView.layoutManager = LinearLayoutManager(context)
                 recyclerView.adapter = adapter
                 val searchField = v.findViewById<SearchView>(R.id.profile_list_search)

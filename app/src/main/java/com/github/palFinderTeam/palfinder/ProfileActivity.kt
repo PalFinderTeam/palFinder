@@ -18,6 +18,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.integration.android.IntentIntegrator
@@ -58,7 +59,7 @@ class ProfileActivity : AppCompatActivity() {
             meetupList = this.findViewById(R.id.meetup_list_recycler)
             meetupList.layoutManager = LinearLayoutManager(this)
 
-            viewModel.createAdapter(userId)
+            viewModel.fetchUserMeetups(userId)
 
             // Bind the adapter to the RecyclerView
             viewModel.meetupDataSet.observe(this) { dataResp ->
@@ -67,6 +68,7 @@ class ProfileActivity : AppCompatActivity() {
                     adapter = MeetupListRootAdapter(
                         meetups,
                         meetups.toMutableList(),
+                        context = applicationContext
                     ) { onListItemClick(it) }
                     meetupList.adapter = adapter
                 }
