@@ -94,6 +94,8 @@ dependencies {
     implementation 'com.github.kittinunf.fuel:fuel-android:2.1.0'
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
+    implementation 'com.journeyapps:zxing-android-embedded:3.6.0'
+
     implementation 'com.github.dhaval2404:imagepicker:2.1'
 
     implementation 'org.florescu.android.rangeseekbar:rangeseekbar-library:0.3.0'
@@ -124,6 +126,8 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+
+    implementation 'com.github.chathuralakmal:AndroidImagePopup:1.2.2'
 
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
 
