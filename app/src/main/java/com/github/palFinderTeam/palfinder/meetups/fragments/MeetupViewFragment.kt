@@ -16,10 +16,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.USER_ID
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpViewViewModel
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import kotlinx.coroutines.launch
 
