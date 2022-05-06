@@ -158,21 +158,21 @@ class MainNavActivity : AppCompatActivity() {
         if (result.contents == null) {
             val originalIntent = result.originalIntent
             if (originalIntent == null) {
-                Log.d("MainActivity", "Cancelled scan")
-                Toast.makeText(applicationContext, "Cancelled", Toast.LENGTH_LONG).show()
+                Log.d(this.toString(), getString(R.string.cancelled_scan))
+                Toast.makeText(applicationContext, getString(R.string.cancelled_scan), Toast.LENGTH_LONG).show()
             } else if (originalIntent.hasExtra(Intents.Scan.MISSING_CAMERA_PERMISSION)) {
-                Log.d("MainActivity", "Cancelled scan due to missing camera permission")
+                Log.d(this.toString(), getString(R.string.no_camera_permission_message))
                 Toast.makeText(
                     applicationContext,
-                    "Cancelled due to missing camera permission",
+                    getString(R.string.no_camera_permission_message),
                     Toast.LENGTH_LONG
                 ).show()
             }
         } else {
-            Log.d("MainActivity", "Scanned")
+            Log.d(this.toString(), getString(R.string.scanned))
             Toast.makeText(
                 applicationContext,
-                "Scanned: " + result.contents,
+                getString(R.string.scanned)+ ": " + result.contents,
                 Toast.LENGTH_LONG
             ).show()
             createPopUp(this, {

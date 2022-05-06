@@ -191,5 +191,8 @@
     <string name="hint_password">password</string>
     <string name="select_icon">Select Icon</string>
     <string name="select_marker">Select Marker</string>
+    <string name="scanned">Scanned</string>
+    <string name="no_camera_permission_message">Cancelled due to missing camera permission</string>
+    <string name="cancelled_scan">Cancelled scan</string>
 
 </resources>
