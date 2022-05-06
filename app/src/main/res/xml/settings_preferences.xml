@@ -18,4 +18,12 @@
         app:summary="Report technical issues or suggest new features"
         app:title="Send feedback" />
 
+    <EditTextPreference
+        app:iconSpaceReserved="false"
+        app:key="feedback"
+        app:summary="Report technical issues or suggest new features"
+        app:title="Send feedback"
+        />
+
+
 </PreferenceScreen>

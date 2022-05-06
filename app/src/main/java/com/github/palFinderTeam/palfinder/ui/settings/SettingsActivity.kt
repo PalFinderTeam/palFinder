@@ -4,11 +4,14 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
+import com.ceylonlabs.imageviewpopup.ImagePopup
 import com.github.palFinderTeam.palfinder.R
 
 class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -89,6 +92,12 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
                     .getString(preference.key, "")
             )
         }
+    }
+
+    fun showInfo(view: View?) {
+//        val imagePopup = ImagePopup(this)
+//        imagePopup.initiatePopup();
+//        imagePopup.viewPopup()
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
