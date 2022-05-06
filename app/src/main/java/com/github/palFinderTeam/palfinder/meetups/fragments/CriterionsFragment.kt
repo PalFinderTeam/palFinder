@@ -12,13 +12,16 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreationViewM
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.google.android.material.slider.RangeSlider
 
-const val MIN_AGE_DIST = 1.0f
 
 class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragment() {
 
     private lateinit var radiusSlider: RangeSlider
     private lateinit var textMin: TextView
     private lateinit var textMax: TextView
+
+    companion object{
+        const val MIN_AGE_DIST = 1.0f
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
