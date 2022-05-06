@@ -17,6 +17,7 @@ import java.time.Year
 import java.util.*
 import kotlin.collections.HashMap
 
+const val USER_ID = "com.github.palFinderTeam.palFinder.USER_ID"
 /**
  * A class to hold the data for a user to be displayed on the profile activity
  * Username as unique identifier
