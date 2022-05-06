@@ -62,7 +62,7 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
 
         val button: Button = v.findViewById(R.id.criterionButtonDone)
 
-        // Set gender, or as Antoine would call it, sex.
+        // Set gender
         button.setOnClickListener {
             val selectedOptionId = sexGroup.checkedRadioButtonId
             val sex = v.findViewById<RadioButton>(selectedOptionId).text
