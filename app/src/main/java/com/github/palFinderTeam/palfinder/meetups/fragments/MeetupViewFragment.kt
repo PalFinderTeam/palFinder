@@ -23,7 +23,6 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import kotlinx.coroutines.launch
 
-private const val ARG_MEETUP = "meetup"
 
 class MeetupViewFragment : Fragment() {
     private val viewModel: MeetUpViewViewModel by activityViewModels()
