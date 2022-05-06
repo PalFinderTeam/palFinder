@@ -281,7 +281,7 @@ class MeetUpCreationViewModel @Inject constructor(
             return
         }
         val endDateVal = endDate.value!!
-        // Check that endDate is not too much in the future
+        // Check that endDate is not too far in the future
         if (!endDateVal.isBefore(maxEndDate)) {
             _endDate.value = maxEndDate
         }

@@ -21,9 +21,9 @@ import javax.inject.Inject
 
 /**
  * viewModel attached to the MeetupView, mainly to fetch the meetUp and fill the fields of the layout
- * @param meetUpRepository the database for the meetups, from which we fetch
- * @param profileService the database for the profiles, mainly to get the currentLoggedUser
- * @param timeService database to retrieve the current time, so we don't display outdated meetups
+ * @param meetUpRepository the database for the meetups from which we fetch
+ * @param profileService the database for the profiles mainly to get the currentLoggedUser
+ * @param timeService database to retrieve the current time so we don't display outdated meetups
  */
 @HiltViewModel
 class MeetUpViewViewModel @Inject constructor(
