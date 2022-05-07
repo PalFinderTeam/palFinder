@@ -50,6 +50,14 @@ android {
 
 
 dependencies {
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    // Glide v4 uses this new annotation processor -- see https://bumptech.github.io/glide/doc/generatedapi.html
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+
+
+
+
+    implementation 'com.github.zend10:OverlapImageListView:v1.0.1'
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'

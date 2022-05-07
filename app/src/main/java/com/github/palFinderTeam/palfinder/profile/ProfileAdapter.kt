@@ -1,14 +1,21 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
+import com.zen.overlapimagelistview.OverlapImageListView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,11 +37,11 @@ class ProfileAdapter(
         val fullName: TextView = view.findViewById(R.id.fullName)
         val pic: ImageView = view.findViewById(R.id.userPic)
         val followButton: Button = view.findViewById(R.id.followButton)
+        val overlapImage: OverlapImageListView = view.findViewById(R.id.overlapImage)
 
         init {
             view.setOnClickListener(this)
         }
-
         override fun onClick(v: View) {
             val position = adapterPosition
             onItemClicked(position)
@@ -73,6 +80,10 @@ class ProfileAdapter(
         val fullName = holder.fullName
         fullName.text = currentDataSet[position].fullName()
         name.text = currentDataSet[position].username
+        holder.overlapImage.size = 200F
+        val achievementImages = ArrayList<Bitmap>(currentDataSet[position].achievements().map{BitmapFactory.decodeResource(
+            Resources.getSystem(), it.imageID)})
+        holder.overlapImage.imageList = achievementImages
         when {
             currentDataSet[position].uuid == loggedUser.uuid -> {
                 holder.followButton.visibility = INVISIBLE

@@ -12,11 +12,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
         android:fontFamily="@font/fredoka_bold"
         android:maxLength="18"
         android:text="@string/placeholder_username"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@id/followButton"
         app:layout_constraintStart_toEndOf="@+id/userPic"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,6 +30,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/demo_pfp" />
 
+    <com.zen.overlapimagelistview.OverlapImageListView
+        android:id="@+id/overlapImage"
+        android:layout_width="74dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="22dp"
+        app:circleCount="3"
+        app:fillColor="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/followButton"
+        app:layout_constraintStart_toEndOf="@+id/profile_name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="#FFFFFF"
+        app:strokeWidth="4dp" />
+
     <TextView
         android:id="@+id/fullName"
         android:layout_width="wrap_content"
@@ -39,7 +54,6 @@
         android:maxLength="18"
         android:text="@string/placeholder_name"
         android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@id/followButton"
         app:layout_constraintStart_toEndOf="@+id/userPic"
         app:layout_constraintTop_toBottomOf="@+id/profile_name" />
 
@@ -47,12 +61,13 @@
         android:id="@+id/followButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginEnd="45dp"
         android:layout_marginBottom="10dp"
         android:text="@string/unfollow_button"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/profile_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/overlapImage"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.812" />
+        app:layout_constraintVertical_bias="0.25" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

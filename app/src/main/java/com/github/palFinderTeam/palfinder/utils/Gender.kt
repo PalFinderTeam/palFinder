@@ -6,6 +6,6 @@ enum class Gender(val stringGender: String) {
     OTHER("other"),
     NON_SPEC("null");
     companion object{
-        fun from(type: String?): Gender = Gender.values().find { it.stringGender == type } ?: NON_SPEC
+        fun from(type: String?): Gender = values().find { it.stringGender == type } ?: NON_SPEC
     }
 }
