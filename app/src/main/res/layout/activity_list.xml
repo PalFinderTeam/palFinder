@@ -12,7 +12,7 @@
         android:name="com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/meetup_list_recycler"
+        app:layout_constraintBottom_toTopOf="@id/distance_slider"
         app:layout_constraintTop_toBottomOf="@id/sort_list"
         tools:layout_editor_absoluteX="205dp" />
 
@@ -42,9 +42,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/meetup_list_recycler"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:padding="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/follower_options_group"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/distance_slider">
@@ -55,11 +55,11 @@
         android:id="@+id/distance_slider"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/search_list"
+        android:valueFrom="1.0"
+        android:valueTo="500.0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:valueFrom="1.0"
-        android:valueTo="500.0">
+        app:layout_constraintTop_toBottomOf="@id/list_select_tag">
 
     </com.google.android.material.slider.Slider>
 
@@ -74,6 +74,43 @@
 
     </SearchView>
 
+    <RadioGroup
+        android:id="@+id/follower_options_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/meetup_list_recycler"
+        tools:layout_editor_absoluteX="178dp" >
+
+        <RadioButton
+            android:id="@+id/button_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/show_all" />
+
+        <RadioButton
+            android:id="@+id/participate_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/only_participating" />
+
+        <RadioButton
+            android:id="@+id/created_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/only_creators" />
+
+        <RadioButton
+            android:id="@+id/joinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/only_joined" />
+
+    </RadioGroup>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

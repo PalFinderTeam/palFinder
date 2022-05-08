@@ -18,7 +18,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-
+/**
+ * extends the MeetupListRootAdapter by adding the distance to the current location and the filter
+ */
 class MeetupListAdapter(private val dataSet: List<MeetUp>, override val currentDataSet: MutableList<MeetUp>,
                         private var filter: SearchedFilter<MeetUp>, private var currentLocation: Location,
                         private val context: Context,

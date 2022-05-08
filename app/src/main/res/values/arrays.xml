@@ -19,4 +19,10 @@
         <item>Default</item>
         <item>Warm</item>
     </string-array>
+
+    <string-array name="initial_values">
+        <item>13</item>
+        <item>66</item>
+    </string-array>
+
 </resources>

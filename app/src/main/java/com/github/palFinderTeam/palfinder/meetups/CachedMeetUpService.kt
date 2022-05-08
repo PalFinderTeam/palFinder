@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
+/**
+ * adds cache dictionnaries to the meetupRepository, for both the meetups printed (temporary) and the meetups joined (permanent)
+ */
 class CachedMeetUpService @Inject constructor(
     private val db: FirebaseFirestore,
     private val time: TimeService,
