@@ -1,27 +1,24 @@
 package com.github.palFinderTeam.palfinder.ui.login
 
-//import android.text.Editable
-//import android.text.TextWatcher
-//import android.widget.EditText
-//import android.widget.Toast
-//import androidx.annotation.StringRes
-
-//import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.icu.util.Calendar
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
+import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
+import com.github.palFinderTeam.palfinder.utils.createPopUp
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.android.gms.auth.api.identity.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -31,41 +28,42 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
-import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
-import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
-import com.github.palFinderTeam.palfinder.utils.createPopUp
-import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
-import com.google.firebase.firestore.ktx.firestore
-//import com.google.firebase.firestore.SetOptions
-//import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 const val CREATE_ACCOUNT_PROFILE = "com.github.palFinderTeam.palFinder.CREATE_ACCOUNT_PROFILE"
 
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-    //private lateinit var signInButton: FrameLayout
     private lateinit var oneTapClient: SignInClient
     private lateinit var signInRequest: BeginSignInRequest
 
+    private lateinit var emailTv: TextView
+    private lateinit var passwordTv: TextView
 
-    private companion object{
+    @Inject
+    lateinit var firebaseProfileService: ProfileService
+
+    private var showOneTapUI = true
+
+    companion object {
         private const val TAG = "LoginActivity"
         private const val RC_GOOGLE_SIGN_IN = 4926
         private const val REQ_ONE_TAP = 4  // Can be any integer unique to the Activity
         private const val REQUEST_CODE_GIS_SAVE_PASSWORD = 2 /* unique request id */
-        private var showOneTapUI = true
-        var firebaseProfileService = FirebaseProfileService(Firebase.firestore)
+
+        const val HIDE_ONE_TAP = "LOGIN.HIDE_ONE_TAP"
     }
 
     public override fun onStart() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
-        if(currentUser != null){
+        if (currentUser != null) {
             lifecycleScope.launch {
                 updateUI(currentUser)
             }
@@ -80,35 +78,40 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        showOneTapUI = !intent.getBooleanExtra(HIDE_ONE_TAP, false)
+
         val signInButton = findViewById<SignInButton>(R.id.signInButton)
         val signInOrRegister = findViewById<Button>(R.id.login)
         val noAccountButton = findViewById<Button>(R.id.noAccountButton)
 
         auth = Firebase.auth
         oneTapClient = Identity.getSignInClient(this)
-        signInRequest= beginSignInRequest()
-        displayOneTap()
+        signInRequest = beginSignInRequest()
 
         //disable auto fill to enable onetap save password, work only with API >= 26
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            window
-                .decorView.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
-        }
+        window
+            .decorView.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
         configureGoogleSignIn(signInButton)
         configurePasswordSignIn(signInOrRegister)
         configureNoAccountButton(noAccountButton)
+
+        if (showOneTapUI) {
+            displayOneTap()
+        }
     }
 
     private fun configurePasswordSignIn(signInOrRegister: Button) {
+        emailTv = findViewById(R.id.email)
+        passwordTv = findViewById(R.id.password)
+
         signInOrRegister.setOnClickListener {
-            val email = findViewById<TextView>(R.id.email).text.toString()
+            val email = emailTv.text.toString()
             //no checks on password is made for now
-            val password = findViewById<TextView>(R.id.password).text.toString()
-            if(email == "" || password == ""){
+            val password = passwordTv.text.toString()
+            if (email == "" || password == "") {
                 Toast.makeText(baseContext, "Enter both fields please.", Toast.LENGTH_SHORT).show()
-            }
-            else if (isValidEmail(email)) {
-                createAccount(email, password)
+            } else if (isValidEmail(email)) {
+                createOrSignInAccount(email, password)
             } else {
                 //pop "email not valid"
                 Toast.makeText(baseContext, "Email not valid", Toast.LENGTH_SHORT).show()
@@ -130,7 +133,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun isValidEmail(str: String): Boolean{
+    private fun isValidEmail(str: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(str).matches()
     }
 
@@ -151,13 +154,14 @@ class LoginActivity : AppCompatActivity() {
         .setAutoSelectEnabled(true)
         .build()
 
-    private fun displayOneTap(){
+    private fun displayOneTap() {
         oneTapClient.beginSignIn(signInRequest)
             .addOnSuccessListener(this) { result ->
                 try {
                     startIntentSenderForResult(
                         result.pendingIntent.intentSender, REQ_ONE_TAP,
-                        null, 0, 0, 0, null)
+                        null, 0, 0, 0, null
+                    )
                 } catch (e: IntentSender.SendIntentException) {
                     Log.e(TAG, "Couldn't start One Tap UI: ${e.localizedMessage}")
                 }
@@ -195,9 +199,8 @@ class LoginActivity : AppCompatActivity() {
             /* password saving was cancelled */
             Toast.makeText(baseContext, "password not saved", Toast.LENGTH_SHORT).show()
         }
-        lifecycleScope.launch {
-            updateUI(auth.currentUser)
-        }
+        // Account created, we now sign in.
+        signIn(emailTv.text.toString(), passwordTv.text.toString(), savePassword = false)
     }
 
     private fun googleSignInRequestHandler(data: Intent?) {
@@ -225,14 +228,14 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun createAccount(email: String, password: String) {
+    private fun createOrSignInAccount(email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 when {
                     task.isSuccessful -> {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "createUserWithEmail:success")
-                        savePassword(email,password)
+                        savePassword(email, password)
                     }
                     task.exception is FirebaseAuthUserCollisionException -> {
                         //if user exist already, go to sign in
@@ -247,14 +250,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signIn(email: String, password: String, savePassword: Boolean) {
-        // [START sign_in_with_email]
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithEmail:success")
-                    if(savePassword) {
-                        savePassword(email,password)
+                    if (savePassword) {
+                        savePassword(email, password)
                     }
                     lifecycleScope.launch {
                         updateUI(auth.currentUser)
@@ -265,7 +267,6 @@ class LoginActivity : AppCompatActivity() {
                     signInSignUpFailure(task, "signInWithEmail:failure")
                 }
             }
-        // [END sign_in_with_email]
     }
 
     private fun signInSignUpFailure(task: Task<AuthResult>, logText: String) {
@@ -285,23 +286,23 @@ class LoginActivity : AppCompatActivity() {
                 try {
                     startIntentSenderForResult(
                         result.pendingIntent.intentSender,
-                        REQUEST_CODE_GIS_SAVE_PASSWORD,  /* fillInIntent= */
-                        null,  /* flagsMask= */
-                        0,  /* flagsValue= */
-                        0,  /* extraFlags= */
-                        0,  /* options= */
+                        REQUEST_CODE_GIS_SAVE_PASSWORD,
+                        null,
+                        0,
+                        0,
+                        0,
                         null
-                    )}catch (e: IntentSender.SendIntentException) {
+                    )
+                } catch (e: IntentSender.SendIntentException) {
                     Log.e(TAG, "Couldn't save password: ${e.localizedMessage}")
                 }
             }
             .addOnFailureListener(this) { e ->
-                // No saved credentials found. Launch the One Tap sign-up flow, or
-                // do nothing and continue presenting the signed-out UI.
                 Log.d(TAG, e.localizedMessage)
+                // No saved credentials found. Connect the user.
+                signIn(emailTv.text.toString(), passwordTv.text.toString(), savePassword = false)
             }
     }
-
 
 
     private fun checkOneTapCredential(idToken: String?, password: String?, username: String?) {
@@ -311,7 +312,7 @@ class LoginActivity : AppCompatActivity() {
                 Log.d(TAG, "Got ID token.")
                 firebaseAuthWithGoogle(idToken)
             }
-            password != null && username != null-> {
+            password != null && username != null -> {
                 // Got a saved username and password. Used to authenticate with the backend.
                 Log.d(TAG, "Got password.")
                 signIn(username, password, false)
@@ -378,8 +379,6 @@ class LoginActivity : AppCompatActivity() {
                 ImageInstance(user.photoUrl.toString())
             )
 
-            //firestoreUsers.addNewUser(user, dbUser, TAG)
-
             val intent = Intent(this, UserSettingsActivity::class.java).apply {
                 putExtra(CREATE_ACCOUNT_PROFILE, profileUser)
             }
@@ -387,20 +386,15 @@ class LoginActivity : AppCompatActivity() {
             finish()
         }
     }
-    /*private fun showLoginFailed(@StringRes errorString: Int) {
-        Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
-    }*/
 
-    private fun configureNoAccountButton(noAccount: Button){
+    private fun configureNoAccountButton(noAccount: Button) {
         noAccount.setOnClickListener {
-
             createPopUp(this,
                 {
                     startActivity(Intent(this, MainNavActivity::class.java))
                     finish()
                 }
             )
-
         }
     }
 }
