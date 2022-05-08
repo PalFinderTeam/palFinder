@@ -52,7 +52,6 @@ class LoginActivityTest {
             closeSoftKeyboard()
             onView(withId(R.id.password)).perform(typeText("123456"))
             closeSoftKeyboard()
-            Intents.init()
             onView(withId(R.id.login)).perform(click())
         }
     }
