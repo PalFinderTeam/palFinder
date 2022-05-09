@@ -139,6 +139,68 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/gender_select_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/fredoka_normal"
+                android:text="@string/criterions_gender_title"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+
+            <RadioGroup
+                android:id="@+id/radioSex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="left"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/gender_select_title">
+
+                <RadioButton
+                    android:id="@+id/radioFemale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/fredoka_normal"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/radio_female"
+                    android:textSize="16sp" />
+
+                <RadioButton
+                    android:id="@+id/radioMale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:fontFamily="@font/fredoka_normal"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/radio_male"
+                    android:textSize="16sp" />
+
+                <RadioButton
+                    android:id="@+id/radioOther"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:fontFamily="@font/fredoka_normal"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/radio_other"
+                    android:textSize="16sp" />
+
+            </RadioGroup>
+
+
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/settingsPfp"
@@ -196,7 +258,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+                app:layout_constraintTop_toBottomOf="@+id/radioSex">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/SettingsBirthdayLayout"

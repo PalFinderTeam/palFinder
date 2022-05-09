@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +10,8 @@ import androidx.fragment.app.DialogFragment
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreationViewModel
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
-import com.github.palFinderTeam.palfinder.utils.PrettyDate
-import org.florescu.android.rangeseekbar.RangeSeekBar
-import org.w3c.dom.Text
+
+import com.google.android.material.slider.RangeSlider
 
 /**
  * fragment that allows user to select the criteria for a meetup
@@ -21,8 +19,14 @@ import org.w3c.dom.Text
  */
 class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragment() {
 
-    //minimum and maximum ages available in the rangeSeekBar
-    companion object {
+
+    private lateinit var radiusSlider: RangeSlider
+    private lateinit var textMin: TextView
+    private lateinit var textMax: TextView
+
+    companion object{
+        const val MIN_AGE_DIST = 1.0f
+        //minimum and maximum ages available in the rangeSeekBar
         const val MIN_AGE = 13
         const val MAX_AGE = 66
     }
@@ -32,31 +36,33 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        //inflate layout with recycler view
+        // Inflate layout with recycler view
         val v: View = inflater.inflate(R.layout.fragment_criterions, container, false)
-        // Setup the new range seek bar
-        val rangeSeekBar: RangeSeekBar<Int> = RangeSeekBar(v.context)
-        val textMin= v.findViewById<TextView>(R.id.minValueAge)
-        val textMax = v.findViewById<TextView>(R.id.maxValueAge)
-        // Set the range
-        rangeSeekBar.setRangeValues(MIN_AGE, MAX_AGE)
-        rangeSeekBar.selectedMinValue = viewModel.criterionAge.value!!.first
-        rangeSeekBar.selectedMaxValue = viewModel.criterionAge.value!!.second
-        textMin.text = rangeSeekBar.selectedMinValue.toString()
-        //as the bar does not go after the maxage, we add a '+' to the text
-        if (rangeSeekBar.selectedMaxValue == rangeSeekBar.absoluteMaxValue) {
-            textMax.text = getString(R.string.criterions_age_max)
-        } else {
-            textMax.text = rangeSeekBar.selectedMaxValue.toString()
-        }
 
-        rangeSeekBar.setOnRangeSeekBarChangeListener { _, minValue, maxValue ->
-            textMin.text = minValue.toString()
-            if (maxValue == rangeSeekBar.absoluteMaxValue) {
-                textMax.text = getString(R.string.criterions_age_max)
+
+        textMin = v.findViewById<TextView>(R.id.minValueAge)
+        textMax = v.findViewById<TextView>(R.id.maxValueAge)
+
+        // Set the new range
+        radiusSlider = v.findViewById(R.id.rangeAgeSelector)
+
+        radiusSlider.setMinSeparationValue(MIN_AGE_DIST)
+        radiusSlider.setValues(
+            viewModel.criterionAge.value!!.first.toFloat(),
+            if (viewModel.criterionAge.value!!.second == Int.MAX_VALUE) {
+                getString(R.string.criterions_age_max).toFloat()
             } else {
-                textMax.text = maxValue.toString()
-            }}
+                viewModel.criterionAge.value!!.second.toFloat()
+            }
+        )
+
+        // Set initial text values
+        updateAgeText(radiusSlider)
+
+        // Bind listener on Slider
+        radiusSlider.addOnChangeListener { rs, _, _ ->
+            updateAgeText(rs)
+        }
 
         val sexGroup: RadioGroup = v.findViewById(R.id.radioSex)
         when (viewModel.criterionGender.value) {
@@ -65,15 +71,9 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
             CriterionGender.ALL -> sexGroup.check(R.id.radioMaleAndFemale)
         }
 
-
-
-        // Add to layout
-        val layout = v.findViewById(R.id.ageSeekBar) as FrameLayout
-        layout.addView(rangeSeekBar)
-
         val button: Button = v.findViewById(R.id.criterionButtonDone)
 
-        //validates the selected criteria
+        // Set gender
         button.setOnClickListener {
             val selectedOptionId = sexGroup.checkedRadioButtonId
             val sex = v.findViewById<RadioButton>(selectedOptionId).text
@@ -84,22 +84,37 @@ class CriterionsFragment(val viewModel: MeetUpCreationViewModel) : DialogFragmen
                 getString(R.string.radio_male_and_female) -> viewModel.setCriterionGender(CriterionGender.ALL)
             }
 
-            // set max value to criterionAge if selected is '66+'
-            if (rangeSeekBar.selectedMaxValue == rangeSeekBar.absoluteMaxValue) {
-                viewModel.setCriterionAge(Pair(rangeSeekBar.selectedMinValue, Int.MAX_VALUE))
+
+            // 66+ means anything above
+            if (radiusSlider.values[1] == radiusSlider.valueTo) {
+                viewModel.setCriterionAge(Pair(radiusSlider.values[0].toInt(), Int.MAX_VALUE))
             } else {
-                viewModel.setCriterionAge(Pair(rangeSeekBar.selectedMinValue, rangeSeekBar.selectedMaxValue))
+                viewModel.setCriterionAge(Pair(radiusSlider.values[0].toInt(), radiusSlider.values[1].toInt()))
             }
             dialog?.dismiss()
         }
+
         return v
     }
 
     override fun onStart() {
         super.onStart()
-
         // Force the dialog to take whole width
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+    }
+
+    /**
+     * Update the age values on either side of the slide bar
+     *
+     * @param rs RangeSlider
+     */
+    private fun updateAgeText(rs: RangeSlider) {
+        textMin.text = (rs.values[0].toInt()).toString()
+        if (rs.values[1] == rs.valueTo) {
+            textMax.text = getString(R.string.criterions_age_max_plus)
+        } else {
+            textMax.text = (rs.values[1].toInt()).toString()
+        }
     }
 }

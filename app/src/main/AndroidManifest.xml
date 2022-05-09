@@ -20,7 +20,6 @@
         <activity
             android:name=".navigation.MainNavActivity"
             android:exported="false" />
-        android:theme="@style/Theme.PalFinder">
         <service
             android:name=".notification.NotificationService"
             android:enabled="true"

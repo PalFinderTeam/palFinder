@@ -108,7 +108,11 @@ interface MeetUpRepository {
     suspend fun getMeetUpsData(meetUpIds: List<String>): List<MeetUp>?
 
     /**
-     * provide additional filter for the getMeetupAroundLocation function, depending
+     * provide additional filter for the getMeetupAroundLocation function, depending on the showParam
+     * you either check if the profileUser is following a meetup participant, or the meetup creator
+     * @param profile the profile of the logged user
+     * @param meetUp the meetUp we need to filter
+     * @param showParam the way we must filter it
      */
     fun additionalFilter(profile: ProfileUser?, meetUp: MeetUp, showParam: ShowParam?): Boolean {
         return when (showParam) {

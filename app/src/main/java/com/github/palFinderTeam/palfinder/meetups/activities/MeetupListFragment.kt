@@ -74,7 +74,7 @@ class MeetupListFragment : Fragment() {
 
         radiusSlider.value = max(radiusSlider.valueFrom, min(radiusSlider.valueTo, viewModel.searchRadius.value!!.toFloat()))
 
-        //changes the meetUps at each change in real time
+        //updates the meetUps at each slider change in real time
         radiusSlider.addOnChangeListener { _, value, _ ->
             viewModel.setSearchParamAndFetch(radiusInKm = value.toDouble())
         }

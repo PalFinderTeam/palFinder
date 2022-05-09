@@ -51,16 +51,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/fredoka_bold"
+                android:onClick="onChat"
+                android:paddingBottom="18dp"
                 android:text="Organized by \@%s"
                 android:textColor="@color/theme_primary"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/tv_ViewEventDescritpion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/fredoka_bold"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="6dp"
                 android:text="@string/placeholder_desc"
                 android:textSize="20sp" />
 
@@ -164,7 +166,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/fredoka_bold"
-                    android:text="%d (out of %d)"
+                    android:text="@string/meetup_view_participation_unlimited"
                     android:textSize="20sp" />
 
             </LinearLayout>
@@ -191,7 +193,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/fredoka_bold"
-                    android:text="24-99 years"
+                    android:text="@string/meetup_view_age"
                     android:textSize="20sp" />
 
             </LinearLayout>
@@ -209,7 +211,7 @@
                     android:layout_marginEnd="10dp"
                     android:alpha="0.5"
                     android:fontFamily="@font/fredoka_normal"
-                    android:text="Gender"
+                    android:text="@string/meetup_view_gender_title"
                     android:textAllCaps="true"
                     android:textSize="14sp" />
 
@@ -218,7 +220,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/fredoka_bold"
-                    android:text="Male, Female, Cat"
+                    android:text=""
                     android:textSize="20sp" />
 
             </LinearLayout>
