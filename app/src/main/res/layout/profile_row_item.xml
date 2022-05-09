@@ -30,21 +30,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/demo_pfp" />
 
-    <com.zen.overlapimagelistview.OverlapImageListView
-        android:id="@+id/overlapImage"
-        android:layout_width="74dp"
-        android:layout_height="37dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="22dp"
-        app:circleCount="3"
-        app:fillColor="#000000"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/followButton"
-        app:layout_constraintStart_toEndOf="@+id/profile_name"
-        app:layout_constraintTop_toTopOf="parent"
-        app:strokeColor="#FFFFFF"
-        app:strokeWidth="4dp" />
-
     <TextView
         android:id="@+id/fullName"
         android:layout_width="wrap_content"
@@ -66,8 +51,41 @@
         android:text="@string/unfollow_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/overlapImage"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.25" />
+
+    <ImageView
+        android:id="@+id/AchPic1"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="35dp"
+        app:layout_constraintEnd_toStartOf="@+id/followButton"
+        app:layout_constraintStart_toEndOf="@+id/profile_name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/circle_shape" />
+
+    <ImageView
+        android:id="@+id/AchPic2"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="43dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toStartOf="@+id/AchPic3"
+        app:layout_constraintStart_toEndOf="@+id/fullName"
+        app:layout_constraintTop_toBottomOf="@id/AchPic1"
+        app:srcCompat="@drawable/circle_shape" />
+
+    <ImageView
+        android:id="@+id/AchPic3"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toEndOf="@+id/AchPic2"
+        app:layout_constraintTop_toBottomOf="@+id/AchPic1"
+        app:srcCompat="@drawable/circle_shape" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
