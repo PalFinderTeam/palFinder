@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -45,8 +46,8 @@ class MeetUpView : AppCompatActivity() {
 
         val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
         viewModel.loadMeetUp(meetupId)
-        //button to show the list of users participating in this meetUp
-        val button = findViewById<Button>(R.id.show_profile_list_button)
+        //button (image for design purpuses) to show the list of users participating in this meetUp
+        val button = findViewById<ImageView>(R.id.show_profile_list_button)
         button.setOnClickListener { showProfileList() }
 
         //fill fields when the meetup is loaded from database
