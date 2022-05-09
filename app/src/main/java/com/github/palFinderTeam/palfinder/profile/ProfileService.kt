@@ -106,7 +106,7 @@ interface ProfileService {
     }
 
     fun updateAchievementsFollowed(followed: ProfileUser): String? {
-        return when (followed.following.size) {
+        return when (followed.followed.size) {
             4 -> Achievement.BEAUTY_AND_THE_PAL.string
             9 -> Achievement.CRYPTOPAL.string
             29 -> Achievement.MASTER_OF_CATS.string

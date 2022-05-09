@@ -18,7 +18,6 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.PerformException
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ScrollToAction
@@ -29,9 +28,7 @@ import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
-import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.espresso.util.HumanReadables
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement
 import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
@@ -41,7 +38,6 @@ import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.*
-import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
@@ -403,6 +399,81 @@ class MeetupViewTest {
                 )
             )
                 .perform(click())
+        }
+    }
+
+    @Test
+    fun DisplayAchievementInFragment() = runTest {
+        val userid = profileRepository.createProfile(user)
+        val id2 = profileRepository.createProfile(user2)
+        val userListFactory = object : FragmentFactory() {
+            override fun instantiate(classLoader: ClassLoader, className: String): Fragment =
+                when (loadFragmentClass(classLoader, className)) {
+                    ProfileListFragment::class.java -> ProfileListFragment(listOf(userid!!, id2!!))
+                    else -> super.instantiate(classLoader, className)
+                }
+        }
+
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userid!!)
+
+        assertThat(userid, notNullValue())
+        newMeetup = MeetUp(
+            "dummy",
+            userid!!,
+            null,
+            eventName,
+            eventDescription,
+            date1,
+            date2,
+            Location(0.0, 0.0),
+            emptySet(),
+            true,
+            2,
+            mutableListOf(userid, id2!!)
+        )
+        val id = meetUpRepository.createMeetUp(newMeetup)
+        assertThat(id, notNullValue())
+
+        var scenario =
+            launchFragmentInHiltContainer<ProfileListFragment>(fragmentFactory = userListFactory)
+        scenario!!.use {
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    0,
+                    R.id.AchPic1
+                )
+            ).check(matches(withEffectiveVisibility(Visibility.INVISIBLE)))
+            profileRepository.editUserProfile(
+                userid,
+                user.copy(
+                    achievements = listOf(
+                        Achievement.VERIFIED.string,
+                        Achievement.CRYPTOPAL.string,
+                        Achievement.PAL_MINER.string
+                    )
+                )
+            )
+        }
+        scenario = launchFragmentInHiltContainer<ProfileListFragment>(fragmentFactory = userListFactory)
+        scenario!!.use {
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    0,
+                    R.id.AchPic1
+                )
+            ).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    0,
+                    R.id.AchPic2
+                )
+            ).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    0,
+                    R.id.AchPic3
+                )
+            ).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         }
     }
 

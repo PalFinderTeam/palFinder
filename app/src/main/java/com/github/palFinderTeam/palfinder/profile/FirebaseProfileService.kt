@@ -114,7 +114,7 @@ open class FirebaseProfileService @Inject constructor(
                 db.collection(PROFILE_COLL).document(targetId),
                 FOLLOWED_BY, FieldValue.arrayUnion(user.uuid)
             )
-            if (updateAchievementsFollower(targetProfile) != null) {
+            if (updateAchievementsFollowed(targetProfile) != null) {
                 batch.update(
                     db.collection(PROFILE_COLL).document(targetId),
                     ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollowed(targetProfile))
