@@ -17,8 +17,14 @@ class MockProfileService : ProfileService {
     }
     override fun getLoggedInUserID(): String? = loggedUserId
 
-    override suspend fun doesUserIDExist(userId: String): Boolean {
-        return db.containsKey(userId)
+    override suspend fun exists(uuid: String): Boolean {
+        return db.containsKey(uuid)
+    }
+
+    override fun fetchAll(currentDate: Calendar?): Flow<List<ProfileUser>> {
+        return flow{
+            emit(db.values.toList())
+        }
     }
 
     override suspend fun followUser(user: ProfileUser, targetId: String): Response<Unit> {
@@ -46,18 +52,18 @@ class MockProfileService : ProfileService {
             Response.Failure(e.message.orEmpty())
         }
     }
-    override suspend fun fetchUserProfile(userId: String): ProfileUser? {
-        return db[userId]
+    override suspend fun fetch(uuid: String): ProfileUser? {
+        return db[uuid]
     }
 
-    override suspend fun fetchUsersProfile(userIds: List<String>): List<ProfileUser>? {
-        return userIds.mapNotNull { fetchUserProfile(it) }
+    override suspend fun fetch(uuids: List<String>): List<ProfileUser>? {
+        return uuids.mapNotNull { fetch(it) }
     }
 
-    override suspend fun editUserProfile(userId: String, field: String, value: Any): String? {
-        if (db.containsKey(userId)) {
-            val oldVal = db[userId]!!
-            db[userId] = when (field) {
+    override suspend fun edit(uuid: String, field: String, value: Any): String? {
+        if (db.containsKey(uuid)) {
+            val oldVal = db[uuid]!!
+            db[uuid] = when (field) {
                 ProfileUser.NAME_KEY -> oldVal.copy(name = value as String)
                 ProfileUser.SURNAME_KEY -> oldVal.copy(surname = value as String)
                 ProfileUser.USERNAME_KEY -> oldVal.copy(username = value as String)
@@ -68,30 +74,30 @@ class MockProfileService : ProfileService {
                 ProfileUser.GENDER -> oldVal.copy(gender = value as Gender)
                 else -> oldVal
             }
-            return userId
+            return uuid
         }
         return null
     }
 
-    override suspend fun editUserProfile(userId: String, userProfile: ProfileUser): String? {
-        return if (db.containsKey(userId)) {
-            db[userId] = userProfile
-            userId
+    override suspend fun edit(uuid: String, obj: ProfileUser): String? {
+        return if (db.containsKey(uuid)) {
+            db[uuid] = obj
+            uuid
         } else {
             null
         }
     }
 
-    override suspend fun createProfile(newUserProfile: ProfileUser): String? {
-        val key = newUserProfile.uuid
-        db[key] = newUserProfile.copy(uuid = key)
+    override suspend fun create(obj: ProfileUser): String {
+        val key = obj.uuid
+        db[key] = obj.copy(uuid = key)
         counter.inc()
         return key
     }
 
-    override fun fetchProfileFlow(userId: String): Flow<Response<ProfileUser>> {
+    override fun fetchFlow(uuid: String): Flow<Response<ProfileUser>> {
         return flow {
-            val profile = db[userId]!!
+            val profile = db[uuid]!!
             emit(Response.Success(profile))
         }
     }

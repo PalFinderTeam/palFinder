@@ -17,6 +17,8 @@ import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -24,6 +26,7 @@ import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltAndroidTest
 class NotificationTest {
     private val uiDevice by lazy { UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()) }
@@ -60,7 +63,7 @@ class NotificationTest {
 
 
     @Test
-    fun postString() {
+    fun postString()  = runTest {
         val context: Context = ApplicationProvider.getApplicationContext()
 
         val expectedTitle = "title"
@@ -79,7 +82,7 @@ class NotificationTest {
     }
 
     @Test
-    fun postID() {
+    fun postID()  = runTest {
         val context: Context = ApplicationProvider.getApplicationContext()
 
         val expectedTitle = "title"
