@@ -82,6 +82,13 @@
     <string name="meetup_view_leave">Leave</string>
     <string name="meetup_view_joined">You joined the meetup</string>
     <string name="meetup_view_left">You left the meetup</string>
+    <string name="meetup_view_participation_unlimited">%d</string>
+    <string name="meetup_view_participation_limited">%d (out of %d)</string>
+    <string name="meetup_view_age">%s-%s years</string>
+    <string name="meetup_view_gender_title">Gender</string>
+    <string name="meetup_view_age_min">13</string>
+    <string name="meetup_view_age_max">66</string>
+    <string name="meetup_view_age_max_plus">66+</string>
 
     <string name="ok">OK</string>
 
@@ -194,5 +201,7 @@
     <string name="scanned">Scanned</string>
     <string name="no_camera_permission_message">Cancelled due to missing camera permission</string>
     <string name="cancelled_scan">Cancelled scan</string>
+
+
 
 </resources>
