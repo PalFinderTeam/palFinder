@@ -143,7 +143,7 @@ class ProfileActivity : AppCompatActivity() {
         //Initiate the barcode encoder
         val barcodeEncoder = BarcodeEncoder()
         //Encode text in editText into QRCode image into the specified size using barcodeEncoder
-        val bitmap = barcodeEncoder.encodeBitmap(intent.getStringExtra(USER_ID), BarcodeFormat.QR_CODE, R.dimen.QR_size, R.dimen.QR_size)
+        val bitmap = barcodeEncoder.encodeBitmap(intent.getStringExtra(USER_ID), BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
 
         //Set up the popup image
         val imagePopup = ImagePopup(this)
