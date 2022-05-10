@@ -578,7 +578,7 @@ class MeetupViewTest {
 
     @Test
     fun ageAboveMaxReturnsPlusText() = runTest {
-        val mid = meetUpRepository.createMeetUp(meetup2)
+        val mid = meetUpRepository.create(meetup2)
 
         val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
             putExtra(MEETUP_SHOWN, mid)
@@ -655,8 +655,8 @@ class MeetupViewTest {
 
     @Test
     fun clickOnCreator() = runTest {
-        val mid = meetUpRepository.createMeetUp(meetup)
-        val uid = profileRepository.createProfile(user)
+        val mid = meetUpRepository.create(meetup)
+        val uid = profileRepository.create(user)
 
         (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
         (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
