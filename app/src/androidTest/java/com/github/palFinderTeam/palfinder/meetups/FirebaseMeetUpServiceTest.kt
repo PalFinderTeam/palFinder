@@ -619,11 +619,11 @@ class FirebaseMeetUpServiceTest {
 
     @Test
     fun getPalParticipatingMeetupWorks() = runTest {
-        val userId = firebaseProfileService.createProfile(user1)
+        val userId = firebaseProfileService.create(user1)
         val meetUp2 = meetUp.copy(
             participantsId = listOf("userId2")) // ~ 628km
-        val id1 = firebaseMeetUpService.createMeetUp(meetUp)
-        val id2 = firebaseMeetUpService.createMeetUp(meetUp2)
+        val id1 = firebaseMeetUpService.create(meetUp)
+        val id2 = firebaseMeetUpService.create(meetUp2)
         assertThat(id1, notNullValue())
         assertThat(id2, notNullValue())
         val fetchedMeetupsFlow =
@@ -649,11 +649,11 @@ class FirebaseMeetUpServiceTest {
 
     @Test
     fun getCreatorParticipatingMeetupWorks() = runTest {
-        val userId = firebaseProfileService.createProfile(user1)
-        val userId2 = firebaseProfileService.createProfile(user2)
+        val userId = firebaseProfileService.create(user1)
+        val userId2 = firebaseProfileService.create(user2)
         val meetUp2 = meetUp.copy(creatorId = userId2!!, name = "damdam") // ~ 628km
-        val id1 = firebaseMeetUpService.createMeetUp(meetUp)
-        val id2 = firebaseMeetUpService.createMeetUp(meetUp2)
+        val id1 = firebaseMeetUpService.create(meetUp)
+        val id2 = firebaseMeetUpService.create(meetUp2)
         assertThat(id1, notNullValue())
         assertThat(id2, notNullValue())
         val fetchedMeetupsFlow =
