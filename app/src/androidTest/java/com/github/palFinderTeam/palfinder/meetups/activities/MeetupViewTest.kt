@@ -423,8 +423,8 @@ class MeetupViewTest {
             onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
             onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
             closeSoftKeyboard()
-            onView(withId(R.id.addTagButton)).perform(scrollTo(), click())
-            onView(withId(R.id.tag_selector_search)).perform(click(), typeText("working out"))
+            onView(withId(R.id.tv_add_tags)).perform(scrollTo(), click())
+            onView(withId(R.id.tag_selector_search)).perform(click(), typeText("Working out"))
             closeSoftKeyboard()
 
             onView(
@@ -432,10 +432,10 @@ class MeetupViewTest {
                     0,
                     R.id.chip
                 )
-            ).check(matches(withText("working out")))
+            ).check(matches(withText("Working out")))
             onView(
                 allOf(
-                    withText("working out"),
+                    withText("Working out"),
                     withId(R.id.chip)
                 )
             ).perform(click())
@@ -468,7 +468,7 @@ class MeetupViewTest {
             onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
             closeSoftKeyboard()
             onView(withId(R.id.addTagButton)).perform(scrollTo(), click())
-            onView(withId(R.id.tag_selector_search)).perform(click(), typeText("working out"))
+            onView(withId(R.id.tag_selector_search)).perform(click(), typeText("Working out"))
             closeSoftKeyboard()
 
             onView(
@@ -476,10 +476,10 @@ class MeetupViewTest {
                     0,
                     R.id.chip
                 )
-            ).check(matches(withText("working out")))
+            ).check(matches(withText("Working out")))
             onView(
                 allOf(
-                    withText("working out"),
+                    withText("Working out"),
                     withId(R.id.chip)
                 )
             ).perform(click())
