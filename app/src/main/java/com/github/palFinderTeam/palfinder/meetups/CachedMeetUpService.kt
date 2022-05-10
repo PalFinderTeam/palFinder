@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.cache.FileCache
+import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
@@ -90,9 +91,11 @@ class CachedMeetUpService @Inject constructor(
     override fun getMeetUpsAroundLocation(
         location: Location,
         radiusInKm: Double,
-        currentDate: Calendar?
+        currentDate: Calendar?,
+        showParam: ShowParam? = ShowParam.ALL,
+        profile: ProfileUser? = null
     ): Flow<Response<List<MeetUp>>> {
-        return db.getMeetUpsAroundLocation(location, radiusInKm, currentDate)
+        return db.getMeetUpsAroundLocation(location, radiusInKm, currentDate, showParam, profile)
     }
 
 
