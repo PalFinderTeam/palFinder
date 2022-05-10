@@ -132,7 +132,7 @@ class MeetupListFragment : Fragment() {
         view.findViewById<Button>(R.id.sort_list).setOnClickListener { showMenu(it) }
         view.findViewById<ImageButton>(R.id.search_place).setOnClickListener { searchOnMap() }
 
-        viewModel.setSearchParamAndFetch(showParam = args.showParam, showOnlyAvailable = true)
+        viewModel.setSearchParamAndFetch(showParam = args.showParam, showOnlyAvailable = true, forceFetch = true)
     }
 
     /**
@@ -196,7 +196,7 @@ class MeetupListFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun sort(sorted: List<MeetUp>) {
         adapter.currentDataSet.clear()
-        viewModel.listOfMeetUpResponse.value?.let { it -> adapter.currentDataSet.addAll(sorted) }
+        viewModel.listOfMeetUpResponse.value?.let { adapter.currentDataSet.addAll(sorted) }
         adapter.notifyDataSetChanged()
     }
 

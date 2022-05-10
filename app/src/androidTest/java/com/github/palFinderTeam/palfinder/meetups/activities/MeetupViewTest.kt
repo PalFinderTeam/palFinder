@@ -27,7 +27,6 @@ import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
-import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement
 import com.github.palFinderTeam.palfinder.ProfileActivity
@@ -38,7 +37,6 @@ import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.*
-import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
@@ -651,6 +649,24 @@ class MeetupViewTest {
         // Leave
         onView(withId(R.id.bt_JoinMeetup)).perform(betterScrollTo()).perform(click())
         assertThat(meetUpRepository.fetch(mid)!!.isParticipating(uid), `is`(false))
+    }
+
+    @Test
+    fun testCannotJoinWithBlockedUser() = runTest {
+        val mid = meetUpRepository.create(meetup)
+        val uid = profileRepository.create(user2.copy(blockedUsers = listOf("user")))
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+
+        ActivityScenario.launch<MeetUpView>(intent)
+
+        // Join
+        onView(withId(R.id.bt_JoinMeetup)).perform(betterScrollTo()).perform(click())
+        assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid!!), `is`(false))
     }
 
     @Test

@@ -12,6 +12,7 @@ import java.time.LocalDate
 import java.time.Period
 
 const val USER_ID = "com.github.palFinderTeam.palFinder.USER_ID"
+
 /**
  * A class to hold the data for a user to be displayed on the profile activity
  * Username as unique identifier
@@ -28,7 +29,8 @@ data class ProfileUser(
     val joinedMeetUps: List<String> = emptyList(),
     val gender: Gender? = Gender.NON_SPEC,
     val following: List<String> = emptyList(),
-    val followed: List<String> = emptyList()
+    val followed: List<String> = emptyList(),
+    val blockedUsers: List<String> = emptyList()
 ) : Serializable, FirebaseObject {
 
     companion object {
@@ -44,6 +46,7 @@ data class ProfileUser(
         const val GENDER = "gender"
         const val FOLLOWING_PROFILES = "following"
         const val FOLLOWED_BY = "followed"
+        const val BLOCKED_USERS = "blocked_users"
 
         /**
          * Provide a way to convert a Firestore query result, in a ProfileUser.
@@ -73,10 +76,12 @@ data class ProfileUser(
                 }
                 val following = (get(FOLLOWING_PROFILES) as? List<String>).orEmpty()
                 val followed = (get(FOLLOWED_BY) as? List<String>).orEmpty()
+                val blockedUsers = (get(BLOCKED_USERS) as? List<String>).orEmpty()
+
                 ProfileUser(
                     uuid, username, name, surname,
                     joinDateCal, ImageInstance(picture), description,
-                    birthdayCal, joinedMeetUp, gender, following, followed
+                    birthdayCal, joinedMeetUp, gender, following, followed, blockedUsers
                 )
 
             } catch (e: Exception) {
@@ -101,7 +106,8 @@ data class ProfileUser(
             JOINED_MEETUPS_KEY to joinedMeetUps,
             GENDER to gender?.stringGender,
             FOLLOWING_PROFILES to following,
-            FOLLOWED_BY to followed
+            FOLLOWED_BY to followed,
+            BLOCKED_USERS to blockedUsers
         )
     }
 

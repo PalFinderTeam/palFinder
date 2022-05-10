@@ -22,10 +22,12 @@ import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.launchFragmentInHiltContainer
 import com.github.palFinderTeam.palfinder.utils.onHiltFragment
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
@@ -58,6 +60,7 @@ class MeetUpListTest {
     private lateinit var meetUpList: List<MeetUp>
     private lateinit var user1: String
     private lateinit var user2: String
+    private lateinit var user3: ProfileUser
     private lateinit var navController: TestNavHostController
 
     private val searchLocation = Location(-122.0, 37.0)
@@ -102,6 +105,7 @@ class MeetUpListTest {
 
         user1 = "user1Id"
         user2 = "user2Id"
+        user3 = ProfileUser("user3Id", "dfdf", "dfdsfds", "efsf",date1, ImageInstance("efe"), blockedUsers = listOf(user1))
 
 
         meetUpList = listOf(
@@ -416,6 +420,50 @@ class MeetUpListTest {
                     .check(matches(anyOf(joinedMeetUps)))
             }
         }
+    }
+
+    @Test
+    fun showFilterBlockedWorks() = runTest {
+        meetUpList.forEach { meetUpRepository.create(it) }
+        val user3Id = profileService.create(user3)
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            user3Id!!
+        )
+
+        val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+            putBoolean("ShowOnlyJoined", false)
+        }, navHostController = navController)
+
+        scenario!!.use {
+
+            scenario.onHiltFragment<MeetupListFragment> {
+                it.viewModel.setSearchParamAndFetch(location = searchLocation, filterBlockedMeetups = true, forceFetch = true)
+            }
+
+            val availableMeetUps = meetUpList.filter { !it.participantsId.contains(user1) }
+                .map { withText(it.name) }
+
+            onView(withId(R.id.meetup_list_recycler)).check(
+                matches(
+                    recyclerViewSizeMatcher(
+                        availableMeetUps.size
+                    )
+                )
+            )
+            for (i in (availableMeetUps.indices)) {
+                onView(
+                    RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
+                        i,
+                        R.id.meetup_title
+                    )
+                )
+                    .check(matches(anyOf(availableMeetUps)))
+            }
+        }
+
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            loggedUserId
+        )
     }
 }
 
