@@ -3,7 +3,6 @@ package com.github.palFinderTeam.palfinder.ui.settings
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.ListPreference
 import androidx.preference.Preference
@@ -30,6 +29,7 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
+
     class SettingsFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.settings_preferences, rootKey)
@@ -39,7 +39,12 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         }
     }
 
+
+
+
+
     companion object {
+
 
         /**
          * A preference value change listener that updates the preference's summary
@@ -90,6 +95,9 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
             )
         }
     }
+
+
+
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         when (key) {

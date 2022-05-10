@@ -49,19 +49,21 @@
                     android:text="@string/meetup_view_join"
                     android:textSize="16sp" />
 
-                <Button
+                <ImageView
                     android:id="@+id/show_profile_list_button"
                     android:layout_width="133dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="11dp"
                     android:layout_marginEnd="16dp"
+                    android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:backgroundTint="@color/theme_primary"
+                    android:elevation="0dp"
                     android:fontFamily="@font/fredoka_bold"
                     android:onClick="onJoinOrLeave"
                     android:paddingTop="14dp"
                     android:paddingBottom="14dp"
-                    app:icon="@drawable/ic_baseline_people_alt_24" />
+                    android:src="@drawable/ic_baseline_people_alt_24"
+                    app:tint="?attr/colorPrimary"/>
             </LinearLayout>
 
         </LinearLayout>
