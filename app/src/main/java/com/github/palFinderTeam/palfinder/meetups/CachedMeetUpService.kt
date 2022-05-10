@@ -92,8 +92,8 @@ class CachedMeetUpService @Inject constructor(
         location: Location,
         radiusInKm: Double,
         currentDate: Calendar?,
-        showParam: ShowParam? = ShowParam.ALL,
-        profile: ProfileUser? = null
+        showParam: ShowParam?,
+        profile: ProfileUser?
     ): Flow<Response<List<MeetUp>>> {
         return db.getMeetUpsAroundLocation(location, radiusInKm, currentDate, showParam, profile)
     }
