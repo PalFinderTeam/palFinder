@@ -261,4 +261,18 @@ class CachedMeetUpServiceTest {
             assertThat(idNull, nullValue())
         }
     }
+
+    @Test
+    fun getLoggedInUser() = runTest {
+        val userId = firebaseProfileService.getLoggedInUserID()
+    }
+
+    @Test
+    fun getAllContainsMeetup() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
+        meetUp = meetUp.copy(creatorId = userId!!)
+        val id = firebaseMeetUpService.createMeetUp(meetUp)
+        //assertThat(firebaseMeetUpService.me(), notNullValue())
+
+    }
 }
