@@ -11,6 +11,7 @@ import java.io.Serializable
 import java.time.LocalDate
 import java.time.Period
 
+const val USER_ID = "com.github.palFinderTeam.palFinder.USER_ID"
 /**
  * A class to hold the data for a user to be displayed on the profile activity
  * Username as unique identifier
@@ -112,7 +113,7 @@ data class ProfileUser(
 
     fun getAge(): Int {
         return if (birthday == null) {
-            1
+            -1
         } else {
             Period.between(
                 LocalDate.of(

@@ -82,7 +82,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         selectLocationButton = view.findViewById(R.id.bt_locationSelection)
         selectMapTypeButton = view.findViewById(R.id.bt_changeMapType)
 
-        viewModel.setSearchParameters(showOnlyJoined = args.showOnlyJoined, showOnlyAvailable = true)
+        viewModel.setSearchParameters(showParam = args.showParam, showOnlyAvailable = true)
         if (args.startOnUserLocation) {
             viewModel.userLocation.observe(requireActivity()) { location ->
                 viewModel.setSearchParameters(location = location)

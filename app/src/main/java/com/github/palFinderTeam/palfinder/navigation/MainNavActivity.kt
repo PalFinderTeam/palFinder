@@ -9,9 +9,11 @@ import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
+import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
 import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -107,7 +109,7 @@ class MainNavActivity : AppCompatActivity() {
                         } else {
                             navController.popBackStack()
                             val args = Bundle().apply {
-                                putBoolean("ShowOnlyJoined", true)
+                                putSerializable("showParam", ShowParam.ONLY_JOINED)
                             }
                             navController.navigate(
                                 R.id.list_fragment,
@@ -173,7 +175,9 @@ class MainNavActivity : AppCompatActivity() {
                     )
                     true
                 } else {
-                    super.onOptionsItemSelected(item)
+                    //super.onOptionsItemSelected(item)
+                    startActivity(Intent(this, UserSettingsActivity::class.java))
+                    return true
                 }
             }
             else -> {

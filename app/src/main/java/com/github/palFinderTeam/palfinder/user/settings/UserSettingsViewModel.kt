@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.image.UrlFormat
@@ -67,6 +68,7 @@ class UserSettingsViewModel @Inject constructor(
     private val _surname: MutableLiveData<String> = MutableLiveData()
     private val _birthday: MutableLiveData<Calendar?> = MutableLiveData()
     private val _userBio: MutableLiveData<String> = MutableLiveData()
+    private val _gender: MutableLiveData<Gender?> = MutableLiveData()
     private val _pfp: MutableLiveData<String> = MutableLiveData()
 
     // The difference with the _pfp is that here it points to a local file and will be set only if the user choose a new icon.
@@ -77,6 +79,7 @@ class UserSettingsViewModel @Inject constructor(
     val surname: LiveData<String> = _surname
     val birthday: LiveData<Calendar?> = _birthday
     val userBio: LiveData<String> = _userBio
+    val gender: LiveData<Gender?> = _gender
     val pfp: LiveData<String> = _pfp
     val pfpUri: LiveData<Uri> = _pfpUri
 
@@ -94,6 +97,7 @@ class UserSettingsViewModel @Inject constructor(
         _surname.value = ""
         _birthday.value = null
         _userBio.value = ""
+        _gender.value = Gender.OTHER
         _pfp.value =
             "" //TODO: TEMP VALUE until image upload works (everyone turns into a cat for now)
     }
@@ -109,6 +113,7 @@ class UserSettingsViewModel @Inject constructor(
         _surname.postValue(user.surname)
         _username.postValue(user.username)
         _userBio.postValue(user.description)
+        _gender.postValue(user.gender)
         _birthday.postValue(user.birthday)
         _pfp.postValue(user.pfp.imgURL)
     }
@@ -170,6 +175,10 @@ class UserSettingsViewModel @Inject constructor(
 
     fun setPfp(uri: Uri) {
         _pfpUri.value = uri
+    }
+
+    fun setGender(gender: Gender) {
+        _gender.value = gender
     }
 
     /**
@@ -234,7 +243,8 @@ class UserSettingsViewModel @Inject constructor(
                 joinDate = _joinDate,
                 pfp = ImageInstance(pfp.value!!),
                 description = userBio.value!!,
-                birthday = birthday.value
+                birthday = birthday.value,
+                gender = gender.value
             )
             if (_isNewUser) {
 
