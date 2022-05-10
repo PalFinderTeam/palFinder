@@ -403,8 +403,8 @@ class MeetupViewTest {
 
     @Test
     fun DisplayAchievementInFragment() = runTest {
-        val userid = profileRepository.createProfile(user)
-        val id2 = profileRepository.createProfile(user2)
+        val userid = profileRepository.create(user)
+        val id2 = profileRepository.create(user2)
         val userListFactory = object : FragmentFactory() {
             override fun instantiate(classLoader: ClassLoader, className: String): Fragment =
                 when (loadFragmentClass(classLoader, className)) {
@@ -430,7 +430,7 @@ class MeetupViewTest {
             2,
             mutableListOf(userid, id2!!)
         )
-        val id = meetUpRepository.createMeetUp(newMeetup)
+        val id = meetUpRepository.create(newMeetup)
         assertThat(id, notNullValue())
 
         var scenario =
@@ -442,7 +442,7 @@ class MeetupViewTest {
                     R.id.AchPic1
                 )
             ).check(matches(withEffectiveVisibility(Visibility.INVISIBLE)))
-            profileRepository.editUserProfile(
+            profileRepository.edit(
                 userid,
                 user.copy(
                     achievements = listOf(

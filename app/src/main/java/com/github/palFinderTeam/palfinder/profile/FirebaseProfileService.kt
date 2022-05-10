@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.profile
 
 
+import android.icu.util.Calendar
 import android.util.Log
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.notification.NotificationHandler
@@ -48,7 +49,7 @@ open class FirebaseProfileService @Inject constructor(
             if (!user.canFollow(targetId)) {
                 return Response.Failure("Cannot follow this user.")
             }
-            val targetProfile = fetchUserProfile(targetId)!!
+            val targetProfile = fetch(targetId)!!
             val batch = db.batch()
             batch.update(
                 db.collection(PROFILE_COLL).document(user.uuid),
@@ -99,6 +100,8 @@ open class FirebaseProfileService @Inject constructor(
     }
 
     override fun getLoggedInUserID(): String? = Firebase.auth.currentUser?.uid
+
+
 
 
     companion object {

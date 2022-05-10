@@ -127,7 +127,7 @@ object UIMockProfileServiceModule {
                 if (!user.canFollow(targetId)) {
                     return Response.Failure("Cannot follow this user.")
                 }
-                val targetProfile = fetchUserProfile(targetId)!!
+                val targetProfile = fetch(targetId)!!
                 db[user.uuid] = user.copy(following = user.following.plus(targetId))
                 if (updateAchievementsFollower(user) != null) {
                     db[user.uuid] = user.copy(achievements = user.achievements().map{it.string}.plus(updateAchievementsFollower(user)!!))

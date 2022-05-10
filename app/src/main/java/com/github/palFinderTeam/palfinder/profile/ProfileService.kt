@@ -16,7 +16,7 @@ interface ProfileService: Repository<ProfileUser> {
      *
      * @return boolean
      */
-    suspend fun doesUserIDExist(userId: String): Boolean
+   // suspend fun doesUserIDExist(userId: String): Boolean
 
     /**
      * Try to follow a user and update the follower achievements if necessary

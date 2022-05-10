@@ -11,12 +11,8 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.CustomTarget
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import com.zen.overlapimagelistview.OverlapImageListView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
