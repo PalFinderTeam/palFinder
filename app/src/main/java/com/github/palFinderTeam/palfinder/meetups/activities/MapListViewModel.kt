@@ -189,7 +189,7 @@ class MapListViewModel @Inject constructor(
                 radiusInKm,
                 currentDate = date,
                 showParam,
-                profileService.fetchUserProfile(profileService.getLoggedInUserID()!!)
+                profileService.fetch(profileService.getLoggedInUserID()!!)
             ).collect {
                 _listOfMeetUpResponse.postValue(it)
             }
