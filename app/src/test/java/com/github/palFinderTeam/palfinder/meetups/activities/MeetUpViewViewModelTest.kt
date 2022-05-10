@@ -76,7 +76,7 @@ class MeetUpViewViewModelTest {
             null
         )
 
-        val id = meetUpRepository.createMeetUp(dummyMeetUp)
+        val id = meetUpRepository.create(dummyMeetUp)
 
         assertThat(id, notNullValue())
         viewModel.loadMeetUp(id!!)

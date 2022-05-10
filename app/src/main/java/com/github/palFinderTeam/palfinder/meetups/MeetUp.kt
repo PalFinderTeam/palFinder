@@ -9,6 +9,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
+import com.github.palFinderTeam.palfinder.utils.generics.FirebaseObject
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
@@ -44,7 +45,7 @@ data class MeetUp(
     val criterionAge: Pair<Int?, Int?>? = null,
     val criterionGender: CriterionGender? = null,
     val markerId: Int? = null,
-) : java.io.Serializable {
+) : java.io.Serializable, FirebaseObject {
 
     /**
      * @param currentLocation
@@ -119,10 +120,12 @@ data class MeetUp(
         return participantsId.contains(userId)
     }
 
+    override fun getUUID(): String = uuid
+
     /**
      * @return a representation which is Firestore friendly of the MeetUp
      */
-    fun toFirestoreData(): HashMap<String, Any?> {
+    override fun toFirestoreData(): HashMap<String, Any?> {
         return hashMapOf(
             CREATOR to creatorId,
             DESCRIPTION to description,

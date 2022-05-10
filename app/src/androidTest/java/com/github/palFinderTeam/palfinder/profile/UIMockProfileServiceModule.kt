@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
-import android.util.Log
 import com.github.palFinderTeam.palfinder.di.ProfileModule
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.DESCRIPTION_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWED_BY
@@ -16,14 +15,12 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.USERNAME
 import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
-import com.google.firebase.firestore.FieldValue
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.tasks.await
 import javax.inject.Singleton
 
 @Module
@@ -50,18 +47,18 @@ object UIMockProfileServiceModule {
 
         private var counter = 0
 
-        override suspend fun fetchUserProfile(userId: String): ProfileUser? {
-            return db[userId]
+        override suspend fun fetch(uuid: String): ProfileUser? {
+            return db[uuid]
         }
 
-        override suspend fun fetchUsersProfile(userIds: List<String>): List<ProfileUser>? {
-            return userIds.mapNotNull { fetchUserProfile(it) }
+        override suspend fun fetch(uuids: List<String>): List<ProfileUser>? {
+            return uuids.mapNotNull { fetch(it) }
         }
 
-        override suspend fun editUserProfile(userId: String, field: String, value: Any): String? {
-            if (db.containsKey(userId)) {
-                val oldVal = db[userId]!!
-                db[userId] = when (field) {
+        override suspend fun edit(uuid: String, field: String, value: Any): String? {
+            if (db.containsKey(uuid)) {
+                val oldVal = db[uuid]!!
+                db[uuid] = when (field) {
                     NAME_KEY -> oldVal.copy(name = value as String)
                     SURNAME_KEY -> oldVal.copy(surname = value as String)
                     USERNAME_KEY -> oldVal.copy(username = value as String)
@@ -74,28 +71,28 @@ object UIMockProfileServiceModule {
                     FOLLOWED_BY -> oldVal.copy(followed = value as List<String>)
                     else -> oldVal
                 }
-                return userId
+                return uuid
             }
             return null
         }
 
-        override suspend fun editUserProfile(userId: String, userProfile: ProfileUser): String? {
-            return if (db.containsKey(userId)) {
-                db[userId] = userProfile
-                userId
+        override suspend fun edit(uuid: String, obj: ProfileUser): String? {
+            return if (db.containsKey(uuid)) {
+                db[uuid] = obj
+                uuid
             } else {
                 null
             }
         }
 
-        override suspend fun createProfile(newUserProfile: ProfileUser): String? {
-            return syncCreateProfile(newUserProfile)
+        override suspend fun create(obj: ProfileUser): String? {
+            return syncCreateProfile(obj)
         }
 
-        override fun fetchProfileFlow(userId: String): Flow<Response<ProfileUser>> {
+        override fun fetchFlow(uuid: String): Flow<Response<ProfileUser>> {
             return flow {
-                if (db.containsKey(userId)) {
-                    val profile = db[userId]!!
+                if (db.containsKey(uuid)) {
+                    val profile = db[uuid]!!
                     emit(Response.Success(profile))
                 }
                 else{
@@ -108,7 +105,7 @@ object UIMockProfileServiceModule {
             db.clear()
         }
 
-        fun syncCreateProfile(newUserProfile: ProfileUser): String? {
+        fun syncCreateProfile(newUserProfile: ProfileUser): String {
             val key = counter.toString()
             db[key] = newUserProfile.copy(uuid = key)
             counter++
@@ -117,8 +114,12 @@ object UIMockProfileServiceModule {
 
         override fun getLoggedInUserID(): String? = loggedUserId
 
-        override suspend fun doesUserIDExist(userId: String): Boolean {
-            return db.containsKey(userId)
+        override suspend fun exists(uuid: String): Boolean {
+            return db.containsKey(uuid)
+        }
+
+        override fun fetchAll(currentDate: Calendar?): Flow<List<ProfileUser>> {
+            return flow{emit(db.values.toList())}
         }
 
         override suspend fun followUser(user: ProfileUser, targetId: String): Response<Unit> {

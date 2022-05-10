@@ -57,7 +57,7 @@ class ProfileAdapter(
         holder.followButton.text = holder.view.resources.getString(R.string.follow_button)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfileAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.profile_row_item, parent, false)
         )
