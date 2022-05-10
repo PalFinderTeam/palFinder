@@ -9,6 +9,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.profile.ProfileService
@@ -168,7 +169,7 @@ class ProfileActivityTest {
         val scenario = ActivityScenario.launch<ProfileActivity>(intent)
 
         scenario.use {
-            onView(withId(R.id.userProfileDescOverflow)).perform(ViewActions.click())
+            onView(withId(R.id.userProfileDescOverflow)).perform(scrollTo(),ViewActions.click())
             onView(withId(R.id.userProfileDescription)).check(matches(withText(userLongBio.description)))
         }
     }
