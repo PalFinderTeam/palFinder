@@ -16,10 +16,14 @@ class CachedMeetUpService @Inject constructor(
     private val time: TimeService,
     private val contextProvider: ContextService
 ) : MeetUpRepository {
-    private var cacheJoined =
-        FileCache("meetup_joined", JoinedMeetupListWrapper::class.java, true, contextProvider.get())
+    companion object{
+        const val REPOSITORY = "meetup"
+        const val REPOSITORY_JOINED = "meetup_joined"
+    }
+    private val cacheJoined =
+        FileCache(REPOSITORY_JOINED, JoinedMeetupListWrapper::class.java, true, contextProvider.get())
 
-    private var cache = CachedRepository("meetup", MeetUp::class.java, db, time, contextProvider)
+    private val cache = CachedRepository(REPOSITORY, MeetUp::class.java, db, time, contextProvider)
 
     override suspend fun create(obj: MeetUp): String? {
         val ret = cache.create(obj)

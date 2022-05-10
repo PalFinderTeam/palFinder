@@ -13,8 +13,12 @@ class CachedProfileService @Inject constructor(
     private val time: TimeService,
     private val contextProvider: ContextService
 ) : ProfileService {
-    private var cache =
-        CachedRepository("profile", ProfileUser::class.java, db, time, contextProvider)
+    companion object{
+        const val REPOSITORY = "profile"
+    }
+
+    private val cache =
+        CachedRepository(REPOSITORY, ProfileUser::class.java, db, time, contextProvider)
 
     override suspend fun create(obj: ProfileUser): String? = cache.create(obj)
 
