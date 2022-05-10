@@ -20,6 +20,7 @@ import com.github.palFinderTeam.palfinder.utils.Response
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+
 /**
  * When creating the profile page, the username (which is unique) will
  * be sent to from the previous page as an intent. A database query will be made

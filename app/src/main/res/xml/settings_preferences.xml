@@ -3,14 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:iconSpaceReserved="false">
 
-    <SwitchPreference
-        android:layout_width="match_parent"
-        android:defaultValue="true"
-        android:key="switch"
-        android:summary="Click to switch on or off"
-        android:title="Switch Preference"
-        app:iconSpaceReserved="false" />
-
     <ListPreference
         app:dialogTitle="Select colors"
         app:entries="@array/settings_list_colors_titles"
@@ -22,8 +14,34 @@
 
     <Preference
         app:iconSpaceReserved="false"
-        app:key="feedback"
         app:summary="Report technical issues or suggest new features"
-        app:title="Send feedback" />
+        app:title="Send feedback">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="mailto:palfinder@gmail.com">
+            <extra
+                android:name="android.intent.extra.SUBJECT"
+                android:value="Feedback"/>
+            <extra
+                android:name="android.intent.extra.TEXT"
+                android:value="Text of Feedback"/>
+        </intent>
+    </Preference>
+    <Preference
+        app:iconSpaceReserved="false"
+        app:summary="Check the website for more information"
+        app:title="Info">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://procatinator.com">
+            <extra
+                android:name="android.intent.extra.SUBJECT"
+                android:value="Feedback"/>
+            <extra
+                android:name="android.intent.extra.TEXT"
+                android:value="Text of Feedback"/>
+        </intent>
+    </Preference>
 
 </PreferenceScreen>
+
