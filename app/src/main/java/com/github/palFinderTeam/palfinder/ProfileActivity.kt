@@ -1,6 +1,8 @@
 package com.github.palFinderTeam.palfinder
 
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
@@ -11,14 +13,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ceylonlabs.imageviewpopup.ImagePopup
 import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.integration.android.IntentIntegrator
+import com.journeyapps.barcodescanner.BarcodeEncoder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+
 
 /**
  * When creating the profile page, the username (which is unique) will
@@ -30,6 +37,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private lateinit var meetupList: RecyclerView
     private lateinit var adapter: MeetupListRootAdapter
+    private lateinit var intentIntegrator: IntentIntegrator
 
     private val viewModel: ProfileViewModel by viewModels()
     companion object{
@@ -66,6 +74,8 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
         }
+
+        intentIntegrator = IntentIntegrator(this)
 
         viewModel.profile.observe(this) {
             when(it) {
@@ -124,6 +134,26 @@ class ProfileActivity : AppCompatActivity() {
         overflow.visibility = GONE
         val desc = findViewById<TextView>(R.id.userProfileDescription)
         desc.maxLines = Integer.MAX_VALUE
+    }
+
+    /**
+     * Clicking on QR Code icon will show QR code
+     */
+    fun showQR(view: View?) {
+        //Initiate the barcode encoder
+        val barcodeEncoder = BarcodeEncoder()
+        //Encode text in editText into QRCode image into the specified size using barcodeEncoder
+        val bitmap = barcodeEncoder.encodeBitmap(intent.getStringExtra(USER_ID), BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
+
+        //Set up the popup image
+        val imagePopup = ImagePopup(this)
+        //Convert the bitmap(QR Code) into a drawable
+        val d: Drawable = BitmapDrawable(resources, bitmap)
+
+        //Displays the popup image
+        imagePopup.initiatePopup(d);
+        imagePopup.viewPopup()
+
     }
 
     /**

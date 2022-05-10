@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="45dp"
         android:layout_marginBottom="10dp"
-        android:text="@string/unfollow_button"
+        android:text="@string/unfollow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

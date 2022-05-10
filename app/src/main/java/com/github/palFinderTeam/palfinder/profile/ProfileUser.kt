@@ -1,21 +1,15 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
+import com.github.palFinderTeam.palfinder.utils.generics.FirebaseObject
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.ktx.getField
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.Period
-import java.time.Year
-import java.util.*
-import kotlin.collections.HashMap
 
 const val USER_ID = "com.github.palFinderTeam.palFinder.USER_ID"
 /**
@@ -36,7 +30,7 @@ data class ProfileUser(
     val following: List<String> = emptyList(),
     val followed: List<String> = emptyList(),
     private val achievements: List<String> = emptyList()
-) : Serializable {
+) : Serializable, FirebaseObject {
 
     companion object {
         const val JOIN_FORMAT = "Joined %s"
@@ -81,6 +75,7 @@ data class ProfileUser(
                 }
                 val following = (get(FOLLOWING_PROFILES) as? List<String>).orEmpty()
                 val followed = (get(FOLLOWED_BY) as? List<String>).orEmpty()
+
                 val achievements = (get(ACHIEVEMENTS_OBTAINED) as? List<String>).orEmpty()
                 ProfileUser(uuid, username, name, surname,
                     joinDateCal, ImageInstance(picture), description,
@@ -96,7 +91,7 @@ data class ProfileUser(
     /**
      * @return a representation which is Firestore friendly of the UserProfile.
      */
-    fun toFirestoreData(): HashMap<String, Any?> {
+    override fun toFirestoreData(): HashMap<String, Any?> {
         return hashMapOf(
             NAME_KEY to name,
             SURNAME_KEY to surname,
@@ -113,6 +108,8 @@ data class ProfileUser(
         )
     }
 
+    override fun getUUID(): String = uuid
+
     fun fullName(): String {
         return "$name $surname"
     }
@@ -122,7 +119,11 @@ data class ProfileUser(
             -1
         } else {
             Period.between(
-                LocalDate.of(birthday.get(Calendar.YEAR), birthday.get(Calendar.MONTH), birthday.get(Calendar.DAY_OF_MONTH)),
+                LocalDate.of(
+                    birthday.get(Calendar.YEAR),
+                    birthday.get(Calendar.MONTH),
+                    birthday.get(Calendar.DAY_OF_MONTH)
+                ),
                 LocalDate.now()
             ).years
         }
@@ -132,7 +133,7 @@ data class ProfileUser(
         return "@$username"
     }
 
-    fun canFollow(profileId : String): Boolean {
+    fun canFollow(profileId: String): Boolean {
         return profileId != uuid && !following.contains(profileId)
     }
 

@@ -106,7 +106,7 @@ class UserSettingsViewModelTest {
 
     @Test
     fun `fill with db profile values exposes those values`() = runTest{
-        viewModel.loggedUID = profileUserService.createProfile(user).toString()
+        viewModel.loggedUID = profileUserService.create(user).toString()
         viewModel.loadUserInfo()
 
         assertThat(viewModel.userBio.value, `is`(user.description))
@@ -243,7 +243,7 @@ class UserSettingsViewModelTest {
         print(user.uuid)
 
         viewModel.loggedUID = user.uuid
-        assertThat(profileUserService.doesUserIDExist(user.uuid), `is`(false))
+        assertThat(profileUserService.exists(user.uuid), `is`(false))
 
         viewModel.saveValuesIntoDatabase()
 
@@ -253,7 +253,7 @@ class UserSettingsViewModelTest {
     @Test
     fun `update existing user in db successful`() = runTest {
         // Create an existing user in DB
-        val userIdInDB = profileUserService.createProfile(user).toString()
+        val userIdInDB = profileUserService.create(user).toString()
 
         // Create update data
         val userUpdate = ProfileUser(
@@ -270,7 +270,7 @@ class UserSettingsViewModelTest {
         viewModel.loggedUID = userIdInDB
         viewModel.loadUserInfo(userUpdate)
 
-        assertThat(profileUserService.doesUserIDExist(userIdInDB), `is`(true))
+        assertThat(profileUserService.exists(userIdInDB), `is`(true))
     }
 
 }
