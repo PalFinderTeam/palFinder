@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
@@ -70,10 +71,12 @@ class MockMeetUpRepository : MeetUpRepository {
         location: Location,
         radiusInKm: Double,
         currentDate: Calendar?,
+        showParam: ShowParam?,
+        profile: ProfileUser?
     ): Flow<Response<List<MeetUp>>> {
         return flow {
             var meetUps = db.values.filter { meetUp ->
-                meetUp.location.distanceInKm(location) <= radiusInKm
+                meetUp.location.distanceInKm(location) <= radiusInKm && additionalFilter(profile, meetUp, showParam)
             }
             if (currentDate != null) {
                 meetUps = meetUps.filter { !it.isFinished(currentDate) }

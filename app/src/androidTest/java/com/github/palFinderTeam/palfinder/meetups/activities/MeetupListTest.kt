@@ -391,7 +391,7 @@ class MeetUpListTest {
         meetUpList.forEach { meetUpRepository.create(it) }
 
         val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
-            putBoolean("ShowOnlyJoined", true)
+            putSerializable("ShowParam", ShowParam.ONLY_JOINED)
         }, navHostController = navController)
 
         scenario!!.use {

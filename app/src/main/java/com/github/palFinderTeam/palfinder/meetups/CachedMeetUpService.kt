@@ -11,6 +11,9 @@ import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+/**
+ * adds cache dictionnaries to the meetupRepository, for both the meetups printed (temporary) and the meetups joined (permanent)
+ */
 class CachedMeetUpService @Inject constructor(
     private val db: FirebaseMeetUpService,
     private val time: TimeService,

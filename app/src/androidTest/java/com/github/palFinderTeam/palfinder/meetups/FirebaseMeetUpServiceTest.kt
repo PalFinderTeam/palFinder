@@ -1,9 +1,11 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.util.Log
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService.Companion.MEETUP_COLL
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.DESCRIPTION
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
+import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
@@ -56,7 +58,7 @@ class FirebaseMeetUpServiceTest {
 
         user1 = ProfileUser(
             "userId", "Michel", "Jordan", "Surimi", Calendar.getInstance(),
-            ImageInstance("")
+            ImageInstance(""), following = listOf("userId2")
         )
         user2 = user1.copy(uuid = "userId2")
 
@@ -613,5 +615,66 @@ class FirebaseMeetUpServiceTest {
             db.collection(MEETUP_COLL).document(id3).delete().await()
             db.collection(PROFILE_COLL).document(userId!!).delete().await()
         }
+    }
+
+    @Test
+    fun getPalParticipatingMeetupWorks() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
+        val meetUp2 = meetUp.copy(
+            participantsId = listOf("userId2")) // ~ 628km
+        val id1 = firebaseMeetUpService.createMeetUp(meetUp)
+        val id2 = firebaseMeetUpService.createMeetUp(meetUp2)
+        assertThat(id1, notNullValue())
+        assertThat(id2, notNullValue())
+        val fetchedMeetupsFlow =
+            firebaseMeetUpService.getMeetUpsAroundLocation(
+                meetUp.location,
+                630.0,
+                showParam = ShowParam.PAL_PARTCIPATING,
+                profile = user1
+            )
+        val fetchedMeetups = fetchedMeetupsFlow.take(2).toList()
+        assertThat(fetchedMeetups[0], instanceOf(Response.Loading::class.java))
+        fetchedMeetups.subList(1, fetchedMeetups.size - 1).forEach {
+            assertThat(it, instanceOf(Response.Success::class.java))
+        }
+        val meetUps =
+            fetchedMeetups.filterIsInstance<Response.Success<List<MeetUp>>>().map { it.data }
+                .reduceRight { a, b -> a + b }
+        assertThat(meetUps, containsInAnyOrder(meetUp2.copy(uuid = id2!!)))
+        db.collection(MEETUP_COLL).document(id1!!).delete().await()
+        db.collection(MEETUP_COLL).document(id2).delete().await()
+        db.collection(PROFILE_COLL).document(userId!!).delete().await()
+    }
+
+    @Test
+    fun getCreatorParticipatingMeetupWorks() = runTest {
+        val userId = firebaseProfileService.createProfile(user1)
+        val userId2 = firebaseProfileService.createProfile(user2)
+        val meetUp2 = meetUp.copy(creatorId = userId2!!, name = "damdam") // ~ 628km
+        val id1 = firebaseMeetUpService.createMeetUp(meetUp)
+        val id2 = firebaseMeetUpService.createMeetUp(meetUp2)
+        assertThat(id1, notNullValue())
+        assertThat(id2, notNullValue())
+        val fetchedMeetupsFlow =
+            firebaseMeetUpService.getMeetUpsAroundLocation(
+                meetUp.location,
+                630.0,
+                showParam = ShowParam.PAL_CREATOR,
+                profile = user1
+            )
+        val fetchedMeetups = fetchedMeetupsFlow.take(2).toList()
+        assertThat(fetchedMeetups[0], instanceOf(Response.Loading::class.java))
+        fetchedMeetups.subList(1, fetchedMeetups.size - 1).forEach {
+            assertThat(it, instanceOf(Response.Success::class.java))
+        }
+        val meetUps =
+            fetchedMeetups.filterIsInstance<Response.Success<List<MeetUp>>>().map { it.data }
+                .reduceRight { a, b -> a + b }
+        assert(meetUps[0].creatorId == userId2)
+        db.collection(MEETUP_COLL).document(id1!!).delete().await()
+        db.collection(MEETUP_COLL).document(id2!!).delete().await()
+        db.collection(PROFILE_COLL).document(userId!!).delete().await()
+        db.collection(PROFILE_COLL).document(userId2).delete().await()
     }
 }

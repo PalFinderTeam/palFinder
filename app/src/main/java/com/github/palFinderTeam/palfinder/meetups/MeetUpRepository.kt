@@ -1,6 +1,8 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.util.Log
+import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
@@ -26,6 +28,8 @@ interface MeetUpRepository : Repository<MeetUp> {
         location: Location,
         radiusInKm: Double,
         currentDate: Calendar? = null,
+        showParam: ShowParam? = ShowParam.ALL,
+        profile: ProfileUser? = null
     ): Flow<Response<List<MeetUp>>>
 
     /**
@@ -57,4 +61,20 @@ interface MeetUpRepository : Repository<MeetUp> {
      * @return A flow of the form Fetching -> MeetUps or Fetching -> Failure.
      */
     fun getUserMeetups(userId: String, currentDate: Calendar? = null): Flow<Response<List<MeetUp>>>
+
+
+    /**
+     * provide additional filter for the getMeetupAroundLocation function, depending on the showParam
+     * you either check if the profileUser is following a meetup participant, or the meetup creator
+     * @param profile the profile of the logged user
+     * @param meetUp the meetUp we need to filter
+     * @param showParam the way we must filter it
+     */
+    fun additionalFilter(profile: ProfileUser?, meetUp: MeetUp, showParam: ShowParam?): Boolean {
+        return when (showParam) {
+            ShowParam.PAL_PARTCIPATING -> profile!!.following.any { meetUp.isParticipating(it) }
+            ShowParam.PAL_CREATOR -> profile!!.following.any{meetUp.creatorId == it}
+            else -> true
+        }
+    }
 }
