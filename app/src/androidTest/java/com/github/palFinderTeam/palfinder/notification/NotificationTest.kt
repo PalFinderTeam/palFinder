@@ -68,8 +68,8 @@ class NotificationTest {
         val title: UiObject2 = uiDevice.findObject(By.text(expectedTitle))
         val text: UiObject2 = uiDevice.findObject(By.textStartsWith(expectedContent))
         assertEquals(expectedTitle, title.text)
-        assertTrue(text.text.startsWith(expectedContent))*/
-        uiDevice.findObject(By.textStartsWith("Clear all")).click()
+        assertTrue(text.text.startsWith(expectedContent))
+        uiDevice.findObject(By.textStartsWith("Clear all")).click()*/
     }
 
     @Test
@@ -87,8 +87,8 @@ class NotificationTest {
         val title: UiObject2 = uiDevice.findObject(By.text(expectedTitle))
         val text: UiObject2 = uiDevice.findObject(By.textStartsWith(expectedContent))
         assertEquals(expectedTitle, title.text)
-        assertTrue(text.text.startsWith(expectedContent))*/
-        uiDevice.findObject(By.textStartsWith("Clear all")).click()
+        assertTrue(text.text.startsWith(expectedContent))
+        uiDevice.findObject(By.textStartsWith("Clear all")).click()*/
     }
 /*
     @Test
