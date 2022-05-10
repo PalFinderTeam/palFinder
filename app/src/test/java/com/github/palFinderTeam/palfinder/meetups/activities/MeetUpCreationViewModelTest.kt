@@ -86,7 +86,7 @@ class MeetUpCreationViewModelTest {
 
     @Test
     fun `fill with default values exposes those values`() = runTest {
-        profileService.setLoggedInUserID(profileService.createProfile(user))
+        profileService.setLoggedInUserID(profileService.create(user))
         viewModel.fillWithDefaultValues()
         assertThat(viewModel.capacity.value, `is`(1))
         assertThat(viewModel.description.value, `is`(""))
@@ -96,7 +96,7 @@ class MeetUpCreationViewModelTest {
 
     @Test
     fun `setters do work and get exposed`() = runTest {
-        profileService.setLoggedInUserID(profileService.createProfile(user))
+        profileService.setLoggedInUserID(profileService.create(user))
 //        viewModel.setStartDate(testStartDate)
 //        viewModel.setEndDate(testEndDate)
         viewModel.setCapacity(4)
@@ -113,7 +113,7 @@ class MeetUpCreationViewModelTest {
 
     @Test
     fun `fetch and display infos from database`() = runTest {
-        profileService.setLoggedInUserID(profileService.createProfile(user))
+        profileService.setLoggedInUserID(profileService.create(user))
         val dummyMeetUp = MeetUp(
             "",
             "username",
@@ -131,7 +131,7 @@ class MeetUpCreationViewModelTest {
             null
         )
 
-        val id = meetUpRepository.createMeetUp(dummyMeetUp)
+        val id = meetUpRepository.create(dummyMeetUp)
 
         assertThat(id, notNullValue())
         viewModel.loadMeetUp(id!!)
@@ -147,7 +147,7 @@ class MeetUpCreationViewModelTest {
 
     @Test
     fun `create new meetup insert in DB`() = runTest {
-        profileService.setLoggedInUserID(profileService.createProfile(user))
+        profileService.setLoggedInUserID(profileService.create(user))
         viewModel.setCapacity(4)
         viewModel.setHasMaxCapacity(true)
         viewModel.setDescription("manger des bananes")
