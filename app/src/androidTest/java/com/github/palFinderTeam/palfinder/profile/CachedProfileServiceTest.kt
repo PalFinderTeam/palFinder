@@ -199,4 +199,24 @@ class CachedProfileServiceTest {
         val id = firebaseProfileService.create(profile)
         assertThat(id, `is`(profile.uuid))
     }
+
+    @Test
+    fun getLoggedInUser() = runTest {
+        val userId = firebaseProfileService.getLoggedInUserID()
+    }
+
+    @Test
+    fun getAllContainsMeetup() = runTest {
+        val userId = firebaseProfileService.create(profile)
+        val flow = firebaseProfileService.fetchAll(Calendar.getInstance().apply { time = Date(0) })
+        val lst = flow.take(1).toList()[0]
+        assertThat(lst, hasItems(profile))
+    }
+
+    @Test
+    fun exitsTest() = runTest {
+        val userId = firebaseProfileService.create(profile)
+        assertThat(firebaseProfileService.exists(userId!!), `is`(true))
+        assertThat(firebaseProfileService.exists("dummyasdfghj"), `is`(false))
+    }
 }

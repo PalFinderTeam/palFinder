@@ -14,6 +14,7 @@ import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.*
@@ -263,16 +264,21 @@ class CachedMeetUpServiceTest {
     }
 
     @Test
-    fun getLoggedInUser() = runTest {
-        val userId = firebaseProfileService.getLoggedInUserID()
+    fun getAllContainsMeetup() = runTest {
+        val userId = firebaseProfileService.create(user1)
+        meetUp = meetUp.copy(creatorId = userId!!)
+        val id = firebaseMeetUpService.create(meetUp)
+        val flow = firebaseMeetUpService.fetchAll(Calendar.getInstance().apply { time = Date(0) })
+        val lst = flow.take(1).toList()[0]
+        assertThat(lst, hasItems(meetUp))
     }
 
     @Test
-    fun getAllContainsMeetup() = runTest {
-        val userId = firebaseProfileService.createProfile(user1)
+    fun exitsTest() = runTest {
+        val userId = firebaseProfileService.create(user1)
         meetUp = meetUp.copy(creatorId = userId!!)
-        val id = firebaseMeetUpService.createMeetUp(meetUp)
-        //assertThat(firebaseMeetUpService.me(), notNullValue())
-
+        val id = firebaseMeetUpService.create(meetUp)
+        assertThat(firebaseMeetUpService.exists(id!!), `is`(true))
+        assertThat(firebaseMeetUpService.exists("dummy"), `is`(false))
     }
 }
