@@ -146,12 +146,12 @@ class NotificationTest {
         val handler = NotificationHandler(context)
         handler.schedule(Calendar.getInstance(), R.string.testNotifTitle,R.string.testNotifContent, R.drawable.icon_beer)
     }
-
+/*
     @Test
     fun actionWorks() = runTest {
         val userId = profileRepository.create(user1)
         val id = meetUpRepository.create(meetUp)
 
         notificationService.action()
-    }
+    }*/
 }
