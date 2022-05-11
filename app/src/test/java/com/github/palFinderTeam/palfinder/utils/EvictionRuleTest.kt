@@ -1,15 +1,6 @@
 package com.github.palFinderTeam.palfinder.utils
 
-import android.content.Context
 import android.icu.util.Calendar
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.rule.ActivityTestRule
-import com.github.palFinderTeam.palfinder.MainActivity
-import com.github.palFinderTeam.palfinder.cache.DictionaryCache
-import com.github.palFinderTeam.palfinder.chat.ChatService
-import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.notification.NotificationService
-import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
