@@ -35,7 +35,7 @@ interface ProfileService: Repository<ProfileUser> {
     suspend fun unfollowUser(user: ProfileUser, targetId: String): Response<Unit>
 
     /**
-     * check if the follower deserves an achievement by checking his number of
+     * check if the follower deserves an achievement by checking the number of pals he follows
      */
     fun updateAchievementsFollower(follower: ProfileUser): String? {
         return when (follower.following.size) {
@@ -47,6 +47,9 @@ interface ProfileService: Repository<ProfileUser> {
         }
     }
 
+    /**
+     * check if the followed deserves an achievement by checking the number of pals follow him
+     */
     fun updateAchievementsFollowed(followed: ProfileUser): String? {
         return when (followed.followed.size) {
             4 -> Achievement.BEAUTY_AND_THE_PAL.string
