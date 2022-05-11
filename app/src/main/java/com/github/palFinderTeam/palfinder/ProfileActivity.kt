@@ -97,40 +97,42 @@ class ProfileActivity : AppCompatActivity() {
      * binds the follow/unfollow button
      */
     private fun bindFollow(view: View?, profile: ProfileUser) {
-        val followButton = findViewById<Button>(R.id.button_follow_profile)
         viewModel.logged_profile.observe(this) {
             when(it) {
                 is Response.Success -> {
-                    when {
-                        viewModel.profileService.getLoggedInUserID() == null -> {
-                            followButton.isEnabled = true
-                        }
-                        profile.uuid == viewModel.profileService.getLoggedInUserID() -> {
-                            followButton.isEnabled = false
-                        }
-                        it.data.canFollow(profile.uuid) -> {
-                            followButton.text = getString(R.string.follow)
-                        }
-                        else -> {
-                            followButton.text = getString(R.string.unfollow)
-                        }
-                    }
-                    val loggedProfile = it.data
-                    followButton.setOnClickListener {
-                        if (followButton.text.equals(getString(R.string.follow))) {
-                            viewModel.follow(loggedProfile.uuid, profile.uuid)
-                            followButton.text = getString(R.string.unfollow)
-                        } else {
-                            viewModel.unFollow(loggedProfile.uuid, profile.uuid)
-                            followButton.text = getString(R.string.follow)
-                        }
-                    }
+                   followSystem(it.data, profile, findViewById(R.id.button_follow_profile))
                 }
                 is Response.Loading -> Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
                 is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
             }
         }
 
+    }
+
+    private fun followSystem(loggedProfile: ProfileUser, profileViewed: ProfileUser, followButton: Button) {
+        when {
+            viewModel.profileService.getLoggedInUserID() == null -> {
+                followButton.isEnabled = true
+            }
+            profileViewed.uuid == viewModel.profileService.getLoggedInUserID() -> {
+                followButton.isEnabled = false
+            }
+            loggedProfile.canFollow(profileViewed.uuid) -> {
+                followButton.text = getString(R.string.follow)
+            }
+            else -> {
+                followButton.text = getString(R.string.unfollow)
+            }
+        }
+        followButton.setOnClickListener {
+            if (followButton.text.equals(getString(R.string.follow))) {
+                viewModel.follow(loggedProfile.uuid, profileViewed.uuid)
+                followButton.text = getString(R.string.unfollow)
+            } else {
+                viewModel.unFollow(loggedProfile.uuid, profileViewed.uuid)
+                followButton.text = getString(R.string.follow)
+            }
+        }
     }
 
     /**
