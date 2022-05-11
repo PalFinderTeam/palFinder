@@ -270,7 +270,7 @@ class CachedMeetUpServiceTest {
         val id = firebaseMeetUpService.create(meetUp)
         val flow = firebaseMeetUpService.fetchAll(Calendar.getInstance().apply { time = Date(0) })
         val lst = flow.take(1).toList()[0]
-        assertThat(lst, hasItems(meetUp))
+        assertThat(lst.any{ it.name == meetUp.name }, `is`(true))
     }
 
     @Test
