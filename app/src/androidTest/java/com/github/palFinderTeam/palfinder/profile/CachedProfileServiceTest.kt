@@ -135,6 +135,7 @@ class CachedProfileServiceTest {
         assertThat(id2, notNullValue())
         if (id1 != null && id2 != null) {
             val fetchedUser = firebaseProfileService.fetch(listOf(id1, id2))
+            val cachedUser = firebaseProfileService.fetch(listOf(id1, id2))
             assertThat(fetchedUser, notNullValue())
             assertThat(fetchedUser, hasItems(profile, profile2))
             // Make sure to clean for next tests
@@ -149,6 +150,7 @@ class CachedProfileServiceTest {
         assertThat(id, notNullValue())
         id!!.let {
             val fetchedUserFlow = firebaseProfileService.fetchFlow(it)
+            val cachedFlow = firebaseProfileService.fetchFlow(it)
             val loading = fetchedUserFlow.take(2).toList()
             assertThat(loading[0], instanceOf(Response.Loading::class.java))
             assertThat(loading[1], `is`(Response.Success(profile)))

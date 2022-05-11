@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.notification
 
 import android.content.Context
+import android.icu.util.Calendar
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
@@ -19,6 +20,8 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -36,7 +39,8 @@ class NotificationTest {
     @JvmField
     val activityRule = ActivityTestRule<MainActivity>(MainActivity::class.java)
 
-    private lateinit var notificationService: NotificationService
+    @Inject
+    lateinit var notificationService: NotificationService
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -56,7 +60,6 @@ class NotificationTest {
     @Before
     fun setup(){
         hiltRule.inject()
-        notificationService = NotificationService(timeService, meetUpRepository, profileRepository, chatService)
         val context: Context = ApplicationProvider.getApplicationContext()
         DictionaryCache.clearAllTempCaches(context)
     }
@@ -99,9 +102,9 @@ class NotificationTest {
         assertTrue(text.text.startsWith(expectedContent))
         uiDevice.findObject(By.textStartsWith("Clear all")).click()
     }
-/*
+
     @Test
-    fun scheduleID() {
+    fun cachedNotification()  = runTest {
         val context: Context = ApplicationProvider.getApplicationContext()
 
         val expectedTitle = "title"
@@ -110,6 +113,12 @@ class NotificationTest {
         val handler = NotificationHandler(context)
         handler.schedule(Calendar.getInstance(), R.string.testNotifTitle,R.string.testNotifContent, R.drawable.icon_beer)
 
+        val notifications = DictionaryCache("notification", CachedNotification::class.java, false, context)
+        assertThat(notifications.getAll().any { it.title == expectedTitle }, `is`(true))
+    }
+
+    @Test
+    fun actionWorks() {
         notificationService.action()
-    }*/
+    }
 }
