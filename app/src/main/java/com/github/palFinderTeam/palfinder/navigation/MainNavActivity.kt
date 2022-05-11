@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.navigation
 
 import android.content.Intent
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -13,6 +14,9 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.ProfileAdapter
 import com.github.palFinderTeam.palfinder.profile.ProfileService
@@ -45,6 +49,8 @@ class MainNavActivity : AppCompatActivity() {
     private lateinit var bottomNavigationView: BottomNavigationView
     @Inject
     lateinit var profileService: ProfileService
+    @Inject
+    lateinit var meetUpRepository: MeetUpRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -178,18 +184,35 @@ class MainNavActivity : AppCompatActivity() {
                 getString(R.string.scanned)+ ": " + result.contents,
                 Toast.LENGTH_LONG
             ).show()
-            createPopUp(this, {
-                CoroutineScope(Dispatchers.IO).launch {
-                    profileService.followUser(
-                        profileService.fetch(profileService.getLoggedInUserID()!!)!!,
-                        result.contents
-                    )
-                }.invokeOnCompletion { val intent = Intent(this, ProfileActivity::class.java)
-                    .apply { putExtra(USER_ID, result.contents) }
-                    startActivity(intent) }
-                              }
-            , textId = R.string.qr_scan_follow_account,
-                continueButtonTextId = R.string.follow)
+            if (result.contents.startsWith("0")) {
+                createPopUp(this, {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        profileService.followUser(
+                            profileService.fetch(profileService.getLoggedInUserID()!!)!!,
+                            result.contents.drop(1)
+                        )
+                    }.invokeOnCompletion {
+                        //0 will be used for a user_id, 1 for a meetup id
+                            val intent = Intent(this, ProfileActivity::class.java)
+                                .apply { putExtra(USER_ID, result.contents.drop(1)) }
+                            startActivity(intent)
+                    }
+                }, textId = R.string.qr_scan_follow_account,
+                    continueButtonTextId = R.string.follow)
+            } else {
+                createPopUp(this, {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        meetUpRepository.joinMeetUp(result.contents.drop(1),
+                            profileService.getLoggedInUserID()!!, Calendar.getInstance(),
+                            profileService.fetch(profileService.getLoggedInUserID()!!)!!)
+                    }.invokeOnCompletion {
+                            val intent = Intent(this, MeetUpView::class.java)
+                                .apply { putExtra(MEETUP_SHOWN, result.contents.drop(1)) }
+                            startActivity(intent)
+                    }
+                }, textId = R.string.qr_scan_follow_account,
+                    continueButtonTextId = R.string.meetup_view_join)
+            }
         }
     }
 

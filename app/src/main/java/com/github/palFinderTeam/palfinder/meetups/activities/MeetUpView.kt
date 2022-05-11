@@ -2,6 +2,8 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -14,6 +16,7 @@ import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileListFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
@@ -23,6 +26,9 @@ import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import com.google.zxing.BarcodeFormat
+import com.journeyapps.barcodescanner.BarcodeEncoder
+import com.ceylonlabs.imageviewpopup.ImagePopup
 
 //ids for putExtra function, to pass Meetups between views
 const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_SHOWN"
@@ -118,6 +124,27 @@ class MeetUpView : AppCompatActivity() {
             }
             startActivity(intent)
         }
+    }
+
+    /**
+     * Clicking on QR Code icon will show QR code
+     */
+    fun showQR(view: View?) {
+        //Initiate the barcode encoder
+        val barcodeEncoder = BarcodeEncoder()
+        //Encode text in editText into QRCode image into the specified size using barcodeEncoder
+        //0 will be used for an user_id, 1 for a meetup id
+        val bitmap = barcodeEncoder.encodeBitmap("1"+intent.getSerializableExtra(MEETUP_SHOWN) as String, BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
+
+        //Set up the popup image
+        val imagePopup = ImagePopup(this)
+        //Convert the bitmap(QR Code) into a drawable
+        val d: Drawable = BitmapDrawable(resources, bitmap)
+
+        //Displays the popup image
+        imagePopup.initiatePopup(d);
+        imagePopup.viewPopup()
+
     }
 
     /**

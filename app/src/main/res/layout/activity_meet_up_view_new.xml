@@ -64,6 +64,17 @@
                     android:paddingBottom="14dp"
                     android:src="@drawable/ic_baseline_people_alt_24"
                     app:tint="?attr/colorPrimary"/>
+
+                <ImageView
+                    android:id="@+id/qr_code_button"
+                    android:layout_width="133dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="11dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="1"
+                    android:onClick="showQR"
+                    app:srcCompat="@drawable/ic_qr" />
             </LinearLayout>
 
         </LinearLayout>
