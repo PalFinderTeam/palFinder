@@ -6,54 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="5dp">
-<!--
-   <TextView
-        android:id="@+id/profile_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/fredoka_bold"
-        android:maxLength="18"
-        android:text="@string/placeholder_username"
-        android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/userPic"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/userPic"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="4dp"
-        app:layout_constraintEnd_toStartOf="@+id/profile_name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/demo_pfp" />
-
-    <TextView
-        android:id="@+id/fullName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:fontFamily="@font/fredoka_normal"
-        android:maxLength="18"
-        android:text="@string/placeholder_name"
-        android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/userPic"
-        app:layout_constraintTop_toBottomOf="@+id/profile_name" />
-
-    <Button
-        android:id="@+id/followButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="45dp"
-        android:layout_marginBottom="10dp"
-        android:text="@string/unfollow"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.812" />
--->
 
     <LinearLayout
         android:id="@+id/profile_box_left"
@@ -65,9 +17,9 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/settingsPfp"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:id="@+id/userPic"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_margin="5dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
@@ -80,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="vertical"
-            android:layout_margin="6dp">
+            android:layout_margin="3dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -88,15 +40,33 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/fullName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/fredoka_bold"
                     android:text="@string/placeholder_name"
-                    android:textSize="22dp" />
+                    android:textSize="20dp" />
 
                 <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:id="@+id/AchPic1"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="5dp"
+                    app:srcCompat="@drawable/ic_checkmark" />
+
+                <ImageView
+                    android:id="@+id/AchPic2"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="5dp"
+                    app:srcCompat="@drawable/ic_checkmark" />
+
+                <ImageView
+                    android:id="@+id/AchPic3"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:layout_marginStart="5dp"
                     app:srcCompat="@drawable/ic_checkmark" />
@@ -104,6 +74,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/profile_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:alpha="0.6"
@@ -131,39 +102,5 @@
         app:layout_constraintLeft_toRightOf="@+id/profile_box_left"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/AchPic1"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:layout_marginStart="21dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="35dp"
-        app:layout_constraintEnd_toStartOf="@+id/followButton"
-        app:layout_constraintStart_toEndOf="@+id/profile_name"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/circle_shape" />
-
-    <ImageView
-        android:id="@+id/AchPic2"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:layout_marginStart="43dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintEnd_toStartOf="@+id/AchPic3"
-        app:layout_constraintStart_toEndOf="@+id/fullName"
-        app:layout_constraintTop_toBottomOf="@id/AchPic1"
-        app:srcCompat="@drawable/circle_shape" />
-
-    <ImageView
-        android:id="@+id/AchPic3"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintStart_toEndOf="@+id/AchPic2"
-        app:layout_constraintTop_toBottomOf="@+id/AchPic1"
-        app:srcCompat="@drawable/circle_shape" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

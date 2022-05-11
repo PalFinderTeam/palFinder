@@ -1,13 +1,9 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.content.Context
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +26,7 @@ class ProfileAdapter(
 
     class ViewHolder(val view: View, private val onItemClicked: (position: Int) -> Unit) :
         RecyclerView.ViewHolder(view), View.OnClickListener {
-        val name: TextView = view.findViewById(R.id.profile_name)
+        val username: TextView = view.findViewById(R.id.profile_name)
         val fullName: TextView = view.findViewById(R.id.fullName)
         val pic: ImageView = view.findViewById(R.id.userPic)
         val followButton: Button = view.findViewById(R.id.followButton)
@@ -73,10 +69,13 @@ class ProfileAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val name = holder.name
+        val name = holder.username
         val fullName = holder.fullName
         fullName.text = currentDataSet[position].fullName()
-        name.text = currentDataSet[position].username
+        name.text = String.format(
+            holder.view.resources.getString(R.string.username_format),
+            currentDataSet[position].username
+        )
         bindImages(holder, position)
         when {
             currentDataSet[position].uuid == loggedUser.uuid -> {

@@ -8,7 +8,7 @@
 
     <style name="profileListCirclePic" parent="">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">36dp</item>
+        <item name="cornerSize">30dp</item>
         <item name="color">@color/theme_bright</item>
     </style>
 
