@@ -127,8 +127,15 @@ object UIMockProfileServiceModule {
                 if (!user.canFollow(targetId)) {
                     return Response.Failure("Cannot follow this user.")
                 }
+                val targetProfile = fetch(targetId)!!
                 db[user.uuid] = user.copy(following = user.following.plus(targetId))
+                if (updateAchievementsFollower(user) != null) {
+                    db[user.uuid] = user.copy(achievements = user.achievements().map{it.string}.plus(updateAchievementsFollower(user)!!))
+                }
                 db[targetId] = db[targetId]!!.copy(followed = db[targetId]!!.followed.plus(user.uuid))
+                if (updateAchievementsFollowed(targetProfile) != null) {
+                    db[targetId] = user.copy(achievements = user.achievements().map{it.string}.plus(updateAchievementsFollower(targetProfile)!!))
+                }
                 Response.Success(Unit)
             } catch (e: Exception) {
                 Response.Failure(e.message.orEmpty())

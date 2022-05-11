@@ -223,4 +223,43 @@ class FirebaseProfileServiceTest {
         assert(!db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.following.contains(id2))
         assert(!db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.followed.contains(id))
     }
+
+    @Test
+    fun achievementsWork() = runTest {
+        val id = firebaseProfileService.create(profile)
+        val id2 = firebaseProfileService.create(profile2)
+        assert(db.collection(PROFILE_COLL).document(id!!).get().await().toProfileUser()!!.achievements().isEmpty())
+
+        firebaseProfileService.followUser(firebaseProfileService.fetch(id)!!, id2!!)
+        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.achievements().isEmpty())
+        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.achievements().isEmpty())
+
+        var list = List(4){" "}
+        firebaseProfileService.edit(id, profile.copy(following = list))
+        firebaseProfileService.edit(id2, profile2.copy(followed = list))
+        firebaseProfileService.followUser(firebaseProfileService.fetch(id)!!, id2)
+        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.achievements().contains(Achievement.PAL_FINDER))
+        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.achievements().contains(Achievement.BEAUTY_AND_THE_PAL))
+
+        list = List(9){" "}
+        firebaseProfileService.edit(id, profile.copy(following = list))
+        firebaseProfileService.edit(id2, profile2.copy(followed = list))
+        firebaseProfileService.followUser(firebaseProfileService.fetch(id)!!, id2)
+        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.achievements().contains(Achievement.PAL_MINER))
+        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.achievements().contains(Achievement.CRYPTOPAL))
+
+        list = List(29){" "}
+        firebaseProfileService.edit(id, profile.copy(following = list))
+        firebaseProfileService.edit(id2, profile2.copy(followed = list))
+        firebaseProfileService.followUser(firebaseProfileService.fetch(id)!!, id2)
+        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.achievements().contains(Achievement.PAL_TRACKER))
+        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.achievements().contains(Achievement.MASTER_OF_CATS))
+
+        list = List(99){" "}
+        firebaseProfileService.edit(id, profile.copy(following = list))
+        firebaseProfileService.edit(id2, profile2.copy(followed = list))
+        firebaseProfileService.followUser(firebaseProfileService.fetch(id)!!, id2)
+        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.achievements().contains(Achievement.PALDEX_COMPLETED))
+        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.achievements().contains(Achievement.VERIFIED))
+    }
 }
