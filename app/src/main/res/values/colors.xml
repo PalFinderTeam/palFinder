@@ -8,6 +8,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="color_opaque">#17000000</color>
+
     <!-- Add app color palette -->
     <color name="theme_brighter">#FFFAEE</color>
     <color name="theme_bright">#EFEBE2</color>
@@ -15,6 +17,7 @@
     <color name="theme_darker">#191517</color>
     <color name="theme_primary_default">#406045</color>
     <color name="theme_primary">#F3AC3E</color>
+
 
     <color name="primaryWarm">#E67436</color>
     <color name="primaryVariantWarm">#36CCE6</color>
