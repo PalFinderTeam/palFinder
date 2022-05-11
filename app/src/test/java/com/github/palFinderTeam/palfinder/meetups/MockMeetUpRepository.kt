@@ -10,6 +10,7 @@ import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 
 class MockMeetUpRepository : MeetUpRepository {
     val db: HashMap<String, MeetUp> = hashMapOf()
@@ -146,6 +147,10 @@ class MockMeetUpRepository : MeetUpRepository {
         } else {
             return userMeetUps
         }
+    }
+
+    override suspend fun getAllJoinedMeetupID(): List<String> {
+        return fetchAll(Calendar.getInstance()).toList()[0].filter { it.isParticipating("user1") }.map { it.uuid }
     }
 
     override suspend fun exists(uuid: String): Boolean {
