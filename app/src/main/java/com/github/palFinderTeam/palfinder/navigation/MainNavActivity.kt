@@ -11,9 +11,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
+import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
+import com.github.palFinderTeam.palfinder.profile.ProfileAdapter
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
@@ -29,6 +32,9 @@ import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -173,8 +179,16 @@ class MainNavActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
             createPopUp(this, {
-                //follow user or join meetup
-            }, textId = R.string.qr_scan_follow_account,
+                CoroutineScope(Dispatchers.IO).launch {
+                    profileService.followUser(
+                        profileService.fetch(profileService.getLoggedInUserID()!!)!!,
+                        result.contents
+                    )
+                }.invokeOnCompletion { val intent = Intent(this, ProfileActivity::class.java)
+                    .apply { putExtra(USER_ID, result.contents) }
+                    startActivity(intent) }
+                              }
+            , textId = R.string.qr_scan_follow_account,
                 continueButtonTextId = R.string.follow)
         }
     }
