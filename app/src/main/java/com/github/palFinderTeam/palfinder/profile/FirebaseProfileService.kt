@@ -1,6 +1,11 @@
 package com.github.palFinderTeam.palfinder.profile
 
+
 import android.icu.util.Calendar
+import android.util.Log
+import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.notification.NotificationHandler
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.ACHIEVEMENTS_OBTAINED
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWED_BY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWING_PROFILES
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
@@ -44,15 +49,28 @@ open class FirebaseProfileService @Inject constructor(
             if (!user.canFollow(targetId)) {
                 return Response.Failure("Cannot follow this user.")
             }
+            val targetProfile = fetch(targetId)!!
             val batch = db.batch()
             batch.update(
                 db.collection(PROFILE_COLL).document(user.uuid),
                 FOLLOWING_PROFILES, FieldValue.arrayUnion(targetId)
             )
+            if (updateAchievementsFollower(user) != null) {
+                batch.update(
+                    db.collection(PROFILE_COLL).document(user.uuid),
+                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollower(user))
+                )
+            }
             batch.update(
                 db.collection(PROFILE_COLL).document(targetId),
                 FOLLOWED_BY, FieldValue.arrayUnion(user.uuid)
             )
+            if (updateAchievementsFollowed(targetProfile) != null) {
+                batch.update(
+                    db.collection(PROFILE_COLL).document(targetId),
+                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollowed(targetProfile))
+                )
+            }
             batch.commit().await()
             Response.Success(Unit)
         } catch (e: Exception) {
@@ -82,6 +100,8 @@ open class FirebaseProfileService @Inject constructor(
     }
 
     override fun getLoggedInUserID(): String? = Firebase.auth.currentUser?.uid
+
+
 
 
     companion object {
