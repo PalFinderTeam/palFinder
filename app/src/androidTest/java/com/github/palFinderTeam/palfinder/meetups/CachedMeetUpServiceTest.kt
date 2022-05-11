@@ -49,8 +49,8 @@ class CachedMeetUpServiceTest {
 
         DictionaryCache.clearAllTempCaches(context.get())
 
-        firebaseMeetUpService = CachedMeetUpService(FirebaseMeetUpService(db), timeService, context)
         firebaseProfileService = CachedProfileService(FirebaseProfileService(db), timeService, context)
+        firebaseMeetUpService = CachedMeetUpService(FirebaseMeetUpService(db, firebaseProfileService), timeService, context)
 
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }

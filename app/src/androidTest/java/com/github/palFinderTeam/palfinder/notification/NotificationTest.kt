@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.notification
 
 import android.content.Context
+import android.icu.util.Calendar
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
@@ -12,8 +13,14 @@ import com.github.palFinderTeam.palfinder.MainActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.chat.ChatService
+import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.utils.CriterionGender
+import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -24,6 +31,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.*
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -31,6 +39,9 @@ import javax.inject.Inject
 class NotificationTest {
     private val uiDevice by lazy { UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()) }
     private val timeout = 10000L
+
+    private lateinit var meetUp: MeetUp
+    private lateinit var user1: ProfileUser
 
     @Rule
     @JvmField
@@ -59,6 +70,31 @@ class NotificationTest {
         hiltRule.inject()
         val context: Context = ApplicationProvider.getApplicationContext()
         DictionaryCache.clearAllTempCaches(context)
+
+        user1 = ProfileUser(
+            "userId", "Michel", "Jordan", "Surimi", Calendar.getInstance(),
+            ImageInstance(""), following = listOf("userId2")
+        )
+
+        val date1 = Calendar.getInstance().apply { time = Date(0) }
+        val date2 = Calendar.getInstance().apply { time = Date(1) }
+
+        meetUp = MeetUp(
+            "dummy",
+            "userId",
+            null,
+            "dummy",
+            "dummy",
+            date1,
+            date2,
+            Location(0.0, 0.0),
+            setOf(Category.DRINKING),
+            true,
+            3,
+            listOf("userId"),
+            Pair(null, null),
+            CriterionGender.ALL
+        )
     }
 
 
@@ -99,10 +135,9 @@ class NotificationTest {
         assertTrue(text.text.startsWith(expectedContent))
         uiDevice.findObject(By.textStartsWith("Clear all")).click()
     }
-    // Might be usefull later
-    /*
+
     @Test
-    fun cachedNotification()  = runTest {
+    fun cachedNotification() = runTest {
         val context: Context = ApplicationProvider.getApplicationContext()
 
         val expectedTitle = "title"
@@ -110,13 +145,13 @@ class NotificationTest {
 
         val handler = NotificationHandler(context)
         handler.schedule(Calendar.getInstance(), R.string.testNotifTitle,R.string.testNotifContent, R.drawable.icon_beer)
-
-        val notifications = DictionaryCache("notification", CachedNotification::class.java, false, context)
-        assertThat(notifications.getAll().any { it.title == expectedTitle }, `is`(true))
     }
 
     @Test
-    fun actionWorks() {
+    fun actionWorks() = runTest {
+        val userId = profileRepository.create(user1)
+        val id = meetUpRepository.create(meetUp)
+
         notificationService.action()
-    }*/
+    }
 }

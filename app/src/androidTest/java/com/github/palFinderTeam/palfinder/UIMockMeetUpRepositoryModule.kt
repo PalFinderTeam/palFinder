@@ -18,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import javax.inject.Singleton
 
 @Module
@@ -183,6 +184,10 @@ object UIMockMeetUpRepositoryModule {
             } else {
                 return userMeetUps
             }
+        }
+
+        override suspend fun getAllJoinedMeetupID(): List<String> {
+            return fetchAll(Calendar.getInstance()).toList()[0].filter { it.isParticipating("user1") }.map { it.uuid }
         }
 
         override suspend fun exists(uuid: String): Boolean {

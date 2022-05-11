@@ -2,7 +2,6 @@ package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
