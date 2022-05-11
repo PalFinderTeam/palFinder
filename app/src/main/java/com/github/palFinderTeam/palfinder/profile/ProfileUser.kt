@@ -167,4 +167,8 @@ data class ProfileUser(
     fun achievements(): List<Achievement> {
         return achievements.reversed().map { Achievement.from(it) }
     }
+
+    fun canBlock(uuid: String): Boolean {
+        return !blockedUsers.contains(uuid)
+    }
 }

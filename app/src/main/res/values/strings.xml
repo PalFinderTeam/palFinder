@@ -204,6 +204,7 @@
     <string name="no_camera_permission_message">Cancelled due to missing camera permission</string>
     <string name="cancelled_scan">Cancelled scan</string>
     <string name="block_user">Block user</string>
+    <string name="unblock_user">Unblock user</string>
 
 
 </resources>
