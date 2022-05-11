@@ -3,6 +3,8 @@ package com.github.palFinderTeam.palfinder
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -12,16 +14,17 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
-import com.github.palFinderTeam.palfinder.profile.ProfileService
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
-import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
-import com.github.palFinderTeam.palfinder.profile.USER_ID
+import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.meetups.activities.RecyclerViewMatcher
+import com.github.palFinderTeam.palfinder.profile.*
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.github.palFinderTeam.palfinder.utils.launchFragmentInHiltContainer
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.hamcrest.Matchers.notNullValue
 import org.junit.*
 import javax.inject.Inject
 
@@ -153,8 +156,10 @@ class ProfileActivityTest {
         // Launch activity
         val scenario = ActivityScenario.launch<ProfileActivity>(intent)
         scenario.use {
-            onView(withId(R.id.userProfileDescOverflow)).check(matches(
-                withEffectiveVisibility(Visibility.GONE))
+            onView(withId(R.id.userProfileDescOverflow)).check(
+                matches(
+                    withEffectiveVisibility(Visibility.GONE)
+                )
             )
         }
     }
@@ -169,7 +174,7 @@ class ProfileActivityTest {
         val scenario = ActivityScenario.launch<ProfileActivity>(intent)
 
         scenario.use {
-            onView(withId(R.id.userProfileDescOverflow)).perform(scrollTo(),ViewActions.click())
+            onView(withId(R.id.userProfileDescOverflow)).perform(scrollTo(), ViewActions.click())
             onView(withId(R.id.userProfileDescription)).check(matches(withText(userLongBio.description)))
         }
     }
@@ -200,5 +205,36 @@ class ProfileActivityTest {
         return targetContext.getResources().getString(id)
     }
 
+
+    @Test
+    fun followWorksOnProfileView() = runTest {
+        val userid = profileService.create(userLouca)
+        val id2 = profileService.create(userCat)
+
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userid!!)
+
+        assertThat(userid, notNullValue())
+
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, id2) }
+        val scenario =
+            ActivityScenario.launch<ProfileActivity>(intent)
+        scenario!!.use {
+
+            assert(!profileService.fetch(userid)!!.following.contains(id2))
+            assert(!profileService.fetch(id2!!)!!.followed.contains(userid))
+            onView(
+                withId(R.id.button_follow_profile)
+            ).perform(ViewActions.click())
+            assert(profileService.fetch(userid)!!.following.contains(id2))
+            assert(profileService.fetch(id2)!!.followed.contains(userid))
+            onView(
+                withId(R.id.button_follow_profile)
+            ).perform(ViewActions.click())
+            assert(!profileService.fetch(userid)!!.following.contains(id2))
+            assert(!profileService.fetch(id2)!!.followed.contains(userid))
+        }
+    }
 }
 

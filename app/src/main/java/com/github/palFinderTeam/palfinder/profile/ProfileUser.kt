@@ -30,7 +30,8 @@ data class ProfileUser(
     val gender: Gender? = Gender.NON_SPEC,
     val following: List<String> = emptyList(),
     val followed: List<String> = emptyList(),
-    val blockedUsers: List<String> = emptyList()
+    val blockedUsers: List<String> = emptyList(),
+    private val achievements: List<String> = emptyList()
 ) : Serializable, FirebaseObject {
 
     companion object {
@@ -47,6 +48,7 @@ data class ProfileUser(
         const val FOLLOWING_PROFILES = "following"
         const val FOLLOWED_BY = "followed"
         const val BLOCKED_USERS = "blocked_users"
+        const val ACHIEVEMENTS_OBTAINED = "achievements"
 
         /**
          * Provide a way to convert a Firestore query result, in a ProfileUser.
@@ -77,11 +79,23 @@ data class ProfileUser(
                 val following = (get(FOLLOWING_PROFILES) as? List<String>).orEmpty()
                 val followed = (get(FOLLOWED_BY) as? List<String>).orEmpty()
                 val blockedUsers = (get(BLOCKED_USERS) as? List<String>).orEmpty()
+                val achievements = (get(ACHIEVEMENTS_OBTAINED) as? List<String>).orEmpty()
 
                 ProfileUser(
-                    uuid, username, name, surname,
-                    joinDateCal, ImageInstance(picture), description,
-                    birthdayCal, joinedMeetUp, gender, following, followed, blockedUsers
+                    uuid,
+                    username,
+                    name,
+                    surname,
+                    joinDateCal,
+                    ImageInstance(picture),
+                    description,
+                    birthdayCal,
+                    joinedMeetUp,
+                    gender,
+                    following,
+                    followed,
+                    blockedUsers,
+                    achievements
                 )
 
             } catch (e: Exception) {
@@ -107,7 +121,8 @@ data class ProfileUser(
             GENDER to gender?.stringGender,
             FOLLOWING_PROFILES to following,
             FOLLOWED_BY to followed,
-            BLOCKED_USERS to blockedUsers
+            BLOCKED_USERS to blockedUsers,
+            ACHIEVEMENTS_OBTAINED to achievements
         )
     }
 
@@ -147,5 +162,9 @@ data class ProfileUser(
     fun prettyJoinTime(): String {
         val prettyDate = PrettyDate()
         return String.format(JOIN_FORMAT, prettyDate.timeDiff(joinDate))
+    }
+
+    fun achievements(): List<Achievement> {
+        return achievements.reversed().map { Achievement.from(it) }
     }
 }
