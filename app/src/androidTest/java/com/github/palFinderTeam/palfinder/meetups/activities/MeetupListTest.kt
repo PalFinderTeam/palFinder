@@ -131,7 +131,7 @@ class MeetUpListTest {
                 startDate = date2,
                 endDate = date1,
                 location = Location(-122.0, 38.0),
-                tags = setOf(Category.WORKING_OUT, Category.DUMMY_TAG1),
+                tags = setOf(Category.WORKING_OUT, Category.SPORTS),
                 capacity = 48,
                 creatorId = user1,
                 hasMaxCapacity = true,
@@ -307,7 +307,7 @@ class MeetUpListTest {
             scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 listFrag.filter(setOf(Category.CINEMA))
                 assert(listFrag.adapter.currentDataSet.isEmpty())
-                listFrag.filter(setOf(Category.WORKING_OUT, Category.DUMMY_TAG1))
+                listFrag.filter(setOf(Category.WORKING_OUT, Category.SPORTS))
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(1))
                 listFrag.filter(setOf())
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(5))
