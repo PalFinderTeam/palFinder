@@ -96,11 +96,12 @@ class ProfileActivity : AppCompatActivity() {
     /**
      * binds the follow/unfollow button
      */
-    private fun bindFollow(view: View?, profile: ProfileUser) {
+    private fun bindFollow(view: View?, profileViewed: ProfileUser) {
+        val followButton = findViewById<Button>(R.id.button_follow_profile)
         viewModel.logged_profile.observe(this) {
             when(it) {
                 is Response.Success -> {
-                   followSystem(it.data, profile, findViewById(R.id.button_follow_profile))
+                   followSystem(it.data, profileViewed, followButton)
                 }
                 is Response.Loading -> Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
                 is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
