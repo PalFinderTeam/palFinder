@@ -184,17 +184,16 @@ class MainNavActivity : AppCompatActivity() {
                 getString(R.string.scanned)+ ": " + result.contents,
                 Toast.LENGTH_LONG
             ).show()
-            if (result.contents.startsWith("0")) {
+            if (result.contents.startsWith(USER_ID)) {
                 createPopUp(this, {
                     CoroutineScope(Dispatchers.IO).launch {
                         profileService.followUser(
                             profileService.fetch(profileService.getLoggedInUserID()!!)!!,
-                            result.contents.drop(1)
+                            result.contents.removePrefix(USER_ID)
                         )
                     }.invokeOnCompletion {
-                        //0 will be used for a user_id, 1 for a meetup id
                             val intent = Intent(this, ProfileActivity::class.java)
-                                .apply { putExtra(USER_ID, result.contents.drop(1)) }
+                                .apply { putExtra(USER_ID, result.contents.removePrefix(USER_ID)) }
                             startActivity(intent)
                     }
                 }, textId = R.string.qr_scan_follow_account,
@@ -202,12 +201,13 @@ class MainNavActivity : AppCompatActivity() {
             } else {
                 createPopUp(this, {
                     CoroutineScope(Dispatchers.IO).launch {
-                        meetUpRepository.joinMeetUp(result.contents.drop(1),
+                        meetUpRepository.joinMeetUp(result.contents.removePrefix(MEETUP_SHOWN),
                             profileService.getLoggedInUserID()!!, Calendar.getInstance(),
                             profileService.fetch(profileService.getLoggedInUserID()!!)!!)
                     }.invokeOnCompletion {
                             val intent = Intent(this, MeetUpView::class.java)
-                                .apply { putExtra(MEETUP_SHOWN, result.contents.drop(1)) }
+                                .apply { putExtra(MEETUP_SHOWN, result.contents.removePrefix(
+                                    MEETUP_SHOWN)) }
                             startActivity(intent)
                     }
                 }, textId = R.string.qr_scan_follow_account,

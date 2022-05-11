@@ -193,8 +193,7 @@ class ProfileActivity : AppCompatActivity() {
         //Initiate the barcode encoder
         val barcodeEncoder = BarcodeEncoder()
         //Encode text in editText into QRCode image into the specified size using barcodeEncoder
-        //0 will be used for an user_id, 1 for a meetup id
-        val bitmap = barcodeEncoder.encodeBitmap("0"+intent.getStringExtra(USER_ID), BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
+        val bitmap = barcodeEncoder.encodeBitmap(USER_ID+intent.getStringExtra(USER_ID), BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
 
         //Set up the popup image
         val imagePopup = ImagePopup(this)
