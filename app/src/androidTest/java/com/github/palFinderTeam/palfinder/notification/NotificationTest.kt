@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder.notification
 
 import android.content.Context
-import android.icu.util.Calendar
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
@@ -20,8 +19,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -102,7 +99,8 @@ class NotificationTest {
         assertTrue(text.text.startsWith(expectedContent))
         uiDevice.findObject(By.textStartsWith("Clear all")).click()
     }
-
+    // Might be usefull later
+    /*
     @Test
     fun cachedNotification()  = runTest {
         val context: Context = ApplicationProvider.getApplicationContext()
@@ -120,5 +118,5 @@ class NotificationTest {
     @Test
     fun actionWorks() {
         notificationService.action()
-    }
+    }*/
 }
