@@ -38,6 +38,9 @@ class ProfileViewModel @Inject constructor(
     private var _meetupDataSet: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
     var meetupDataSet: LiveData<Response<List<MeetUp>>> = _meetupDataSet
 
+    private val _logged_profile: MutableLiveData<Response<ProfileUser>> = MutableLiveData()
+    val logged_profile: LiveData<Response<ProfileUser>> = _logged_profile
+
     /**
      * Fetch user profile and post its value
      * @param userId
@@ -49,6 +52,17 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
+    fun fetchLoggedProfile() {
+        viewModelScope.launch {
+            if (profileService.getLoggedInUserID() != null) {
+                profileService.fetchFlow(profileService.getLoggedInUserID()!!).collect {
+                    _logged_profile.postValue(it)
+                }
+            }
+        }
+    }
+
 
     /**
      * Fetch user profiles and post the values in the list

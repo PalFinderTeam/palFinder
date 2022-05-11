@@ -12,7 +12,6 @@ import androidx.core.view.isVisible
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
-import com.github.palFinderTeam.palfinder.databinding.NoAccountWarningBinding
 import com.github.palFinderTeam.palfinder.profile.ProfileListFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
@@ -23,7 +22,6 @@ import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 //ids for putExtra function, to pass Meetups between views
@@ -47,7 +45,7 @@ class MeetUpView : AppCompatActivity() {
         val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
         viewModel.loadMeetUp(meetupId)
         //button (image for design purpuses) to show the list of users participating in this meetUp
-        val button = findViewById<ImageView>(R.id.show_profile_list_button)
+        val button = findViewById<ImageView>(R.id.show_qr_button)
         button.setOnClickListener { showProfileList() }
 
         //fill fields when the meetup is loaded from database
@@ -80,7 +78,7 @@ class MeetUpView : AppCompatActivity() {
             this.isVisible = isCreator
             this.isClickable = isCreator
         }
-        findViewById<Button>(R.id.bt_JoinMeetup).apply {
+        findViewById<Button>(R.id.button_follow_profile).apply {
             this.isEnabled = !isCreator
             this.isClickable = !isCreator
             this.text = if (hasJoined) getString(R.string.meetup_view_leave) else getString(R.string.meetup_view_join)
