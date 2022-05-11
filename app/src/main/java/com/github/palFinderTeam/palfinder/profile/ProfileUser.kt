@@ -28,7 +28,8 @@ data class ProfileUser(
     val joinedMeetUps: List<String> = emptyList(),
     val gender: Gender? = Gender.NON_SPEC,
     val following: List<String> = emptyList(),
-    val followed: List<String> = emptyList()
+    val followed: List<String> = emptyList(),
+    private val achievements: List<String> = emptyList()
 ) : Serializable, FirebaseObject {
 
     companion object {
@@ -44,6 +45,7 @@ data class ProfileUser(
         const val GENDER = "gender"
         const val FOLLOWING_PROFILES = "following"
         const val FOLLOWED_BY = "followed"
+        const val ACHIEVEMENTS_OBTAINED = "achievements"
 
         /**
          * Provide a way to convert a Firestore query result, in a ProfileUser.
@@ -73,11 +75,11 @@ data class ProfileUser(
                 }
                 val following = (get(FOLLOWING_PROFILES) as? List<String>).orEmpty()
                 val followed = (get(FOLLOWED_BY) as? List<String>).orEmpty()
-                ProfileUser(
-                    uuid, username, name, surname,
+
+                val achievements = (get(ACHIEVEMENTS_OBTAINED) as? List<String>).orEmpty()
+                ProfileUser(uuid, username, name, surname,
                     joinDateCal, ImageInstance(picture), description,
-                    birthdayCal, joinedMeetUp, gender, following, followed
-                )
+                    birthdayCal, joinedMeetUp, gender, following, followed, achievements)
 
             } catch (e: Exception) {
                 Log.e("ProfileUser", "Error deserializing user", e)
@@ -101,7 +103,8 @@ data class ProfileUser(
             JOINED_MEETUPS_KEY to joinedMeetUps,
             GENDER to gender?.stringGender,
             FOLLOWING_PROFILES to following,
-            FOLLOWED_BY to followed
+            FOLLOWED_BY to followed,
+            ACHIEVEMENTS_OBTAINED to achievements
         )
     }
 
@@ -141,5 +144,9 @@ data class ProfileUser(
     fun prettyJoinTime(): String {
         val prettyDate = PrettyDate()
         return String.format(JOIN_FORMAT, prettyDate.timeDiff(joinDate))
+    }
+
+    fun achievements(): List<Achievement> {
+        return achievements.reversed().map {Achievement.from(it) }
     }
 }
