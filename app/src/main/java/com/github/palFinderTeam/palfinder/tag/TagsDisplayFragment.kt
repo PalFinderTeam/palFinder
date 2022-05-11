@@ -8,9 +8,10 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.github.palFinderTeam.palfinder.R
 import com.google.android.material.chip.Chip
@@ -34,7 +35,8 @@ class TagsDisplayFragment<T: Tag>() : Fragment() {
     )
 
     private lateinit var tagGroup: ChipGroup
-    private lateinit var plusButton: Button
+    private lateinit var plusButton: ImageView //Changed from button for design purposes
+    private lateinit var placeholderText: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,11 +47,13 @@ class TagsDisplayFragment<T: Tag>() : Fragment() {
 
         tagGroup = binding.findViewById(R.id.tag_group)
         plusButton = binding.findViewById(R.id.addTagButton)
+        placeholderText = binding.findViewById(R.id.tv_add_tags)
 
         viewModel.isEditable.observe(viewLifecycleOwner) { isEditable ->
             setEditableUI(isEditable)
         }
         plusButton.setOnClickListener { showTagSelector() }
+        placeholderText.setOnClickListener { showTagSelector() }
 
         viewModel.tagContainer.observe(viewLifecycleOwner) { newTags ->
             displayTags(newTags)
@@ -73,15 +77,19 @@ class TagsDisplayFragment<T: Tag>() : Fragment() {
     }
 
     private fun displayTags(tags: Set<T>) {
+        // Display placeholder or tags area
+        if(tags.isEmpty()){
+            placeholderText.visibility = VISIBLE
+            tagGroup.visibility = GONE
+        } else {
+            placeholderText.visibility = GONE
+            tagGroup.visibility = VISIBLE
+        }
+
         // We recreate the whole list, it is a bit overkill but much simpler
         tagGroup.removeAllViews()
         tags.forEach { tag ->
             val chip = Chip(activity)
-            val paddingDp = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 10f,
-                resources.displayMetrics
-            ).toInt()
-            chip.setPadding(paddingDp, paddingDp, paddingDp, paddingDp)
             chip.text = tag.tagName
             chip.isCloseIconVisible = viewModel.isEditable.value == true
             chip.setOnCloseIconClickListener {
