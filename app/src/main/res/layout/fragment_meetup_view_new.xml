@@ -54,7 +54,7 @@
                 android:onClick="onChat"
                 android:paddingBottom="18dp"
                 android:text="Organized by \@%s"
-                android:textColor="@color/theme_primary"
+                android:textColor="?attr/colorSecondary"
                 android:textSize="18sp" />
 
             <TextView
