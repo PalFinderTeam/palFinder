@@ -124,14 +124,14 @@
     <string name="action_sign_in_short">Se connnecter</string>
     <string name="welcome">"Bienvenue !"</string>
     <string name="invalid_username">Nom d\'utilisateur invalide</string>
-    <string name="invalid_password">Le mot de passe doit faire au moins 5 characters</string>
+    <string name="invalid_password">Le mot de passe doit faire au moins 5 caractères</string>
     <string name="login_failed">"Connection échouée"</string>
-    <string name="limit_people">Limité la particpation à</string>
+    <string name="limit_people">Limiter la participation à</string>
     <string name="DB_error_msg">Problème de connection à la base de donnée</string>
 
     <string name="criterions_title">Critères de la rencontre</string>
     <string name="criterions_age_title">Sélection de l\'age</string>
-    <string name="criterions_age_desc">Si vous souhaiter continuer avec ces paramètres, uniquement les personnes ayant entré leur anniversaires pourront rejoindre la rencontre</string>
+    <string name="criterions_age_desc">Si vous souhaitez continuer avec ces paramètres, uniquement les personnes ayant entré leur anniversaires pourront rejoindre la rencontre</string>
     <string name="criterions_age_min">13</string>
     <string name="criterions_age_max">66</string>
     <string name="criterions_age_max_plus">66+</string>
@@ -207,7 +207,17 @@
     <string name="scanned">Scanné</string>
     <string name="no_camera_permission_message">Annulé à cause des permissions de la caméra</string>
     <string name="cancelled_scan">Scan annulé</string>
+
     <string name="title_attendees_list">Participants</string>
     <string name="search_user_hint">Chercher un utilisateur</string>
+  
+    <string name="meetup_with_blocked">Vous ne pouvez pas rejoindre cette rencontre car vous avez bloqué un des membres.</string>
+    <string name="block_user">Bloquer l\'utilisateur</string>
+    <string name="unblock_user">Débloquer l\'utilisateur</string>
 
+    <string name="following_content">%1$s vous suis!</string>
+    <string name="following_title">Nouveau Follower!</string>
+
+    <string name="meetup_start_title">%1$s commence!</string>
+  
 </resources>

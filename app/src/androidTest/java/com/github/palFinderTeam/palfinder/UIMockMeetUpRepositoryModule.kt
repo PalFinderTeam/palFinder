@@ -18,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import javax.inject.Singleton
 
 @Module
@@ -44,6 +45,8 @@ object UIMockMeetUpRepositoryModule {
     class UIMockRepository : MeetUpRepository {
         val db: HashMap<String, MeetUp> = hashMapOf()
         private var counter = 0
+
+        public var loggedUserID = "user"
 
         override suspend fun fetch(uuid: String): MeetUp? {
             return db[uuid]
@@ -183,6 +186,10 @@ object UIMockMeetUpRepositoryModule {
             } else {
                 return userMeetUps
             }
+        }
+
+        override suspend fun getAllJoinedMeetupID(): List<String> {
+            return fetchAll(Calendar.getInstance()).toList()[0].filter { it.isParticipating(loggedUserID) }.map { it.uuid }
         }
 
         override suspend fun exists(uuid: String): Boolean {

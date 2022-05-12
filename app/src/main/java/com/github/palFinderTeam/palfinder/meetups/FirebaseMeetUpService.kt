@@ -9,6 +9,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.PARTICIPANTS
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
 import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
+import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOINED_MEETUPS_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
@@ -21,9 +22,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -32,7 +31,8 @@ import javax.inject.Inject
  * Object containing methods to query the database about MeetUps.
  */
 open class FirebaseMeetUpService @Inject constructor(
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val profileService: ProfileService
 ) : MeetUpRepository {
 
     private val wrapper = FirestoreRepository(db, MEETUP_COLL, END_DATE) { it.toMeetUp() }
@@ -229,6 +229,11 @@ open class FirebaseMeetUpService @Inject constructor(
                 }
             }
         }
+    }
+
+    override suspend fun getAllJoinedMeetupID(): List<String>{
+        val lst = fetchAll(Calendar.getInstance()).take(1).toList()
+        return lst[0].filter { it.isParticipating(profileService.getLoggedInUserID()) }.map { it.uuid }
     }
 
     companion object {

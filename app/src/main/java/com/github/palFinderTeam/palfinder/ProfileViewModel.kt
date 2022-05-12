@@ -10,6 +10,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
 import com.github.palFinderTeam.palfinder.meetups.*
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.BLOCKED_USERS
 import com.github.palFinderTeam.palfinder.utils.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -104,6 +105,32 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             profileService.fetch(userId)?.let {
                 profileService.unfollowUser(it, otherId)
+            }
+        }
+    }
+
+    /**
+     * We handle the block/unblock logic here to avoid handling coroutines in
+     * the adapter. Notice that we need to fetch again the user who wants to follow,
+     * that's because we need to have the more up to date info.
+     */
+    fun block(userId: String, otherId: String) {
+        viewModelScope.launch {
+            profileService.fetch(userId)?.let {
+                // Sanity check
+                if (userId != otherId && !it.blockedUsers.contains(otherId)) {
+                    profileService.edit(it.uuid, BLOCKED_USERS, it.blockedUsers.plus(otherId))
+                }
+            }
+        }
+    }
+    fun unBlock(userId: String, otherId: String) {
+        viewModelScope.launch {
+            profileService.fetch(userId)?.let {
+                // Sanity check
+                if (userId != otherId && it.blockedUsers.contains(otherId)) {
+                    profileService.edit(it.uuid, BLOCKED_USERS, it.blockedUsers.minus(otherId))
+                }
             }
         }
     }

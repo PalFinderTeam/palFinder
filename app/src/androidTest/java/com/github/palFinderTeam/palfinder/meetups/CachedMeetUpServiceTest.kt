@@ -14,6 +14,7 @@ import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.*
@@ -48,8 +49,8 @@ class CachedMeetUpServiceTest {
 
         DictionaryCache.clearAllTempCaches(context.get())
 
-        firebaseMeetUpService = CachedMeetUpService(FirebaseMeetUpService(db), timeService, context)
         firebaseProfileService = CachedProfileService(FirebaseProfileService(db), timeService, context)
+        firebaseMeetUpService = CachedMeetUpService(FirebaseMeetUpService(db, firebaseProfileService), timeService, context)
 
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }
@@ -260,5 +261,24 @@ class CachedMeetUpServiceTest {
             val idNull = firebaseMeetUpService.edit(it, "NotAField", "NotAValue")
             assertThat(idNull, nullValue())
         }
+    }
+
+    @Test
+    fun getAllContainsMeetup() = runTest {
+        val userId = firebaseProfileService.create(user1)
+        meetUp = meetUp.copy(creatorId = userId!!)
+        val id = firebaseMeetUpService.create(meetUp)
+        val flow = firebaseMeetUpService.fetchAll(Calendar.getInstance().apply { time = Date(0) })
+        val lst = flow.take(1).toList()[0]
+        assertThat(lst.any{ it.name == meetUp.name }, `is`(true))
+    }
+
+    @Test
+    fun exitsTest() = runTest {
+        val userId = firebaseProfileService.create(user1)
+        meetUp = meetUp.copy(creatorId = userId!!)
+        val id = firebaseMeetUpService.create(meetUp)
+        assertThat(firebaseMeetUpService.exists(id!!), `is`(true))
+        assertThat(firebaseMeetUpService.exists("dummy"), `is`(false))
     }
 }
