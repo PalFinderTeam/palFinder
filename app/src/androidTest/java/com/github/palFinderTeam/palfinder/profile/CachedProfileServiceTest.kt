@@ -135,6 +135,7 @@ class CachedProfileServiceTest {
         assertThat(id2, notNullValue())
         if (id1 != null && id2 != null) {
             val fetchedUser = firebaseProfileService.fetch(listOf(id1, id2))
+            val cachedUser = firebaseProfileService.fetch(listOf(id1, id2))
             assertThat(fetchedUser, notNullValue())
             assertThat(fetchedUser, hasItems(profile, profile2))
             // Make sure to clean for next tests
@@ -149,6 +150,7 @@ class CachedProfileServiceTest {
         assertThat(id, notNullValue())
         id!!.let {
             val fetchedUserFlow = firebaseProfileService.fetchFlow(it)
+            val cachedFlow = firebaseProfileService.fetchFlow(it)
             val loading = fetchedUserFlow.take(2).toList()
             assertThat(loading[0], instanceOf(Response.Loading::class.java))
             assertThat(loading[1], `is`(Response.Success(profile)))
@@ -198,5 +200,25 @@ class CachedProfileServiceTest {
     fun addNewProfileUseSameIdAsProfile() = runTest {
         val id = firebaseProfileService.create(profile)
         assertThat(id, `is`(profile.uuid))
+    }
+
+    @Test
+    fun getLoggedInUser() = runTest {
+        val userId = firebaseProfileService.getLoggedInUserID()
+    }
+
+    @Test
+    fun getAllContainsMeetup() = runTest {
+        val userId = firebaseProfileService.create(profile)
+        val flow = firebaseProfileService.fetchAll(Calendar.getInstance().apply { time = Date(0) })
+        val lst = flow.take(1).toList()[0]
+        assertThat(lst, hasItems(profile))
+    }
+
+    @Test
+    fun exitsTest() = runTest {
+        val userId = firebaseProfileService.create(profile)
+        assertThat(firebaseProfileService.exists(userId!!), `is`(true))
+        assertThat(firebaseProfileService.exists("dummyasdfghj"), `is`(false))
     }
 }

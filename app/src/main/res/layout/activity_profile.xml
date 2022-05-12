@@ -81,7 +81,7 @@
                     android:orientation="horizontal">
 
                     <Button
-                        android:id="@+id/button_follow_profile"
+                        android:id="@+id/button_join_meetup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="0dp"
@@ -193,7 +193,26 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="parent">
+
             </androidx.recyclerview.widget.RecyclerView>
+
+            <FrameLayout
+                android:id="@+id/BlackListLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/theme_bright"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
+
+                <Button
+                    android:id="@+id/blackList"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/block_user"
+                    android:textAlignment="center"
+                    app:icon="@drawable/ic_baseline_cancel_24" />
+            </FrameLayout>
 
         </LinearLayout>
     </ScrollView>

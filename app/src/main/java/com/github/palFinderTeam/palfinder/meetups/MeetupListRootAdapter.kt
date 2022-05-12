@@ -1,18 +1,14 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.utils.Location
-import com.github.palFinderTeam.palfinder.utils.PrettyDate
-import com.github.palFinderTeam.palfinder.utils.SearchedFilter
+import com.github.palFinderTeam.palfinder.utils.time.PrettyDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -93,6 +89,7 @@ open class MeetupListRootAdapter(
                     it.loadImageInto(meetupPicture, context)
                 }
             }
+            meetupPicture.visibility = View.VISIBLE
         } else {
             meetupPicture.visibility = View.GONE
         }

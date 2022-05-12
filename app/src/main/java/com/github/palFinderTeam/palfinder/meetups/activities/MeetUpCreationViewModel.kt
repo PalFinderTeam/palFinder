@@ -18,8 +18,8 @@ import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
-import com.github.palFinderTeam.palfinder.utils.isBefore
-import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
+import com.github.palFinderTeam.palfinder.utils.time.isBefore
+import com.github.palFinderTeam.palfinder.utils.time.isDeltaBefore
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

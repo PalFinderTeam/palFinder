@@ -8,7 +8,7 @@ import android.text.format.DateFormat
 import android.widget.TimePicker
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
-import com.github.palFinderTeam.palfinder.utils.SimpleTime
+import com.github.palFinderTeam.palfinder.utils.time.SimpleTime
 import java.util.*
 import java.util.concurrent.CompletableFuture
 

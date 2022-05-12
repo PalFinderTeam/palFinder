@@ -31,6 +31,9 @@ import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.pickProfileImage
+import com.github.palFinderTeam.palfinder.utils.time.askTime
+import com.github.palFinderTeam.palfinder.utils.time.toSimpleDate
+import com.github.palFinderTeam.palfinder.utils.time.toSimpleTime
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.icondialog.IconDialog
