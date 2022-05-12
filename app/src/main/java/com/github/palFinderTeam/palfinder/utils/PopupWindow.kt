@@ -64,6 +64,9 @@ fun createPopUp(
 
 }
 
+/**
+ * dim the background of a popupWindow, code taken from : https://stackoverflow.com/questions/35874001/dim-the-background-using-popupwindow-in-android
+ */
 private fun PopupWindow.dimBehind() {
     val container = contentView.rootView
     val context = contentView.context
