@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
@@ -110,7 +111,8 @@ class MeetUpCreationViewModel @Inject constructor(
         _description.value = ""
         _tags.value = emptySet()
         _participantsId.value = listOf(profileService.getLoggedInUserID()!!)
-        _criterionAge.value = Pair(13, 66)
+        _criterionAge.value = Pair(CriterionsFragment.MIN_AGE, CriterionsFragment.MAX_AGE)
+        _marker.value = null
     }
 
     fun setStartDate(date: Calendar) {
