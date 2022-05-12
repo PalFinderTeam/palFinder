@@ -111,6 +111,7 @@ class MeetUpCreationViewModel @Inject constructor(
         _tags.value = emptySet()
         _participantsId.value = listOf(profileService.getLoggedInUserID()!!)
         _criterionAge.value = Pair(13, 66)
+        //TODO: Set marker to null for default?
     }
 
     fun setStartDate(date: Calendar) {
