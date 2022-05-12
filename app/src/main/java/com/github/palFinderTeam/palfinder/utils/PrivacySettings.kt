@@ -5,6 +5,6 @@ enum class PrivacySettings(val stringPrivacysettings: String) {
     PUBLIC("public"),
     FRIENDS("friends only");
     companion object{
-        fun from(type: String?): PrivacySettings = values().find { it.stringPrivacysettings == type } ?: PRIVATE
+        fun from(type: String?): PrivacySettings = values().find { it.stringPrivacysettings == type } ?: PUBLIC
     }
 }

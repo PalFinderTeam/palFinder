@@ -31,7 +31,7 @@ data class ProfileUser(
     val following: List<String> = emptyList(),
     val followed: List<String> = emptyList(),
     private val achievements: List<String> = emptyList(),
-    val privacySettings: PrivacySettings? = PrivacySettings.PUBLIC,
+    val privacySettings: PrivacySettings = PrivacySettings.PUBLIC,
 ) : Serializable, FirebaseObject {
 
     companion object {
@@ -81,10 +81,7 @@ data class ProfileUser(
 
                 val achievements = (get(ACHIEVEMENTS_OBTAINED) as? List<String>).orEmpty()
 
-                var privacySettings: PrivacySettings? = null
-                if (getString(PRIVACY_SETTINGS_KEY) != null) {
-                    privacySettings = PrivacySettings.from(getString(PRIVACY_SETTINGS_KEY))
-                }
+                val privacySettings = PrivacySettings.from(getString(PRIVACY_SETTINGS_KEY))
 
                 ProfileUser(uuid, username, name, surname,
                     joinDateCal, ImageInstance(picture), description,
