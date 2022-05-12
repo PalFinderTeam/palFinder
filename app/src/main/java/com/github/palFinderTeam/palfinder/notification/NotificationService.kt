@@ -34,6 +34,7 @@ class NotificationService @Inject constructor(
     val chatService: ChatService
 ): JobService() {
 
+    // Android want a default constructor
     constructor():this(
         AppContextService(),
         RealTimeService(),
@@ -56,6 +57,7 @@ class NotificationService @Inject constructor(
         }
         val context = contextService.get()
         runBlocking {
+            // Notification For Follow
             val id = profileService.getLoggedInUserID()
             if (id != null){
                 val logged = profileService.fetch(id!!)
@@ -69,6 +71,7 @@ class NotificationService @Inject constructor(
                     }
                 }
             }
+            //Notification For Meetup
             for (m in meetupService.getAllJoinedMeetupID()) {
                 var meetup = meetupService.fetch(m)
                 val meta = if (meetupsMetaData.contains(m)) {
