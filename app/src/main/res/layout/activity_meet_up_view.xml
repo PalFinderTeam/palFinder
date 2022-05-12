@@ -28,13 +28,13 @@
             android:layout_height="89dp" />
 
         <Button
-            android:id="@+id/show_profile_list_button"
+            android:id="@+id/show_qr_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/show_profiles" />
 
         <Button
-            android:id="@+id/bt_JoinMeetup"
+            android:id="@+id/button_follow_profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="onJoinOrLeave"
