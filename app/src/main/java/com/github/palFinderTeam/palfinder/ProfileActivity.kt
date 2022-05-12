@@ -159,8 +159,14 @@ class ProfileActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.userProfileUsername).text = user.atUsername()
         findViewById<TextView>(R.id.userProfileJoinDate).apply { text = user.prettyJoinTime() }
 
-        findViewById<TextView>(R.id.followers).text = String.format(FOLLOWERS, user.followed.size)
-        findViewById<TextView>(R.id.following).text = String.format(FOLLOWING, user.following.size)
+        findViewById<TextView>(R.id.followers).text = String.format(
+            getString(R.string.following_nb),
+            user.followed.size
+        )
+        findViewById<TextView>(R.id.following).text = String.format(
+            getString(R.string.followers_nb),
+            user.following.size
+        )
         if(user.canProfileBeSeenBy(viewModel.profileService.getLoggedInUserID()!!)) {
             findViewById<TextView>(R.id.userProfileName).text = user.fullName()
             injectBio(user.description)

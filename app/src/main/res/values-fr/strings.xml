@@ -145,6 +145,8 @@
 
     <string name="follow">Suivre</string>
     <string name="unfollow">Ne plus suivre</string>
+    <string name="following_nb">%d abonné(s)</string>
+    <string name="followers_nb">%d abonemment(s)</string>
 
     <string name="criterions_gender_title">Sélection du genre</string>
     <string name="radio_male">Homme</string>
