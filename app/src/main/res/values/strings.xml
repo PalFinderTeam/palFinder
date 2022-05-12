@@ -62,7 +62,7 @@
     <string name="meetup_creation_meetup_location_not_selected">Location not selected</string>
     <string name="meetup_creation_meetup_main_description">Set the general information about your Meetup! Add a catchy title, a short description, and specify where the even will take place.</string>
     <string name="meetup_creation_meetup_create">Create an Meetup</string>
-    <string name="meetup_creation_meetup_location_desc">Tap to choose the prefect location for you Meetup!</string>
+    <string name="meetup_creation_meetup_location_desc">Tap to choose the perfect location for you Meetup!</string>
     <string name="meetup_creation_meetup_marker_desc">Tap to chose your marker</string>
     <string name="meetup_creation_meetup_date">When do you plan this event?</string>
     <string name="meetup_creation_meetup_date_desc">Select a start and end date/time</string>
