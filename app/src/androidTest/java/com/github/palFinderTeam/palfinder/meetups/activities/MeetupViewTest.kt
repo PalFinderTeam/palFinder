@@ -718,12 +718,30 @@ class MeetupViewTest {
         ActivityScenario.launch<MeetUpView>(intent)
 
         // Join
-        onView(withId(R.id.button_follow_profile)).perform(betterScrollTo()).perform(click())
+        onView(withId(R.id.button_join_meetup)).perform(betterScrollTo()).perform(click())
         assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid!!), `is`(true))
 
         // Leave
-        onView(withId(R.id.button_follow_profile)).perform(betterScrollTo()).perform(click())
+        onView(withId(R.id.button_join_meetup)).perform(betterScrollTo()).perform(click())
         assertThat(meetUpRepository.fetch(mid)!!.isParticipating(uid), `is`(false))
+    }
+
+    @Test
+    fun testCannotJoinWithBlockedUser() = runTest {
+        val mid = meetUpRepository.create(meetup)
+        val uid = profileRepository.create(user2.copy(blockedUsers = listOf("user")))
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+
+        ActivityScenario.launch<MeetUpView>(intent)
+
+        // Join
+        onView(withId(R.id.button_join_meetup)).perform(betterScrollTo()).perform(click())
+        assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid!!), `is`(false))
     }
 
     @Test
@@ -758,7 +776,7 @@ class MeetupViewTest {
         }
         ActivityScenario.launch<MeetUpView>(intent)
 
-        onView(withId(R.id.button_follow_profile)).check(matches(isNotClickable()))
+        onView(withId(R.id.button_join_meetup)).check(matches(isNotClickable()))
     }
 }
 

@@ -207,5 +207,8 @@
     <string name="scanned">Scanné</string>
     <string name="no_camera_permission_message">Annulé à cause des permissions de la caméra</string>
     <string name="cancelled_scan">Scan annulé</string>
+    <string name="meetup_with_blocked">Vous ne pouvez pas rejoindre cette rencontre car vous avez bloqué un des membres.</string>
+    <string name="block_user">Bloquer l\'utilisateur</string>
+    <string name="unblock_user">Débloquer l\'utilisateur</string>
 
 </resources>
