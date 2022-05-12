@@ -1,4 +1,4 @@
-package com.github.palFinderTeam.palfinder.utils
+package com.github.palFinderTeam.palfinder.utils.time
 
 /**
  * Define time units with their conversion to seconds factor.

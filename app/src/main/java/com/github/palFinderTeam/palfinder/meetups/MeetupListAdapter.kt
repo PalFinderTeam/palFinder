@@ -1,22 +1,11 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
 import android.view.View.VISIBLE
-import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
-import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.utils.Location
-import com.github.palFinderTeam.palfinder.utils.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
  * extends the MeetupListRootAdapter by adding the distance to the current location and the filter

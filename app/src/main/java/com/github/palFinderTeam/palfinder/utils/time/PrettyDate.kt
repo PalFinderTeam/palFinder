@@ -1,4 +1,4 @@
-package com.github.palFinderTeam.palfinder.utils
+package com.github.palFinderTeam.palfinder.utils.time
 
 import android.icu.util.Calendar
 import kotlin.math.abs

@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
-import android.util.Log
 import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
@@ -77,4 +76,6 @@ interface MeetUpRepository : Repository<MeetUp> {
             else -> true
         }
     }
+
+    suspend fun getAllJoinedMeetupID(): List<String>
 }
