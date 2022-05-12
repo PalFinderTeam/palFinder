@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.profile
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.di.ProfileModule
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.ACHIEVEMENTS_OBTAINED
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.BLOCKED_USERS
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.DESCRIPTION_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWED_BY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWING_PROFILES
@@ -72,6 +73,7 @@ object UIMockProfileServiceModule {
                     GENDER -> oldVal.copy(gender = value as Gender)
                     FOLLOWING_PROFILES -> oldVal.copy(following = value as List<String>)
                     FOLLOWED_BY -> oldVal.copy(followed = value as List<String>)
+                    BLOCKED_USERS -> oldVal.copy(blockedUsers = value as List<String>)
                     ACHIEVEMENTS_OBTAINED -> oldVal.copy(achievements = value as List<String>)
                     PRIVACY_SETTINGS_KEY -> oldVal.copy(privacySettings = value as PrivacySettings)
                     else -> oldVal

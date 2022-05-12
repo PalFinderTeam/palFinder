@@ -13,6 +13,7 @@ import java.time.LocalDate
 import java.time.Period
 
 const val USER_ID = "com.github.palFinderTeam.palFinder.USER_ID"
+
 /**
  * A class to hold the data for a user to be displayed on the profile activity
  * Username as unique identifier
@@ -30,6 +31,7 @@ data class ProfileUser(
     val gender: Gender? = Gender.NON_SPEC,
     val following: List<String> = emptyList(),
     val followed: List<String> = emptyList(),
+    val blockedUsers: List<String> = emptyList(),
     private val achievements: List<String> = emptyList(),
     val privacySettings: PrivacySettings? = PrivacySettings.PUBLIC,
 ) : Serializable, FirebaseObject {
@@ -47,6 +49,7 @@ data class ProfileUser(
         const val GENDER = "gender"
         const val FOLLOWING_PROFILES = "following"
         const val FOLLOWED_BY = "followed"
+        const val BLOCKED_USERS = "blocked_users"
         const val ACHIEVEMENTS_OBTAINED = "achievements"
         const val PRIVACY_SETTINGS_KEY = "privacy_settings"
 
@@ -78,7 +81,7 @@ data class ProfileUser(
                 }
                 val following = (get(FOLLOWING_PROFILES) as? List<String>).orEmpty()
                 val followed = (get(FOLLOWED_BY) as? List<String>).orEmpty()
-
+                val blockedUsers = (get(BLOCKED_USERS) as? List<String>).orEmpty()
                 val achievements = (get(ACHIEVEMENTS_OBTAINED) as? List<String>).orEmpty()
 
                 var privacySettings: PrivacySettings? = null
@@ -86,9 +89,24 @@ data class ProfileUser(
                     privacySettings = PrivacySettings.from(getString(PRIVACY_SETTINGS_KEY))
                 }
 
-                ProfileUser(uuid, username, name, surname,
-                    joinDateCal, ImageInstance(picture), description,
-                    birthdayCal, joinedMeetUp, gender, following, followed, achievements, privacySettings)
+
+                ProfileUser(
+                    uuid,
+                    username,
+                    name,
+                    surname,
+                    joinDateCal,
+                    ImageInstance(picture),
+                    description,
+                    birthdayCal,
+                    joinedMeetUp,
+                    gender,
+                    following,
+                    followed,
+                    blockedUsers,
+                    achievements,
+                    privacySettings
+                )
 
             } catch (e: Exception) {
                 Log.e("ProfileUser", "Error deserializing user", e)
@@ -113,6 +131,7 @@ data class ProfileUser(
             GENDER to gender?.stringGender,
             FOLLOWING_PROFILES to following,
             FOLLOWED_BY to followed,
+            BLOCKED_USERS to blockedUsers,
             ACHIEVEMENTS_OBTAINED to achievements,
             PRIVACY_SETTINGS_KEY to privacySettings
         )
@@ -166,6 +185,10 @@ data class ProfileUser(
     }
 
     fun achievements(): List<Achievement> {
-        return achievements.reversed().map {Achievement.from(it) }
+        return achievements.reversed().map { Achievement.from(it) }
+    }
+
+    fun canBlock(uuid: String): Boolean {
+        return !blockedUsers.contains(uuid)
     }
 }

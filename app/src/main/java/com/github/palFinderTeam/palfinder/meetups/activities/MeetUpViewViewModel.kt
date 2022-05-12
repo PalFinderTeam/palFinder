@@ -90,7 +90,7 @@ class MeetUpViewViewModel @Inject constructor(
      */
     fun joinOrLeave(context: Context){
         val uuid = profileService.getLoggedInUserID()
-        if (uuid != null){
+        if (uuid != null) {
             viewModelScope.launch {
                 if (hasJoin()) {
                     when(val ret = meetUpRepository.leaveMeetUp(meetUp.value!!.uuid, uuid)){
@@ -98,10 +98,15 @@ class MeetUpViewViewModel @Inject constructor(
                         else -> Toast.makeText(context, R.string.meetup_view_left, Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    when(val ret = meetUpRepository.joinMeetUp(meetUp.value!!.uuid, uuid, timeService.now(),
-                        profileService.fetch(profileService.getLoggedInUserID()!!)!!)){
-                        is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
-                        else -> Toast.makeText(context, R.string.meetup_view_joined, Toast.LENGTH_SHORT).show()
+                    val profile = profileService.fetch(uuid)
+                    if (profile?.blockedUsers?.intersect(meetUp.value!!.participantsId)?.isNotEmpty() == true) {
+                        Toast.makeText(context, R.string.meetup_with_blocked, Toast.LENGTH_SHORT).show()
+                    } else {
+                        when(val ret = meetUpRepository.joinMeetUp(meetUp.value!!.uuid, uuid, timeService.now(),
+                            profileService.fetch(uuid)!!)){
+                            is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
+                            else -> Toast.makeText(context, R.string.meetup_view_joined, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
                 loadMeetUp(meetUp.value!!.uuid)

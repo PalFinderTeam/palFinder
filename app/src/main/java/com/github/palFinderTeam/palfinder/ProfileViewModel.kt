@@ -10,6 +10,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
 import com.github.palFinderTeam.palfinder.meetups.*
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.BLOCKED_USERS
 import com.github.palFinderTeam.palfinder.utils.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -38,6 +39,9 @@ class ProfileViewModel @Inject constructor(
     private var _meetupDataSet: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
     var meetupDataSet: LiveData<Response<List<MeetUp>>> = _meetupDataSet
 
+    private val _logged_profile: MutableLiveData<Response<ProfileUser>> = MutableLiveData()
+    val logged_profile: LiveData<Response<ProfileUser>> = _logged_profile
+
     /**
      * Fetch user profile and post its value
      * @param userId
@@ -49,6 +53,17 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
+    fun fetchLoggedProfile() {
+        viewModelScope.launch {
+            if (profileService.getLoggedInUserID() != null) {
+                profileService.fetchFlow(profileService.getLoggedInUserID()!!).collect {
+                    _logged_profile.postValue(it)
+                }
+            }
+        }
+    }
+
 
     /**
      * Fetch user profiles and post the values in the list
@@ -90,6 +105,32 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             profileService.fetch(userId)?.let {
                 profileService.unfollowUser(it, otherId)
+            }
+        }
+    }
+
+    /**
+     * We handle the block/unblock logic here to avoid handling coroutines in
+     * the adapter. Notice that we need to fetch again the user who wants to follow,
+     * that's because we need to have the more up to date info.
+     */
+    fun block(userId: String, otherId: String) {
+        viewModelScope.launch {
+            profileService.fetch(userId)?.let {
+                // Sanity check
+                if (userId != otherId && !it.blockedUsers.contains(otherId)) {
+                    profileService.edit(it.uuid, BLOCKED_USERS, it.blockedUsers.plus(otherId))
+                }
+            }
+        }
+    }
+    fun unBlock(userId: String, otherId: String) {
+        viewModelScope.launch {
+            profileService.fetch(userId)?.let {
+                // Sanity check
+                if (userId != otherId && it.blockedUsers.contains(otherId)) {
+                    profileService.edit(it.uuid, BLOCKED_USERS, it.blockedUsers.minus(otherId))
+                }
             }
         }
     }

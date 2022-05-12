@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -54,6 +55,7 @@ class ProfileActivity : AppCompatActivity() {
         if (intent.hasExtra(USER_ID)) {
             val userId = intent.getStringExtra(USER_ID)!!
             viewModel.fetchProfile(userId)
+            viewModel.fetchLoggedProfile()
 
             // Fetch last Meetups list through adapter
             meetupList = this.findViewById(R.id.meetup_list_recycler)
@@ -79,9 +81,72 @@ class ProfileActivity : AppCompatActivity() {
 
         viewModel.profile.observe(this) {
             when(it) {
-                is Response.Success -> injectUserInfo(it.data)
+                is Response.Success -> {
+                    injectUserInfo(it.data)
+                    bindFollow(null, it.data)
+                }
                 is Response.Loading -> Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
                 is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    /**
+     * binds the follow/unfollow button
+     */
+    private fun bindFollow(view: View?, profileViewed: ProfileUser) {
+        val followButton = findViewById<Button>(R.id.button_join_meetup)
+        val blockButton = findViewById<Button>(R.id.blackList)
+        viewModel.logged_profile.observe(this) {
+            when(it) {
+                is Response.Success -> {
+                   followAndBlockSystem(it.data, profileViewed, followButton, blockButton)
+                }
+                is Response.Loading -> Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
+                is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
+            }
+        }
+
+    }
+
+    private fun followAndBlockSystem(loggedProfile: ProfileUser, profileViewed: ProfileUser, followButton: Button, blockButton: Button) {
+        when {
+            viewModel.profileService.getLoggedInUserID() == null -> {
+                followButton.isEnabled = true
+                blockButton.isEnabled = true
+            }
+            profileViewed.uuid == viewModel.profileService.getLoggedInUserID() -> {
+                followButton.isEnabled = false
+                blockButton.isEnabled = false
+            }
+            loggedProfile.canFollow(profileViewed.uuid) -> {
+                followButton.text = getString(R.string.follow)
+            }
+            loggedProfile.canUnFollow(profileViewed.uuid) -> {
+                followButton.text = getString(R.string.unfollow)
+            }
+        }
+        if (loggedProfile.canBlock(profileViewed.uuid)) {
+            blockButton.text = getString(R.string.block_user)
+        } else {
+            blockButton.text = getString(R.string.unblock_user)
+        }
+        followButton.setOnClickListener {
+            if (followButton.text.equals(getString(R.string.follow))) {
+                viewModel.follow(loggedProfile.uuid, profileViewed.uuid)
+                followButton.text = getString(R.string.unfollow)
+            } else {
+                viewModel.unFollow(loggedProfile.uuid, profileViewed.uuid)
+                followButton.text = getString(R.string.follow)
+            }
+        }
+        blockButton.setOnClickListener {
+            if (blockButton.text.equals(getString(R.string.block_user))) {
+                viewModel.block(loggedProfile.uuid, profileViewed.uuid)
+                blockButton.text = getString(R.string.unblock_user)
+            } else {
+                viewModel.unBlock(loggedProfile.uuid, profileViewed.uuid)
+                blockButton.text = getString(R.string.block_user)
             }
         }
     }
@@ -149,7 +214,7 @@ class ProfileActivity : AppCompatActivity() {
         //Initiate the barcode encoder
         val barcodeEncoder = BarcodeEncoder()
         //Encode text in editText into QRCode image into the specified size using barcodeEncoder
-        val bitmap = barcodeEncoder.encodeBitmap(intent.getStringExtra(USER_ID), BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
+        val bitmap = barcodeEncoder.encodeBitmap(USER_ID+intent.getStringExtra(USER_ID), BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
 
         //Set up the popup image
         val imagePopup = ImagePopup(this)
