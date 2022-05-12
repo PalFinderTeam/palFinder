@@ -206,5 +206,7 @@
     <string name="scanned">Scanné</string>
     <string name="no_camera_permission_message">Annulé à cause des permissions de la caméra</string>
     <string name="cancelled_scan">Scan annulé</string>
+    <string name="title_attendees_list">Participants</string>
+    <string name="search_user_hint">Chercher un utilisateur</string>
 
 </resources>
