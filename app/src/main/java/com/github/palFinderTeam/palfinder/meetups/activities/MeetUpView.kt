@@ -12,7 +12,6 @@ import androidx.core.view.isVisible
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
-import com.github.palFinderTeam.palfinder.databinding.NoAccountWarningBinding
 import com.github.palFinderTeam.palfinder.profile.ProfileListFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
