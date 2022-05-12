@@ -20,6 +20,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
@@ -75,6 +76,7 @@ class MapsFragmentTest {
         val dateNow = Calendar.getInstance()
         dateNow.set(2022, 2, 0)
         (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(dateNow)
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID("0000")
     }
 
 
