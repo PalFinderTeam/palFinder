@@ -39,8 +39,6 @@ class ProfileAdapter(
             val position = adapterPosition
             onItemClicked(position)
         }
-
-
     }
 
     private fun follow(position: Int, holder: ViewHolder) {
