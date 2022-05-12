@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.PopupWindow
@@ -28,12 +29,13 @@ fun createPopUp(
     cancelButtonTextId: Int = R.string.cancel){
 
         val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val view = inflater.inflate(R.layout.no_account_warning, null)
+        val view = inflater.inflate(R.layout.popup_window, null)
         val popUpWindow = PopupWindow(
             view,
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
+
 
         val buttonContinue = view.findViewById<TextView>(R.id.continue_warning_button)
         val buttonCancel = view.findViewById<Button>(R.id.cancel_warning_button)
@@ -58,4 +60,19 @@ fun createPopUp(
             0
         )
 
+        popUpWindow.dimBehind()
+
+}
+
+/**
+ * dim the background of a popupWindow, code taken from : https://stackoverflow.com/questions/35874001/dim-the-background-using-popupwindow-in-android
+ */
+private fun PopupWindow.dimBehind() {
+    val container = contentView.rootView
+    val context = contentView.context
+    val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    val p = container.layoutParams as WindowManager.LayoutParams
+    p.flags = p.flags or WindowManager.LayoutParams.FLAG_DIM_BEHIND
+    p.dimAmount = 0.3f
+    wm.updateViewLayout(container, p)
 }
