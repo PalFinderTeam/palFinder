@@ -21,12 +21,12 @@
                 android:layout_height="wrap_content"
                 android:background="@color/theme_bright"
                 android:orientation="vertical"
-                android:padding="22dp">
+                android:padding="20dp">
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/userProfileImage"
-                    android:layout_width="160dp"
-                    android:layout_height="160dp"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
 
                     android:adjustViewBounds="true"
                     android:background="?attr/colorSecondary"
@@ -34,14 +34,30 @@
                     android:src="@drawable/icon_user_female"
                     app:shapeAppearanceOverlay="@style/profileRoundEdge" />
 
-                <TextView
-                    android:id="@+id/userProfileName"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center|start"
                     android:layout_marginTop="15dp"
-                    android:fontFamily="@font/fredoka_bold"
-                    android:text="@string/placeholder_name"
-                    android:textSize="40sp" />
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/userProfileName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/fredoka_bold"
+                        android:text="@string/placeholder_name"
+                        android:textSize="32sp" />
+
+                    <ImageView
+                        android:layout_marginHorizontal="8dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_badge_dev"/>
+
+
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -56,7 +72,7 @@
                         android:fontFamily="@font/fredoka_normal"
                         android:text="@string/placeholder_username"
                         android:textColor="?attr/colorSecondary"
-                        android:textSize="22sp" />
+                        android:textSize="20sp" />
 
                     <View
                         android:id="@+id/userProfileSeparator"
@@ -78,7 +94,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginTop="5dp">
 
                     <Button
                         android:id="@+id/button_join_meetup"
@@ -86,21 +103,21 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="0dp"
                         android:layout_weight="1"
+                        android:paddingVertical="13dp"
                         android:fontFamily="@font/fredoka_bold"
                         android:text="@string/follow"
                         android:textSize="14sp" />
 
                     <ImageView
                         android:id="@+id/show_qr_button"
-                        android:layout_width="133dp"
+                        android:layout_width="128dp"
                         android:layout_height="match_parent"
                         android:layout_marginStart="11dp"
                         android:layout_marginEnd="0dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/fredoka_bold"
                         android:onClick="showQR"
-                        android:paddingTop="6dp"
-                        android:paddingBottom="6dp"
+                        android:paddingVertical="9dp"
                         android:src="@drawable/ic_qr"
                         app:tint="?attr/colorPrimary"/>
 
@@ -159,26 +176,65 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="20dp">
+                    android:layout_marginTop="10dp">
 
-                    <TextView
-                        android:id="@+id/followers"
+                    <LinearLayout
+                        android:gravity="center"
                         android:layout_weight="1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/placeholder_follower"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/userProfileDescOverflow" />
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/following"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/following_handle_title"
+                            android:fontFamily="@font/fredoka_bold"
+                            android:alpha="0.5"/>
+
+                        <TextView
+                            android:id="@+id/followers"
+                            android:layout_weight="1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/placeholder_follows"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/userProfileDescOverflow"
+                            android:fontFamily="@font/fredoka_normal"
+                            android:textSize="20sp"/>
+
+                        <!-- ADD LIST OF BADGES -->
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="@string/placeholder_following"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/userProfileDescOverflow" />
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/fredoka_bold"
+                            android:text="@string/followers_handle_title"
+                            android:alpha="0.5"/>
+
+                        <TextView
+                            android:id="@+id/following"
+                            android:layout_weight="1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/placeholder_follows"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/userProfileDescOverflow"
+                            android:fontFamily="@font/fredoka_normal"
+                            android:textSize="20sp"/>
+
+                        <!-- ADD LIST OF BADGES -->
+
+                    </LinearLayout>
 
                 </LinearLayout>
 

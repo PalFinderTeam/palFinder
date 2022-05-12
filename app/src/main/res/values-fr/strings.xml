@@ -113,8 +113,6 @@
     <string name="placeholder_username">\@username</string>
     <string name="placeholder_date">yyyy/mm/dd</string>
 
-    <string name="placeholder_following">Suis dddd</string>
-    <string name="placeholder_follower">Est suivi par dddd personnes</string>
     <string name="desc_name">— A propos de moi</string>
     <string name="no_desc">Pas de biographie indiquée…</string>
 
@@ -219,8 +217,11 @@
     <string name="unblock_user">Débloquer l\'utilisateur</string>
 
     <string name="following_content">%1$s vous suis!</string>
-    <string name="following_title">Nouveau Follower!</string>
+    <string name="following_title">Nouvel abonné!</string>
 
     <string name="meetup_start_title">%1$s commence!</string>
+
+    <string name="following_handle_title">Abonnements</string>
+    <string name="followers_handle_title">Abonnés</string>
   
 </resources>
