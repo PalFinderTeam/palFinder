@@ -122,7 +122,7 @@
     <string name="placeholder_name" translatable="false">someone</string>
     <string name="placeholder_username">\@username</string>
     <string name="placeholder_date">yyyy/mm/dd</string>
-    <string name="placeholder_follows">50</string>
+    <string name="placeholder_follows" translatable="false">50</string>
     <string name="following_title">Following</string>
     <string name="followers_title">Followers</string>
     <string name="desc_name">— About me</string>
