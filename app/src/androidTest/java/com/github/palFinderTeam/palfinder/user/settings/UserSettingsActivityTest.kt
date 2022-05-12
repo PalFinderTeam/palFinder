@@ -137,7 +137,7 @@ class UserSettingsActivityTest {
             onView(withId(R.id.SettingsBioText))
                 .check(matches(withText(user.description)))
             onView(withId(R.id.SettingsBirthdayText))
-                .perform(ViewActions.scrollTo())
+                .perform(scrollTo())
                 .check(matches(withText(bdFormat.format(user.birthday))))
         }
     }
