@@ -125,8 +125,9 @@
     <string name="placeholder_name" translatable="false">someone</string>
     <string name="placeholder_username">\@username</string>
     <string name="placeholder_date">yyyy/mm/dd</string>
-    <string name="placeholder_following">following dddd</string>
-    <string name="placeholder_follower">dddd followers</string>
+    <string name="placeholder_follows" translatable="false">50</string>
+    <string name="following_handle_title">Following</string>
+    <string name="followers_handle_title">Followers</string>
     <string name="desc_name">— About me</string>
     <string name="placeholder_desc" translatable="false">Hello, I am a placeholder description. I am long enough so that I break onto another line, hopefully, but if not then I will add some extra text.</string>
     <string name="no_desc">No bio provided…</string>
@@ -153,8 +154,11 @@
     <string name="criterions_age_max_plus">66+</string>
     <string name="criterion_select">Select criteria</string>
 
-    <string name="follow">follow</string>
-    <string name="unfollow">unfollow</string>
+    <string name="username_format" translatable="false">\@%s</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="title_attendees_list">Meetup attendees</string>
+    <string name="search_user_hint">Search for user</string>
 
     <string name="criterions_gender_title">Select gender</string>
     <string name="radio_male">Male</string>
