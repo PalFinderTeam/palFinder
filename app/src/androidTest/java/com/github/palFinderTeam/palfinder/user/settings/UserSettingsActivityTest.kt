@@ -134,6 +134,7 @@ class UserSettingsActivityTest {
             onView(withId(R.id.SettingsBioText))
                 .check(matches(withText(user.description)))
             onView(withId(R.id.SettingsBirthdayText))
+                .perform(ViewActions.scrollTo())
                 .check(matches(withText(bdFormat.format(user.birthday))))
         }
     }
@@ -189,6 +190,54 @@ class UserSettingsActivityTest {
     }
 
     @Test
+    fun loadSpecificUserProfileYieldsPrivacySettingsCorrectly() = runTest {
+        val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
+            .apply{
+                putExtra(CREATE_ACCOUNT_PROFILE, user)
+            }
+
+        // Male
+        val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.radioPublic))
+                .check(matches(isChecked()))
+            onView(withId(R.id.radioFriends))
+                .check(matches(not(isChecked())))
+            onView(withId(R.id.radioPrivate))
+                .check(matches(not(isChecked())))
+        }
+    }
+
+    @Test
+    fun selectingPrivacySettingsModifiesRadios() = runTest {
+        val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
+            .apply{
+                putExtra(CREATE_ACCOUNT_PROFILE, user)
+            }
+
+        val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.radioFriends))
+                .perform(scrollTo(), click())
+            onView(withId(R.id.radioPrivate))
+                .check(matches(not(isChecked())))
+            onView(withId(R.id.radioFriends))
+                .check(matches(isChecked()))
+            onView(withId(R.id.radioPublic))
+                .check(matches(not(isChecked())))
+
+            onView(withId(R.id.radioPrivate))
+                .perform(scrollTo(), click())
+            onView(withId(R.id.radioPublic))
+                .check(matches(not(isChecked())))
+            onView(withId(R.id.radioFriends))
+                .check(matches(not(isChecked())))
+            onView(withId(R.id.radioPrivate))
+                .check(matches(isChecked()))
+        }
+    }
+
+    @Test
     fun submittingCorrectDataSendsToMeetupListActivity() = runTest {
         val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
             .apply{
@@ -221,6 +270,7 @@ class UserSettingsActivityTest {
         val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
 
         scenario.use {
+
             onView(withId(R.id.SettingsBirthdayText)).perform(ViewActions.scrollTo(), click())
             val bDay = user.birthday!!
 
