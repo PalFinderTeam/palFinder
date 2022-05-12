@@ -167,16 +167,30 @@ class ProfileActivity : AppCompatActivity() {
      * @param user: ProfileUser
      */
     private fun injectUserInfo(user: ProfileUser) {
-        findViewById<TextView>(R.id.userProfileName).text = user.fullName()
         findViewById<TextView>(R.id.userProfileUsername).text = user.atUsername()
         findViewById<TextView>(R.id.userProfileJoinDate).apply { text = user.prettyJoinTime() }
-        findViewById<TextView>(R.id.followers).text = user.followed.size.toString()
-        findViewById<TextView>(R.id.following).text = user.following.size.toString()
-        injectBio(user.description)
+
+        findViewById<TextView>(R.id.followers).text = String.format(
+            getString(R.string.following_nb),
+            user.followed.size
+        )
+        findViewById<TextView>(R.id.following).text = String.format(
+            getString(R.string.followers_nb),
+            user.following.size
+        )
+        if(user.canProfileBeSeenBy(viewModel.profileService.getLoggedInUserID()!!)) {
+            findViewById<TextView>(R.id.userProfileName).text = user.fullName()
+            injectBio(user.description)
+        }else{
+            findViewById<TextView>(R.id.userProfileName).text = this.resources.getString(R.string.private_name)
+            injectBio(this.resources.getString(R.string.private_desc))
+        }
+
         lifecycleScope.launch {
             user.pfp.loadImageInto(findViewById(R.id.userProfileImage), applicationContext)
         }
     }
+
 
     /**
      * Injects the bio by applying the Read More feature
@@ -243,5 +257,6 @@ class ProfileActivity : AppCompatActivity() {
             }
         startActivity(intent)
     }
+
 
 }

@@ -128,9 +128,13 @@
     <string name="placeholder_follows" translatable="false">50</string>
     <string name="following_handle_title">Following</string>
     <string name="followers_handle_title">Followers</string>
+    <string name="following_nb">%d followers</string>
+    <string name="followers_nb">following %d</string>
     <string name="desc_name">— About me</string>
     <string name="placeholder_desc" translatable="false">Hello, I am a placeholder description. I am long enough so that I break onto another line, hopefully, but if not then I will add some extra text.</string>
     <string name="no_desc">No bio provided…</string>
+    <string name="private_name">Private profile</string>
+    <string name="private_desc">This user has set his profile to private</string>
 
     <string name="title_activity_login" translatable="false">LoginActivity</string>
     <string name="prompt_email">Email</string>
@@ -164,6 +168,11 @@
     <string name="radio_male_and_female">Any</string>
     <string name="radio_other">Other</string>
     <string name="criterion_confirm">Confirm criteria</string>
+
+    <string name="radio_privacy">Privacy Settings</string>
+    <string name="radio_private">Private</string>
+    <string name="radio_public">Public</string>
+    <string name="radio_friends">Friends only</string>
 
     <string name="pretty_location_too_small">Here</string>
     <string name="pretty_location_m">%1$s m</string>

@@ -24,6 +24,7 @@ import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.ui.login.CREATE_ACCOUNT_PROFILE
 import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
+import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.time.askDate
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.pickProfileImage
@@ -44,6 +45,7 @@ class UserSettingsActivity : AppCompatActivity() {
     private lateinit var imageField: ImageView
     private lateinit var removeBirthdayButton: ImageView
     private lateinit var genderRadio: RadioGroup
+    private lateinit var privacySettingsRadio: RadioGroup
 
     private var dateFormat = SimpleDateFormat()
 
@@ -96,6 +98,7 @@ class UserSettingsActivity : AppCompatActivity() {
         birthdayField = findViewById(R.id.SettingsBirthdayText)
         removeBirthdayButton = findViewById(R.id.SettingsDeleteBDay)
         genderRadio = findViewById(R.id.radioSex)
+        privacySettingsRadio = findViewById(R.id.radioPrivacy)
     }
 
     /**
@@ -133,6 +136,15 @@ class UserSettingsActivity : AppCompatActivity() {
                 getString(R.string.radio_other) -> viewModel.setGender(Gender.OTHER)
             }
         }
+        privacySettingsRadio.setOnCheckedChangeListener { _, checkedId ->
+            when (findViewById<RadioButton>(checkedId).text) {
+                getString(R.string.radio_public) -> viewModel.setPrivacySetting(PrivacySettings.PUBLIC)
+                getString(R.string.radio_friends) -> viewModel.setPrivacySetting(PrivacySettings.FRIENDS)
+                getString(R.string.radio_private) -> viewModel.setPrivacySetting(PrivacySettings.PRIVATE)
+            }
+
+        }
+
         // NOTE: We don't have an observer for the text changing because
         // it is triggered directly with other functions such as
         // openDatePickerFragment() or deletePickedBirthday()
@@ -165,6 +177,15 @@ class UserSettingsActivity : AppCompatActivity() {
                 Gender.MALE -> genderRadio.check(R.id.radioMale)
                 Gender.FEMALE -> genderRadio.check(R.id.radioFemale)
                 Gender.OTHER -> genderRadio.check(R.id.radioOther)
+                else -> genderRadio.check(R.id.radioOther)
+            }
+        }
+        viewModel.privacySettings.observeOnce(this) {
+            when (it) {
+                PrivacySettings.PUBLIC -> privacySettingsRadio.check(R.id.radioPublic)
+                PrivacySettings.FRIENDS -> privacySettingsRadio.check(R.id.radioFriends)
+                PrivacySettings.PRIVATE -> privacySettingsRadio.check(R.id.radioPrivate)
+                else -> privacySettingsRadio.check(R.id.radioPublic)
             }
         }
     }

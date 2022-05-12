@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.profile
 import android.icu.util.Calendar
 import android.util.Log
 import com.github.palFinderTeam.palfinder.utils.Gender
+import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.time.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.generics.FirebaseObject
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
@@ -31,7 +32,8 @@ data class ProfileUser(
     val following: List<String> = emptyList(),
     val followed: List<String> = emptyList(),
     val blockedUsers: List<String> = emptyList(),
-    private val achievements: List<String> = emptyList()
+    private val achievements: List<String> = emptyList(),
+    val privacySettings: PrivacySettings? = PrivacySettings.PUBLIC,
 ) : Serializable, FirebaseObject {
 
     companion object {
@@ -49,6 +51,7 @@ data class ProfileUser(
         const val FOLLOWED_BY = "followed"
         const val BLOCKED_USERS = "blocked_users"
         const val ACHIEVEMENTS_OBTAINED = "achievements"
+        const val PRIVACY_SETTINGS_KEY = "privacy_settings"
 
         /**
          * Provide a way to convert a Firestore query result, in a ProfileUser.
@@ -81,6 +84,9 @@ data class ProfileUser(
                 val blockedUsers = (get(BLOCKED_USERS) as? List<String>).orEmpty()
                 val achievements = (get(ACHIEVEMENTS_OBTAINED) as? List<String>).orEmpty()
 
+                val privacySettings = PrivacySettings.from(getString(PRIVACY_SETTINGS_KEY))
+
+
                 ProfileUser(
                     uuid,
                     username,
@@ -95,7 +101,8 @@ data class ProfileUser(
                     following,
                     followed,
                     blockedUsers,
-                    achievements
+                    achievements,
+                    privacySettings
                 )
 
             } catch (e: Exception) {
@@ -122,7 +129,8 @@ data class ProfileUser(
             FOLLOWING_PROFILES to following,
             FOLLOWED_BY to followed,
             BLOCKED_USERS to blockedUsers,
-            ACHIEVEMENTS_OBTAINED to achievements
+            ACHIEVEMENTS_OBTAINED to achievements,
+            PRIVACY_SETTINGS_KEY to privacySettings
         )
     }
 
@@ -157,6 +165,15 @@ data class ProfileUser(
 
     fun canUnFollow(profileId: String): Boolean {
         return following.contains(profileId)
+    }
+
+    fun canProfileBeSeenBy(profileId: String): Boolean{
+        return when (privacySettings) {
+            PrivacySettings.PRIVATE -> false
+            PrivacySettings.PUBLIC -> true
+            PrivacySettings.FRIENDS -> followed.contains(profileId)
+            else -> false
+        }
     }
 
     fun prettyJoinTime(): String {

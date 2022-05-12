@@ -15,6 +15,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.profile.*
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
+import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -32,6 +33,8 @@ class ProfileActivityTest {
     private lateinit var userCat: ProfileUser
     private lateinit var userLongBio: ProfileUser
     private lateinit var userNoBio: ProfileUser
+    private lateinit var userPrivate: ProfileUser
+    private lateinit var someUser: ProfileUser
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -80,7 +83,31 @@ class ProfileActivityTest {
             ""
         )
 
-        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(null)
+        userPrivate = ProfileUser(
+            "42",
+            "somePrivateUser",
+            "private",
+            "user",
+            Calendar.getInstance(),
+            ImageInstance(""),
+            "I like my private life",
+            privacySettings = PrivacySettings.PRIVATE
+        )
+
+        someUser = ProfileUser(
+            "1",
+            "The",
+            "only",
+            "one",
+            Calendar.getInstance(),
+            ImageInstance("")
+            )
+    }
+
+    @Before
+    fun setBaseUser() = runTest{
+        val id = profileService.create(someUser)
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(id)
     }
 
     @After
@@ -198,6 +225,26 @@ class ProfileActivityTest {
         }
     }
 
+    @Test
+    fun testPrivateUserProfile() = runTest{
+        val uuid = profileService.create(userPrivate)
+
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, uuid) }
+
+        // Launch activity
+        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.userProfileDescription)).check(
+                matches(
+                    withText(R.string.private_desc)
+                )
+            )
+        }
+    }
+
+
     private fun getResourceString(id: Int): String? {
         val targetContext: Context = InstrumentationRegistry.getTargetContext()
         return targetContext.getResources().getString(id)
@@ -256,4 +303,3 @@ class ProfileActivityTest {
         }
     }
 }
-
