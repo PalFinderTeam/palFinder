@@ -80,6 +80,8 @@
     <string name="list_sort_menu">Sort</string>
     <string name="meetup_creation_missing_name_desc">Please add an Event Name, an Event Description and a location</string>
     <string name="meetup_creation_missing_name_desc_title">Missing Data</string>
+    <string name="meetup_creation_icon_title">Tap to chose your marker</string>
+    <string name="meetup_creation_icon_hint">Change the icon of the meetup directly on the map to make it stand out!</string>
 
     <!-- Strings used for meetupList -->
     <string name="show_all">all meetups</string>

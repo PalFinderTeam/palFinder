@@ -132,7 +132,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="16dp"
+                    android:layout_margin="16dp"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -174,26 +174,39 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/bt_locationSelect">
 
-                <Button
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="16dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_markerHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/fredoka_bold"
+                        android:text="@string/meetup_creation_icon_title" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:drawablePadding="5dp"
+                        android:fontFamily="@font/fredoka_normal"
+                        android:gravity="top"
+                        android:text="@string/meetup_creation_icon_hint" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_weight="1"
                     android:id="@+id/bt_markerType"
                     android:layout_width="120dp"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="?attr/colorSecondary"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="16dp"
-                    android:text="@string/select_marker" />
-
-                <TextView
-                    android:id="@+id/tv_markerHint"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/fredoka_normal"
-                    android:text="@string/meetup_creation_meetup_marker_desc"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    android:layout_height="100dp"
+                    app:srcCompat="@drawable/ic_meetup_icons" />
 
             </LinearLayout>
 
