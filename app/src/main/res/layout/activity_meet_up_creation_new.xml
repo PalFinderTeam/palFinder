@@ -16,7 +16,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:scrollbars="vertical">
 
             <TextView
@@ -29,7 +29,7 @@
                 android:drawablePadding="5dp"
                 android:fontFamily="@font/fredoka_bold"
                 android:gravity="top"
-                android:text="Create an Meetup"
+                android:text="@string/meetup_creation_meetup_create"
                 android:textSize="31sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -46,7 +46,7 @@
                 android:drawablePadding="5dp"
                 android:fontFamily="@font/fredoka_normal"
                 android:gravity="top"
-                android:text="Set the general information about your Meetup! Add a catchy title, a short description, and specify where the even will take place."
+                android:text="@string/meetup_creation_meetup_description"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -142,7 +142,7 @@
                         android:drawablePadding="5dp"
                         android:fontFamily="@font/fredoka_bold"
                         android:gravity="top"
-                        android:text="Tap to choose the prefect location for you Meetup!"
+                        android:text="@string/meetup_creation_meetup_location_desc"
                         android:textSize="16sp" />
 
                     <TextView
@@ -208,7 +208,6 @@
                     android:layout_height="100dp"
                     app:srcCompat="@drawable/ic_meetup_icons" />
 
-
             </LinearLayout>
 
 
@@ -222,7 +221,7 @@
                 android:drawablePadding="5dp"
                 android:fontFamily="@font/fredoka_bold"
                 android:gravity="top"
-                android:text="When do you plan this event?"
+                android:text="@string/meetup_creation_meetup_date"
                 android:textSize="23sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -240,7 +239,7 @@
                 android:drawablePadding="5dp"
                 android:fontFamily="@font/fredoka_normal"
                 android:gravity="top"
-                android:text="Select a start and end date/time"
+                android:text="@string/meetup_creation_meetup_date_desc"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -343,7 +342,7 @@
                 android:drawablePadding="5dp"
                 android:fontFamily="@font/fredoka_normal"
                 android:gravity="top"
-                android:text="Put your Meetup into categories with Tags, so that people can find it easily"
+                android:text="@string/meetup_creation_meetup_tags_desc"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -371,7 +370,7 @@
                 android:drawablePadding="5dp"
                 android:fontFamily="@font/fredoka_bold"
                 android:gravity="top"
-                android:text="Miscellaneous"
+                android:text="@string/meetup_creation_meetup_miscellaneous"
                 android:textSize="23sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -388,7 +387,7 @@
                 android:drawablePadding="5dp"
                 android:fontFamily="@font/fredoka_normal"
                 android:gravity="top"
-                android:text="Making sure your meetup is perfect!"
+                android:text="@string/meetup_creation_meetup_miscellaneous_desc"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -437,7 +436,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:fontFamily="@font/fredoka_normal"
-                        android:text="Tap the picture above to change the icon of your Meetup."
+                        android:text="@string/meetup_creation_meetup_picture_desc"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
@@ -469,7 +468,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/fredoka_normal"
-                        android:text="Tap to select criteria for the meeting, such as the age, gender."
+                        android:text="@string/meetup_creation_meetup_criteria_desc"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent" />
