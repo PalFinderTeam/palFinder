@@ -116,6 +116,9 @@
     <string name="placeholder_follower">Est suivi par dddd personnes</string>
     <string name="desc_name">— A propos de moi</string>
     <string name="no_desc">Pas de biographie indiquée…</string>
+    <string name="private_name">Profil privé</string>
+    <string name="private_desc">Le profil de cet utilisateur est privé.</string>
+
 
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Mot de passe</string>
@@ -135,6 +138,11 @@
     <string name="criterions_age_max">66</string>
     <string name="criterions_age_max_plus">66+</string>
     <string name="criterion_select">Sélection des critères</string>
+
+    <string name="radio_privacy">Paramètre de confidentialité</string>
+    <string name="radio_private">Privé</string>
+    <string name="radio_public">Publique</string>
+    <string name="radio_friends">Amis uniquement</string>
 
     <string name="follow">Suivre</string>
     <string name="unfollow">Ne plus suivre</string>
