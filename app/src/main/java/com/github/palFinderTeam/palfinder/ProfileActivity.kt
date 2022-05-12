@@ -103,7 +103,7 @@ class ProfileActivity : AppCompatActivity() {
         }else{
             findViewById<TextView>(R.id.userProfileName).text = this.resources.getString(R.string.private_name)
 
-            injectBio(this.resources.getString(R.string.private_bio))
+            injectBio(this.resources.getString(R.string.private_desc))
         }
         lifecycleScope.launch {
             user.pfp.loadImageInto(findViewById(R.id.userProfileImage), applicationContext)

@@ -104,7 +104,7 @@
     <string name="placeholder_desc">Hello, I am a placeholder description. I am long enough so that I break onto another line, hopefully, but if not then I will add some extra text.</string>
     <string name="no_desc">No bio provided...</string>
     <string name="private_name">Private profile</string>
-    <string name="private_bio">This user has set his profile to private</string>
+    <string name="private_desc">This user has set his profile to private</string>
 
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>

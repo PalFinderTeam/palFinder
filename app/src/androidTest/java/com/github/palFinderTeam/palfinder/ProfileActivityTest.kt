@@ -208,25 +208,27 @@ class ProfileActivityTest {
         }
     }
 
-    /**@Test
+    @Test
     fun testPrivateUserProfile() = runTest{
         val userId = profileService.create(userCat)
         val privateId = profileService.create(userPrivate)
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userId)
 
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
-                .apply { putExtra(USER_ID, userId) }
+                .apply { putExtra(USER_ID, privateId) }
 
         // Launch activity
         val scenario = ActivityScenario.launch<ProfileActivity>(intent)
         scenario.use {
-            onView(withId(R.id.userProfileName)).check(
+            onView(withId(R.id.userProfileDescription)).check(
                 matches(
-                    withText(userLouca.fullName())
+                    withText(R.string.private_desc)
                 )
             )
+        }
     }
-    **/
+
 
     private fun getResourceString(id: Int): String? {
         val targetContext: Context = InstrumentationRegistry.getTargetContext()
