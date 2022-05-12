@@ -1,17 +1,16 @@
 <resources>
     <string name="app_name">palFinder</string>
-    <string name="title_activity_greeting">activity_greeting</string>
+    <string name="title_activity_greeting" translatable="false">activity_greeting</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
+    <string name="first_fragment_label" translatable="false">First Fragment</string>
+    <string name="second_fragment_label" translatable="false">Second Fragment</string>
     <string name="previous">Previous</string>
 
     <!-- Strings used for image loading -->
     <string name="image_load_failed">Sorry, we could not load the image that you requested</string>
 
     <!-- Strings used for Map Activity-->
-    <string name="title_activity_maps">MapsActivity</string>
+    <string name="title_activity_maps" translatable="false">MapsActivity</string>
 
     <string name="tag_element_text">tag</string>
     <string name="add_tags">Add tags</string>
@@ -20,9 +19,9 @@
     <string name="profile_element">name</string>
 
     <!-- Strings used for login activity-->
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="title_activity_meetup_creation">meetup_creation</string>
+    <string name="hello_first_fragment" translatable="false">Hello first fragment</string>
+    <string name="hello_second_fragment" translatable="false">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_meetup_creation" translatable="false">meetup_creation</string>
 
     <string name="search_no_location">Please provide a location</string>
     <string name="search_location_not_found">Location not found</string>
@@ -38,10 +37,12 @@
     <string name="no_account_join"> You need an accout to join a meetUp.</string>
     <string name="no_account_profile"> You need an account to have a profile.</string>
     <string name="qr_scan_follow_account"> Do you want to follow this account?</string>
+    <string name="qr_scan_join_meetup">Do you want to join this meetup ?</string>
+
 
     <!-- Strings used for meetup creation -->
     <string name="meetup_creation_meetup_name">Event Name</string>
-    <string name="meetup_creation_meetup_name_example">Party with the boys!</string>
+    <string name="meetup_creation_meetup_name_example" translatable="false">Party with the boys!</string>
     <string name="meetup_creation_meetup_description">Event Description</string>
     <string name="meetup_creation_meetup_icon">Icon</string>
     <string name="meetup_creation_meetup_start_date">Start Date</string>
@@ -59,7 +60,20 @@
     <string name="meetup_creation_meetup_done">Done</string>
     <string name="meetup_creation_meetup_select_location">Pick Location</string>
     <string name="meetup_creation_meetup_location_not_selected">Location not selected</string>
+    <string name="meetup_creation_meetup_main_description">Set the general information about your Meetup! Add a catchy title, a short description, and specify where the even will take place.</string>
+    <string name="meetup_creation_meetup_create">Create an Meetup</string>
+    <string name="meetup_creation_meetup_location_desc">Tap to choose the prefect location for you Meetup!</string>
+    <string name="meetup_creation_meetup_marker_desc">Tap to chose your marker</string>
+    <string name="meetup_creation_meetup_date">When do you plan this event?</string>
+    <string name="meetup_creation_meetup_date_desc">Select a start and end date/time</string>
+    <string name="meetup_creation_meetup_tags_desc">Put your Meetup into categories with Tags, so that people can find it easily</string>
+    <string name="meetup_creation_meetup_miscellaneous">Miscellaneous</string>
+    <string name="meetup_creation_meetup_miscellaneous_desc">Making sure your meetup is perfect!</string>
+    <string name="meetup_creation_meetup_picture_desc">Tap the picture above to change the icon of your Meetup.</string>
+    <string name="meetup_creation_meetup_criteria_desc">Tap to select criteria for the meeting, such as the age, gender.</string>
+
     <string name="criteria">criteria</string>
+
     <string name="list_sort_by_alphabetical_order">Sort by Alph.</string>
     <string name="list_sort_by_capacity">Sort by Cap.</string>
     <string name="list_sort_by_location">Sort by Dist.</string>
@@ -86,26 +100,36 @@
     <string name="meetup_with_blocked">You cannot join this meetup, you blocked one of the participant.</string>
     <string name="meetup_view_participation_unlimited">%d</string>
     <string name="meetup_view_participation_limited">%d (out of %d)</string>
-    <string name="meetup_view_age">%s-%s years</string>
-    <string name="meetup_view_gender_title">Gender</string>
     <string name="meetup_view_age_min">13</string>
     <string name="meetup_view_age_max">66</string>
     <string name="meetup_view_age_max_plus">66+</string>
+    <string name="meetup_view_meetup">Meetup</string>
+    <string name="meetup_view_event_name" translatable="false">This is a very long event name</string>
+    <string name="meetup_view_created_by">Organized by \@%s</string>
+    <string name="meetup_view_time_date">Time and dates</string>
+    <string name="meetup_view_start_date" translatable="false">10th of April 2022 at 14:00</string>
+    <string name="meetup_view_end_date" translatable="false">12th of April 2022 at 14:00</string>
+    <string name="meetup_view_other_info">Other info</string>
+    <string name="meetup_view_people">People</string>
+    <string name="meetup_view_age_text">Age</string>
+    <string name="meetup_view_age">%s-%s years</string>
+    <string name="meetup_view_gender_title">Gender</string>
+
 
     <string name="ok">OK</string>
 
     <string name="date_long_format">EEEE, MMMM d, yyyy \'at\' h:mm a</string>
 
-    <string name="placeholder_name">someone</string>
+    <string name="placeholder_name" translatable="false">someone</string>
     <string name="placeholder_username">\@username</string>
     <string name="placeholder_date">yyyy/mm/dd</string>
     <string name="placeholder_following">following dddd</string>
     <string name="placeholder_follower">dddd followers</string>
     <string name="desc_name">— About me</string>
-    <string name="placeholder_desc">Hello, I am a placeholder description. I am long enough so that I break onto another line, hopefully, but if not then I will add some extra text.</string>
-    <string name="no_desc">No bio provided...</string>
+    <string name="placeholder_desc" translatable="false">Hello, I am a placeholder description. I am long enough so that I break onto another line, hopefully, but if not then I will add some extra text.</string>
+    <string name="no_desc">No bio provided…</string>
 
-    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_login" translatable="false">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -145,7 +169,7 @@
     <string name="nav_bar_group">Groups</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="createAccount">Create Account</string>
 
     <!-- User settings -->
@@ -159,7 +183,7 @@
     <string name="read_more">Read more</string>
     <string name="userSettingsBirthday">Birthday (Optional)</string>
     <string name="working_out_tag">working out</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_settings" translatable="false">SettingsActivity</string>
 
 
     <!-- Preference Titles -->
@@ -177,8 +201,8 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
 
-    <string name="meetup_demo_title">This is a demo title for a meetup</string>
-    <string name="meetup_demo_desc">This is a demo description for a meetup, it\'s fun but if it\'s too long it\'s still okay because it fits this box</string>
+    <string name="meetup_demo_title" translatable="false">This is a demo title for a meetup</string>
+    <string name="meetup_demo_desc" translatable="false">This is a demo description for a meetup, it\'s fun but if it\'s too long it\'s still okay because it fits this box</string>
 
     <string name="SettingsBdayHint">Please note that you won\'t be able to join events that require a minimum age.</string>
     <string name="userSettings">Read more</string>
@@ -188,8 +212,8 @@
     <string name="userSettingsSaveFail">An error occurred while trying to save. Please try again</string>
     <string name="userSettingsSaveCreate">Account created! Welcome to PalFinder :)</string>
 
-    <string name="testNotifTitle">title</string>
-    <string name="testNotifContent">content</string>
+    <string name="testNotifTitle" translatable="false">title</string>
+    <string name="testNotifContent" translatable="false">content</string>
     <string name="map">map</string>
     <string name="list">list</string>
     <string name="show_profiles">show profiles</string>

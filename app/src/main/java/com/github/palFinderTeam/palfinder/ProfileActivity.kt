@@ -94,11 +94,13 @@ class ProfileActivity : AppCompatActivity() {
     /**
      * binds the follow/unfollow button
      */
-    private fun bindFollow(view: View?, profile: ProfileUser) {
+    private fun bindFollow(view: View?, profileViewed: ProfileUser) {
+        val followButton = findViewById<Button>(R.id.button_join_meetup)
+        val blockButton = findViewById<Button>(R.id.blackList)
         viewModel.logged_profile.observe(this) {
             when(it) {
                 is Response.Success -> {
-                   followAndBlockSystem(it.data, profile, findViewById(R.id.button_join_meetup), findViewById(R.id.blackList))
+                   followAndBlockSystem(it.data, profileViewed, followButton, blockButton)
                 }
                 is Response.Loading -> Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
                 is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
@@ -120,7 +122,7 @@ class ProfileActivity : AppCompatActivity() {
             loggedProfile.canFollow(profileViewed.uuid) -> {
                 followButton.text = getString(R.string.follow)
             }
-            else -> {
+            loggedProfile.canUnFollow(profileViewed.uuid) -> {
                 followButton.text = getString(R.string.unfollow)
             }
         }
@@ -206,7 +208,7 @@ class ProfileActivity : AppCompatActivity() {
         //Initiate the barcode encoder
         val barcodeEncoder = BarcodeEncoder()
         //Encode text in editText into QRCode image into the specified size using barcodeEncoder
-        val bitmap = barcodeEncoder.encodeBitmap(intent.getStringExtra(USER_ID), BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
+        val bitmap = barcodeEncoder.encodeBitmap(USER_ID+intent.getStringExtra(USER_ID), BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
 
         //Set up the popup image
         val imagePopup = ImagePopup(this)
