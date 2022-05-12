@@ -11,6 +11,7 @@ import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.generics.FirebaseObject
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.github.palFinderTeam.palfinder.utils.time.isBefore
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
 

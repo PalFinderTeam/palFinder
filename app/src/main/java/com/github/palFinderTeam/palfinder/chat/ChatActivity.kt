@@ -35,10 +35,35 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
         sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
+    private fun loadChat(){
         if (intent.hasExtra(CHAT)) {
             val meetupId = intent.getStringExtra(CHAT)
             viewModel.connectToChat(meetupId!!)
+            currentlyViewChat = meetupId
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        currentlyViewChat = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadChat()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        currentlyViewChat = null
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_chat)
+
+        loadChat()
+
         chatList = findViewById(R.id.chat_list)
         chatList.layoutManager = LinearLayoutManager(this)
 
@@ -60,5 +85,9 @@ class ChatActivity : AppCompatActivity() {
             viewModel.sendMessage(chatBox.text.toString())
             chatBox.text = ""
         }
+    }
+
+    companion object{
+        var currentlyViewChat: String? = ""
     }
 }

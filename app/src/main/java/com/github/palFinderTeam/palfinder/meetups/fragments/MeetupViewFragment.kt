@@ -3,7 +3,6 @@ package com.github.palFinderTeam.palfinder.meetups.fragments
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,9 +17,7 @@ import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpViewViewModel
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.USER_ID
-import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import kotlinx.coroutines.launch
 
 
