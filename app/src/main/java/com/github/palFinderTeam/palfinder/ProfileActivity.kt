@@ -25,8 +25,6 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -97,11 +95,12 @@ class ProfileActivity : AppCompatActivity() {
      * binds the follow/unfollow button
      */
     private fun bindFollow(view: View?, profileViewed: ProfileUser) {
-        val followButton = findViewById<Button>(R.id.button_follow_profile)
+        val followButton = findViewById<Button>(R.id.button_join_meetup)
+        val blockButton = findViewById<Button>(R.id.blackList)
         viewModel.logged_profile.observe(this) {
             when(it) {
                 is Response.Success -> {
-                   followSystem(it.data, profileViewed, followButton)
+                   followAndBlockSystem(it.data, profileViewed, followButton, blockButton)
                 }
                 is Response.Loading -> Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
                 is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
@@ -110,13 +109,15 @@ class ProfileActivity : AppCompatActivity() {
 
     }
 
-    private fun followSystem(loggedProfile: ProfileUser, profileViewed: ProfileUser, followButton: Button) {
+    private fun followAndBlockSystem(loggedProfile: ProfileUser, profileViewed: ProfileUser, followButton: Button, blockButton: Button) {
         when {
             viewModel.profileService.getLoggedInUserID() == null -> {
                 followButton.isEnabled = true
+                blockButton.isEnabled = true
             }
             profileViewed.uuid == viewModel.profileService.getLoggedInUserID() -> {
                 followButton.isEnabled = false
+                blockButton.isEnabled = false
             }
             loggedProfile.canFollow(profileViewed.uuid) -> {
                 followButton.text = getString(R.string.follow)
@@ -125,6 +126,11 @@ class ProfileActivity : AppCompatActivity() {
                 followButton.text = getString(R.string.unfollow)
             }
         }
+        if (loggedProfile.canBlock(profileViewed.uuid)) {
+            blockButton.text = getString(R.string.block_user)
+        } else {
+            blockButton.text = getString(R.string.unblock_user)
+        }
         followButton.setOnClickListener {
             if (followButton.text.equals(getString(R.string.follow))) {
                 viewModel.follow(loggedProfile.uuid, profileViewed.uuid)
@@ -132,6 +138,15 @@ class ProfileActivity : AppCompatActivity() {
             } else {
                 viewModel.unFollow(loggedProfile.uuid, profileViewed.uuid)
                 followButton.text = getString(R.string.follow)
+            }
+        }
+        blockButton.setOnClickListener {
+            if (blockButton.text.equals(getString(R.string.block_user))) {
+                viewModel.block(loggedProfile.uuid, profileViewed.uuid)
+                blockButton.text = getString(R.string.unblock_user)
+            } else {
+                viewModel.unBlock(loggedProfile.uuid, profileViewed.uuid)
+                blockButton.text = getString(R.string.block_user)
             }
         }
     }
