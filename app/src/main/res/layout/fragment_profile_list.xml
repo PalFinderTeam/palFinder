@@ -26,7 +26,7 @@
         android:id="@+id/profile_list_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:queryHint="Search for user">
+        android:queryHint="@string/search_user_hint">
     </SearchView>
 
     <androidx.recyclerview.widget.RecyclerView
