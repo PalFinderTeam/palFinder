@@ -34,6 +34,8 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="android:shape">@color/theme_primary_default</item>
+        <item name="colorSurface">@color/message_in_coming_color</item>
+        <item name="android:buttonStyle">?attr/colorSecondary</item>
     </style>
 
 

@@ -2,7 +2,9 @@ package com.github.palFinderTeam.palfinder.user.settings
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
@@ -48,8 +50,18 @@ class UserSettingsActivity : AppCompatActivity() {
     private var dateFormat = SimpleDateFormat()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
+        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
+        setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_settings)
+        var sharedPreferenceChangeListener =
+            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                if (key == "theme") {
+                    recreate()
+                }
+            }
+        sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
         dateFormat = SimpleDateFormat(getString(R.string.userSettingsBdayPattern))
 
         // Force user id

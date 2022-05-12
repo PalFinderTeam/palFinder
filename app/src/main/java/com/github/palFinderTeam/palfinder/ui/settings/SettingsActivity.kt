@@ -9,11 +9,13 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 
 class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val sharedPref = getPreferences(Context.MODE_PRIVATE) ?: return
+        val sharedPref = getSharedPreferences("theme",Context.MODE_PRIVATE) ?: return
+        val pref = PreferenceManager.getDefaultSharedPreferences(this /* Activity context */)
         val theme = sharedPref.getInt(getString(R.string.theme), R.style.palFinder_default_theme)
         setTheme(theme)
         super.onCreate(savedInstanceState)
@@ -103,14 +105,14 @@ class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferen
         when (key) {
             "list_color" -> {
                 if (sharedPreferences.getString(key, "Default") == "Default") {
-                    val sharedPref = getPreferences(Context.MODE_PRIVATE) ?: return
+                    val sharedPref = getSharedPreferences("theme",Context.MODE_PRIVATE) ?: return
                     with(sharedPref.edit()) {
                         putInt(getString(R.string.theme), R.style.palFinder_default_theme)
                         apply()
                     }
                     recreate()
                 } else if (sharedPreferences.getString(key, "Warm") == "Warm") {
-                    val sharedPref = getPreferences(Context.MODE_PRIVATE) ?: return
+                    val sharedPref = getSharedPreferences("theme",Context.MODE_PRIVATE) ?: return
                     with(sharedPref.edit()) {
                         putInt(getString(R.string.theme), R.style.palFinder_warm_theme)
                         apply()

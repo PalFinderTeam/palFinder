@@ -72,7 +72,7 @@ class LoginActivity : AppCompatActivity() {
 
     // onCreate One Tap version
     override fun onCreate(savedInstanceState: Bundle?) {
-        val sharedPref = getPreferences(Context.MODE_PRIVATE) ?: return
+        val sharedPref = getSharedPreferences("theme",Context.MODE_PRIVATE) ?: return
         val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
         setTheme(theme)
         super.onCreate(savedInstanceState)
