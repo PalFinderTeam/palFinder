@@ -102,7 +102,6 @@ class ProfileActivity : AppCompatActivity() {
             injectBio(user.description)
         }else{
             findViewById<TextView>(R.id.userProfileName).text = this.resources.getString(R.string.private_name)
-
             injectBio(this.resources.getString(R.string.private_desc))
         }
         lifecycleScope.launch {

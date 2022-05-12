@@ -35,6 +35,7 @@ class ProfileActivityTest {
     private lateinit var userLongBio: ProfileUser
     private lateinit var userNoBio: ProfileUser
     private lateinit var userPrivate: ProfileUser
+    private lateinit var someUser: ProfileUser
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -93,6 +94,21 @@ class ProfileActivityTest {
             "I like my private life",
             privacySettings = PrivacySettings.PRIVATE
         )
+
+        someUser = ProfileUser(
+            "1",
+            "The",
+            "only",
+            "one",
+            Calendar.getInstance(),
+            ImageInstance("")
+            )
+    }
+
+    @Before
+    fun setBaseUser() = runTest{
+        val id = profileService.create(someUser)
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(id)
     }
 
     @After
@@ -210,13 +226,11 @@ class ProfileActivityTest {
 
     @Test
     fun testPrivateUserProfile() = runTest{
-        val userId = profileService.create(userCat)
-        val privateId = profileService.create(userPrivate)
-        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userId)
+        val uuid = profileService.create(userPrivate)
 
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
-                .apply { putExtra(USER_ID, privateId) }
+                .apply { putExtra(USER_ID, uuid) }
 
         // Launch activity
         val scenario = ActivityScenario.launch<ProfileActivity>(intent)
