@@ -104,4 +104,22 @@ class FirebaseChatServiceTest {
                 .document(id2)
         }
     }
+
+    @Test
+    fun fetchMessagesFetchDirectRightInfo() = runTest {
+        val id1 = firebaseChatService.postMessage(groupId, message1)
+        val id2 = firebaseChatService.postMessage(groupId, message2)
+        assertThat(id1, notNullValue())
+        assertThat(id2, notNullValue())
+        if (id1 != null && id2 != null) {
+            val messagesInDbFlow = firebaseChatService.fetchMessages(groupId)
+
+            assertThat(messagesInDbFlow, hasItems(message1, message2))
+            // Make sure to clean for next tests
+            db.collection(FirebaseMeetUpService.MEETUP_COLL).document(groupId).collection(MSG_COLL)
+                .document(id1)
+            db.collection(FirebaseMeetUpService.MEETUP_COLL).document(groupId).collection(MSG_COLL)
+                .document(id2)
+        }
+    }
 }

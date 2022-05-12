@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.chat.CachedChatService
+import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.chat.ChatService
 import com.github.palFinderTeam.palfinder.di.FirestoreModule
 import com.github.palFinderTeam.palfinder.meetups.CachedMeetUpService
@@ -17,7 +18,8 @@ import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.utils.EndlessService
 import com.github.palFinderTeam.palfinder.utils.context.AppContextService
-import com.github.palFinderTeam.palfinder.utils.isBefore
+import com.github.palFinderTeam.palfinder.utils.context.ContextService
+import com.github.palFinderTeam.palfinder.utils.time.isBefore
 import com.github.palFinderTeam.palfinder.utils.time.RealTimeService
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import kotlinx.coroutines.runBlocking
@@ -25,40 +27,58 @@ import javax.inject.Inject
 
 
 class NotificationService @Inject constructor(
-    var timeService: TimeService,
-    var meetupService: MeetUpRepository,
-    var profileService: ProfileService,
-    var chatService: ChatService
+    val contextService: ContextService,
+    val timeService: TimeService,
+    val meetupService: MeetUpRepository,
+    val profileService: ProfileService,
+    val chatService: ChatService
 ): JobService() {
 
-    constructor() : this(
+    // Android want a default constructor
+    constructor():this(
+        AppContextService(),
         RealTimeService(),
-        CachedMeetUpService(FirebaseMeetUpService(FirestoreModule.provideFirestore()), RealTimeService(), AppContextService()),
+        CachedMeetUpService(FirebaseMeetUpService(FirestoreModule.provideFirestore(),FirebaseProfileService(FirestoreModule.provideFirestore())), RealTimeService(), AppContextService()),
         CachedProfileService(FirebaseProfileService(FirestoreModule.provideFirestore()), RealTimeService(), AppContextService()),
-        CachedChatService(FirestoreModule.provideFirestore(), AppContextService())
+        CachedChatService(FirestoreModule.provideFirestore(), AppContextService()),
     )
 
-
-    private val notifications = DictionaryCache("notification", CachedNotification::class.java, false, this)
-    private val meetups = DictionaryCache("meetup_meta", MeetupMetaData::class.java, false, this)
+    private val notifications = DictionaryCache("notification", CachedNotification::class.java, false, contextService.get())
+    private val meetupsMetaData = DictionaryCache("meetup_meta", MeetupMetaData::class.java, false, contextService.get())
+    private val profileMetaData = DictionaryCache("profile_meta", ProfileMetaData::class.java, false, contextService.get())
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun action(){
         for (notif in notifications.getAll()){
             if (notif.time.isBefore(timeService.now())){
-                NotificationHandler(this).post(notif.title, notif.content, notif.icon)
+                NotificationHandler(contextService.get()).post(notif.title, notif.content, notif.icon)
                 notifications.delete(notif.uuid)
             }
         }
-        val context = this
+        val context = contextService.get()
         runBlocking {
-            for (m in (meetupService as CachedMeetUpService).getAllJoinedMeetupID()) {
+            // Notification For Follow
+            val id = profileService.getLoggedInUserID()
+            if (id != null){
+                val logged = profileService.fetch(id!!)
+                if (logged != null){
+                    for(p in logged!!.following){
+                        val user = profileService.fetch(p)
+                        if (!profileMetaData.contains(p) && user != null){
+                            profileMetaData.store(p, ProfileMetaData(p, true))
+                            NotificationHandler(context).post(context.getString(R.string.following_title), context.getString(R.string.following_content).format(user.username), R.drawable.icon_beer)
+                        }
+                    }
+                }
+            }
+            //Notification For Meetup
+            for (m in meetupService.getAllJoinedMeetupID()) {
                 var meetup = meetupService.fetch(m)
-                val meta = if (meetups.contains(m)) {
-                    meetups.get(m)
+                val meta = if (meetupsMetaData.contains(m)) {
+                    meetupsMetaData.get(m)
                 } else {
                     val ret = MeetupMetaData(m, false, "")
-                    meetups.store(m, ret)
+                    meetupsMetaData.store(m, ret)
                     ret
                 }
                 if (meetup != null) {
@@ -66,21 +86,23 @@ class NotificationService @Inject constructor(
                     if (!meta.sendStartNotification && meetup.startDate.isBefore(timeService.now())) {
                         NotificationHandler(context).post(meetup.name, meetup.description, R.drawable.icon_beer)
                         meta.sendStartNotification = true
-                        meetups.store(m, meta)
+                        meetupsMetaData.store(m, meta)
                     }
 
                     // Look for message of that meetup
                     val messages = chatService.fetchMessages(m)
                     if (messages!= null && messages.isNotEmpty()) {
-                        val meta = meetups.get(m)
+                        val meta = meetupsMetaData.get(m)
                         val last = messages.takeLast(1)[0]
                         val hash = last.hashCode().toString()
 
                         if (hash != meta.lastMessageNotification && last.sentBy != profileService.getLoggedInUserID()) {
                             val name = profileService.fetch(last.sentBy)?.username?:""
-                            NotificationHandler(context).post(name, last.content, R.drawable.icon_beer)
+                            if (ChatActivity.currentlyViewChat != m) {
+                                NotificationHandler(context).post(name, last.content, R.drawable.icon_beer)
+                            }
                             meta.lastMessageNotification = hash
-                            meetups.store(m, meta)
+                            meetupsMetaData.store(m, meta)
                         }
                     }
                 }
@@ -100,4 +122,5 @@ class NotificationService @Inject constructor(
     }
 
     data class MeetupMetaData(var uuid: String, var sendStartNotification: Boolean, var lastMessageNotification: String)
+    data class ProfileMetaData(var uuid: String, var sendStartNotification: Boolean)
 }

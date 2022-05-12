@@ -234,8 +234,13 @@
     <string name="scanned">Scanned</string>
     <string name="no_camera_permission_message">Cancelled due to missing camera permission</string>
     <string name="cancelled_scan">Cancelled scan</string>
+
+    <string name="following_content">%1$s is now following you!</string>
+    <string name="following_title">New Follower!</string>
+
     <string name="block_user">Block user</string>
     <string name="unblock_user">Unblock user</string>
 
+    <string name="meetup_start_title">%1$s is starting!</string>
 
 </resources>
