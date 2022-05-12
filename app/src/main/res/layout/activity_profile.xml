@@ -81,7 +81,7 @@
                     android:orientation="horizontal">
 
                     <Button
-                        android:id="@+id/bt_JoinMeetup"
+                        android:id="@+id/button_follow_profile"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="0dp"
@@ -91,7 +91,7 @@
                         android:textSize="14sp" />
 
                     <ImageView
-                        android:id="@+id/show_profile_list_button"
+                        android:id="@+id/show_qr_button"
                         android:layout_width="133dp"
                         android:layout_height="match_parent"
                         android:layout_marginStart="11dp"
