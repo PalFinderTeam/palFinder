@@ -33,7 +33,7 @@ data class ProfileUser(
     val followed: List<String> = emptyList(),
     val blockedUsers: List<String> = emptyList(),
     private val achievements: List<String> = emptyList(),
-    val privacySettings: PrivacySettings = PrivacySettings.PUBLIC,
+    val privacySettings: PrivacySettings? = PrivacySettings.PUBLIC,
 ) : Serializable, FirebaseObject {
 
     companion object {
