@@ -206,5 +206,7 @@
     <string name="scanned">Scanné</string>
     <string name="no_camera_permission_message">Annulé à cause des permissions de la caméra</string>
     <string name="cancelled_scan">Scan annulé</string>
+    <string name="meetup_creation_icon_title">Appyuer pour choisir le marker</string>
+    <string name="meetup_creation_icon_hint">Changez l\'icone de la rencontre directement sur la map</string>
 
 </resources>
