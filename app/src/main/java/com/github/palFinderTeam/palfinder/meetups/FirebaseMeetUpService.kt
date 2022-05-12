@@ -157,11 +157,11 @@ open class FirebaseMeetUpService @Inject constructor(
                 return Success(Unit)
             }
 
-            if (!meetUp.canJoin(now, profile)) {
-                return Failure("Cannot join meetup now, either it is full, out of time or you do not meet the requirements")
-            }
             if (meetUp.isFull()) {
                 return Failure("Cannot join, it is full.")
+            }
+            if (!meetUp.canJoin(now, profile)) {
+                return Failure("Cannot join meetup now, either it is full, out of time or you do not meet the requirements")
             }
 
             val batch = db.batch()

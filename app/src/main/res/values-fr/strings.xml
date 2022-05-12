@@ -31,6 +31,7 @@
     <string name="no_account_join">Vous devez être connecté pour rejoindre une rencontre.</string>
     <string name="no_account_profile">Vous devez être connecté pour voir votre profil.</string>
     <string name="qr_scan_follow_account">Est-ce que vous voulez suivre ce compte?</string>
+    <string name="qr_scan_join_meetup">Est-ce que vous voulez rejoindre cette rencontre?</string>
 
 
     <!-- Strings used for meetup creation -->
