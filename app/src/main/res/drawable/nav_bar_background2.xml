@@ -7,6 +7,6 @@
 
 
     <path
-        android:fillColor="@color/theme_darker"
+        android:fillColor="?android:shape"
         android:pathData="M0 1h1v1h-1z" />
 </vector>

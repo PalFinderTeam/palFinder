@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:alpha="0.5 "
-        android:background="@color/black" />
+        android:background="?attr/colorSecondary" />
 
     <ProgressBar
         style="@style/Widget.AppCompat.ProgressBar"

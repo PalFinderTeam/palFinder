@@ -2,6 +2,8 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -14,6 +16,7 @@ import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileListFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
@@ -22,8 +25,10 @@ import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import com.google.zxing.BarcodeFormat
+import com.journeyapps.barcodescanner.BarcodeEncoder
+import com.ceylonlabs.imageviewpopup.ImagePopup
 
 //ids for putExtra function, to pass Meetups between views
 const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_SHOWN"
@@ -46,7 +51,7 @@ class MeetUpView : AppCompatActivity() {
         val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
         viewModel.loadMeetUp(meetupId)
         //button (image for design purpuses) to show the list of users participating in this meetUp
-        val button = findViewById<ImageView>(R.id.show_profile_list_button)
+        val button = findViewById<ImageView>(R.id.show_qr_button)
         button.setOnClickListener { showProfileList() }
 
         //fill fields when the meetup is loaded from database
@@ -79,7 +84,7 @@ class MeetUpView : AppCompatActivity() {
             this.isVisible = isCreator
             this.isClickable = isCreator
         }
-        findViewById<Button>(R.id.bt_JoinMeetup).apply {
+        findViewById<Button>(R.id.button_follow_profile).apply {
             this.isEnabled = !isCreator
             this.isClickable = !isCreator
             this.text = if (hasJoined) getString(R.string.meetup_view_leave) else getString(R.string.meetup_view_join)
@@ -119,6 +124,26 @@ class MeetUpView : AppCompatActivity() {
             }
             startActivity(intent)
         }
+    }
+
+    /**
+     * Clicking on QR Code icon will show QR code
+     */
+    fun showQR(view: View?) {
+        //Initiate the barcode encoder
+        val barcodeEncoder = BarcodeEncoder()
+        //Encode text in editText into QRCode image into the specified size using barcodeEncoder
+        val bitmap = barcodeEncoder.encodeBitmap(MEETUP_SHOWN+intent.getSerializableExtra(MEETUP_SHOWN) as String, BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
+
+        //Set up the popup image
+        val imagePopup = ImagePopup(this)
+        //Convert the bitmap(QR Code) into a drawable
+        val d: Drawable = BitmapDrawable(resources, bitmap)
+
+        //Displays the popup image
+        imagePopup.initiatePopup(d);
+        imagePopup.viewPopup()
+
     }
 
     /**

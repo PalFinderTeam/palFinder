@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.navigation
 
 import android.content.Intent
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -11,10 +12,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
+import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
+import com.github.palFinderTeam.palfinder.profile.ProfileAdapter
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
+import com.github.palFinderTeam.palfinder.ui.login.LoginActivity.Companion.HIDE_ONE_TAP
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
 import com.github.palFinderTeam.palfinder.utils.createPopUp
@@ -29,6 +37,9 @@ import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -39,6 +50,8 @@ class MainNavActivity : AppCompatActivity() {
     private lateinit var bottomNavigationView: BottomNavigationView
     @Inject
     lateinit var profileService: ProfileService
+    @Inject
+    lateinit var meetUpRepository: MeetUpRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,10 +185,35 @@ class MainNavActivity : AppCompatActivity() {
                 getString(R.string.scanned)+ ": " + result.contents,
                 Toast.LENGTH_LONG
             ).show()
-            createPopUp(this, {
-                //follow user or join meetup
-            }, textId = R.string.qr_scan_follow_account,
-                continueButtonTextId = R.string.follow)
+            if (result.contents.startsWith(USER_ID)) {
+                createPopUp(this, {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        profileService.followUser(
+                            profileService.fetch(profileService.getLoggedInUserID()!!)!!,
+                            result.contents.removePrefix(USER_ID)
+                        )
+                    }.invokeOnCompletion {
+                            val intent = Intent(this, ProfileActivity::class.java)
+                                .apply { putExtra(USER_ID, result.contents.removePrefix(USER_ID)) }
+                            startActivity(intent)
+                    }
+                }, textId = R.string.qr_scan_follow_account,
+                    continueButtonTextId = R.string.follow)
+            } else {
+                createPopUp(this, {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        meetUpRepository.joinMeetUp(result.contents.removePrefix(MEETUP_SHOWN),
+                            profileService.getLoggedInUserID()!!, Calendar.getInstance(),
+                            profileService.fetch(profileService.getLoggedInUserID()!!)!!)
+                    }.invokeOnCompletion {
+                            val intent = Intent(this, MeetUpView::class.java)
+                                .apply { putExtra(MEETUP_SHOWN, result.contents.removePrefix(
+                                    MEETUP_SHOWN)) }
+                            startActivity(intent)
+                    }
+                }, textId = R.string.qr_scan_follow_account,
+                    continueButtonTextId = R.string.meetup_view_join)
+            }
         }
     }
 
@@ -192,7 +230,7 @@ class MainNavActivity : AppCompatActivity() {
 
                 val client = GoogleSignIn.getClient(this, gso)
                 client.signOut()
-                val logoutIntent = Intent(this, LoginActivity::class.java)
+                val logoutIntent = Intent(this, LoginActivity::class.java).apply { putExtra(HIDE_ONE_TAP, true) }
                 logoutIntent.flags =
                     Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(logoutIntent)
