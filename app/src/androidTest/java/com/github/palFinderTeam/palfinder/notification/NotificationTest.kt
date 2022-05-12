@@ -11,6 +11,7 @@ import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
 import com.github.palFinderTeam.palfinder.MainActivity
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.chat.ChatMessage
 import com.github.palFinderTeam.palfinder.chat.ChatService
@@ -160,14 +161,18 @@ class NotificationTest {
 
     @Test
     fun actionWorks() = runTest {
+        val date1 = Calendar.getInstance().apply { time = Date(0) }
         val userId = profileRepository.create(user1)
         val userId2 = profileRepository.create(user2)
         profileRepository.edit(userId2!!, "following", listOf(userId))
+        profileRepository.edit(userId!!, "followed", listOf(userId2))
 
         (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userId)
 
         val id = meetUpRepository.create(meetUp)
-        val date1 = Calendar.getInstance().apply { time = Date(0) }
+        meetUpRepository.joinMeetUp(id!!, userId, date1, profileRepository.fetch(userId)!!)
+        (meetUpRepository as UIMockMeetUpRepositoryModule.UIMockRepository).loggedUserID = userId
+
         chatService.postMessage(id!!, ChatMessage(date1, userId2, "hello world"))
 
         notificationService.action()

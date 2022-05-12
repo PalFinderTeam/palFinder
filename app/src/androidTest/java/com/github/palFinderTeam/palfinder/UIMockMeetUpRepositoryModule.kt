@@ -46,6 +46,8 @@ object UIMockMeetUpRepositoryModule {
         val db: HashMap<String, MeetUp> = hashMapOf()
         private var counter = 0
 
+        public var loggedUserID = "user"
+
         override suspend fun fetch(uuid: String): MeetUp? {
             return db[uuid]
         }
@@ -187,7 +189,7 @@ object UIMockMeetUpRepositoryModule {
         }
 
         override suspend fun getAllJoinedMeetupID(): List<String> {
-            return fetchAll(Calendar.getInstance()).toList()[0].filter { it.isParticipating("user1") }.map { it.uuid }
+            return fetchAll(Calendar.getInstance()).toList()[0].filter { it.isParticipating(loggedUserID) }.map { it.uuid }
         }
 
         override suspend fun exists(uuid: String): Boolean {
