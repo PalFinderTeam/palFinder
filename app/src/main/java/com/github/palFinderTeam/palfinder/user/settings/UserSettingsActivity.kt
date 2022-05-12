@@ -24,7 +24,7 @@ import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.ui.login.CREATE_ACCOUNT_PROFILE
 import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
-import com.github.palFinderTeam.palfinder.utils.askDate
+import com.github.palFinderTeam.palfinder.utils.time.askDate
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.pickProfileImage
 import dagger.hilt.android.AndroidEntryPoint
