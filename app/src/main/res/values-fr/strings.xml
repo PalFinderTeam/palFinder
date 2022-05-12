@@ -6,7 +6,7 @@
     <string name="previous">Précédent</string>
 
     <!-- Strings used for image loading -->
-    <string name="image_load_failed">Désolé, nous n\'avons pas pu charger l\'image que vous avez choisi.</string>
+    <string name="image_load_failed">Désolé, nous n\'avons pas pu charger l\'image que vous avez choisie.</string>
 
     <string name="tag_element_text">tag</string>
     <string name="add_tags">Ajouter des tags</string>
@@ -25,43 +25,43 @@
     <string name="cancel">Annuler</string>
     <string name="continu">Continuer</string>
     <string name="login">Login</string>
-    <string name="no_account_warning">Sans vous connectez, vous ne pourrez pas rejoindre de rencontre.</string>
+    <string name="no_account_warning">Sans vous connecter, vous ne pourrez pas rejoindre de rencontre.</string>
     <string name="no_account_create">Vous devez être connecté pour créer une rencontre.</string>
     <string name="no_account_groups">Vous devez être connecté pour rejoindre un groupe.</string>
     <string name="no_account_join">Vous devez être connecté pour rejoindre une rencontre.</string>
     <string name="no_account_profile">Vous devez être connecté pour voir votre profil.</string>
-    <string name="qr_scan_follow_account">Est ce que vous voulez suivre ce compte?</string>
+    <string name="qr_scan_follow_account">Est-ce que vous voulez suivre ce compte?</string>
 
 
     <!-- Strings used for meetup creation -->
     <string name="meetup_creation_meetup_name">Nom de la rencontre</string>
     <string name="meetup_creation_meetup_description">Description de la rencontre</string>
-    <string name="meetup_creation_meetup_icon">Icone</string>
+    <string name="meetup_creation_meetup_icon">Icône</string>
     <string name="meetup_creation_meetup_start_date">Date du début</string>
     <string name="meetup_creation_meetup_end_date">Date de la fin</string>
     <string name="meetup_creation_meetup_duration">Durée</string>
     <string name="meetup_creation_meetup_location">Localisation</string>
     <string name="meetup_creation_meetup_has_participant_limit">Limite de participants?</string>
-    <string name="meetup_creation_meetup_participant_limit">Limite de Participant</string>
+    <string name="meetup_creation_meetup_participant_limit">Limite de participants</string>
     <string name="meetup_creation_meetup_start_date_bt">Sélectionner date du début</string>
     <string name="meetup_creation_meetup_end_date_bt">Sélectionner date de fin</string>
     <string name="meetup_creation_meetup_tags">Tags</string>
     <string name="meetup_creation_meetup_no_tags">Pas de tags sélectionnés</string>
-    <string name="meetup_creation_meetup_tags_bt">Ajouter des Tags</string>
+    <string name="meetup_creation_meetup_tags_bt">Ajouter des tags</string>
     <string name="meetup_creation_meetup_entries">participants</string>
     <string name="meetup_creation_meetup_done">Fini</string>
     <string name="meetup_creation_meetup_select_location">Sélection d\'une localisation</string>
     <string name="meetup_creation_meetup_location_not_selected">Localisation non sélectionnée</string>
-    <string name="meetup_creation_meetup_main_description">Paramétrer les informations générales de votre rencontre! Ajouter un titre, une petite description et spécifier où la rencontre va avoir lieu.</string>
-    <string name="meetup_creation_meetup_create">Créer une rencontre.</string>
-    <string name="meetup_creation_meetup_location_desc">Appuyer pour choisir le lieu parfait de la rencontre.</string>
-    <string name="meetup_creation_meetup_marker_desc">Appuyer pour choise le marqueur.</string>
-    <string name="meetup_creation_meetup_date">Quand planifiez vous la rencontre?</string>
+    <string name="meetup_creation_meetup_main_description">Paramétrez les informations générales de votre rencontre! Ajouter un titre, une petite description et spécifier où la rencontre va avoir lieu.</string>
+    <string name="meetup_creation_meetup_create">Créez une rencontre.</string>
+    <string name="meetup_creation_meetup_location_desc">Appuyez pour choisir le lieu parfait de la rencontre.</string>
+    <string name="meetup_creation_meetup_marker_desc">Appuyez pour choise le marqueur.</string>
+    <string name="meetup_creation_meetup_date">Quand planifiez-vous la rencontre?</string>
     <string name="meetup_creation_meetup_date_desc">Choisissez une date et une heure de début et de fin</string>
     <string name="meetup_creation_meetup_tags_desc">Catégorisez votre rencontre avec des tags pour que les gens la trouvent facilement.</string>
     <string name="meetup_creation_meetup_miscellaneous">Divers</string>
-    <string name="meetup_creation_meetup_miscellaneous_desc">Pour être sûres que vous rencontre soient parfaites.</string>
-    <string name="meetup_creation_meetup_picture_desc">Appuyer sur l\'image pour changer l\'icone de la rencontre.</string>
+    <string name="meetup_creation_meetup_miscellaneous_desc">Pour être sûr que vous rencontre soient parfaites.</string>
+    <string name="meetup_creation_meetup_picture_desc">Appuyer sur l\'image pour changer l\'icône de la rencontre.</string>
     <string name="meetup_creation_meetup_criteria_desc">Appuyer pour ajouter des critères à la rencontre, tels que l\'âge ou le genre.</string>
 
     <string name="criteria">Critères</string>
@@ -201,7 +201,7 @@
 
     <string name="hint_username">nom d\'utilisateur</string>
     <string name="hint_password">mot de passe</string>
-    <string name="select_icon">Sélection de l\'icone</string>
+    <string name="select_icon">Sélection de l\'icône</string>
     <string name="select_marker">Sélection du marqueur</string>
     <string name="scanned">Scanné</string>
     <string name="no_camera_permission_message">Annulé à cause des permissions de la caméra</string>
