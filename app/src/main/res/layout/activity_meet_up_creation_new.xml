@@ -178,7 +178,6 @@
                     android:id="@+id/bt_markerType"
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="?attr/colorSecondary"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
                     android:text="@string/select_marker" />
@@ -443,7 +442,6 @@
                         android:id="@+id/criterionsSelectButton"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="?attr/colorSecondary"
                         android:paddingTop="16dp"
                         android:paddingBottom="16dp"
                         android:text="@string/criterion_select" />
@@ -515,7 +513,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:backgroundTint="?attr/colorSecondary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

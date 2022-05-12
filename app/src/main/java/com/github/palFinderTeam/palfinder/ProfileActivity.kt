@@ -1,6 +1,8 @@
 package com.github.palFinderTeam.palfinder
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -51,9 +53,18 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
+        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
+        setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
-
+        var sharedPreferenceChangeListener =
+            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                if (key == "theme") {
+                    recreate()
+                }
+            }
+        sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
         if (intent.hasExtra(USER_ID)) {
             val userId = intent.getStringExtra(USER_ID)!!
             viewModel.fetchProfile(userId)

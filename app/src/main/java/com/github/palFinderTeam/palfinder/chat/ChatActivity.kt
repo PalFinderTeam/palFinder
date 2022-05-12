@@ -1,5 +1,7 @@
 package com.github.palFinderTeam.palfinder.chat
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -21,8 +23,18 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var chatBox: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
+        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
+        setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
+        var sharedPreferenceChangeListener =
+            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                if (key == "theme") {
+                    recreate()
+                }
+            }
+        sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
         if (intent.hasExtra(CHAT)) {
             val meetupId = intent.getStringExtra(CHAT)
             viewModel.connectToChat(meetupId!!)

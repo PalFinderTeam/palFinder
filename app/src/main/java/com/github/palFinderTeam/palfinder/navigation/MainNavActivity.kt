@@ -162,7 +162,7 @@ class MainNavActivity : AppCompatActivity() {
     }
 
     var sharedPreferenceChangeListener =
-        OnSharedPreferenceChangeListener { sharedPreferences, key ->
+        OnSharedPreferenceChangeListener { _, key ->
             if (key == "theme") {
                 recreate()
             }
