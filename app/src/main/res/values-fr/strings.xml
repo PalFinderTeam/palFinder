@@ -10,6 +10,8 @@
 
     <string name="tag_element_text">tag</string>
     <string name="add_tags">Ajouter des tags</string>
+    <string name="add_tags_click">Cliquer pour sélectionner des tags</string>
+
 
     <string name="profile_element">nom</string>
 
@@ -28,6 +30,8 @@
     <string name="no_account_groups"> Vous devez être connecté pour rejoindre un groupe.</string>
     <string name="no_account_join"> Vous devez être connecté pour rejoindre une rencontre.</string>
     <string name="no_account_profile"> Vous devez être connecté pour voir votre profil.</string>
+    <string name="qr_scan_follow_account"> Est ce que vous voulez suivre ce compte??</string>
+
 
     <!-- Strings used for meetup creation -->
     <string name="meetup_creation_meetup_name">Nom de la rencontre</string>
@@ -60,6 +64,7 @@
     <string name="meetup_creation_meetup_picture_desc">Appuyer sur l\'image pour changer l\'icone de la rencontre.</string>
     <string name="meetup_creation_meetup_criteria_desc">Appuyer pour ajouter des critères à la rencontre, tels que l\'âge ou le genre.</string>
 
+    <string name="criteria">Critères</string>
 
 
     <string name="list_sort_by_alphabetical_order">Trier par ordre alphabétique</string>
@@ -69,6 +74,12 @@
     <string name="meetup_creation_missing_name_desc">Veuillez ajouter un nom, une description et une localisation de la rencontre.</string>
     <string name="meetup_creation_missing_name_desc_title">Informations manquantes</string>
 
+
+    <!-- Strings used for meetupList -->
+    <string name="show_all">Toutes les rencontres</string>
+    <string name="only_participating">pal prenant part</string>
+    <string name="only_creators">Créé par pal</string>
+    <string name="only_joined">rejoins</string>
 
     <!-- Strings used for meetup view -->
     <string name="meetup_view_meetup_start_at">Débute à</string>
@@ -83,9 +94,14 @@
     <string name="meetup_view_time_date">Dates et heures</string>
     <string name="meetup_view_other_info">Autres informations</string>
     <string name="meetup_view_people">Personnes</string>
-    <string name="meetup_view_participant">%d (sur %d)</string>
+    <string name="meetup_view_participation_unlimited">%d</string>
+    <string name="meetup_view_participation_limited">%d (sur %d)</string>
+    <string name="meetup_view_age_min">13</string>
+    <string name="meetup_view_age_max">66</string>
+    <string name="meetup_view_age_max_plus">66+</string>
     <string name="meetup_view_age">Age</string>
-    <string name="meetup_view_gender">Genre</string>
+    <string name="meetup_view_age_interval">%s-%s ans</string>
+    <string name="meetup_view_gender_title">Genre</string>
 
 
 
@@ -112,18 +128,24 @@
     <string name="limit_people">Limité la particpation à</string>
     <string name="DB_error_msg">Problème de connection à la base de donnée</string>
 
+    <string name="criterions_title">Critères de la rencontre</string>
     <string name="criterions_age_title">Sélection de l\'age</string>
+    <string name="criterions_age_desc">Si vous souhaiter continuer avec ces paramètres, uniquement les personnes ayant entré leur anniversaires pourront rejoindre la rencontre</string>
     <string name="criterions_age_min">13</string>
-    <string name="criterions_age_max">66+</string>
+    <string name="criterions_age_max">66</string>
+    <string name="criterions_age_max_plus">66+</string>
     <string name="criterion_select">Sélection des critères</string>
 
-    <string name="follow_button">Suivre</string>
-    <string name="unfollow_button">Ne plus suivre</string>
+    <string name="follow">Suivre</string>
+    <string name="unfollow">Ne plus suivre</string>
 
     <string name="criterions_gender_title">Sélection du genre</string>
     <string name="radio_male">Homme</string>
     <string name="radio_female">Femme</string>
     <string name="radio_male_and_female">Homme et Femme</string>
+    <string name="radio_other">Autre</string>
+    <string name="criterion_confirm">Confirmer les critères</string>
+
 
     <string name="pretty_location_too_small">Ici</string>
     <string name="pretty_location_m">%1$s m</string>
@@ -181,5 +203,8 @@
     <string name="hint_password">mot de passe</string>
     <string name="select_icon">Sélection de l\'icone</string>
     <string name="select_marker">Sélection du marqueur</string>
+    <string name="scanned">Scanné</string>
+    <string name="no_camera_permission_message">Annulé à cause des permissions de la caméra</string>
+    <string name="cancelled_scan">Scan annulé</string>
 
 </resources>
