@@ -22,15 +22,15 @@
 
     <!-- Strings used for no account user-->
     <string name="skip_connection"> Sauter la connection </string>
-    <string name="cancel"> Annuler</string>
-    <string name="continu"> Continuer</string>
-    <string name="login"> Login</string>
+    <string name="cancel">Annuler</string>
+    <string name="continu">Continuer</string>
+    <string name="login">Login</string>
     <string name="no_account_warning">Sans vous connectez, vous ne pourrez pas rejoindre de rencontre.</string>
-    <string name="no_account_create"> Vous devez être connecté pour créer une rencontre.</string>
-    <string name="no_account_groups"> Vous devez être connecté pour rejoindre un groupe.</string>
-    <string name="no_account_join"> Vous devez être connecté pour rejoindre une rencontre.</string>
-    <string name="no_account_profile"> Vous devez être connecté pour voir votre profil.</string>
-    <string name="qr_scan_follow_account"> Est ce que vous voulez suivre ce compte??</string>
+    <string name="no_account_create">Vous devez être connecté pour créer une rencontre.</string>
+    <string name="no_account_groups">Vous devez être connecté pour rejoindre un groupe.</string>
+    <string name="no_account_join">Vous devez être connecté pour rejoindre une rencontre.</string>
+    <string name="no_account_profile">Vous devez être connecté pour voir votre profil.</string>
+    <string name="qr_scan_follow_account">Est ce que vous voulez suivre ce compte?</string>
 
 
     <!-- Strings used for meetup creation -->
@@ -99,8 +99,8 @@
     <string name="meetup_view_age_min">13</string>
     <string name="meetup_view_age_max">66</string>
     <string name="meetup_view_age_max_plus">66+</string>
-    <string name="meetup_view_age">Age</string>
-    <string name="meetup_view_age_interval">%s-%s ans</string>
+    <string name="meetup_view_age_text">Age</string>
+    <string name="meetup_view_age">%s-%s ans</string>
     <string name="meetup_view_gender_title">Genre</string>
 
 
@@ -193,7 +193,7 @@
     <string name="userSettingsSaveFail">Une erreur s\'est produite lors de la sauvegarde. Veuillez ressayer</string>
     <string name="userSettingsSaveCreate">Compte créé! Bienvenue sur PalFinder :)</string>
 
-    <string name="map">map</string>
+    <string name="map">carte</string>
     <string name="list">liste</string>
     <string name="show_profiles">montrer les profiles</string>
 

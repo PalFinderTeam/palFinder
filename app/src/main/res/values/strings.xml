@@ -108,8 +108,8 @@
     <string name="meetup_view_end_date" translatable="false">12th of April 2022 at 14:00</string>
     <string name="meetup_view_other_info">Other info</string>
     <string name="meetup_view_people">People</string>
-    <string name="meetup_view_age">Age</string>
-    <string name="meetup_view_age_interval">%s-%s years</string>
+    <string name="meetup_view_age_text">Age</string>
+    <string name="meetup_view_age">%s-%s years</string>
     <string name="meetup_view_gender_title">Gender</string>
 
 
