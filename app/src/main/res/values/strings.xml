@@ -152,8 +152,11 @@
     <string name="criterions_age_max_plus">66+</string>
     <string name="criterion_select">Select criteria</string>
 
-    <string name="follow">follow</string>
-    <string name="unfollow">unfollow</string>
+    <string name="username_format" translatable="false">\@%s</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="title_attendees_list">Meetup attendees</string>
+    <string name="search_user_hint">Search for user</string>
 
     <string name="criterions_gender_title">Select gender</string>
     <string name="radio_male">Male</string>
