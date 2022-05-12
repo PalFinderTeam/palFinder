@@ -1,7 +1,5 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
-import android.graphics.Bitmap
-import androidx.core.graphics.drawable.toBitmap
 import android.Manifest
 import android.app.Application
 import android.content.pm.PackageManager
@@ -12,22 +10,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel.Companion.INITIAL_RADIUS
-import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel.Companion.START_LOCATION
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
-import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.*
-import com.maltaisn.icondialog.pack.IconPack
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.internal.aggregatedroot.codegen._com_github_palFinderTeam_palfinder_PalFinderApplication
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -53,7 +43,17 @@ class MapListViewModel @Inject constructor(
     companion object {
         const val INITIAL_RADIUS: Double = 400.0
         val START_LOCATION = Location(45.0, 45.0)
+
+        private fun Response<List<MeetUp>>.filterBlocked(blockedUser: List<String>): Response<List<MeetUp>> {
+           return if (this is Response.Success) {
+               val filtered = this.data.filter { meetUp -> meetUp.participantsId.intersect(blockedUser).isEmpty() }
+               Response.Success(filtered)
+           } else {
+               this
+           }
+        }
     }
+
     //store the fetched meetups in real time, separated in 2 to be immutable
     private val _listOfMeetUpResponse: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
     val listOfMeetUpResponse: LiveData<Response<List<MeetUp>>> = _listOfMeetUpResponse
@@ -79,6 +79,7 @@ class MapListViewModel @Inject constructor(
     val searchRadius: LiveData<Double> = _searchRadius
     var showParam: ShowParam = ShowParam.ALL
     private var showOnlyAvailableInTime = true
+    private var filterBlockedUserMeetups = true
 
     //updates the userLocation
     init {
@@ -109,12 +110,14 @@ class MapListViewModel @Inject constructor(
      * @param radiusInKm Radius of the search.
      * @param showParam specify the meetUps to be displayed
      * @param showOnlyAvailable If true, only show meetup available at the current time.
+     * @param filterBlockedMeetups If true, only show meetup where no blocked user participates.
      */
     fun setSearchParameters(
         location: Location? = null,
         radiusInKm: Double? = null,
         showParam: ShowParam? = ShowParam.ALL,
-        showOnlyAvailable: Boolean? = null
+        showOnlyAvailable: Boolean? = null,
+        filterBlockedMeetups: Boolean? = null,
     ) {
         location?.let {
             _searchLocation.value = it
@@ -128,6 +131,9 @@ class MapListViewModel @Inject constructor(
         showOnlyAvailable?.let {
             showOnlyAvailableInTime = it
         }
+        filterBlockedMeetups?.let {
+            filterBlockedUserMeetups = it
+        }
     }
 
     /**
@@ -136,6 +142,8 @@ class MapListViewModel @Inject constructor(
      * @param location Location around which to search.
      * @param radiusInKm Radius of the search.
      * @param showParam specify the meetUps to be displayed
+     * @param showOnlyAvailable If true, only show meetup available at the current time.
+     * @param filterBlockedMeetups If true, only show meetup where no blocked user participates.
      * @param forceFetch If true, always fetch after assigning the params.
      */
     fun setSearchParamAndFetch(
@@ -143,7 +151,8 @@ class MapListViewModel @Inject constructor(
         radiusInKm: Double? = null,
         showParam: ShowParam? = ShowParam.ALL,
         showOnlyAvailable: Boolean? = null,
-        forceFetch: Boolean = false
+        forceFetch: Boolean = false,
+        filterBlockedMeetups: Boolean? = null,
     ) {
         // In case the search params are the same we don't fetch again.
         if (
@@ -152,11 +161,18 @@ class MapListViewModel @Inject constructor(
             && (radiusInKm == null || searchRadius.value == radiusInKm)
             && (this.showParam == showParam)
             && (showOnlyAvailable == null || showOnlyAvailableInTime == showOnlyAvailable)
+            && (filterBlockedMeetups == null || filterBlockedMeetups == filterBlockedUserMeetups)
         ) {
             return
         }
 
-        setSearchParameters(location, radiusInKm, showParam, showOnlyAvailable)
+        setSearchParameters(
+            location,
+            radiusInKm,
+            showParam,
+            showOnlyAvailable,
+            filterBlockedMeetups
+        )
         fetchMeetUps()
     }
 
@@ -168,7 +184,11 @@ class MapListViewModel @Inject constructor(
     fun fetchMeetUps() {
         when (showParam) {
             ShowParam.ONLY_JOINED -> fetchUserMeetUps()
-            else -> getMeetupAroundLocation(searchLocation.value!!, searchRadius.value ?: INITIAL_RADIUS, showParam)
+            else -> getMeetupAroundLocation(
+                searchLocation.value!!,
+                searchRadius.value ?: INITIAL_RADIUS,
+                showParam
+            )
         }
     }
 
@@ -186,15 +206,25 @@ class MapListViewModel @Inject constructor(
     ) {
         val date = if (showOnlyAvailableInTime) timeService.now() else null
         viewModelScope.launch {
+            val userId = profileService.getLoggedInUserID()
+            val blockedUser = getBlockedUser(userId)
             meetUpRepository.getMeetUpsAroundLocation(
                 position,
                 radiusInKm,
                 currentDate = date,
                 showParam,
-                profileService.fetch(profileService.getLoggedInUserID()!!)
+                if (userId == null) userId else profileService.fetch(userId)
             ).collect {
-                _listOfMeetUpResponse.postValue(it)
+                _listOfMeetUpResponse.postValue(it.filterBlocked(blockedUser))
             }
+        }
+    }
+
+    private suspend fun getBlockedUser(uuid: String?): List<String> {
+        return if (filterBlockedUserMeetups && uuid != null) {
+            profileService.fetch(uuid)?.blockedUsers.orEmpty()
+        } else {
+            emptyList()
         }
     }
 
@@ -206,9 +236,10 @@ class MapListViewModel @Inject constructor(
         val date = if (showOnlyAvailableInTime) timeService.now() else null
         if (userId != null) {
             viewModelScope.launch {
+                val blockedUser = getBlockedUser(userId)
                 meetUpRepository.getUserMeetups(userId, date)
                     .collect {
-                        _listOfMeetUpResponse.postValue(it)
+                        _listOfMeetUpResponse.postValue(it.filterBlocked(blockedUser))
                     }
             }
         } else {
