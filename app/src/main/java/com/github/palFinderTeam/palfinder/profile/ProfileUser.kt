@@ -1,22 +1,17 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
+import com.github.palFinderTeam.palfinder.utils.generics.FirebaseObject
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.ktx.getField
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.Period
-import java.time.Year
-import java.util.*
-import kotlin.collections.HashMap
 
+const val USER_ID = "com.github.palFinderTeam.palFinder.USER_ID"
 /**
  * A class to hold the data for a user to be displayed on the profile activity
  * Username as unique identifier
@@ -33,8 +28,9 @@ data class ProfileUser(
     val joinedMeetUps: List<String> = emptyList(),
     val gender: Gender? = Gender.NON_SPEC,
     val following: List<String> = emptyList(),
-    val followed: List<String> = emptyList()
-) : Serializable {
+    val followed: List<String> = emptyList(),
+    private val achievements: List<String> = emptyList()
+) : Serializable, FirebaseObject {
 
     companion object {
         const val JOIN_FORMAT = "Joined %s"
@@ -49,6 +45,7 @@ data class ProfileUser(
         const val GENDER = "gender"
         const val FOLLOWING_PROFILES = "following"
         const val FOLLOWED_BY = "followed"
+        const val ACHIEVEMENTS_OBTAINED = "achievements"
 
         /**
          * Provide a way to convert a Firestore query result, in a ProfileUser.
@@ -78,9 +75,11 @@ data class ProfileUser(
                 }
                 val following = (get(FOLLOWING_PROFILES) as? List<String>).orEmpty()
                 val followed = (get(FOLLOWED_BY) as? List<String>).orEmpty()
+
+                val achievements = (get(ACHIEVEMENTS_OBTAINED) as? List<String>).orEmpty()
                 ProfileUser(uuid, username, name, surname,
                     joinDateCal, ImageInstance(picture), description,
-                    birthdayCal, joinedMeetUp, gender, following, followed)
+                    birthdayCal, joinedMeetUp, gender, following, followed, achievements)
 
             } catch (e: Exception) {
                 Log.e("ProfileUser", "Error deserializing user", e)
@@ -92,7 +91,7 @@ data class ProfileUser(
     /**
      * @return a representation which is Firestore friendly of the UserProfile.
      */
-    fun toFirestoreData(): HashMap<String, Any?> {
+    override fun toFirestoreData(): HashMap<String, Any?> {
         return hashMapOf(
             NAME_KEY to name,
             SURNAME_KEY to surname,
@@ -104,9 +103,12 @@ data class ProfileUser(
             JOINED_MEETUPS_KEY to joinedMeetUps,
             GENDER to gender?.stringGender,
             FOLLOWING_PROFILES to following,
-            FOLLOWED_BY to followed
+            FOLLOWED_BY to followed,
+            ACHIEVEMENTS_OBTAINED to achievements
         )
     }
+
+    override fun getUUID(): String = uuid
 
     fun fullName(): String {
         return "$name $surname"
@@ -114,10 +116,14 @@ data class ProfileUser(
 
     fun getAge(): Int {
         return if (birthday == null) {
-            1
+            -1
         } else {
             Period.between(
-                LocalDate.of(birthday.get(Calendar.YEAR), birthday.get(Calendar.MONTH), birthday.get(Calendar.DAY_OF_MONTH)),
+                LocalDate.of(
+                    birthday.get(Calendar.YEAR),
+                    birthday.get(Calendar.MONTH),
+                    birthday.get(Calendar.DAY_OF_MONTH)
+                ),
                 LocalDate.now()
             ).years
         }
@@ -127,7 +133,7 @@ data class ProfileUser(
         return "@$username"
     }
 
-    fun canFollow(profileId : String): Boolean {
+    fun canFollow(profileId: String): Boolean {
         return profileId != uuid && !following.contains(profileId)
     }
 
@@ -138,5 +144,9 @@ data class ProfileUser(
     fun prettyJoinTime(): String {
         val prettyDate = PrettyDate()
         return String.format(JOIN_FORMAT, prettyDate.timeDiff(joinDate))
+    }
+
+    fun achievements(): List<Achievement> {
+        return achievements.reversed().map {Achievement.from(it) }
     }
 }

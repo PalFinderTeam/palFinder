@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
+import com.github.palFinderTeam.palfinder.meetups.*
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
@@ -43,7 +44,7 @@ class ProfileViewModel @Inject constructor(
      */
     fun fetchProfile(userId: String) {
         viewModelScope.launch {
-            profileService.fetchProfileFlow(userId).collect {
+            profileService.fetchFlow(userId).collect {
                 _profile.postValue(it)
             }
         }
@@ -55,7 +56,7 @@ class ProfileViewModel @Inject constructor(
      */
     fun fetchUsersProfile(usersIds: List<String>) {
         viewModelScope.launch {
-            _profilesList.postValue(profileService.fetchUsersProfile(usersIds))
+            _profilesList.postValue(profileService.fetch(usersIds))
         }
     }
 
@@ -80,14 +81,14 @@ class ProfileViewModel @Inject constructor(
      */
     fun follow(userId: String, otherId: String) {
         viewModelScope.launch {
-            profileService.fetchUserProfile(userId)?.let {
+            profileService.fetch(userId)?.let {
                 profileService.followUser(it, otherId)
             }
         }
     }
     fun unFollow(userId: String, otherId: String) {
         viewModelScope.launch {
-            profileService.fetchUserProfile(userId)?.let {
+            profileService.fetch(userId)?.let {
                 profileService.unfollowUser(it, otherId)
             }
         }

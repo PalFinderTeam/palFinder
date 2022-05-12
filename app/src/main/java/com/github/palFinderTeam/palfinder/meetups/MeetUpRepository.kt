@@ -1,10 +1,12 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
+import android.util.Log
+import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.github.palFinderTeam.palfinder.utils.generics.Repository
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -12,38 +14,7 @@ import kotlinx.coroutines.flow.Flow
  *
  * It is implemented by our concrete database service and can be easily mocked in tests.
  */
-interface MeetUpRepository {
-    /**
-     * Return meetup data from database.
-     *
-     * @param meetUpId Id of the meetup in the db.
-     */
-    suspend fun getMeetUpData(meetUpId: String): MeetUp?
-
-    /**
-     * Create a new meetUp in db.
-     *
-     * @param newMeetUp MeetUp to create.
-     */
-    suspend fun createMeetUp(newMeetUp: MeetUp): String?
-
-    /**
-     * Edit an existing meetUp in db.
-     *
-     * @param meetUpId id of MeetUp.
-     * @param field String key of field to update.
-     * @param value new value.
-     */
-    suspend fun editMeetUp(meetUpId: String, field: String, value: Any): String?
-
-    /**
-     * Edit an existing meetUp in db.
-     *
-     * @param meetUpId id of MeetUp.
-     * @param meetUp meetUp that will overwrite the existing one.
-     */
-    suspend fun editMeetUp(meetUpId: String, meetUp: MeetUp): String?
-
+interface MeetUpRepository : Repository<MeetUp> {
     /**
      * Return a list of meetups around a certain location.
      *
@@ -57,6 +28,8 @@ interface MeetUpRepository {
         location: Location,
         radiusInKm: Double,
         currentDate: Calendar? = null,
+        showParam: ShowParam? = ShowParam.ALL,
+        profile: ProfileUser? = null
     ): Flow<Response<List<MeetUp>>>
 
     /**
@@ -80,15 +53,6 @@ interface MeetUpRepository {
      */
     suspend fun leaveMeetUp(meetUpId: String, userId: String): Response<Unit>
 
-    /**
-     * Fetches every meetups from DB. It will be removed later but is useful for development.
-     *
-     * @param currentDate If not null, will fetch only meetups that are available.
-     */
-    @ExperimentalCoroutinesApi
-    fun getAllMeetUps(
-        currentDate: Calendar? = null,
-    ): Flow<List<MeetUp>>
 
     /**
      * Get all meetup the user, with id [userId], is taking part of.
@@ -98,8 +62,19 @@ interface MeetUpRepository {
      */
     fun getUserMeetups(userId: String, currentDate: Calendar? = null): Flow<Response<List<MeetUp>>>
 
+
     /**
-     * Get all meetup from the list of ids [meetUpIds].
+     * provide additional filter for the getMeetupAroundLocation function, depending on the showParam
+     * you either check if the profileUser is following a meetup participant, or the meetup creator
+     * @param profile the profile of the logged user
+     * @param meetUp the meetUp we need to filter
+     * @param showParam the way we must filter it
      */
-    suspend fun getMeetUpsData(meetUpIds: List<String>): List<MeetUp>?
+    fun additionalFilter(profile: ProfileUser?, meetUp: MeetUp, showParam: ShowParam?): Boolean {
+        return when (showParam) {
+            ShowParam.PAL_PARTCIPATING -> profile!!.following.any { meetUp.isParticipating(it) }
+            ShowParam.PAL_CREATOR -> profile!!.following.any{meetUp.creatorId == it}
+            else -> true
+        }
+    }
 }

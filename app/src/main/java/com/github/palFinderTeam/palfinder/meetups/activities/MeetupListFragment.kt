@@ -7,10 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.PopupMenu
-import android.widget.SearchView
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -31,21 +28,27 @@ import kotlin.math.max
 import kotlin.math.min
 
 
-const val SHOW_JOINED_ONLY = "com.github.palFinderTeam.palFinder.meetup_list_view.SHOW_JOINED_ONLY"
-const val BASE_RADIUS = 50f
 const val LOCATION_RESULT = "location"
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
+/**
+ * Fragment used to display the list of the meetUps available around a location, with several ways to filter it
+ */
 class MeetupListFragment : Fragment() {
+    //recyclerView and adapter to handle the list and each meetup
     private lateinit var meetupList: RecyclerView
     lateinit var adapter: MeetupListAdapter
-    private lateinit var tagsViewModelFactory: TagsViewModelFactory<Category>
+
+    //allows the user to add tags to filter the list
     private lateinit var tagsViewModel: TagsViewModel<Category>
+    //allows the user to change the radius of search of meetUps around location
     private lateinit var radiusSlider: Slider
 
+    //viewModel to fetch the meetups and handle the localisation
     val viewModel: MapListViewModel by activityViewModels()
 
+    //navigation args, mainly showParam to select the type of meetUps displayed
     private val args: MeetupListFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -62,6 +65,8 @@ class MeetupListFragment : Fragment() {
 
         meetupList = view.findViewById(R.id.meetup_list_recycler)
         meetupList.layoutManager = LinearLayoutManager(requireContext())
+
+        //setup the searchField that will be given to the adapter as argument
         val searchField = view.findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
 
@@ -69,12 +74,26 @@ class MeetupListFragment : Fragment() {
 
         radiusSlider.value = max(radiusSlider.valueFrom, min(radiusSlider.valueTo, viewModel.searchRadius.value!!.toFloat()))
 
+        //updates the meetUps at each slider change in real time
         radiusSlider.addOnChangeListener { _, value, _ ->
             viewModel.setSearchParamAndFetch(radiusInKm = value.toDouble())
         }
-        viewModel.setSearchParamAndFetch(radiusInKm = radiusSlider.value.toDouble())
+
+        //radioGroup to choose between the different options about followers
+        val followerOptions: RadioGroup = view.findViewById(R.id.follower_options_group)
+        view.findViewById<RadioButton>(R.id.button_all).isChecked = true
+        followerOptions.setOnCheckedChangeListener { _, checkedId ->
+            val radio: RadioButton = view.findViewById(checkedId)
+            when (followerOptions.indexOfChild(radio)) {
+                0 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ALL)
+                1 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_PARTCIPATING)
+                2 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_CREATOR)
+                3 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ONLY_JOINED)
+            }
+        }
 
 
+        //generate a new adapter for the recyclerView every time the meetUps dataset changes
         viewModel.listOfMeetUpResponse.observe(requireActivity()) { it ->
             if (it is Response.Success && viewModel.searchLocation.value != null) {
                 val meetups = it.data
@@ -95,18 +114,13 @@ class MeetupListFragment : Fragment() {
 
         }
 
-//        viewModel.searchLocation.observe(requireActivity()) {
-//            viewModel.fetchMeetUps()
-//        }
-
+        //live data of current user location, and update the parameters in real time accordingly
         getNavigationResultLiveData<Location>(LOCATION_RESULT)?.observe(viewLifecycleOwner) { result ->
             viewModel.setSearchParamAndFetch(location = result)
             // Make sure to consume the value
             removeNavigationResult<Location>(LOCATION_RESULT)
         }
-
-        tagsViewModelFactory = TagsViewModelFactory(viewModel.tagRepository)
-        tagsViewModel = createTagFragmentModel(this, tagsViewModelFactory)
+        tagsViewModel = createTagFragmentModel(this, TagsViewModelFactory(viewModel.tagRepository))
         if (savedInstanceState == null) {
             addTagsToFragmentManager(childFragmentManager, R.id.list_select_tag)
         }
@@ -118,11 +132,13 @@ class MeetupListFragment : Fragment() {
         view.findViewById<Button>(R.id.sort_list).setOnClickListener { showMenu(it) }
         view.findViewById<ImageButton>(R.id.search_place).setOnClickListener { searchOnMap() }
 
-        var value = viewModel.searchRadius.value
-
-        viewModel.setSearchParamAndFetch(showOnlyJoined = args.showOnlyJoined, showOnlyAvailable = true)
+        viewModel.setSearchParamAndFetch(showParam = args.showParam, showOnlyAvailable = true)
     }
 
+    /**
+     * function used to filter one meetup according to the current list of tags of the viewModel
+     * @param meetup current meetup
+     */
     private fun filterTags(meetup: MeetUp): Boolean {
         return meetup.tags.containsAll(viewModel.tags.value!!)
     }
@@ -184,6 +200,7 @@ class MeetupListFragment : Fragment() {
         adapter.notifyDataSetChanged()
     }
 
+    //button make a menu appears, with several sort options
     private fun showMenu(view: View?) {
         val popupMenu = PopupMenu(requireContext(), view) //View will be an anchor for PopupMenu
         popupMenu.inflate(R.menu.sort)
@@ -199,11 +216,13 @@ class MeetupListFragment : Fragment() {
         popupMenu.show()
     }
 
+    //opens another map fragment to select the location to fetch around
     private fun searchOnMap() {
         val action = MeetupListFragmentDirections.actionListPickLocation()
         findNavController().navigate(action)
     }
 
+    //allows to jump to the meetupView when clicking on a meetup in the list
     private fun onListItemClick(position: Int) {
         val intent = Intent(requireContext(), MeetUpView::class.java)
             .apply {

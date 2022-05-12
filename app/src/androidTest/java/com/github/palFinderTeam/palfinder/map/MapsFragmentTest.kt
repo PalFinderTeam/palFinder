@@ -18,6 +18,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
@@ -103,7 +104,7 @@ class MapsFragmentTest {
             listOf("user2")
         )
 
-        val id = meetUpRepository.createMeetUp(meetup)
+        val id = meetUpRepository.create(meetup)
         assertThat(id, `is`(notNullValue()))
 
         val scenario = launchFragmentInHiltContainer<MapsFragment>(Bundle().apply {
@@ -114,7 +115,7 @@ class MapsFragmentTest {
         })
         scenario!!.use {
             scenario.onHiltFragment<MapsFragment> {
-                it.viewModel.setSearchParameters(location = meetup.location, showOnlyJoined = false)
+                it.viewModel.setSearchParameters(location = meetup.location, showParam = ShowParam.ALL)
                 it.viewModel.fetchMeetUps()
                 it.setMapLocation(meetup.location, instantaneous = true)
             }

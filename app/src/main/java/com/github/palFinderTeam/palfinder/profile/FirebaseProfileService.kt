@@ -1,109 +1,76 @@
 package com.github.palFinderTeam.palfinder.profile
 
+
+import android.icu.util.Calendar
 import android.util.Log
+import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.notification.NotificationHandler
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.ACHIEVEMENTS_OBTAINED
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWED_BY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWING_PROFILES
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
-import com.google.android.gms.tasks.Tasks
+import com.github.palFinderTeam.palfinder.utils.generics.FirestoreRepository
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 open class FirebaseProfileService @Inject constructor(
     private val db: FirebaseFirestore
 ) : ProfileService {
 
-    override suspend fun fetchUserProfile(userId: String): ProfileUser? {
-        return try {
-            db.collection(PROFILE_COLL)
-                .document(userId).get().await().toProfileUser()
-        } catch (e: Exception) {
-            Log.d("db user", "failed safely")
-            null
-        }
-    }
+    private val wrapper = FirestoreRepository(db, PROFILE_COLL, null) { it.toProfileUser() }
 
-    override fun fetchProfileFlow(userId: String): Flow<Response<ProfileUser>> {
-        return flow {
-            emit(Response.Loading())
+    override suspend fun fetch(uuid: String): ProfileUser? = wrapper.fetch(uuid)
 
-            val profile = fetchUserProfile(userId)
-            if (profile != null) {
-                emit(Response.Success(profile))
-            } else {
-                emit(Response.Failure("Could not find user."))
-            }
+    override fun fetchFlow(uuid: String): Flow<Response<ProfileUser>> = wrapper.fetchFlow(uuid)
 
-        }.catch { error ->
-            emit(Response.Failure(error.message.orEmpty()))
-        }
-    }
+    override suspend fun fetch(uuids: List<String>): List<ProfileUser> = wrapper.fetch(uuids)
 
-    override suspend fun fetchUsersProfile(userIds: List<String>): List<ProfileUser> {
-        // Firebase don't support more than 10 ids in query.
-        val chunked = userIds.chunked(10)
-        val queries = chunked.map {
-            db.collection(PROFILE_COLL).whereIn(FieldPath.documentId(), it).get()
-        }
-        val result = Tasks.whenAllSuccess<QuerySnapshot>(queries).await()
-        return result.flatMap { it.documents.mapNotNull { it.toProfileUser() } }
-    }
+    override suspend fun edit(uuid: String, field: String, value: Any): String? =
+        wrapper.edit(uuid, field, value)
 
-    override suspend fun editUserProfile(userId: String, field: String, value: Any): String? {
-        return try {
-            db.collection(PROFILE_COLL).document(userId).update(field, value).await()
-            userId
-        } catch (e: Exception) {
-            null
-        }
-    }
+    override suspend fun edit(uuid: String, obj: ProfileUser): String? = wrapper.edit(uuid, obj)
 
-    override suspend fun editUserProfile(userId: String, userProfile: ProfileUser): String? {
-        return try {
-            db.collection(PROFILE_COLL).document(userId).update(userProfile.toFirestoreData())
-                .await()
-            userId
-        } catch (e: Exception) {
-            null
-        }
-    }
+    override suspend fun create(obj: ProfileUser): String? = wrapper.create(obj)
 
-    override suspend fun createProfile(newUserProfile: ProfileUser): String? {
-        return try {
-            db.collection(PROFILE_COLL).document(newUserProfile.uuid)
-                .set(newUserProfile.toFirestoreData()).await()
-            newUserProfile.uuid
-        } catch (e: Exception) {
-            null
-        }
-    }
+    override fun fetchAll(currentDate: Calendar?): Flow<List<ProfileUser>> =
+        wrapper.fetchAll(currentDate)
+
+    override suspend fun exists(uuid: String): Boolean = wrapper.exists(uuid)
+
 
     override suspend fun followUser(user: ProfileUser, targetId: String): Response<Unit> {
         return try {
             if (!user.canFollow(targetId)) {
                 return Response.Failure("Cannot follow this user.")
             }
+            val targetProfile = fetch(targetId)!!
             val batch = db.batch()
             batch.update(
                 db.collection(PROFILE_COLL).document(user.uuid),
                 FOLLOWING_PROFILES, FieldValue.arrayUnion(targetId)
             )
+            if (updateAchievementsFollower(user) != null) {
+                batch.update(
+                    db.collection(PROFILE_COLL).document(user.uuid),
+                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollower(user))
+                )
+            }
             batch.update(
                 db.collection(PROFILE_COLL).document(targetId),
                 FOLLOWED_BY, FieldValue.arrayUnion(user.uuid)
             )
+            if (updateAchievementsFollowed(targetProfile) != null) {
+                batch.update(
+                    db.collection(PROFILE_COLL).document(targetId),
+                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollowed(targetProfile))
+                )
+            }
             batch.commit().await()
             Response.Success(Unit)
         } catch (e: Exception) {
@@ -134,9 +101,8 @@ open class FirebaseProfileService @Inject constructor(
 
     override fun getLoggedInUserID(): String? = Firebase.auth.currentUser?.uid
 
-    override suspend fun doesUserIDExist(userId: String): Boolean {
-        return db.collection(PROFILE_COLL).document(userId).get().await().exists()
-    }
+
+
 
     companion object {
         const val PROFILE_COLL = "users"

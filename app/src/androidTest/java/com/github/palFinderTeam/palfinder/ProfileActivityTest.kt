@@ -3,35 +3,25 @@ package com.github.palFinderTeam.palfinder
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
-import android.os.Bundle
-import android.widget.TextView
 import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
-import com.github.palFinderTeam.palfinder.meetups.activities.RecyclerViewMatcher
-import com.github.palFinderTeam.palfinder.meetups.activities.recyclerViewSizeMatcher
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
-import com.github.palFinderTeam.palfinder.utils.launchFragmentInHiltContainer
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.hamcrest.CoreMatchers
 import org.junit.*
 import javax.inject.Inject
 
@@ -100,7 +90,7 @@ class ProfileActivityTest {
 
     @Test
     fun fullNameIsCorrectlyDisplayed() = runTest {
-        val id = profileService.createProfile(userLouca)
+        val id = profileService.create(userLouca)
         // Create intent with data to inject
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
@@ -120,7 +110,7 @@ class ProfileActivityTest {
 
     @Test
     fun userHasNoBioDisplaysTitleDifferently() = runTest {
-        val id = profileService.createProfile(userLouca)
+        val id = profileService.create(userLouca)
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
                 .apply { putExtra(USER_ID, id) }
@@ -137,7 +127,7 @@ class ProfileActivityTest {
 
     @Test
     fun userWithBioDisplaysShortBioEntirely() = runTest {
-        val id = profileService.createProfile(userCat)
+        val id = profileService.create(userCat)
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
                 .apply { putExtra(USER_ID, id) }
@@ -155,7 +145,7 @@ class ProfileActivityTest {
 
     @Test
     fun noBioHasNoReadMore() = runTest {
-        val id = profileService.createProfile(userNoBio)
+        val id = profileService.create(userNoBio)
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
                 .apply { putExtra(USER_ID, id) }
@@ -171,7 +161,7 @@ class ProfileActivityTest {
 
     @Test
     fun userExpandsBioCorrectly() = runTest {
-        val id = profileService.createProfile(userLongBio)
+        val id = profileService.create(userLongBio)
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
                 .apply { putExtra(USER_ID, id) }
@@ -179,14 +169,14 @@ class ProfileActivityTest {
         val scenario = ActivityScenario.launch<ProfileActivity>(intent)
 
         scenario.use {
-            onView(withId(R.id.userProfileDescOverflow)).perform(ViewActions.click())
+            onView(withId(R.id.userProfileDescOverflow)).perform(scrollTo(),ViewActions.click())
             onView(withId(R.id.userProfileDescription)).check(matches(withText(userLongBio.description)))
         }
     }
 
     @Test
     fun httpLoadImageAndClearCache() = runTest {
-        val id = profileService.createProfile(userLouca)
+        val id = profileService.create(userLouca)
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
                 .apply { putExtra(USER_ID, id) }

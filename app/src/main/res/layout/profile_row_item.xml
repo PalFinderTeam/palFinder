@@ -12,11 +12,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
         android:fontFamily="@font/fredoka_bold"
         android:maxLength="18"
         android:text="@string/placeholder_username"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@id/followButton"
         app:layout_constraintStart_toEndOf="@+id/userPic"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,7 +39,6 @@
         android:maxLength="18"
         android:text="@string/placeholder_name"
         android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@id/followButton"
         app:layout_constraintStart_toEndOf="@+id/userPic"
         app:layout_constraintTop_toBottomOf="@+id/profile_name" />
 
@@ -47,12 +46,46 @@
         android:id="@+id/followButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginEnd="45dp"
         android:layout_marginBottom="10dp"
-        android:text="@string/unfollow_button"
+        android:text="@string/unfollow"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/profile_name"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.812" />
+        app:layout_constraintVertical_bias="0.25" />
+
+    <ImageView
+        android:id="@+id/AchPic1"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="35dp"
+        app:layout_constraintEnd_toStartOf="@+id/followButton"
+        app:layout_constraintStart_toEndOf="@+id/profile_name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/circle_shape" />
+
+    <ImageView
+        android:id="@+id/AchPic2"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="43dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toStartOf="@+id/AchPic3"
+        app:layout_constraintStart_toEndOf="@+id/fullName"
+        app:layout_constraintTop_toBottomOf="@id/AchPic1"
+        app:srcCompat="@drawable/circle_shape" />
+
+    <ImageView
+        android:id="@+id/AchPic3"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toEndOf="@+id/AchPic2"
+        app:layout_constraintTop_toBottomOf="@+id/AchPic1"
+        app:srcCompat="@drawable/circle_shape" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,29 +18,25 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.PerformException
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ScrollToAction
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.espresso.util.HumanReadables
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement
+import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.profile.ProfileListFragment
-import com.github.palFinderTeam.palfinder.profile.ProfileService
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
-import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
+import com.github.palFinderTeam.palfinder.profile.*
 import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
@@ -66,6 +62,7 @@ import javax.inject.Inject
 class MeetupViewTest {
 
     private lateinit var meetup: MeetUp
+    private lateinit var meetup2: MeetUp
     private lateinit var newMeetup: MeetUp
     private lateinit var user: ProfileUser
     private lateinit var user2: ProfileUser
@@ -148,6 +145,23 @@ class MeetupViewTest {
             null
         )
 
+        meetup2 = MeetUp(
+            "dummy",
+            "user",
+            null,
+            eventName,
+            eventDescription,
+            date1,
+            date2,
+            Location(0.0, 0.0),
+            emptySet(),
+            true,
+            2,
+            mutableListOf("user"),
+            Pair(13, Int.MAX_VALUE),
+            null
+        )
+
         UiThreadStatement.runOnUiThread {
             navController = TestNavHostController(getApplicationContext())
             navController.setViewModelStore(ViewModelStore())
@@ -167,7 +181,7 @@ class MeetupViewTest {
 
     @Test
     fun editExistingMeetupDisplayRightFields() = runTest {
-        val id = meetUpRepository.createMeetUp(meetup)
+        val id = meetUpRepository.create(meetup)
         assertThat(id, notNullValue())
 
         val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
@@ -187,7 +201,7 @@ class MeetupViewTest {
 
     @Test
     fun selectLocationBringsTheMap() = runTest {
-        val id = meetUpRepository.createMeetUp(meetup)
+        val id = meetUpRepository.create(meetup)
         assertThat(id, notNullValue())
 
         val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
@@ -206,7 +220,7 @@ class MeetupViewTest {
     @Test
     fun editExistingMeetupEditTheRightOneInDB() = runTest {
 
-        val id = meetUpRepository.createMeetUp(meetup)
+        val id = meetUpRepository.create(meetup)
         assertThat(id, notNullValue())
 
         val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
@@ -325,8 +339,8 @@ class MeetupViewTest {
 
     @Test
     fun userClickableInFragment() = runTest {
-        val userid = profileRepository.createProfile(user)
-        val id2 = profileRepository.createProfile(user2)
+        val userid = profileRepository.create(user)
+        val id2 = profileRepository.create(user2)
         val userListFactory = object : FragmentFactory() {
             override fun instantiate(classLoader: ClassLoader, className: String): Fragment =
                 when (loadFragmentClass(classLoader, className)) {
@@ -352,31 +366,31 @@ class MeetupViewTest {
             2,
             mutableListOf(userid)
         )
-        val id = meetUpRepository.createMeetUp(newMeetup)
+        val id = meetUpRepository.create(newMeetup)
         assertThat(id, notNullValue())
 
         val scenario =
             launchFragmentInHiltContainer<ProfileListFragment>(fragmentFactory = userListFactory)
         scenario!!.use {
 
-            assert(!profileRepository.fetchUserProfile(userid)!!.following.contains(id2))
-            assert(!profileRepository.fetchUserProfile(id2!!)!!.followed.contains(userid))
+            assert(!profileRepository.fetch(userid)!!.following.contains(id2))
+            assert(!profileRepository.fetch(id2!!)!!.followed.contains(userid))
             onView(
                 RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
                     1,
                     R.id.followButton
                 )
             ).perform(click())
-            assert(profileRepository.fetchUserProfile(userid)!!.following.contains(id2))
-            assert(profileRepository.fetchUserProfile(id2!!)!!.followed.contains(userid))
+            assert(profileRepository.fetch(userid)!!.following.contains(id2))
+            assert(profileRepository.fetch(id2)!!.followed.contains(userid))
             onView(
                 RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
                     1,
                     R.id.followButton
                 )
             ).perform(click())
-            assert(!profileRepository.fetchUserProfile(userid)!!.following.contains(id2))
-            assert(!profileRepository.fetchUserProfile(id2!!)!!.followed.contains(userid))
+            assert(!profileRepository.fetch(userid)!!.following.contains(id2))
+            assert(!profileRepository.fetch(id2)!!.followed.contains(userid))
             onView(
                 RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
                     1,
@@ -384,6 +398,81 @@ class MeetupViewTest {
                 )
             )
                 .perform(click())
+        }
+    }
+
+    @Test
+    fun DisplayAchievementInFragment() = runTest {
+        val userid = profileRepository.create(user)
+        val id2 = profileRepository.create(user2)
+        val userListFactory = object : FragmentFactory() {
+            override fun instantiate(classLoader: ClassLoader, className: String): Fragment =
+                when (loadFragmentClass(classLoader, className)) {
+                    ProfileListFragment::class.java -> ProfileListFragment(listOf(userid!!, id2!!))
+                    else -> super.instantiate(classLoader, className)
+                }
+        }
+
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userid!!)
+
+        assertThat(userid, notNullValue())
+        newMeetup = MeetUp(
+            "dummy",
+            userid!!,
+            null,
+            eventName,
+            eventDescription,
+            date1,
+            date2,
+            Location(0.0, 0.0),
+            emptySet(),
+            true,
+            2,
+            mutableListOf(userid, id2!!)
+        )
+        val id = meetUpRepository.create(newMeetup)
+        assertThat(id, notNullValue())
+
+        var scenario =
+            launchFragmentInHiltContainer<ProfileListFragment>(fragmentFactory = userListFactory)
+        scenario!!.use {
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    0,
+                    R.id.AchPic1
+                )
+            ).check(matches(withEffectiveVisibility(Visibility.INVISIBLE)))
+            profileRepository.edit(
+                userid,
+                user.copy(
+                    achievements = listOf(
+                        Achievement.VERIFIED.string,
+                        Achievement.CRYPTOPAL.string,
+                        Achievement.PAL_MINER.string
+                    )
+                )
+            )
+        }
+        scenario = launchFragmentInHiltContainer<ProfileListFragment>(fragmentFactory = userListFactory)
+        scenario!!.use {
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    0,
+                    R.id.AchPic1
+                )
+            ).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    0,
+                    R.id.AchPic2
+                )
+            ).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+            onView(
+                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
+                    0,
+                    R.id.AchPic3
+                )
+            ).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         }
     }
 
@@ -404,8 +493,8 @@ class MeetupViewTest {
             onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
             onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
             closeSoftKeyboard()
-            onView(withId(R.id.addTagButton)).perform(scrollTo(), click())
-            onView(withId(R.id.tag_selector_search)).perform(click(), typeText("working out"))
+            onView(withId(R.id.tv_add_tags)).perform(scrollTo(), click())
+            onView(withId(R.id.tag_selector_search)).perform(click(), typeText("Working out"))
             closeSoftKeyboard()
 
             onView(
@@ -413,10 +502,10 @@ class MeetupViewTest {
                     0,
                     R.id.chip
                 )
-            ).check(matches(withText("working out")))
+            ).check(matches(withText("Working out")))
             onView(
                 allOf(
-                    withText("working out"),
+                    withText("Working out"),
                     withId(R.id.chip)
                 )
             ).perform(click())
@@ -449,7 +538,7 @@ class MeetupViewTest {
             onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
             closeSoftKeyboard()
             onView(withId(R.id.addTagButton)).perform(scrollTo(), click())
-            onView(withId(R.id.tag_selector_search)).perform(click(), typeText("working out"))
+            onView(withId(R.id.tag_selector_search)).perform(click(), typeText("Working out"))
             closeSoftKeyboard()
 
             onView(
@@ -457,10 +546,10 @@ class MeetupViewTest {
                     0,
                     R.id.chip
                 )
-            ).check(matches(withText("working out")))
+            ).check(matches(withText("Working out")))
             onView(
                 allOf(
-                    withText("working out"),
+                    withText("Working out"),
                     withId(R.id.chip)
                 )
             ).perform(click())
@@ -482,10 +571,10 @@ class MeetupViewTest {
 
     @Test
     fun checkErrorWork() = runTest {
-        val uid = profileRepository.createProfile(user)
+        val uid = profileRepository.create(user)
         (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
 
-        val id = meetUpRepository.createMeetUp(meetup)
+        val id = meetUpRepository.create(meetup)
         assertThat(id, notNullValue())
 
         val scenario = launchFragmentInHiltContainer<MeetUpCreation>(
@@ -499,14 +588,14 @@ class MeetupViewTest {
                 matches(
                     isDisplayed()
                 )
-            );
+            )
         }
     }
 
     @Test
     fun testEditButton() = runTest {
-        val uid = profileRepository.createProfile(user)
-        val mid = meetUpRepository.createMeetUp(meetup.copy(creatorId = uid!!))
+        val uid = profileRepository.create(user)
+        val mid = meetUpRepository.create(meetup.copy(creatorId = uid!!))
         (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
 
         val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
@@ -522,7 +611,7 @@ class MeetupViewTest {
 
     @Test
     fun testHiddenEditButton() = runTest {
-        val id = meetUpRepository.createMeetUp(meetup)
+        val id = meetUpRepository.create(meetup)
 
         val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
             putExtra(MEETUP_SHOWN, id)
@@ -533,8 +622,8 @@ class MeetupViewTest {
 
     @Test
     fun testChatButton() = runTest {
-        val uid = profileRepository.createProfile(user)
-        val mid = meetUpRepository.createMeetUp(meetup.copy(participantsId = listOf(uid!!)))
+        val uid = profileRepository.create(user)
+        val mid = meetUpRepository.create(meetup.copy(participantsId = listOf(uid!!)))
         (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
 
         val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
@@ -550,7 +639,7 @@ class MeetupViewTest {
 
     @Test
     fun testHiddenChatButton() = runTest {
-        val mid = meetUpRepository.createMeetUp(meetup)
+        val mid = meetUpRepository.create(meetup)
 
         val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
             putExtra(MEETUP_SHOWN, mid)
@@ -558,6 +647,18 @@ class MeetupViewTest {
 
         ActivityScenario.launch<MeetUpView>(intent)
         onView(withId(R.id.bt_ChatMeetup)).check(matches(isNotClickable()))
+    }
+
+    @Test
+    fun ageAboveMaxReturnsPlusText() = runTest {
+        val mid = meetUpRepository.create(meetup2)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+
+        ActivityScenario.launch<MeetUpView>(intent)
+        onView(withId(R.id.tv_ViewAge)).check(matches(withText("13-66+ years")))
     }
 
     @Test
@@ -605,8 +706,8 @@ class MeetupViewTest {
 
     @Test
     fun testJoinLeaveButton() = runTest {
-        val mid = meetUpRepository.createMeetUp(meetup)
-        val uid = profileRepository.createProfile(user2)
+        val mid = meetUpRepository.create(meetup)
+        val uid = profileRepository.create(user2)
         (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
         (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
 
@@ -618,17 +719,37 @@ class MeetupViewTest {
 
         // Join
         onView(withId(R.id.bt_JoinMeetup)).perform(betterScrollTo()).perform(click())
-        assertThat(meetUpRepository.getMeetUpData(mid!!)!!.isParticipating(uid!!), `is`(true))
+        assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid!!), `is`(true))
 
         // Leave
         onView(withId(R.id.bt_JoinMeetup)).perform(betterScrollTo()).perform(click())
-        assertThat(meetUpRepository.getMeetUpData(mid)!!.isParticipating(uid), `is`(false))
+        assertThat(meetUpRepository.fetch(mid)!!.isParticipating(uid), `is`(false))
+    }
+
+    @Test
+    fun clickOnCreator() = runTest {
+        val mid = meetUpRepository.create(meetup)
+        val uid = profileRepository.create(user)
+
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
+
+        Intents.init()
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+
+        ActivityScenario.launch<MeetUpView>(intent)
+        onView(withId(R.id.tv_ViewEventCreator)).perform(betterScrollTo()).perform(click())
+
+        Intents.intended(allOf(IntentMatchers.hasComponent(ProfileActivity::class.java.name), hasExtra(USER_ID, user.uuid)))
+        Intents.release()
     }
 
     @Test
     fun testJoinLeaveCreatorButton() = runTest {
-        val uid = profileRepository.createProfile(user)
-        val mid = meetUpRepository.createMeetUp(meetup.copy(creatorId = uid!!))
+        val uid = profileRepository.create(user)
+        val mid = meetUpRepository.create(meetup.copy(creatorId = uid!!))
         (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
         (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
 
@@ -678,5 +799,5 @@ class BetterScrollToAction:ViewAction by ScrollToAction()
 // convenience method
 fun betterScrollTo():ViewAction
 {
-    return ViewActions.actionWithAssertions(BetterScrollToAction())
+    return actionWithAssertions(BetterScrollToAction())
 }

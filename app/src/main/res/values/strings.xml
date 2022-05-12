@@ -14,6 +14,7 @@
 
     <string name="tag_element_text">tag</string>
     <string name="add_tags">Add tags</string>
+    <string name="add_tags_click">Click to select tags</string>
 
     <string name="profile_element">name</string>
 
@@ -35,6 +36,7 @@
     <string name="no_account_groups"> You need an account to join groups.</string>
     <string name="no_account_join"> You need an accout to join a meetUp.</string>
     <string name="no_account_profile"> You need an account to have a profile.</string>
+    <string name="qr_scan_follow_account"> Do you want to follow this account?</string>
 
     <!-- Strings used for meetup creation -->
     <string name="meetup_creation_meetup_name">Event Name</string>
@@ -68,12 +70,21 @@
     <string name="meetup_creation_meetup_picture_desc">Tap the picture above to change the icon of your Meetup.</string>
     <string name="meetup_creation_meetup_criteria_desc">Tap to select criteria for the meeting, such as the age, gender.</string>
 
+    <string name="criteria">criteria</string>
+
     <string name="list_sort_by_alphabetical_order">Sort by Alph.</string>
     <string name="list_sort_by_capacity">Sort by Cap.</string>
     <string name="list_sort_by_location">Sort by Dist.</string>
     <string name="list_sort_menu">Sort</string>
     <string name="meetup_creation_missing_name_desc">Please add an Event Name, an Event Description and a location</string>
     <string name="meetup_creation_missing_name_desc_title">Missing Data</string>
+
+    <!-- Strings used for meetupList -->
+    <string name="show_all">all meetups</string>
+    <string name="only_participating">pal taking part</string>
+    <string name="only_creators">created by pal</string>
+    <string name="only_joined">joined</string>
+
 
 
     <!-- Strings used for meetup view -->
@@ -84,6 +95,11 @@
     <string name="meetup_view_leave">Leave</string>
     <string name="meetup_view_joined">You joined the meetup</string>
     <string name="meetup_view_left">You left the meetup</string>
+    <string name="meetup_view_participation_unlimited">%d</string>
+    <string name="meetup_view_participation_limited">%d (out of %d)</string>
+    <string name="meetup_view_age_min">13</string>
+    <string name="meetup_view_age_max">66</string>
+    <string name="meetup_view_age_max_plus">66+</string>
     <string name="meetup_view_meetup">Meetup</string>
     <string name="meetup_view_event_name" translatable="false">This is a very long event name</string>
     <string name="meetup_view_created_by">Organized by \@%s</string>
@@ -92,11 +108,9 @@
     <string name="meetup_view_end_date" translatable="false">12th of April 2022 at 14:00</string>
     <string name="meetup_view_other_info">Other info</string>
     <string name="meetup_view_people">People</string>
-    <string name="meetup_view_participant">%d (out of %d)</string>
     <string name="meetup_view_age">Age</string>
-    <string name="meetup_view_age_interval" translatable="false">24-99 years</string>
-    <string name="meetup_view_gender">Gender</string>
-    <string name="meetup_view_gender_val" translatable="false">Male, Female, Cat</string>
+    <string name="meetup_view_age_interval">%s-%s years</string>
+    <string name="meetup_view_gender_title">Gender</string>
 
 
     <string name="ok">OK</string>
@@ -124,18 +138,23 @@
     <string name="limit_people">Limit participation to</string>
     <string name="DB_error_msg">Cannot contact database</string>
 
-    <string name="criterions_age_title">age selection</string>
+    <string name="criterions_title">Meetup Criteria</string>
+    <string name="criterions_age_title">Select an age interval</string>
+    <string name="criterions_age_desc">If you wish to proceed with this setting, only people who entered their birthdays will be allowed to join the event</string>
     <string name="criterions_age_min">13</string>
-    <string name="criterions_age_max">66+</string>
+    <string name="criterions_age_max">66</string>
+    <string name="criterions_age_max_plus">66+</string>
     <string name="criterion_select">Select criteria</string>
 
-    <string name="follow_button">follow</string>
-    <string name="unfollow_button">unfollow</string>
+    <string name="follow">follow</string>
+    <string name="unfollow">unfollow</string>
 
-    <string name="criterions_gender_title">gender selection</string>
+    <string name="criterions_gender_title">Select gender</string>
     <string name="radio_male">Male</string>
     <string name="radio_female">Female</string>
-    <string name="radio_male_and_female">Male and Female</string>
+    <string name="radio_male_and_female">Any</string>
+    <string name="radio_other">Other</string>
+    <string name="criterion_confirm">Confirm criteria</string>
 
     <string name="pretty_location_too_small">Here</string>
     <string name="pretty_location_m">%1$s m</string>
@@ -162,6 +181,7 @@
     <string name="userSettingsBirthday">Birthday (Optional)</string>
     <string name="working_out_tag">working out</string>
     <string name="title_activity_settings" translatable="false">SettingsActivity</string>
+
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
@@ -201,5 +221,10 @@
     <string name="hint_password">password</string>
     <string name="select_icon">Select Icon</string>
     <string name="select_marker">Select Marker</string>
+    <string name="scanned">Scanned</string>
+    <string name="no_camera_permission_message">Cancelled due to missing camera permission</string>
+    <string name="cancelled_scan">Cancelled scan</string>
+
+
 
 </resources>
