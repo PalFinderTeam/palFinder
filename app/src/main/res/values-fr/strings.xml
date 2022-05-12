@@ -207,4 +207,9 @@
     <string name="no_camera_permission_message">Annulé à cause des permissions de la caméra</string>
     <string name="cancelled_scan">Scan annulé</string>
 
+    <string name="following_content">%1$s vous suis!</string>
+    <string name="following_title">Nouveau Follower!</string>
+
+    <string name="meetup_start_title">%1$s commence!</string>
+
 </resources>
