@@ -82,6 +82,7 @@ class UserSettingsActivityTest {
         // Create viewModel with mock profile service
         profileService = UIMockProfileServiceModule.provideProfileService()
 
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(user.uuid)
         viewModel = UserSettingsViewModel(profileService, imageUploader, timeService)
         //Dispatchers.setMain(UnconfinedTestDispatcher())
     }
