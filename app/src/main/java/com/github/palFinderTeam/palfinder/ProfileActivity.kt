@@ -98,7 +98,7 @@ class ProfileActivity : AppCompatActivity() {
         viewModel.logged_profile.observe(this) {
             when(it) {
                 is Response.Success -> {
-                   followAndBlockSystem(it.data, profile, findViewById(R.id.button_follow_profile), findViewById(R.id.blackList))
+                   followAndBlockSystem(it.data, profile, findViewById(R.id.button_join_meetup), findViewById(R.id.blackList))
                 }
                 is Response.Loading -> Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
                 is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
@@ -141,10 +141,10 @@ class ProfileActivity : AppCompatActivity() {
         blockButton.setOnClickListener {
             if (blockButton.text.equals(getString(R.string.block_user))) {
                 viewModel.block(loggedProfile.uuid, profileViewed.uuid)
-                followButton.text = getString(R.string.unblock_user)
+                blockButton.text = getString(R.string.unblock_user)
             } else {
                 viewModel.unBlock(loggedProfile.uuid, profileViewed.uuid)
-                followButton.text = getString(R.string.block_user)
+                blockButton.text = getString(R.string.block_user)
             }
         }
     }

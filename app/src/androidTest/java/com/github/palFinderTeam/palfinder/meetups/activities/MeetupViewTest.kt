@@ -718,11 +718,11 @@ class MeetupViewTest {
         ActivityScenario.launch<MeetUpView>(intent)
 
         // Join
-        onView(withId(R.id.button_follow_profile)).perform(betterScrollTo()).perform(click())
+        onView(withId(R.id.button_join_meetup)).perform(betterScrollTo()).perform(click())
         assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid!!), `is`(true))
 
         // Leave
-        onView(withId(R.id.button_follow_profile)).perform(betterScrollTo()).perform(click())
+        onView(withId(R.id.button_join_meetup)).perform(betterScrollTo()).perform(click())
         assertThat(meetUpRepository.fetch(mid)!!.isParticipating(uid), `is`(false))
     }
 
@@ -740,7 +740,7 @@ class MeetupViewTest {
         ActivityScenario.launch<MeetUpView>(intent)
 
         // Join
-        onView(withId(R.id.bt_JoinMeetup)).perform(betterScrollTo()).perform(click())
+        onView(withId(R.id.button_join_meetup)).perform(betterScrollTo()).perform(click())
         assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid!!), `is`(false))
     }
 
@@ -776,7 +776,7 @@ class MeetupViewTest {
         }
         ActivityScenario.launch<MeetUpView>(intent)
 
-        onView(withId(R.id.button_follow_profile)).check(matches(isNotClickable()))
+        onView(withId(R.id.button_join_meetup)).check(matches(isNotClickable()))
     }
 }
 

@@ -78,7 +78,7 @@ class MeetUpView : AppCompatActivity() {
             this.isVisible = isCreator
             this.isClickable = isCreator
         }
-        findViewById<Button>(R.id.button_follow_profile).apply {
+        findViewById<Button>(R.id.button_join_meetup).apply {
             this.isEnabled = !isCreator
             this.isClickable = !isCreator
             this.text = if (hasJoined) getString(R.string.meetup_view_leave) else getString(R.string.meetup_view_join)
