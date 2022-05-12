@@ -18,9 +18,8 @@
     <color name="theme_primary_default">#406045</color>
     <color name="theme_primary">#F3AC3E</color>
 
-
     <color name="primaryWarm">#E67436</color>
-    <color name="primaryVariantWarm">#36CCE6</color>
+    <color name="primaryVariantWarm">#6ABBDF</color>
 
     <color name="message_in_coming_color">#F2F2F2</color>
     <color name="message_out_going_color">#D0EBF8</color>

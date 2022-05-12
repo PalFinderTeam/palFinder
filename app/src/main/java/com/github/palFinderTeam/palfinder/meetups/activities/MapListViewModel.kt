@@ -101,6 +101,8 @@ class MapListViewModel @Inject constructor(
         }
     }
 
+
+
     /**
      * Set search parameters that you want to apply.
      *
