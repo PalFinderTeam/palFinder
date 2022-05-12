@@ -49,6 +49,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
     private val BASE_ZOOM = 7.0
     private val MAX_ZOOM = 12.0
+    private val GMAP_PIXEL_RATIO = 500
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var selectLocationButton: FloatingActionButton
     private lateinit var selectMapTypeButton: FloatingActionButton
@@ -377,7 +378,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
     private fun getZoomLevel(radius: Double?): Double{
         val result = if(radius != null){
-            val scale = radius/500.0
+            val scale = radius/GMAP_PIXEL_RATIO
             (16- ln(scale))/ ln(2.0)
         }else BASE_ZOOM
         return Math.min(result, MAX_ZOOM)
