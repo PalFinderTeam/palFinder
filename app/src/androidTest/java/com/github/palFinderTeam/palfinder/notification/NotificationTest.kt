@@ -12,14 +12,17 @@ import androidx.test.uiautomator.Until
 import com.github.palFinderTeam.palfinder.MainActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
+import com.github.palFinderTeam.palfinder.chat.ChatMessage
 import com.github.palFinderTeam.palfinder.chat.ChatService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
+import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
+import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -42,6 +45,7 @@ class NotificationTest {
 
     private lateinit var meetUp: MeetUp
     private lateinit var user1: ProfileUser
+    private lateinit var user2: ProfileUser
 
     @Rule
     @JvmField
@@ -75,9 +79,16 @@ class NotificationTest {
             "userId", "Michel", "Jordan", "Surimi", Calendar.getInstance(),
             ImageInstance(""), following = listOf("userId2")
         )
+        user2 = ProfileUser(
+            "userId", "Michel", "Jordan", "Surimi", Calendar.getInstance(),
+            ImageInstance(""), following = listOf("userId2")
+        )
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }
         val date2 = Calendar.getInstance().apply { time = Date(1) }
+        val date3 = Calendar.getInstance().apply { time = Date(3) }
+
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date3)
 
         meetUp = MeetUp(
             "dummy",
@@ -146,12 +157,19 @@ class NotificationTest {
         val handler = NotificationHandler(context)
         handler.schedule(Calendar.getInstance(), R.string.testNotifTitle,R.string.testNotifContent, R.drawable.icon_beer)
     }
-/*
+
     @Test
     fun actionWorks() = runTest {
         val userId = profileRepository.create(user1)
+        val userId2 = profileRepository.create(user2)
+        profileRepository.edit(userId2!!, "following", listOf(userId))
+
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userId)
+
         val id = meetUpRepository.create(meetUp)
+        val date1 = Calendar.getInstance().apply { time = Date(0) }
+        chatService.postMessage(id!!, ChatMessage(date1, userId2, "hello world"))
 
         notificationService.action()
-    }*/
+    }
 }
