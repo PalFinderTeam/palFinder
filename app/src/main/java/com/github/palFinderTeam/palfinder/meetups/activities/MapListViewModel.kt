@@ -204,22 +204,23 @@ class MapListViewModel @Inject constructor(
     ) {
         val date = if (showOnlyAvailableInTime) timeService.now() else null
         viewModelScope.launch {
-            val blockedUser = getBlockedUser(profileService.getLoggedInUserID()!!)
+            val userId = profileService.getLoggedInUserID()
+            val blockedUser = getBlockedUser(userId)
             meetUpRepository.getMeetUpsAroundLocation(
                 position,
                 radiusInKm,
                 currentDate = date,
                 showParam,
-                profileService.fetch(profileService.getLoggedInUserID()!!)
+                if (userId == null) userId else profileService.fetch(userId)
             ).collect {
                 _listOfMeetUpResponse.postValue(it.filterBlocked(blockedUser))
             }
         }
     }
 
-    private suspend fun getBlockedUser(uuid: String): List<String> {
-        return if (filterBlockedUserMeetups) {
-            profileService.fetch(profileService.getLoggedInUserID()!!)?.blockedUsers.orEmpty()
+    private suspend fun getBlockedUser(uuid: String?): List<String> {
+        return if (filterBlockedUserMeetups && uuid != null) {
+            profileService.fetch(uuid)?.blockedUsers.orEmpty()
         } else {
             emptyList()
         }
