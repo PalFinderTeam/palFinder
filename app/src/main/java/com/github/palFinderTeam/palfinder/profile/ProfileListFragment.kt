@@ -57,8 +57,8 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
     }
 
     private fun changeAdapter(list: List<ProfileUser>, v: View) {
-        viewModel.fetchProfile(viewModel.profileService.getLoggedInUserID()!!)
-        viewModel.profile.observe(this) {
+        viewModel.fetchLoggedProfile()
+        viewModel.logged_profile.observe(this) {
             if (it is Response.Success) {
                 val adapter = ProfileAdapter(
                     list,
