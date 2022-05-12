@@ -295,6 +295,7 @@ class UserSettingsActivityTest {
         val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
         scenario.use {
             onView(withId(R.id.SettingsBirthdayText))
+                .perform(scrollTo())
                 .check(matches(withText(bdFormat.format(user.birthday))))
             onView(withId(R.id.SettingsDeleteBDay)).perform(click())
             onView(withId(R.id.SettingsBirthdayText))
