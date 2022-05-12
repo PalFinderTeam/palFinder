@@ -22,19 +22,7 @@ class ChatActivity : AppCompatActivity() {
 
     private lateinit var chatBox: TextView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
-        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
-        setTheme(theme)
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat)
-        var sharedPreferenceChangeListener =
-            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                if (key == "theme") {
-                    recreate()
-                }
-            }
-        sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
+
     private fun loadChat(){
         if (intent.hasExtra(CHAT)) {
             val meetupId = intent.getStringExtra(CHAT)
@@ -59,8 +47,18 @@ class ChatActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
+        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
+        setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
+        var sharedPreferenceChangeListener =
+            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                if (key == "theme") {
+                    recreate()
+                }
+            }
+        sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
 
         loadChat()
 
