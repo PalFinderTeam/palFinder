@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Gender
+import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.image.UrlFormat
@@ -69,6 +70,7 @@ class UserSettingsViewModel @Inject constructor(
     private val _birthday: MutableLiveData<Calendar?> = MutableLiveData()
     private val _userBio: MutableLiveData<String> = MutableLiveData()
     private val _gender: MutableLiveData<Gender?> = MutableLiveData()
+    private val _privacySettings: MutableLiveData<PrivacySettings?> = MutableLiveData()
     private val _pfp: MutableLiveData<String> = MutableLiveData()
 
     // The difference with the _pfp is that here it points to a local file and will be set only if the user choose a new icon.
@@ -80,6 +82,7 @@ class UserSettingsViewModel @Inject constructor(
     val birthday: LiveData<Calendar?> = _birthday
     val userBio: LiveData<String> = _userBio
     val gender: LiveData<Gender?> = _gender
+    val privacySettings: LiveData<PrivacySettings?> = _privacySettings
     val pfp: LiveData<String> = _pfp
     val pfpUri: LiveData<Uri> = _pfpUri
 
@@ -98,6 +101,7 @@ class UserSettingsViewModel @Inject constructor(
         _birthday.value = null
         _userBio.value = ""
         _gender.value = Gender.OTHER
+        _privacySettings.value = PrivacySettings.PUBLIC
         _pfp.value =
             "" //TODO: TEMP VALUE until image upload works (everyone turns into a cat for now)
     }
@@ -114,6 +118,7 @@ class UserSettingsViewModel @Inject constructor(
         _username.postValue(user.username)
         _userBio.postValue(user.description)
         _gender.postValue(user.gender)
+        _privacySettings.postValue(user.privacySettings)
         _birthday.postValue(user.birthday)
         _pfp.postValue(user.pfp.imgURL)
     }
@@ -181,6 +186,10 @@ class UserSettingsViewModel @Inject constructor(
         _gender.value = gender
     }
 
+    fun setPrivacySetting(privacySettings: PrivacySettings){
+        _privacySettings.value = privacySettings
+    }
+
     /**
      * Checks if a specific field value meets the
      * defined requirements. If the requirements of
@@ -244,7 +253,8 @@ class UserSettingsViewModel @Inject constructor(
                 pfp = ImageInstance(pfp.value!!),
                 description = userBio.value!!,
                 birthday = birthday.value,
-                gender = gender.value
+                gender = gender.value,
+                privacySettings = privacySettings.value,
             )
             if (_isNewUser) {
 

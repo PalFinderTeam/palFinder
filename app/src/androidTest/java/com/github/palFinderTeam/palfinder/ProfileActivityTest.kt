@@ -17,6 +17,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
+import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -33,6 +34,7 @@ class ProfileActivityTest {
     private lateinit var userCat: ProfileUser
     private lateinit var userLongBio: ProfileUser
     private lateinit var userNoBio: ProfileUser
+    private lateinit var userPrivate: ProfileUser
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -79,6 +81,17 @@ class ProfileActivityTest {
             Calendar.getInstance(),
             ImageInstance(""),
             ""
+        )
+
+        userPrivate = ProfileUser(
+            "42",
+            "somePrivateUser",
+            "private",
+            "user",
+            Calendar.getInstance(),
+            ImageInstance(""),
+            "I like my private life",
+            privacySettings = PrivacySettings.PRIVATE
         )
     }
 
@@ -194,6 +207,26 @@ class ProfileActivityTest {
             Assert.assertEquals(ImageInstance.NOT_LOADED, userCat.pfp.imgStatus)
         }
     }
+
+    /**@Test
+    fun testPrivateUserProfile() = runTest{
+        val userId = profileService.create(userCat)
+        val privateId = profileService.create(userPrivate)
+
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, userId) }
+
+        // Launch activity
+        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.userProfileName)).check(
+                matches(
+                    withText(userLouca.fullName())
+                )
+            )
+    }
+    **/
 
     private fun getResourceString(id: Int): String? {
         val targetContext: Context = InstrumentationRegistry.getTargetContext()

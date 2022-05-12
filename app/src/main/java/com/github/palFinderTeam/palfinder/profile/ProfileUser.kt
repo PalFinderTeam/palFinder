@@ -4,6 +4,7 @@ import android.icu.util.Calendar
 import android.util.Log
 import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.PrettyDate
+import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.generics.FirebaseObject
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.DocumentSnapshot
@@ -29,7 +30,8 @@ data class ProfileUser(
     val gender: Gender? = Gender.NON_SPEC,
     val following: List<String> = emptyList(),
     val followed: List<String> = emptyList(),
-    private val achievements: List<String> = emptyList()
+    private val achievements: List<String> = emptyList(),
+    val privacySettings: PrivacySettings? = PrivacySettings.PUBLIC,
 ) : Serializable, FirebaseObject {
 
     companion object {
@@ -46,6 +48,7 @@ data class ProfileUser(
         const val FOLLOWING_PROFILES = "following"
         const val FOLLOWED_BY = "followed"
         const val ACHIEVEMENTS_OBTAINED = "achievements"
+        const val PRIVACY_SETTINGS_KEY = "privacy_settings"
 
         /**
          * Provide a way to convert a Firestore query result, in a ProfileUser.
@@ -77,9 +80,15 @@ data class ProfileUser(
                 val followed = (get(FOLLOWED_BY) as? List<String>).orEmpty()
 
                 val achievements = (get(ACHIEVEMENTS_OBTAINED) as? List<String>).orEmpty()
+
+                var privacySettings: PrivacySettings? = null
+                if (getString(PRIVACY_SETTINGS_KEY) != null) {
+                    privacySettings = PrivacySettings.from(getString(PRIVACY_SETTINGS_KEY))
+                }
+
                 ProfileUser(uuid, username, name, surname,
                     joinDateCal, ImageInstance(picture), description,
-                    birthdayCal, joinedMeetUp, gender, following, followed, achievements)
+                    birthdayCal, joinedMeetUp, gender, following, followed, achievements, privacySettings)
 
             } catch (e: Exception) {
                 Log.e("ProfileUser", "Error deserializing user", e)
@@ -104,7 +113,8 @@ data class ProfileUser(
             GENDER to gender?.stringGender,
             FOLLOWING_PROFILES to following,
             FOLLOWED_BY to followed,
-            ACHIEVEMENTS_OBTAINED to achievements
+            ACHIEVEMENTS_OBTAINED to achievements,
+            PRIVACY_SETTINGS_KEY to privacySettings
         )
     }
 
@@ -139,6 +149,15 @@ data class ProfileUser(
 
     fun canUnFollow(profileId: String): Boolean {
         return following.contains(profileId)
+    }
+
+    fun canProfileBeSeenBy(profileId: String): Boolean{
+        return when (privacySettings) {
+            PrivacySettings.PRIVATE -> false
+            PrivacySettings.PUBLIC -> true
+            PrivacySettings.FRIENDS -> followed.contains(profileId)
+            else -> false
+        }
     }
 
     fun prettyJoinTime(): String {
