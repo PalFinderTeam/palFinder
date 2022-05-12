@@ -93,6 +93,7 @@ open class MeetupListRootAdapter(
                     it.loadImageInto(meetupPicture, context)
                 }
             }
+            meetupPicture.visibility = View.VISIBLE
         } else {
             meetupPicture.visibility = View.GONE
         }

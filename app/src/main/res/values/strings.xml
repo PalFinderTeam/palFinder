@@ -62,7 +62,7 @@
     <string name="meetup_creation_meetup_location_not_selected">Location not selected</string>
     <string name="meetup_creation_meetup_main_description">Set the general information about your Meetup! Add a catchy title, a short description, and specify where the even will take place.</string>
     <string name="meetup_creation_meetup_create">Create an Meetup</string>
-    <string name="meetup_creation_meetup_location_desc">Tap to choose the prefect location for you Meetup!</string>
+    <string name="meetup_creation_meetup_location_desc">Tap to choose the perfect location for you Meetup!</string>
     <string name="meetup_creation_meetup_marker_desc">Tap to chose your marker</string>
     <string name="meetup_creation_meetup_date">When do you plan this event?</string>
     <string name="meetup_creation_meetup_date_desc">Select a start and end date/time</string>
@@ -97,6 +97,7 @@
     <string name="meetup_view_leave">Leave</string>
     <string name="meetup_view_joined">You joined the meetup</string>
     <string name="meetup_view_left">You left the meetup</string>
+    <string name="meetup_with_blocked">You cannot join this meetup, you blocked one of the participant.</string>
     <string name="meetup_view_participation_unlimited">%d</string>
     <string name="meetup_view_participation_limited">%d (out of %d)</string>
     <string name="meetup_view_age_min">13</string>
@@ -227,7 +228,8 @@
     <string name="scanned">Scanned</string>
     <string name="no_camera_permission_message">Cancelled due to missing camera permission</string>
     <string name="cancelled_scan">Cancelled scan</string>
-
+    <string name="block_user">Block user</string>
+    <string name="unblock_user">Unblock user</string>
 
 
 </resources>
