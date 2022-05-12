@@ -209,7 +209,7 @@
                 android:layout_marginTop="32dp"
                 android:adjustViewBounds="true"
 
-                android:background="@color/theme_primary"
+                android:background="?attr/colorSecondary"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="@+id/settingsPfpHint"
                 app:layout_constraintHorizontal_bias="0.0"

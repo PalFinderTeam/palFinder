@@ -63,7 +63,7 @@
                 android:layout_weight="0"
 
                 android:adjustViewBounds="true"
-                android:background="@color/theme_primary"
+                android:background="?attr/colorSecondary"
                 android:elevation="5dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="@+id/settingsPfpHint"
@@ -112,7 +112,7 @@
                 android:fontFamily="@font/fredoka_bold"
                 android:gravity="bottom|end"
                 android:text="in 5 days"
-                android:textColor="@color/theme_primary_default"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="18dp"></TextView>
         </LinearLayout>
 

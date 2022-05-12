@@ -53,8 +53,8 @@
                 android:fontFamily="@font/fredoka_bold"
                 android:onClick="onChat"
                 android:paddingBottom="18dp"
+                android:textColor="?attr/colorSecondary"
                 android:text="@string/meetup_view_created_by"
-                android:textColor="@color/theme_primary"
                 android:textSize="18sp" />
 
             <TextView
