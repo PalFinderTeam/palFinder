@@ -1,7 +1,7 @@
 package com.github.palFinderTeam.palfinder
 
 import android.icu.util.Calendar
-import com.github.palFinderTeam.palfinder.utils.PrettyDate
+import com.github.palFinderTeam.palfinder.utils.time.PrettyDate
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.Mockito

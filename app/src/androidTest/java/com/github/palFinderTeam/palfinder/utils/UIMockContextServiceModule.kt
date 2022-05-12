@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.utils
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.github.palFinderTeam.palfinder.di.ContextModule
 import com.github.palFinderTeam.palfinder.di.TimeModule
 import com.github.palFinderTeam.palfinder.utils.context.ContextService
 import dagger.Module
@@ -14,7 +15,7 @@ import javax.inject.Singleton
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [TimeModule::class]
+    replaces = [ContextModule::class]
 )
 /**
  * Provide a mock time service for every UI tests.

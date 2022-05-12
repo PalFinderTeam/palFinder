@@ -1,7 +1,6 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
-import android.util.Log
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService.Companion.MEETUP_COLL
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.DESCRIPTION
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
@@ -50,8 +49,8 @@ class FirebaseMeetUpServiceTest {
             .build()
         db.firestoreSettings = settings
 
-        firebaseMeetUpService = FirebaseMeetUpService(db)
         firebaseProfileService = FirebaseProfileService(db)
+        firebaseMeetUpService = FirebaseMeetUpService(db, firebaseProfileService)
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }
         val date2 = Calendar.getInstance().apply { time = Date(1) }

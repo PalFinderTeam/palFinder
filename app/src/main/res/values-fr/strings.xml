@@ -211,4 +211,9 @@
     <string name="block_user">Bloquer l\'utilisateur</string>
     <string name="unblock_user">Débloquer l\'utilisateur</string>
 
+    <string name="following_content">%1$s vous suis!</string>
+    <string name="following_title">Nouveau Follower!</string>
+
+    <string name="meetup_start_title">%1$s commence!</string>
+
 </resources>
