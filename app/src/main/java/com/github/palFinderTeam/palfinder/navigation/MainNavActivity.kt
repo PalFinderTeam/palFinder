@@ -2,8 +2,11 @@ package com.github.palFinderTeam.palfinder.navigation
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
@@ -22,8 +25,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.zxing.client.android.Intents
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanIntentResult
+import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class MainNavActivity : AppCompatActivity() {
@@ -144,6 +152,35 @@ class MainNavActivity : AppCompatActivity() {
         return true
     }
 
+    // Register the launcher and result handler
+    private val barcodeLauncher: ActivityResultLauncher<ScanOptions?>? = registerForActivityResult(
+        ScanContract()
+    ) { result: ScanIntentResult ->
+        if (result.contents == null) {
+            val originalIntent = result.originalIntent
+            if (originalIntent == null) {
+                Toast.makeText(applicationContext, getString(R.string.cancelled_scan), Toast.LENGTH_LONG).show()
+            } else if (originalIntent.hasExtra(Intents.Scan.MISSING_CAMERA_PERMISSION)) {
+                Toast.makeText(
+                    applicationContext,
+                    getString(R.string.no_camera_permission_message),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        } else {
+            Toast.makeText(
+                applicationContext,
+                getString(R.string.scanned)+ ": " + result.contents,
+                Toast.LENGTH_LONG
+            ).show()
+            createPopUp(this, {
+                //follow user or join meetup
+            }, textId = R.string.qr_scan_follow_account,
+                continueButtonTextId = R.string.follow)
+        }
+    }
+
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.miLogout -> {
@@ -160,31 +197,34 @@ class MainNavActivity : AppCompatActivity() {
                 logoutIntent.flags =
                     Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(logoutIntent)
-                return true
+
             }
             R.id.miSettings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
-                return true
             }
             R.id.miUserSettings -> {
-                return if (profileService.getLoggedInUserID() == null) {
+                if (profileService.getLoggedInUserID() == null) {
                     createPopUp(
                         this,
                         { startActivity(Intent(this, LoginActivity::class.java)) },
                         textId = R.string.no_account_profile,
                         continueButtonTextId = R.string.login
                     )
-                    true
                 } else {
                     //super.onOptionsItemSelected(item)
                     startActivity(Intent(this, UserSettingsActivity::class.java))
-                    return true
                 }
+            }
+            R.id.miScanQR -> {
+                val options = ScanOptions()
+                options.setOrientationLocked(false);
+                barcodeLauncher!!.launch(options)
             }
             else -> {
                 return super.onOptionsItemSelected(item)
             }
         }
+        return true
     }
 
     private fun navItemToPosition(itemId: Int): Int {

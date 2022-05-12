@@ -1,59 +1,48 @@
 package com.github.palFinderTeam.palfinder.profile
 
-import com.github.palFinderTeam.palfinder.cache.DictionaryCache
+import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.context.ContextService
-import com.github.palFinderTeam.palfinder.utils.evictAfterXMinutes
+import com.github.palFinderTeam.palfinder.utils.generics.CachedRepository
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class CachedProfileService @Inject constructor(
-    private val db: FirebaseFirestore,
+    private val db: FirebaseProfileService,
     private val time: TimeService,
     private val contextProvider: ContextService
-) : FirebaseProfileService(db) {
-    private var cache = DictionaryCache("profile", ProfileUser::class.java, false, contextProvider.get(), evictAfterXMinutes(10, time))
-
-    override suspend fun fetchUserProfile(userId: String): ProfileUser? {
-        return if (cache.contains(userId)){
-            cache.get(userId)
-        }else{
-            super.fetchUserProfile(userId)
-        }
+) : ProfileService {
+    companion object{
+        const val REPOSITORY = "profile"
     }
 
-    override fun fetchProfileFlow(userId: String): Flow<Response<ProfileUser>> {
-        return if (cache.contains(userId)){
-            flow {
-                emit(Response.Success(cache.get(userId)))
-            }
-        }else{
-            super.fetchProfileFlow(userId)
-        }
-    }
+    private val cache =
+        CachedRepository(REPOSITORY, ProfileUser::class.java, db, time, contextProvider)
 
-    override suspend fun editUserProfile(userId: String, field: String, value: Any): String? {
-        val id = super.editUserProfile(userId, field, value)
-        return if (id != null){
-            cache.store(userId, super.fetchUserProfile(userId)!!)
-            id
-        }
-        else{
-            null
-        }
-    }
+    override suspend fun create(obj: ProfileUser): String? = cache.create(obj)
 
-    override suspend fun editUserProfile(userId: String, userProfile: ProfileUser): String? {
-        val id = super.editUserProfile(userId, userProfile)
-        return if(id != null){
-            cache.store(userId, userProfile)
-            id
-        }
-        else{
-            null
-        }
-    }
+    override suspend fun fetch(uuid: String): ProfileUser? = cache.fetch(uuid)
+
+    override suspend fun fetch(uuids: List<String>): List<ProfileUser> = cache.fetch(uuids)
+
+    override fun fetchAll(currentDate: Calendar?): Flow<List<ProfileUser>> =
+        cache.fetchAll(currentDate)
+
+    override fun fetchFlow(uuid: String): Flow<Response<ProfileUser>> = cache.fetchFlow(uuid)
+
+    override suspend fun edit(uuid: String, obj: ProfileUser): String? = cache.edit(uuid, obj)
+
+    override suspend fun edit(uuid: String, field: String, value: Any): String? =
+        cache.edit(uuid, field, value)
+
+    override suspend fun exists(uuid: String): Boolean = cache.exists(uuid)
+
+    override fun getLoggedInUserID(): String? = db.getLoggedInUserID()
+
+    override suspend fun followUser(user: ProfileUser, targetId: String): Response<Unit> =
+        db.followUser(user, targetId)
+
+    override suspend fun unfollowUser(user: ProfileUser, targetId: String): Response<Unit> =
+        db.unfollowUser(user, targetId)
 }

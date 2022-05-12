@@ -25,7 +25,7 @@ import java.util.*
 
 @ExperimentalCoroutinesApi
 class CachedProfileServiceTest {
-    private lateinit var firebaseProfileService: FirebaseProfileService
+    private lateinit var firebaseProfileService: CachedProfileService
     private lateinit var db: FirebaseFirestore
     private lateinit var profile: ProfileUser
     private lateinit var profile2: ProfileUser
@@ -46,7 +46,7 @@ class CachedProfileServiceTest {
 
         DictionaryCache.clearAllTempCaches(context.get())
 
-        firebaseProfileService = CachedProfileService(db, timeService, context)
+        firebaseProfileService = CachedProfileService(FirebaseProfileService(db), timeService, context)
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }
         val date2 = Calendar.getInstance().apply { time = Date(1) }
@@ -66,7 +66,7 @@ class CachedProfileServiceTest {
 
     @Test
     fun createUserAddToDB() = runTest {
-        val id = firebaseProfileService.createProfile(profile)
+        val id = firebaseProfileService.create(profile)
         assertThat(id, notNullValue())
         id!!.let {
             val userInDb = db.collection(PROFILE_COLL).document(it).get().await().toProfileUser()
@@ -79,13 +79,13 @@ class CachedProfileServiceTest {
 
     @Test
     fun fetchNonExistingUserReturnsNull() = runTest {
-        val nonExistingUser = firebaseProfileService.fetchUserProfile("Nani")
+        val nonExistingUser = firebaseProfileService.fetch("Nani")
         assertThat(nonExistingUser, nullValue())
     }
 
     @Test
     fun fetchNonExistingUserFlowReturnsError() = runTest {
-        val nonExistingUserFlow = firebaseProfileService.fetchProfileFlow("WTF")
+        val nonExistingUserFlow = firebaseProfileService.fetchFlow("WTF")
         val nonExistingUser = nonExistingUserFlow.take(2).toList()
         assertThat(nonExistingUser[0], instanceOf(Response.Loading::class.java))
         assertThat(nonExistingUser[1], instanceOf(Response.Failure::class.java))
@@ -93,22 +93,33 @@ class CachedProfileServiceTest {
 
     @Test
     fun editNonExistingUserReturnsNull() = runTest {
-        val nonExistingId = firebaseProfileService.editUserProfile("HAHA", "dw", 4)
+        val nonExistingId = firebaseProfileService.edit("HAHA", "dw", 4)
         assertThat(nonExistingId, nullValue())
     }
 
     @Test
     fun editNonExistingUserWithEntireNewProfileReturnsNull() = runTest {
-        val nonExistingId = firebaseProfileService.editUserProfile("HAHA", profile)
+        val nonExistingId = firebaseProfileService.edit("HAHA", profile)
         assertThat(nonExistingId, nullValue())
     }
 
     @Test
+    fun editNonExistingFieldReturnsNull() = runTest {
+        val id = firebaseProfileService.create(profile)
+        id!!.let {
+            val idNull = firebaseProfileService.edit(it, "NotAField", "NotAValue")
+            assertThat(idNull, nullValue())
+            db.collection(FirebaseMeetUpService.MEETUP_COLL).document(it).delete().await()
+            db.collection(PROFILE_COLL).document(profile.uuid).delete().await()
+        }
+    }
+
+    @Test
     fun fetchUserReturnRightInfo() = runTest {
-        val id = firebaseProfileService.createProfile(profile)
+        val id = firebaseProfileService.create(profile)
         assertThat(id, notNullValue())
         id!!.let {
-            val fetchedUser = firebaseProfileService.fetchUserProfile(it)
+            val fetchedUser = firebaseProfileService.fetch(it)
             assertThat(fetchedUser, notNullValue())
             assertThat(fetchedUser, `is`(profile))
             // Make sure to clean for next tests
@@ -118,12 +129,12 @@ class CachedProfileServiceTest {
 
     @Test
     fun fetchUsersReturnRightInfo() = runTest {
-        val id1 = firebaseProfileService.createProfile(profile)
-        val id2 = firebaseProfileService.createProfile(profile2)
+        val id1 = firebaseProfileService.create(profile)
+        val id2 = firebaseProfileService.create(profile2)
         assertThat(id1, notNullValue())
         assertThat(id2, notNullValue())
         if (id1 != null && id2 != null) {
-            val fetchedUser = firebaseProfileService.fetchUsersProfile(listOf(id1, id2))
+            val fetchedUser = firebaseProfileService.fetch(listOf(id1, id2))
             assertThat(fetchedUser, notNullValue())
             assertThat(fetchedUser, hasItems(profile, profile2))
             // Make sure to clean for next tests
@@ -134,10 +145,10 @@ class CachedProfileServiceTest {
 
     @Test
     fun fetchUserFlowReturnRightInfoAndBehaveAsExpected() = runTest {
-        val id = firebaseProfileService.createProfile(profile)
+        val id = firebaseProfileService.create(profile)
         assertThat(id, notNullValue())
         id!!.let {
-            val fetchedUserFlow = firebaseProfileService.fetchProfileFlow(it)
+            val fetchedUserFlow = firebaseProfileService.fetchFlow(it)
             val loading = fetchedUserFlow.take(2).toList()
             assertThat(loading[0], instanceOf(Response.Loading::class.java))
             assertThat(loading[1], `is`(Response.Success(profile)))
@@ -150,12 +161,12 @@ class CachedProfileServiceTest {
 
     @Test
     fun editingMeetupEditInDB() = runTest {
-        val id = firebaseProfileService.createProfile(profile)
+        val id = firebaseProfileService.create(profile)
         assertThat(id, notNullValue())
         id!!.let {
             val newUsername = "Romain"
             val sameId =
-                firebaseProfileService.editUserProfile(it, profile.copy(username = newUsername))
+                firebaseProfileService.edit(it, profile.copy(username = newUsername))
             assertThat(sameId, notNullValue())
             assertThat(sameId, `is`(id))
 
@@ -168,11 +179,11 @@ class CachedProfileServiceTest {
 
     @Test
     fun editingOneFieldEditInDb() = runTest {
-        val id = firebaseProfileService.createProfile(profile)
+        val id = firebaseProfileService.create(profile)
         assertThat(id, notNullValue())
         id!!.let {
             val newUsername = "Romain"
-            val sameId = firebaseProfileService.editUserProfile(it, USERNAME_KEY, newUsername)
+            val sameId = firebaseProfileService.edit(it, USERNAME_KEY, newUsername)
             assertThat(sameId, notNullValue())
             assertThat(sameId, `is`(id))
 
@@ -185,7 +196,7 @@ class CachedProfileServiceTest {
 
     @Test
     fun addNewProfileUseSameIdAsProfile() = runTest {
-        val id = firebaseProfileService.createProfile(profile)
+        val id = firebaseProfileService.create(profile)
         assertThat(id, `is`(profile.uuid))
     }
 }

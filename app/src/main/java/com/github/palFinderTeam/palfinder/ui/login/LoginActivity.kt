@@ -88,9 +88,9 @@ class LoginActivity : AppCompatActivity() {
         oneTapClient = Identity.getSignInClient(this)
         signInRequest = beginSignInRequest()
 
-        //disable auto fill to enable onetap save password, work only with API >= 26
-        window
-            .decorView.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+        //disable auto fill to enable onetap save password
+        window.decorView.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+
         configureGoogleSignIn(signInButton)
         configurePasswordSignIn(signInOrRegister)
         configureNoAccountButton(noAccountButton)
@@ -366,7 +366,7 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        if (firebaseProfileService.doesUserIDExist(user.uid)) {
+        if (firebaseProfileService.exists(user.uid)) {
             startActivity(Intent(this, MainNavActivity::class.java))
             finish()
         } else {
