@@ -61,10 +61,10 @@ class NotificationService @Inject constructor(
                 val logged = profileService.fetch(id!!)
                 if (logged != null){
                     for(p in logged!!.following){
-                        val username = profileService.fetch(p)!!.username
-                        if (!profileMetaData.contains(p)){
+                        val user = profileService.fetch(p)
+                        if (!profileMetaData.contains(p) && user != null){
                             profileMetaData.store(p, ProfileMetaData(p, true))
-                            NotificationHandler(context).post(context.getString(R.string.following_title), context.getString(R.string.following_content).format(username), R.drawable.icon_beer)
+                            NotificationHandler(context).post(context.getString(R.string.following_title), context.getString(R.string.following_content).format(user.username), R.drawable.icon_beer)
                         }
                     }
                 }
