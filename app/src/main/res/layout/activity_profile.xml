@@ -188,7 +188,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/following_title"
+                            android:text="@string/following_handle_title"
                             android:fontFamily="@font/fredoka_bold"
                             android:alpha="0.5"/>
 
@@ -218,7 +218,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/fredoka_bold"
-                            android:text="@string/followers_title"
+                            android:text="@string/followers_handle_title"
                             android:alpha="0.5"/>
 
                         <TextView

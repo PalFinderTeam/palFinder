@@ -205,8 +205,7 @@
     <string name="scanned">Scanné</string>
     <string name="no_camera_permission_message">Annulé à cause des permissions de la caméra</string>
     <string name="cancelled_scan">Scan annulé</string>
-    <string name="following_title">Abonnements</string>
-    <string name="followers_title">Abonnés</string>
+    <string name="following_title">Nouvel abonné!</string>
     <string name="meetup_with_blocked">Vous ne pouvez pas rejoindre cette rencontre car vous avez bloqué un des membres.</string>
     <string name="block_user">Bloquer l\'utilisateur</string>
     <string name="unblock_user">Débloquer l\'utilisateur</string>
@@ -215,5 +214,7 @@
     <string name="following_title">Nouveau Follower!</string>
 
     <string name="meetup_start_title">%1$s commence!</string>
+    <string name="following_handle_title">Abonnements</string>
+    <string name="followers_handle_title">Abonnés</string>
 
 </resources>
