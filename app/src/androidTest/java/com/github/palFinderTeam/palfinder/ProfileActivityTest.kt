@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
+import android.util.Log
 import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -270,12 +271,12 @@ class ProfileActivityTest {
             assert(!profileService.fetch(userid)!!.following.contains(id2))
             assert(!profileService.fetch(id2!!)!!.followed.contains(userid))
             onView(
-                withId(R.id.button_join_meetup)
+                withId(R.id.button_follow_profile)
             ).perform(click())
 /*            assert(profileService.fetch(userid)!!.following.contains(id2))
             assert(profileService.fetch(id2)!!.followed.contains(userid))*/
             onView(
-                withId(R.id.button_join_meetup)
+                withId(R.id.button_follow_profile)
             ).perform(click())
             assert(!profileService.fetch(userid)!!.following.contains(id2))
             assert(!profileService.fetch(id2)!!.followed.contains(userid))
