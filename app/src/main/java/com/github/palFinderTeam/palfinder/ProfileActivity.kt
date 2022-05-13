@@ -87,7 +87,6 @@ class ProfileActivity : AppCompatActivity() {
                     injectUserInfo(it.data)
                     bindFollow(null, it.data)
                 }
-                is Response.Loading -> Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
                 is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
             }
         }
@@ -103,7 +102,6 @@ class ProfileActivity : AppCompatActivity() {
                 is Response.Success -> {
                    followSystem(it.data, profileViewed, followButton)
                 }
-                is Response.Loading -> Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
                 is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
             }
         }

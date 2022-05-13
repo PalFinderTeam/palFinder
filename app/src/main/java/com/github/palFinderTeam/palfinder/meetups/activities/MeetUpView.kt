@@ -29,6 +29,7 @@ import javax.inject.Inject
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.ceylonlabs.imageviewpopup.ImagePopup
+import com.github.palFinderTeam.palfinder.utils.image.BitmapSave
 
 //ids for putExtra function, to pass Meetups between views
 const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_SHOWN"
@@ -140,9 +141,12 @@ class MeetUpView : AppCompatActivity() {
         //Convert the bitmap(QR Code) into a drawable
         val d: Drawable = BitmapDrawable(resources, bitmap)
 
-        //Displays the popup image
+        /*//Displays the popup image
         imagePopup.initiatePopup(d);
-        imagePopup.viewPopup()
+        imagePopup.viewPopup()*/
+
+        startActivity(BitmapSave.shareImageUri(bitmap))
+
 
     }
 
