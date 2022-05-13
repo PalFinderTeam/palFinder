@@ -45,12 +45,14 @@ class MapListViewModel @Inject constructor(
         val START_LOCATION = Location(45.0, 45.0)
 
         private fun Response<List<MeetUp>>.filterBlocked(blockedUser: List<String>): Response<List<MeetUp>> {
-           return if (this is Response.Success) {
-               val filtered = this.data.filter { meetUp -> meetUp.participantsId.intersect(blockedUser).isEmpty() }
-               Response.Success(filtered)
-           } else {
-               this
-           }
+            return if (this is Response.Success) {
+                val filtered = this.data.filter { meetUp ->
+                    meetUp.participantsId.intersect(blockedUser).isEmpty()
+                }
+                Response.Success(filtered)
+            } else {
+                this
+            }
         }
     }
 
@@ -102,7 +104,6 @@ class MapListViewModel @Inject constructor(
     }
 
 
-
     /**
      * Set search parameters that you want to apply.
      *
@@ -115,7 +116,7 @@ class MapListViewModel @Inject constructor(
     fun setSearchParameters(
         location: Location? = null,
         radiusInKm: Double? = null,
-        showParam: ShowParam? = ShowParam.ALL,
+        showParam: ShowParam? = null,
         showOnlyAvailable: Boolean? = null,
         filterBlockedMeetups: Boolean? = null,
     ) {

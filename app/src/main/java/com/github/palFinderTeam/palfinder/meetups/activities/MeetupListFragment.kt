@@ -33,7 +33,7 @@ const val LOCATION_RESULT = "location"
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 /**
- * Fragment used to display the list of the meetUps available around a location, with several ways to filter it
+ * Fragment used to display a list of the meetUps, with several ways to filter it.
  */
 class MeetupListFragment : Fragment() {
     //recyclerView and adapter to handle the list and each meetup
@@ -114,12 +114,14 @@ class MeetupListFragment : Fragment() {
 
         }
 
-        //live data of current user location, and update the parameters in real time accordingly
+        // Listen for result of the map fragment, when using the select precise location functionality.
         getNavigationResultLiveData<Location>(LOCATION_RESULT)?.observe(viewLifecycleOwner) { result ->
             viewModel.setSearchParamAndFetch(location = result)
             // Make sure to consume the value
             removeNavigationResult<Location>(LOCATION_RESULT)
         }
+
+        // Prepare and add tags fragment.
         tagsViewModel = createTagFragmentModel(this, TagsViewModelFactory(viewModel.tagRepository))
         if (savedInstanceState == null) {
             addTagsToFragmentManager(childFragmentManager, R.id.list_select_tag)
