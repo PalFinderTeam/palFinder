@@ -193,7 +193,7 @@
                             android:alpha="0.5"/>
 
                         <TextView
-                            android:id="@+id/followers"
+                            android:id="@+id/following"
                             android:layout_weight="1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -222,7 +222,7 @@
                             android:alpha="0.5"/>
 
                         <TextView
-                            android:id="@+id/following"
+                            android:id="@+id/followers"
                             android:layout_weight="1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

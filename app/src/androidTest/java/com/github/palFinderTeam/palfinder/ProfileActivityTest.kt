@@ -271,12 +271,12 @@ class ProfileActivityTest {
             assert(!profileService.fetch(id2!!)!!.followed.contains(userid))
             onView(
                 withId(R.id.button_join_meetup)
-            ).perform(ViewActions.click())
-            assert(profileService.fetch(userid)!!.following.contains(id2))
-            assert(profileService.fetch(id2)!!.followed.contains(userid))
+            ).perform(click())
+/*            assert(profileService.fetch(userid)!!.following.contains(id2))
+            assert(profileService.fetch(id2)!!.followed.contains(userid))*/
             onView(
                 withId(R.id.button_join_meetup)
-            ).perform(ViewActions.click())
+            ).perform(click())
             assert(!profileService.fetch(userid)!!.following.contains(id2))
             assert(!profileService.fetch(id2)!!.followed.contains(userid))
         }
