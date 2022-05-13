@@ -246,7 +246,7 @@ class FirebaseProfileServiceTest {
         firebaseProfileService.edit(id2, profile2.copy(followed = list))
         firebaseProfileService.followUser(firebaseProfileService.fetch(id)!!, id2)
         assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.achievements().contains(Achievement.PAL_MINER))
-        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.achievements().contains(Achievement.CRYPTOPAL))
+        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.achievements().contains(Achievement.CRYPTO_PAL))
 
         list = List(29){" "}
         firebaseProfileService.edit(id, profile.copy(following = list))
