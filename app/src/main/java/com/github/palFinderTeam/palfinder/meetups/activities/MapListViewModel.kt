@@ -150,7 +150,7 @@ class MapListViewModel @Inject constructor(
     fun setSearchParamAndFetch(
         location: Location? = null,
         radiusInKm: Double? = null,
-        showParam: ShowParam? = ShowParam.ALL,
+        showParam: ShowParam? = null,
         showOnlyAvailable: Boolean? = null,
         forceFetch: Boolean = false,
         filterBlockedMeetups: Boolean? = null,
