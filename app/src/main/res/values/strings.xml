@@ -135,6 +135,7 @@
     <string name="no_desc">No bio provided…</string>
     <string name="private_name">Private profile</string>
     <string name="private_desc">This user has set his profile to private</string>
+    <string name="profile_last_attended">Last attended</string>
 
     <string name="title_activity_login" translatable="false">LoginActivity</string>
     <string name="prompt_email">Email</string>
