@@ -81,7 +81,12 @@ class MeetupListFragment : Fragment() {
 
         //radioGroup to choose between the different options about followers
         val followerOptions: RadioGroup = view.findViewById(R.id.follower_options_group)
-        view.findViewById<RadioButton>(R.id.button_all).isChecked = true
+        when (args.showParam) {
+            ShowParam.ALL -> view.findViewById<RadioButton>(R.id.button_all).isChecked = true
+            ShowParam.ONLY_JOINED -> view.findViewById<RadioButton>(R.id.joinedButton).isChecked = true
+            ShowParam.PAL_PARTCIPATING -> view.findViewById<RadioButton>(R.id.participate_button).isChecked = true
+            ShowParam.PAL_CREATOR -> view.findViewById<RadioButton>(R.id.created_button).isChecked = true
+        }
         followerOptions.setOnCheckedChangeListener { _, checkedId ->
             val radio: RadioButton = view.findViewById(checkedId)
             when (followerOptions.indexOfChild(radio)) {
