@@ -34,6 +34,7 @@ data class ProfileUser(
     val blockedUsers: List<String> = emptyList(),
     private val achievements: List<String> = emptyList(),
     val privacySettings: PrivacySettings? = PrivacySettings.PUBLIC,
+    val mutedMeetups: List<String> = emptyList()
 ) : Serializable, FirebaseObject {
 
     companion object {
@@ -52,6 +53,7 @@ data class ProfileUser(
         const val BLOCKED_USERS = "blocked_users"
         const val ACHIEVEMENTS_OBTAINED = "achievements"
         const val PRIVACY_SETTINGS_KEY = "privacy_settings"
+        const val MUTED_MEETUPS = "muted_meetups"
 
         /**
          * Provide a way to convert a Firestore query result, in a ProfileUser.
@@ -86,6 +88,8 @@ data class ProfileUser(
 
                 val privacySettings = PrivacySettings.from(getString(PRIVACY_SETTINGS_KEY))
 
+                val mutedMeetups = (get(MUTED_MEETUPS) as? List<String>).orEmpty()
+
 
                 ProfileUser(
                     uuid,
@@ -102,7 +106,8 @@ data class ProfileUser(
                     followed,
                     blockedUsers,
                     achievements,
-                    privacySettings
+                    privacySettings,
+                    mutedMeetups
                 )
 
             } catch (e: Exception) {
@@ -130,7 +135,8 @@ data class ProfileUser(
             FOLLOWED_BY to followed,
             BLOCKED_USERS to blockedUsers,
             ACHIEVEMENTS_OBTAINED to achievements,
-            PRIVACY_SETTINGS_KEY to privacySettings
+            PRIVACY_SETTINGS_KEY to privacySettings,
+            MUTED_MEETUPS to mutedMeetups
         )
     }
 
@@ -187,5 +193,17 @@ data class ProfileUser(
 
     fun canBlock(uuid: String): Boolean {
         return !blockedUsers.contains(uuid)
+    }
+
+    fun canMuteMeetup(uuid: String): Boolean{
+        return !mutedMeetups.contains(uuid)
+    }
+
+    fun canUnMuteMeetup(uuid: String): Boolean{
+        return mutedMeetups.contains(uuid)
+    }
+
+    fun isMeetupMuted(uuid: String): Boolean{
+        return mutedMeetups.contains(uuid)
     }
 }

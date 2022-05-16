@@ -778,6 +778,28 @@ class MeetupViewTest {
 
         onView(withId(R.id.button_join_meetup)).check(matches(isNotClickable()))
     }
+
+    @Test
+    fun testMuteButton() = runTest {
+        val mid = meetUpRepository.create(meetup)
+        val uid = profileRepository.create(user2)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+
+        ActivityScenario.launch<MeetUpView>(intent)
+
+        // Mute
+        onView(withId(R.id.notification_button)).perform(betterScrollTo()).perform(click())
+        assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid!!), `is`(true))
+
+        // Unmute
+        onView(withId(R.id.notification_button)).perform(betterScrollTo()).perform(click())
+        assertThat(meetUpRepository.fetch(mid)!!.isParticipating(uid), `is`(false))
+    }
 }
 
 class ClickCloseIconAction : ViewAction {

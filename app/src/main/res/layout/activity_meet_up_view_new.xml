@@ -38,7 +38,7 @@
 
                 <Button
                     android:id="@+id/button_join_meetup"
-                    android:layout_width="match_parent"
+                    android:layout_width="336dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
@@ -48,6 +48,22 @@
                     android:paddingBottom="16dp"
                     android:text="@string/meetup_view_join"
                     android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/notification_button"
+                    android:layout_width="133dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="11dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="1"
+                    android:elevation="0dp"
+                    android:fontFamily="@font/fredoka_bold"
+                    android:onClick="onMuteOrUnmute"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
+                    android:src="@drawable/ic_baseline_people_alt_24"
+                    app:tint="?attr/colorPrimary" />
 
                 <ImageView
                     android:id="@+id/show_qr_button"

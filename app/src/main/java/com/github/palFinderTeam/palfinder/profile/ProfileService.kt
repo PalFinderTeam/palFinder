@@ -35,6 +35,22 @@ interface ProfileService: Repository<ProfileUser> {
     suspend fun unfollowUser(user: ProfileUser, targetId: String): Response<Unit>
 
     /**
+     * Try to mute a meetup
+     *
+     * @param user profile of user
+     * @param meetup Id of meetup to mute
+     */
+    suspend fun muteMeetup(user: ProfileUser, meetup: String): Response<Unit>
+
+    /**
+     * Try to unmute a meetup
+     *
+     * @param user profile of user
+     * @param meetup Id of meetup to mute
+     */
+    suspend fun unMuteMeetup(user: ProfileUser, meetup: String): Response<Unit>
+
+    /**
      * check if the follower deserves an achievement by checking the number of pals he follows
      */
     fun updateAchievementsFollower(follower: ProfileUser): String? {

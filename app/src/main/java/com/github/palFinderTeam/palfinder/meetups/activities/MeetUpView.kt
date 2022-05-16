@@ -85,6 +85,7 @@ class MeetUpView : AppCompatActivity() {
     private fun handleButton(){
         val hasJoined = viewModel.hasJoin()
         val isCreator = viewModel.isCreator()
+        val canMuteUnMute = viewModel.canMute() || viewModel.canUnMute()
         findViewById<View>(R.id.bt_ChatMeetup).apply {
             this.isEnabled = hasJoined
             this.isVisible = hasJoined
@@ -99,6 +100,10 @@ class MeetUpView : AppCompatActivity() {
             this.isEnabled = !isCreator
             this.isClickable = !isCreator
             this.text = if (hasJoined) getString(R.string.meetup_view_leave) else getString(R.string.meetup_view_join)
+        }
+        findViewById<ImageView>(R.id.notification_button).apply {
+            this.isEnabled = !canMuteUnMute
+            this.isClickable = !canMuteUnMute
         }
     }
 
@@ -172,7 +177,21 @@ class MeetUpView : AppCompatActivity() {
             viewModel.joinOrLeave(this)
         }
     }
+    /**
+     * cannot mute/unmute a meetUp if you are not logged in
+     */
+    fun onMuteOrUnmute(v: View){
+        if(profileService.getLoggedInUserID() == null){
+            createPopUp(this,
+                { startActivity(Intent(this, LoginActivity::class.java)) },
+                textId = R.string.no_account_join,
+                continueButtonTextId = R.string.login
+            )
 
+        }else {
+            viewModel.muteOrUnMute(this)
+        }
+    }
 
 
 

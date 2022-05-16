@@ -10,6 +10,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWIN
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.GENDER
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOINED_MEETUPS_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOIN_DATE_KEY
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.MUTED_MEETUPS
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.NAME_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.PICTURE_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.PRIVACY_SETTINGS_KEY
@@ -76,6 +77,7 @@ object UIMockProfileServiceModule {
                     BLOCKED_USERS -> oldVal.copy(blockedUsers = value as List<String>)
                     ACHIEVEMENTS_OBTAINED -> oldVal.copy(achievements = value as List<String>)
                     PRIVACY_SETTINGS_KEY -> oldVal.copy(privacySettings = value as PrivacySettings)
+                    MUTED_MEETUPS -> oldVal.copy(mutedMeetups = value as List<String>)
                     else -> oldVal
                 }
                 return uuid
@@ -152,10 +154,35 @@ object UIMockProfileServiceModule {
         override suspend fun unfollowUser(user: ProfileUser, targetId: String): Response<Unit> {
             return try {
                 if (!user.canUnFollow(targetId)) {
-                    return Response.Failure("Cannot unfollow this user.")
+                    return Response.Failure("Cannot mute this meetup.")
                 }
                 db[user.uuid] = user.copy(following = user.following.minus(targetId))
                 db[targetId] = db[targetId]!!.copy(followed = db[targetId]!!.followed.minus(user.uuid))
+                Response.Success(Unit)
+            } catch (e: Exception) {
+                Response.Failure(e.message.orEmpty())
+            }
+        }
+
+        override suspend fun muteMeetup(user: ProfileUser, meetup: String): Response<Unit> {
+            return try {
+                if (!user.canMuteMeetup(meetup)) {
+                    return Response.Failure("Cannot follow this meetup.")
+                }
+                db[user.uuid] = user.copy(mutedMeetups = user.mutedMeetups.plus(meetup))
+
+                Response.Success(Unit)
+            } catch (e: Exception) {
+                Response.Failure(e.message.orEmpty())
+            }
+        }
+
+        override suspend fun unMuteMeetup(user: ProfileUser, meetup: String): Response<Unit> {
+            return try {
+                if (!user.canUnMuteMeetup(meetup)) {
+                    return Response.Failure("Cannot unmute this meetup.")
+                }
+                db[user.uuid] = user.copy(mutedMeetups = user.mutedMeetups.minus(meetup))
                 Response.Success(Unit)
             } catch (e: Exception) {
                 Response.Failure(e.message.orEmpty())
