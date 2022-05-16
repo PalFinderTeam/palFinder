@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.notification
 
 import android.content.Context
+import android.content.Intent
 import android.icu.util.Calendar
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
@@ -17,6 +18,7 @@ import com.github.palFinderTeam.palfinder.chat.ChatMessage
 import com.github.palFinderTeam.palfinder.chat.ChatService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
@@ -145,6 +147,16 @@ class NotificationTest {
         val text: UiObject2 = uiDevice.findObject(By.textStartsWith(expectedContent))
         assertEquals(expectedTitle, title.text)
         assertTrue(text.text.startsWith(expectedContent))
+        uiDevice.findObject(By.textStartsWith("Clear all")).click()
+        val intent = Intent(context, MeetUpView::class.java)
+        handler.post(R.string.testNotifTitle,R.string.testNotifContent, R.drawable.icon_beer, intent)
+
+        uiDevice.openNotification()
+        uiDevice.wait(Until.hasObject(By.textStartsWith(expectedTitle)), timeout)
+        val title2: UiObject2 = uiDevice.findObject(By.text(expectedTitle))
+        val text2: UiObject2 = uiDevice.findObject(By.textStartsWith(expectedContent))
+        assertEquals(expectedTitle, title2.text)
+        assertTrue(text2.text.startsWith(expectedContent))
         uiDevice.findObject(By.textStartsWith("Clear all")).click()
     }
 

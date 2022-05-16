@@ -2,8 +2,10 @@ package com.github.palFinderTeam.palfinder.notification
 
 import android.app.job.JobParameters
 import android.app.job.JobService
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.chat.CachedChatService
@@ -13,9 +15,12 @@ import com.github.palFinderTeam.palfinder.di.FirestoreModule
 import com.github.palFinderTeam.palfinder.meetups.CachedMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.CachedProfileService
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.EndlessService
 import com.github.palFinderTeam.palfinder.utils.context.AppContextService
 import com.github.palFinderTeam.palfinder.utils.context.ContextService
@@ -66,7 +71,10 @@ class NotificationService @Inject constructor(
                         val user = profileService.fetch(p)
                         if (!profileMetaData.contains(p) && user != null){
                             profileMetaData.store(p, ProfileMetaData(p, true))
-                            NotificationHandler(context).post(context.getString(R.string.following_title), context.getString(R.string.following_content).format(user.username), R.drawable.icon_beer)
+                            val intent = Intent(context, ProfileActivity::class.java).apply {
+                                putExtra(USER_ID, user.uuid)
+                            }
+                            NotificationHandler(context).post(context.getString(R.string.following_title), context.getString(R.string.following_content).format(user.username), R.drawable.icon_beer, intent)
                         }
                     }
                 }
@@ -84,7 +92,10 @@ class NotificationService @Inject constructor(
                 if (meetup != null) {
                     // Check if meetup started and notification not sent
                     if (!meta.sendStartNotification && meetup.startDate.isBefore(timeService.now())) {
-                        NotificationHandler(context).post(meetup.name, meetup.description, R.drawable.icon_beer)
+                        val intent = Intent(context, MeetUpView::class.java).apply {
+                            putExtra(MEETUP_SHOWN, m)
+                        }
+                        NotificationHandler(context).post(meetup.name, meetup.description, R.drawable.icon_beer, intent)
                         meta.sendStartNotification = true
                         meetupsMetaData.store(m, meta)
                     }

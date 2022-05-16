@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.notification
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -14,6 +15,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.cache.FileCache
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 
 private const val CHANNEL_ID = "PalFinder"
 private const val NOTIFICATION = "notification"
@@ -56,11 +58,24 @@ class NotificationHandler (
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createNotification(title: String, content: String, icon: Int): Notification{
+    private fun createNotification(title: String, content: String, icon: Int, ): Notification{
         return Notification.Builder(context, CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(content)
             .setSmallIcon(icon)
+            .setAutoCancel(true)
+            .build()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotification(title: String, content: String, icon: Int, intent: Intent): Notification{
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, getNotificationUUID(), intent, PendingIntent.FLAG_IMMUTABLE)
+        return Notification.Builder(context, CHANNEL_ID)
+            .setContentTitle(title)
+            .setContentText(content)
+            .setSmallIcon(icon)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
             .build()
     }
 
@@ -95,6 +110,33 @@ class NotificationHandler (
             context.getString(title),
             context.getString(content),
             icon
+        )
+    }
+
+    /**
+     * Post a Notification
+     * @param title: Title of the notification
+     * @param content: Content of the notification
+     * @param icon: Icon of the notification
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun post(title: String, content: String, icon: Int, intent: Intent){
+        post(createNotification(title,content, icon, intent))
+    }
+
+    /**
+     * Post a Notification
+     * @param title: Title of the notification
+     * @param content: Content of the notification
+     * @param icon: Icon of the notification
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun post(title: Int, content: Int, icon: Int, intent: Intent){
+        post(
+            context.getString(title),
+            context.getString(content),
+            icon,
+            intent
         )
     }
 
