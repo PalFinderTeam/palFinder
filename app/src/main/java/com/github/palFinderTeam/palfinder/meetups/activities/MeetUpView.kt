@@ -37,7 +37,6 @@ const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_
 const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
 
 
-@SuppressLint("SimpleDateFormat")
 @AndroidEntryPoint
 class MeetUpView : AppCompatActivity() {
     private val viewModel: MeetUpViewViewModel by viewModels()

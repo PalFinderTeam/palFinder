@@ -148,16 +148,9 @@ class NotificationTest {
         assertEquals(expectedTitle, title.text)
         assertTrue(text.text.startsWith(expectedContent))
         uiDevice.findObject(By.textStartsWith("Clear all")).click()
+
         val intent = Intent(context, MeetUpView::class.java)
         handler.post(R.string.testNotifTitle,R.string.testNotifContent, R.drawable.icon_beer, intent)
-
-        uiDevice.openNotification()
-        uiDevice.wait(Until.hasObject(By.textStartsWith(expectedTitle)), timeout)
-        val title2: UiObject2 = uiDevice.findObject(By.text(expectedTitle))
-        val text2: UiObject2 = uiDevice.findObject(By.textStartsWith(expectedContent))
-        assertEquals(expectedTitle, title2.text)
-        assertTrue(text2.text.startsWith(expectedContent))
-        uiDevice.findObject(By.textStartsWith("Clear all")).click()
     }
 
     @Test
