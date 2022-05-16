@@ -273,8 +273,8 @@ class ProfileActivityTest {
             onView(
                 withId(R.id.button_follow_profile)
             ).perform(click())
-/*            assert(profileService.fetch(userid)!!.following.contains(id2))
-            assert(profileService.fetch(id2)!!.followed.contains(userid))*/
+            assert(profileService.fetch(userid)!!.following.contains(id2))
+            assert(profileService.fetch(id2)!!.followed.contains(userid))
             onView(
                 withId(R.id.button_follow_profile)
             ).perform(click())
