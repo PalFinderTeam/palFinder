@@ -16,7 +16,6 @@ import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileListFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
-import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
@@ -24,12 +23,12 @@ import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import com.github.palFinderTeam.palfinder.utils.image.QRCode
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
-import com.ceylonlabs.imageviewpopup.ImagePopup
-import com.github.palFinderTeam.palfinder.utils.image.BitmapSave
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+
 
 //ids for putExtra function, to pass Meetups between views
 const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_SHOWN"
@@ -136,16 +135,7 @@ class MeetUpView : AppCompatActivity() {
         //Encode text in editText into QRCode image into the specified size using barcodeEncoder
         val bitmap = barcodeEncoder.encodeBitmap(MEETUP_SHOWN+intent.getSerializableExtra(MEETUP_SHOWN) as String, BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
 
-        //Set up the popup image
-        val imagePopup = ImagePopup(this)
-        //Convert the bitmap(QR Code) into a drawable
-        val d: Drawable = BitmapDrawable(resources, bitmap)
-
-        /*//Displays the popup image
-        imagePopup.initiatePopup(d);
-        imagePopup.viewPopup()*/
-
-        startActivity(BitmapSave.shareImageUri(bitmap))
+        QRCode.shareQRcode(bitmap, this)
 
 
     }
