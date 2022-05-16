@@ -1,9 +1,10 @@
 package com.github.palFinderTeam.palfinder.navigation
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.icu.util.Calendar
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -22,6 +23,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileAdapter
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
+import com.github.palFinderTeam.palfinder.ui.login.LoginActivity.Companion.HIDE_ONE_TAP
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
 import com.github.palFinderTeam.palfinder.utils.createPopUp
@@ -53,8 +55,14 @@ class MainNavActivity : AppCompatActivity() {
     lateinit var meetUpRepository: MeetUpRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
+        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
+        setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_nav)
+
+
+        sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
 
         auth = Firebase.auth
 
@@ -153,6 +161,13 @@ class MainNavActivity : AppCompatActivity() {
 
     }
 
+    var sharedPreferenceChangeListener =
+        OnSharedPreferenceChangeListener { _, key ->
+            if (key == "theme") {
+                recreate()
+            }
+        }
+
     fun hideShowNavBar(show: Boolean) {
         bottomNavigationView.isVisible = show
     }
@@ -229,11 +244,10 @@ class MainNavActivity : AppCompatActivity() {
 
                 val client = GoogleSignIn.getClient(this, gso)
                 client.signOut()
-                val logoutIntent = Intent(this, LoginActivity::class.java)
+                val logoutIntent = Intent(this, LoginActivity::class.java).apply { putExtra(HIDE_ONE_TAP, true) }
                 logoutIntent.flags =
                     Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(logoutIntent)
-
             }
             R.id.miSettings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))

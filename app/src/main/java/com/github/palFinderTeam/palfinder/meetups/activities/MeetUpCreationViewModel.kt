@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
@@ -17,8 +18,8 @@ import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
-import com.github.palFinderTeam.palfinder.utils.isBefore
-import com.github.palFinderTeam.palfinder.utils.isDeltaBefore
+import com.github.palFinderTeam.palfinder.utils.time.isBefore
+import com.github.palFinderTeam.palfinder.utils.time.isDeltaBefore
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -110,7 +111,8 @@ class MeetUpCreationViewModel @Inject constructor(
         _description.value = ""
         _tags.value = emptySet()
         _participantsId.value = listOf(profileService.getLoggedInUserID()!!)
-        _criterionAge.value = Pair(13, 66)
+        _criterionAge.value = Pair(CriterionsFragment.MIN_AGE, CriterionsFragment.MAX_AGE)
+        _marker.value = null
     }
 
     fun setStartDate(date: Calendar) {

@@ -16,19 +16,20 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.*
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
 import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.ui.login.CREATE_ACCOUNT_PROFILE
 import com.github.palFinderTeam.palfinder.utils.Gender
+import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matchers
 import org.junit.After
@@ -57,7 +58,7 @@ class UserSettingsActivityTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Before
-    fun setup() {
+    fun setup() = runTest{
         hiltRule.inject()
 
         // Set up static birthday for tests
@@ -74,14 +75,16 @@ class UserSettingsActivityTest {
             ImageInstance("null"),
             "The cato is backo...",
             bDay,
-            gender = Gender.MALE
+            gender = Gender.MALE,
+            privacySettings = PrivacySettings.PUBLIC
         )
 
         bdFormat = SimpleDateFormat("d/M/y")
 
         // Create viewModel with mock profile service
         profileService = UIMockProfileServiceModule.provideProfileService()
-
+        val uuid = profileService.create(user)
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uuid)
         viewModel = UserSettingsViewModel(profileService, imageUploader, timeService)
         //Dispatchers.setMain(UnconfinedTestDispatcher())
     }
@@ -134,6 +137,7 @@ class UserSettingsActivityTest {
             onView(withId(R.id.SettingsBioText))
                 .check(matches(withText(user.description)))
             onView(withId(R.id.SettingsBirthdayText))
+                .perform(scrollTo())
                 .check(matches(withText(bdFormat.format(user.birthday))))
         }
     }
@@ -189,6 +193,54 @@ class UserSettingsActivityTest {
     }
 
     @Test
+    fun loadSpecificUserProfileYieldsPrivacySettingsCorrectly() = runTest {
+        val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
+            .apply{
+                putExtra(CREATE_ACCOUNT_PROFILE, user)
+            }
+
+        // Male
+        val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.radioPublic))
+                .check(matches(isChecked()))
+            onView(withId(R.id.radioFriends))
+                .check(matches(not(isChecked())))
+            onView(withId(R.id.radioPrivate))
+                .check(matches(not(isChecked())))
+        }
+    }
+
+    @Test
+    fun selectingPrivacySettingsModifiesRadios() = runTest {
+        val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
+            .apply{
+                putExtra(CREATE_ACCOUNT_PROFILE, user)
+            }
+
+        val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.radioFriends))
+                .perform(scrollTo(), click())
+            onView(withId(R.id.radioPrivate))
+                .check(matches(not(isChecked())))
+            onView(withId(R.id.radioFriends))
+                .check(matches(isChecked()))
+            onView(withId(R.id.radioPublic))
+                .check(matches(not(isChecked())))
+
+            onView(withId(R.id.radioPrivate))
+                .perform(scrollTo(), click())
+            onView(withId(R.id.radioPublic))
+                .check(matches(not(isChecked())))
+            onView(withId(R.id.radioFriends))
+                .check(matches(not(isChecked())))
+            onView(withId(R.id.radioPrivate))
+                .check(matches(isChecked()))
+        }
+    }
+
+    @Test
     fun submittingCorrectDataSendsToMeetupListActivity() = runTest {
         val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
             .apply{
@@ -197,7 +249,7 @@ class UserSettingsActivityTest {
 
         ActivityScenario.launch<UserSettingsActivity>(intent)
         Intents.init()
-        onView(withId(R.id.SettingsSubmitButton)).perform(ViewActions.scrollTo(), click())
+        onView(withId(R.id.SettingsSubmitButton)).perform(scrollTo(), click())
         Intents.intended(IntentMatchers.hasComponent(MainNavActivity::class.java.name))
         Intents.release()
     }
@@ -207,11 +259,12 @@ class UserSettingsActivityTest {
         val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
         val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
 
+        Intents.init()
         scenario.use {
-            onView(withId(R.id.SettingsDeleteBDay)).perform(ViewActions.scrollTo(), click())
-            // Check if a field is still empty => stayed on same page
-            onView(withId(R.id.SettingsUsernameText)).check(matches(withText("")))
+            onView(withId(R.id.SettingsDeleteBDay)).perform(scrollTo(), click())
+            assertThat(Intents.getIntents().size, `is`(0))
         }
+        Intents.release()
     }
 
     @Test
@@ -221,7 +274,8 @@ class UserSettingsActivityTest {
         val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
 
         scenario.use {
-            onView(withId(R.id.SettingsBirthdayText)).perform(ViewActions.scrollTo(), click())
+
+            onView(withId(R.id.SettingsBirthdayText)).perform(scrollTo(), click())
             val bDay = user.birthday!!
 
             onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
@@ -245,6 +299,7 @@ class UserSettingsActivityTest {
         val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
         scenario.use {
             onView(withId(R.id.SettingsBirthdayText))
+                .perform(scrollTo())
                 .check(matches(withText(bdFormat.format(user.birthday))))
             onView(withId(R.id.SettingsDeleteBDay)).perform(click())
             onView(withId(R.id.SettingsBirthdayText))

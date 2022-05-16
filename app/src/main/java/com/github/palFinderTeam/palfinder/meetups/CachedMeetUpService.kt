@@ -80,7 +80,7 @@ class CachedMeetUpService @Inject constructor(
     /**
      * Return List of all joined Meetup ID
      */
-    fun getAllJoinedMeetupID(): List<String> {
+    override suspend fun getAllJoinedMeetupID(): List<String> {
         return if (cacheJoined.exist()) {
             cacheJoined.get().lst
         } else {

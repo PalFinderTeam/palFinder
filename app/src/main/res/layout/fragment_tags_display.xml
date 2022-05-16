@@ -50,7 +50,7 @@
             android:gravity="center"
             android:padding="9dp"
             android:src="@drawable/ic_baseline_new_label_24"
-            app:iconTint="@color/black" />
+            app:iconTint="?attr/colorSecondary" />
 
 
     </LinearLayout>

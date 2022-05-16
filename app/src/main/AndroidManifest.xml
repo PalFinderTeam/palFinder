@@ -22,6 +22,7 @@
             android:exported="false" />
         <activity
             android:name=".navigation.MainNavActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false"/>
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"

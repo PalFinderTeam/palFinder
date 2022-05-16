@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">palFinder</string>
+
+    <!-- Strings used for fragments for navigation -->
+    <string name="previous">Précédent</string>
+
+    <!-- Strings used for image loading -->
+    <string name="image_load_failed">Désolé, nous n\'avons pas pu charger l\'image que vous avez choisie.</string>
+
+    <string name="tag_element_text">tag</string>
+    <string name="add_tags">Ajouter des tags</string>
+    <string name="add_tags_click">Cliquer pour sélectionner des tags</string>
+
+
+    <string name="profile_element">nom</string>
+
+    <!-- Strings used for login activity-->
+
+    <string name="search_no_location">Veuillez ajouter une localisation.</string>
+    <string name="search_location_not_found">Localisation introuvable.</string>
+
+    <!-- Strings used for no account user-->
+    <string name="skip_connection"> Sauter la connection </string>
+    <string name="cancel">Annuler</string>
+    <string name="continu">Continuer</string>
+    <string name="login">Login</string>
+    <string name="no_account_warning">Sans vous connecter, vous ne pourrez pas rejoindre de rencontre.</string>
+    <string name="no_account_create">Vous devez être connecté pour créer une rencontre.</string>
+    <string name="no_account_groups">Vous devez être connecté pour rejoindre un groupe.</string>
+    <string name="no_account_join">Vous devez être connecté pour rejoindre une rencontre.</string>
+    <string name="no_account_profile">Vous devez être connecté pour voir votre profil.</string>
+    <string name="qr_scan_follow_account">Est-ce que vous voulez suivre ce compte?</string>
+    <string name="qr_scan_join_meetup">Est-ce que vous voulez rejoindre cette rencontre?</string>
+
+
+    <!-- Strings used for meetup creation -->
+    <string name="meetup_creation_meetup_name">Nom de la rencontre</string>
+    <string name="meetup_creation_meetup_description">Description de la rencontre</string>
+    <string name="meetup_creation_meetup_icon">Icône</string>
+    <string name="meetup_creation_meetup_start_date">Date du début</string>
+    <string name="meetup_creation_meetup_end_date">Date de la fin</string>
+    <string name="meetup_creation_meetup_duration">Durée</string>
+    <string name="meetup_creation_meetup_location">Localisation</string>
+    <string name="meetup_creation_meetup_has_participant_limit">Limite de participants?</string>
+    <string name="meetup_creation_meetup_participant_limit">Limite de participants</string>
+    <string name="meetup_creation_meetup_start_date_bt">Sélectionner date du début</string>
+    <string name="meetup_creation_meetup_end_date_bt">Sélectionner date de fin</string>
+    <string name="meetup_creation_meetup_tags">Tags</string>
+    <string name="meetup_creation_meetup_no_tags">Pas de tags sélectionnés</string>
+    <string name="meetup_creation_meetup_tags_bt">Ajouter des tags</string>
+    <string name="meetup_creation_meetup_entries">participants</string>
+    <string name="meetup_creation_meetup_done">Fini</string>
+    <string name="meetup_creation_meetup_select_location">Sélection d\'une localisation</string>
+    <string name="meetup_creation_meetup_location_not_selected">Localisation non sélectionnée</string>
+    <string name="meetup_creation_meetup_main_description">Paramétrez les informations générales de votre rencontre! Ajouter un titre, une petite description et spécifier où la rencontre va avoir lieu.</string>
+    <string name="meetup_creation_meetup_create">Créez une rencontre.</string>
+    <string name="meetup_creation_meetup_location_desc">Appuyez pour choisir le lieu parfait de la rencontre.</string>
+    <string name="meetup_creation_meetup_marker_desc">Appuyez pour choise le marqueur.</string>
+    <string name="meetup_creation_meetup_date">Quand planifiez-vous la rencontre?</string>
+    <string name="meetup_creation_meetup_date_desc">Choisissez une date et une heure de début et de fin</string>
+    <string name="meetup_creation_meetup_tags_desc">Catégorisez votre rencontre avec des tags pour que les gens la trouvent facilement.</string>
+    <string name="meetup_creation_meetup_miscellaneous">Divers</string>
+    <string name="meetup_creation_meetup_miscellaneous_desc">Pour être sûr que vous rencontre soient parfaites.</string>
+    <string name="meetup_creation_meetup_picture_desc">Appuyer sur l\'image pour changer l\'icône de la rencontre.</string>
+    <string name="meetup_creation_meetup_criteria_desc">Appuyer pour ajouter des critères à la rencontre, tels que l\'âge ou le genre.</string>
+
+    <string name="criteria">Critères</string>
+
+
+    <string name="list_sort_by_alphabetical_order">Trier par ordre alphabétique</string>
+    <string name="list_sort_by_capacity">Trier par place restante</string>
+    <string name="list_sort_by_location">Trier par distance</string>
+    <string name="list_sort_menu">Trier</string>
+    <string name="meetup_creation_missing_name_desc">Veuillez ajouter un nom, une description et une localisation de la rencontre.</string>
+    <string name="meetup_creation_missing_name_desc_title">Informations manquantes</string>
+
+
+    <!-- Strings used for meetupList -->
+    <string name="show_all">Toutes les rencontres</string>
+    <string name="only_participating">pal prenant part</string>
+    <string name="only_creators">Créé par pal</string>
+    <string name="only_joined">rejoins</string>
+
+    <!-- Strings used for meetup view -->
+    <string name="meetup_view_meetup_start_at">Débute à</string>
+    <string name="meetup_view_meetup_end_at">Fini à</string>
+    <string name="meetup_view_creator">Créé par @%1$s</string>
+    <string name="meetup_view_join">Rejoindre</string>
+    <string name="meetup_view_leave">Quitter</string>
+    <string name="meetup_view_joined">Vous avez rejoins la rencontre</string>
+    <string name="meetup_view_left">Vous avez quitté la rencontre</string>
+    <string name="meetup_view_meetup">Rencontre</string>
+    <string name="meetup_view_created_by">Organisée par \@%s</string>
+    <string name="meetup_view_time_date">Dates et heures</string>
+    <string name="meetup_view_other_info">Autres informations</string>
+    <string name="meetup_view_people">Personnes</string>
+    <string name="meetup_view_participation_unlimited">%d</string>
+    <string name="meetup_view_participation_limited">%d (sur %d)</string>
+    <string name="meetup_view_age_min">13</string>
+    <string name="meetup_view_age_max">66</string>
+    <string name="meetup_view_age_max_plus">66+</string>
+    <string name="meetup_view_age_text">Age</string>
+    <string name="meetup_view_age">%s-%s ans</string>
+    <string name="meetup_view_gender_title">Genre</string>
+
+
+
+    <string name="ok">OK</string>
+
+    <string name="date_long_format">EEEE, MMMM d, yyyy \'à\' h:mm a</string>
+
+    <string name="placeholder_username">\@username</string>
+    <string name="placeholder_date">yyyy/mm/dd</string>
+
+    <string name="desc_name">— A propos de moi</string>
+    <string name="no_desc">Pas de biographie indiquée…</string>
+    <string name="private_name">Profil privé</string>
+    <string name="private_desc">Le profil de cet utilisateur est privé.</string>
+
+
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Mot de passe</string>
+    <string name="action_sign_in">Se connecter ou créer un compte</string>
+    <string name="action_sign_in_short">Se connnecter</string>
+    <string name="welcome">"Bienvenue !"</string>
+    <string name="invalid_username">Nom d\'utilisateur invalide</string>
+    <string name="invalid_password">Le mot de passe doit faire au moins 5 caractères</string>
+    <string name="login_failed">"Connection échouée"</string>
+    <string name="limit_people">Limiter la participation à</string>
+    <string name="DB_error_msg">Problème de connection à la base de donnée</string>
+
+    <string name="criterions_title">Critères de la rencontre</string>
+    <string name="criterions_age_title">Sélection de l\'age</string>
+    <string name="criterions_age_desc">Si vous souhaitez continuer avec ces paramètres, uniquement les personnes ayant entré leur anniversaires pourront rejoindre la rencontre</string>
+    <string name="criterions_age_min">13</string>
+    <string name="criterions_age_max">66</string>
+    <string name="criterions_age_max_plus">66+</string>
+    <string name="criterion_select">Sélection des critères</string>
+
+    <string name="radio_privacy">Paramètre de confidentialité</string>
+    <string name="radio_private">Privé</string>
+    <string name="radio_public">Publique</string>
+    <string name="radio_friends">Amis uniquement</string>
+
+    <string name="follow">Suivre</string>
+    <string name="unfollow">Ne plus suivre</string>
+    <string name="following_nb">%d abonné(s)</string>
+    <string name="followers_nb">%d abonemment(s)</string>
+
+    <string name="criterions_gender_title">Sélection du genre</string>
+    <string name="radio_male">Homme</string>
+    <string name="radio_female">Femme</string>
+    <string name="radio_male_and_female">Homme et Femme</string>
+    <string name="radio_other">Autre</string>
+    <string name="criterion_confirm">Confirmer les critères</string>
+
+
+    <string name="pretty_location_too_small">Ici</string>
+    <string name="pretty_location_m">%1$s m</string>
+    <string name="pretty_location_km">%1$s km</string>
+
+    <string name="nav_bar_create">Créer</string>
+    <string name="nav_bar_find">Trouver</string>
+    <string name="nav_bar_list">Liste</string>
+    <string name="nav_bar_group">Groupes</string>
+
+    <string name="createAccount">Créer un compte</string>
+
+    <!-- User settings -->
+    <string name="userSettingsButtonSave">Sauvegarder</string>
+    <string name="userSettingsButtonCreate">Créer un compte!</string>
+    <string name="userSettingsPfpHint">Taper sur votre image de profil pour la modifier</string>
+    <string name="userSettingsSurname">Nom</string>
+    <string name="userSettingsName">Prénom</string>
+    <string name="userSettingsUsername">Nom d\'utilisateur</string>
+    <string name="userSettingsBio">A propos de vous</string>
+    <string name="read_more">Lire plus</string>
+    <string name="userSettingsBirthday">Anniversaire (optionnel)</string>
+    <string name="working_out_tag">Entrainement</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Votre signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Synchroniser les emails périodiquement</string>
+    <string name="attachment_title">Télécharger les pièces jointes automatiquement</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Seulement télécharger les pièces jointes manuellement</string>
+
+    <string name="SettingsBdayHint">Vous ne pourrez pas rejoindre les rencontres nécessitant un âge minimum.</string>
+    <string name="userSettings">Lire plus</string>
+
+    <string name="userSettingsBdayPattern">d/M/y</string>
+    <string name="userSettingsSaveSuccess">Succès de la sauvegarde des changements </string>
+    <string name="userSettingsSaveFail">Une erreur s\'est produite lors de la sauvegarde. Veuillez ressayer</string>
+    <string name="userSettingsSaveCreate">Compte créé! Bienvenue sur PalFinder :)</string>
+
+    <string name="map">carte</string>
+    <string name="list">liste</string>
+    <string name="show_profiles">montrer les profiles</string>
+
+    <string name="theme">thème</string>
+
+    <string name="hint_username">nom d\'utilisateur</string>
+    <string name="hint_password">mot de passe</string>
+    <string name="select_icon">Sélection de l\'icône</string>
+    <string name="select_marker">Sélection du marqueur</string>
+    <string name="scanned">Scanné</string>
+    <string name="no_camera_permission_message">Annulé à cause des permissions de la caméra</string>
+    <string name="cancelled_scan">Scan annulé</string>
+
+    <string name="title_attendees_list">Participants</string>
+    <string name="search_user_hint">Chercher un utilisateur</string>
+  
+    <string name="meetup_creation_icon_title">Appyuer pour choisir le repère</string>
+    <string name="meetup_creation_icon_hint">Changez l\'icone de la rencontre directement sur la carte!</string>
+
+    <string name="meetup_with_blocked">Vous ne pouvez pas rejoindre cette rencontre car vous avez bloqué un des membres.</string>
+    <string name="block_user">Bloquer l\'utilisateur</string>
+    <string name="unblock_user">Débloquer l\'utilisateur</string>
+
+    <string name="following_content">%1$s vous suis!</string>
+    <string name="following_title">Nouvel abonné!</string>
+
+    <string name="meetup_start_title">%1$s commence!</string>
+
+    <string name="following_handle_title">Abonnements</string>
+    <string name="followers_handle_title">Abonnés</string>
+  
+</resources>

@@ -1,10 +1,12 @@
 package com.github.palFinderTeam.palfinder.map
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,13 +42,16 @@ import com.maltaisn.icondialog.pack.IconPack
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.IOException
-
+import kotlin.math.ln
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
     SearchView.OnQueryTextListener {
 
+    private val BASE_ZOOM = 7.0
+    private val MAX_ZOOM = 12.0
+    private val GMAP_PIXEL_RATIO = 500
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var selectLocationButton: FloatingActionButton
     private lateinit var selectMapTypeButton: FloatingActionButton
@@ -181,7 +186,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         mapReady = true
 
         viewModel.searchLocation.value?.let {
-            map.moveCamera(CameraUpdateFactory.newLatLng(it.toLatLng()))
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(it.toLatLng(), getZoomLevel(viewModel.searchRadius.value).toFloat()))
         }
 
         when (context) {
@@ -371,5 +376,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 map.animateCamera(target)
             }
         }
+    }
+
+    private fun getZoomLevel(radius: Double?): Double{
+        val result = if(radius != null){
+            val scale = radius/GMAP_PIXEL_RATIO
+            (16- ln(scale))/ ln(2.0)
+        }else BASE_ZOOM
+        return Math.min(result, MAX_ZOOM)
     }
 }

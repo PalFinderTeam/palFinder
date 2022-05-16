@@ -37,7 +37,7 @@
                 android:layout_marginBottom="76dp">
 
                 <Button
-                    android:id="@+id/button_follow_profile"
+                    android:id="@+id/button_join_meetup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -90,7 +90,7 @@
         android:clickable="true"
         android:focusable="true"
         android:onClick="onChat"
-        app:backgroundTint="@color/theme_primary_default"
+        app:backgroundTint="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_baseline_message_24"
@@ -107,7 +107,7 @@
         android:focusable="true"
 
         android:onClick="onEdit"
-        app:backgroundTint="@color/theme_primary_default"
+        app:backgroundTint="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_baseline_edit_24"

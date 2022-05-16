@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/fredoka_normal"
-                android:text="Meetup"
+                android:text="@string/meetup_view_meetup"
                 android:textSize="16sp" />
 
             <TextView
@@ -43,7 +43,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="3dp"
                 android:fontFamily="@font/fredoka_bolder"
-                android:text="This is a very long event name"
+                android:text="@string/meetup_view_event_name"
                 android:textSize="34sp" />
 
             <TextView
@@ -53,8 +53,8 @@
                 android:fontFamily="@font/fredoka_bold"
                 android:onClick="onChat"
                 android:paddingBottom="18dp"
-                android:text="Organized by \@%s"
-                android:textColor="@color/theme_primary"
+                android:textColor="?attr/colorSecondary"
+                android:text="@string/meetup_view_created_by"
                 android:textSize="18sp" />
 
             <TextView
@@ -73,7 +73,7 @@
                 android:drawablePadding="5dp"
                 android:fontFamily="@font/fredoka_bold"
                 android:gravity="center|left"
-                android:text="Time and dates"
+                android:text="@string/meetup_view_time_date"
                 android:textSize="18sp"
                 app:drawableStartCompat="@drawable/ic_baseline_calendar_month_24" />
 
@@ -99,7 +99,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/fredoka_bold"
-                    android:text="10th of April 2022 at 14:00"
+                    android:text="@string/meetup_view_start_date"
                     android:textSize="18sp" />
 
             </LinearLayout>
@@ -127,7 +127,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/fredoka_bold"
-                    android:text="12th of April 2022 at 14:00"
+                    android:text="@string/meetup_view_end_date"
                     android:textSize="18sp" />
 
             </LinearLayout>
@@ -140,7 +140,7 @@
                 android:drawablePadding="5dp"
                 android:fontFamily="@font/fredoka_bold"
                 android:gravity="center|left"
-                android:text="Other info"
+                android:text="@string/meetup_view_other_info"
                 android:textSize="18sp"
                 app:drawableStartCompat="@drawable/ic_baseline_person_24" />
 
@@ -157,7 +157,7 @@
                     android:layout_marginEnd="10dp"
                     android:alpha="0.5"
                     android:fontFamily="@font/fredoka_normal"
-                    android:text="People"
+                    android:text="@string/meetup_view_people"
                     android:textAllCaps="true"
                     android:textSize="14sp" />
 
@@ -184,7 +184,7 @@
                     android:layout_marginEnd="10dp"
                     android:alpha="0.5"
                     android:fontFamily="@font/fredoka_normal"
-                    android:text="Age"
+                    android:text="@string/meetup_view_age_text"
                     android:textAllCaps="true"
                     android:textSize="14sp" />
 

@@ -31,6 +31,9 @@ import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.pickProfileImage
+import com.github.palFinderTeam.palfinder.utils.time.askTime
+import com.github.palFinderTeam.palfinder.utils.time.toSimpleDate
+import com.github.palFinderTeam.palfinder.utils.time.toSimpleTime
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.icondialog.IconDialog
@@ -67,8 +70,8 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
     private lateinit var limitEditText: EditText
     private lateinit var nameEditText: EditText
     private lateinit var descriptionEditText: EditText
-    private lateinit var changeIconButton: LinearLayout
-    private lateinit var changeMarkerButton: Button
+    private lateinit var changeIconButton: LinearLayout // Button but changed for design purposes
+    private lateinit var changeMarkerButton: LinearLayout // Button but changed for design purposes
     private lateinit var icon: ImageView
     private lateinit var iconDialog: IconDialog
     private lateinit var startDateField: TextView
@@ -114,7 +117,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
             removeNavigationResult<Location>(LOCATION_RESULT)
         }
 
-        //allows user to set a custom image for his meetup
+        // Allows user to set a custom image for his meetup
         iconDialog = childFragmentManager.findFragmentByTag(ICON_DIALOG_TAG) as IconDialog?
             ?: IconDialog.newInstance(IconDialogSettings())
     }
@@ -128,7 +131,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         nameEditText = rootView.findViewById(R.id.et_EventName)
         descriptionEditText = rootView.findViewById(R.id.et_Description)
         changeIconButton = rootView.findViewById(R.id.bt_SelectIcon)
-        changeMarkerButton = rootView.findViewById(R.id.bt_markerType)
+        changeMarkerButton = rootView.findViewById(R.id.linearLayout_marker)
         icon = rootView.findViewById(R.id.iv_Icon)
         startDateField = rootView.findViewById(R.id.tv_StartDate)
         endDateField = rootView.findViewById(R.id.tv_EndDate)

@@ -16,7 +16,7 @@ enum class Achievement(val string: String, val imageID : Int) {
     BEAUTY_AND_THE_PAL("the beauty and the pal", R.drawable.ic_baseline_alternate_email_24), //obtained when you are followed by 5 pals
     CRYPTOPAL("cryptoPal", R.drawable.ic_baseline_cake_24), //obtained when you are followed by 10 pals
     MASTER_OF_CATS("master of cats", R.drawable.ic_baseline_people_alt_24), //obtained when you are followed by 30 pals
-    VERIFIED("verfied user", R.drawable.ic_baseline_settings_24), //obtained when you are followed by 100 pals
+    VERIFIED("verified user", R.drawable.ic_checkmark), //obtained when you are followed by 100 pals
 
     NON_SPEC("what are you searching there ?", R.drawable.not_found); //used when the Achievement is not in this list
     companion object {

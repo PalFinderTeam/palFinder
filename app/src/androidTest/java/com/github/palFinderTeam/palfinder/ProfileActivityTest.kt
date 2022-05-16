@@ -3,23 +3,20 @@ package com.github.palFinderTeam.palfinder
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentFactory
 import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
-import com.github.palFinderTeam.palfinder.meetups.activities.RecyclerViewMatcher
 import com.github.palFinderTeam.palfinder.profile.*
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
+import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
-import com.github.palFinderTeam.palfinder.utils.launchFragmentInHiltContainer
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,6 +33,8 @@ class ProfileActivityTest {
     private lateinit var userCat: ProfileUser
     private lateinit var userLongBio: ProfileUser
     private lateinit var userNoBio: ProfileUser
+    private lateinit var userPrivate: ProfileUser
+    private lateinit var someUser: ProfileUser
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -83,6 +82,32 @@ class ProfileActivityTest {
             ImageInstance(""),
             ""
         )
+
+        userPrivate = ProfileUser(
+            "42",
+            "somePrivateUser",
+            "private",
+            "user",
+            Calendar.getInstance(),
+            ImageInstance(""),
+            "I like my private life",
+            privacySettings = PrivacySettings.PRIVATE
+        )
+
+        someUser = ProfileUser(
+            "1",
+            "The",
+            "only",
+            "one",
+            Calendar.getInstance(),
+            ImageInstance("")
+            )
+    }
+
+    @Before
+    fun setBaseUser() = runTest{
+        val id = profileService.create(someUser)
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(id)
     }
 
     @After
@@ -200,6 +225,26 @@ class ProfileActivityTest {
         }
     }
 
+    @Test
+    fun testPrivateUserProfile() = runTest{
+        val uuid = profileService.create(userPrivate)
+
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, uuid) }
+
+        // Launch activity
+        val scenario = ActivityScenario.launch<ProfileActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.userProfileDescription)).check(
+                matches(
+                    withText(R.string.private_desc)
+                )
+            )
+        }
+    }
+
+
     private fun getResourceString(id: Int): String? {
         val targetContext: Context = InstrumentationRegistry.getTargetContext()
         return targetContext.getResources().getString(id)
@@ -225,16 +270,36 @@ class ProfileActivityTest {
             assert(!profileService.fetch(userid)!!.following.contains(id2))
             assert(!profileService.fetch(id2!!)!!.followed.contains(userid))
             onView(
-                withId(R.id.button_follow_profile)
+                withId(R.id.button_join_meetup)
             ).perform(ViewActions.click())
             assert(profileService.fetch(userid)!!.following.contains(id2))
             assert(profileService.fetch(id2)!!.followed.contains(userid))
             onView(
-                withId(R.id.button_follow_profile)
+                withId(R.id.button_join_meetup)
             ).perform(ViewActions.click())
             assert(!profileService.fetch(userid)!!.following.contains(id2))
             assert(!profileService.fetch(id2)!!.followed.contains(userid))
         }
     }
-}
 
+    @Test
+    fun canBlockUnBlock() = runTest {
+        val userid = profileService.create(userLouca)
+        val id2 = profileService.create(userCat)
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userid)
+
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, id2) }
+        val scenario =
+            ActivityScenario.launch<ProfileActivity>(intent)
+        scenario!!.use {
+
+            assert(!profileService.fetch(userid!!)!!.blockedUsers.contains(id2))
+            onView(withId(R.id.blackList)).perform(scrollTo(), click())
+            assert(profileService.fetch(userid!!)!!.blockedUsers.contains(id2))
+            onView(withId(R.id.blackList)).perform(scrollTo(), click())
+            assert(!profileService.fetch(userid!!)!!.blockedUsers.contains(id2))
+        }
+    }
+}

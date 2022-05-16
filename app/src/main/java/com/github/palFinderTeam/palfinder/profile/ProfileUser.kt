@@ -3,7 +3,8 @@ package com.github.palFinderTeam.palfinder.profile
 import android.icu.util.Calendar
 import android.util.Log
 import com.github.palFinderTeam.palfinder.utils.Gender
-import com.github.palFinderTeam.palfinder.utils.PrettyDate
+import com.github.palFinderTeam.palfinder.utils.PrivacySettings
+import com.github.palFinderTeam.palfinder.utils.time.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.generics.FirebaseObject
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.DocumentSnapshot
@@ -12,6 +13,7 @@ import java.time.LocalDate
 import java.time.Period
 
 const val USER_ID = "com.github.palFinderTeam.palFinder.USER_ID"
+
 /**
  * A class to hold the data for a user to be displayed on the profile activity
  * Username as unique identifier
@@ -29,7 +31,9 @@ data class ProfileUser(
     val gender: Gender? = Gender.NON_SPEC,
     val following: List<String> = emptyList(),
     val followed: List<String> = emptyList(),
-    private val achievements: List<String> = emptyList()
+    val blockedUsers: List<String> = emptyList(),
+    private val achievements: List<String> = emptyList(),
+    val privacySettings: PrivacySettings? = PrivacySettings.PUBLIC,
 ) : Serializable, FirebaseObject {
 
     companion object {
@@ -45,7 +49,9 @@ data class ProfileUser(
         const val GENDER = "gender"
         const val FOLLOWING_PROFILES = "following"
         const val FOLLOWED_BY = "followed"
+        const val BLOCKED_USERS = "blocked_users"
         const val ACHIEVEMENTS_OBTAINED = "achievements"
+        const val PRIVACY_SETTINGS_KEY = "privacy_settings"
 
         /**
          * Provide a way to convert a Firestore query result, in a ProfileUser.
@@ -75,11 +81,29 @@ data class ProfileUser(
                 }
                 val following = (get(FOLLOWING_PROFILES) as? List<String>).orEmpty()
                 val followed = (get(FOLLOWED_BY) as? List<String>).orEmpty()
-
+                val blockedUsers = (get(BLOCKED_USERS) as? List<String>).orEmpty()
                 val achievements = (get(ACHIEVEMENTS_OBTAINED) as? List<String>).orEmpty()
-                ProfileUser(uuid, username, name, surname,
-                    joinDateCal, ImageInstance(picture), description,
-                    birthdayCal, joinedMeetUp, gender, following, followed, achievements)
+
+                val privacySettings = PrivacySettings.from(getString(PRIVACY_SETTINGS_KEY))
+
+
+                ProfileUser(
+                    uuid,
+                    username,
+                    name,
+                    surname,
+                    joinDateCal,
+                    ImageInstance(picture),
+                    description,
+                    birthdayCal,
+                    joinedMeetUp,
+                    gender,
+                    following,
+                    followed,
+                    blockedUsers,
+                    achievements,
+                    privacySettings
+                )
 
             } catch (e: Exception) {
                 Log.e("ProfileUser", "Error deserializing user", e)
@@ -104,7 +128,9 @@ data class ProfileUser(
             GENDER to gender?.stringGender,
             FOLLOWING_PROFILES to following,
             FOLLOWED_BY to followed,
-            ACHIEVEMENTS_OBTAINED to achievements
+            BLOCKED_USERS to blockedUsers,
+            ACHIEVEMENTS_OBTAINED to achievements,
+            PRIVACY_SETTINGS_KEY to privacySettings
         )
     }
 
@@ -141,12 +167,25 @@ data class ProfileUser(
         return following.contains(profileId)
     }
 
+    fun canProfileBeSeenBy(profileId: String): Boolean{
+        return when (privacySettings) {
+            PrivacySettings.PRIVATE -> false
+            PrivacySettings.PUBLIC -> true
+            PrivacySettings.FRIENDS -> followed.contains(profileId)
+            else -> false
+        }
+    }
+
     fun prettyJoinTime(): String {
         val prettyDate = PrettyDate()
         return String.format(JOIN_FORMAT, prettyDate.timeDiff(joinDate))
     }
 
     fun achievements(): List<Achievement> {
-        return achievements.reversed().map {Achievement.from(it) }
+        return achievements.reversed().map { Achievement.from(it) }
+    }
+
+    fun canBlock(uuid: String): Boolean {
+        return !blockedUsers.contains(uuid)
     }
 }

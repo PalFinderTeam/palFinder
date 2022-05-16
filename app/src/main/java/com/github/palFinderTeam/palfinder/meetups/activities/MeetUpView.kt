@@ -1,7 +1,9 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -45,8 +47,18 @@ class MeetUpView : AppCompatActivity() {
     lateinit var profileService: ProfileService
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
+        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
+        setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_view_new)
+        var sharedPreferenceChangeListener =
+            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                if (key == "theme") {
+                    recreate()
+                }
+            }
+        sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
 
         val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
         viewModel.loadMeetUp(meetupId)
@@ -84,7 +96,7 @@ class MeetUpView : AppCompatActivity() {
             this.isVisible = isCreator
             this.isClickable = isCreator
         }
-        findViewById<Button>(R.id.button_follow_profile).apply {
+        findViewById<Button>(R.id.button_join_meetup).apply {
             this.isEnabled = !isCreator
             this.isClickable = !isCreator
             this.text = if (hasJoined) getString(R.string.meetup_view_leave) else getString(R.string.meetup_view_join)
