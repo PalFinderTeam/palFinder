@@ -31,9 +31,9 @@ enum class Achievement(val aName: String, val imageID : Int, val desc: String = 
  * Milestone numbers for achievement levels
  */
 object AchievementMilestones {
-    const val MILESTONE1 = 3 //TODO: Follow tests fail if milestone is set to 1 (unlocked automatically)
-    const val MILESTONE2 = 8
-    const val MILESTONE3 = 15
+    const val MILESTONE1 = 1
+    const val MILESTONE2 = 5
+    const val MILESTONE3 = 10
     const val MILESTONE4 = 25
 
     /**
