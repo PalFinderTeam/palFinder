@@ -446,9 +446,9 @@ class MeetupViewTest {
                 userid,
                 user.copy(
                     achievements = listOf(
-                        Achievement.VERIFIED.string,
-                        Achievement.CRYPTOPAL.string,
-                        Achievement.PAL_MINER.string
+                        Achievement.VERIFIED.aName,
+                        Achievement.CRYPTO_PAL.aName,
+                        Achievement.PAL_MINER.aName
                     )
                 )
             )
