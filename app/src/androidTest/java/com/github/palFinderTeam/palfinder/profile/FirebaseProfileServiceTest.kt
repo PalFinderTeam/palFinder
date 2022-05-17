@@ -235,28 +235,28 @@ class FirebaseProfileServiceTest {
 //        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.achievements().isEmpty())
 //        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.achievements().isEmpty())
 
-        var list = List(followCountAdapt(AchievementMilestones.MILESTONE1)) { " " }
+        var list = List(AchievementMilestones.MILESTONE1 - 1) { " " }
         firebaseProfileService.edit(id, profile.copy(following = list))
         firebaseProfileService.edit(id2, profile2.copy(followed = list))
         firebaseProfileService.followUser(firebaseProfileService.fetch(id)!!, id2)
         assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.achievements().contains(Achievement.PAL_FINDER))
         assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.achievements().contains(Achievement.BEAUTY_AND_THE_PAL))
 
-        list = List(followCountAdapt(AchievementMilestones.MILESTONE2)){" "}
+        list = List(AchievementMilestones.MILESTONE2 - 1){" "}
         firebaseProfileService.edit(id, profile.copy(following = list))
         firebaseProfileService.edit(id2, profile2.copy(followed = list))
         firebaseProfileService.followUser(firebaseProfileService.fetch(id)!!, id2)
         assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.achievements().contains(Achievement.PAL_MINER))
         assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.achievements().contains(Achievement.CRYPTO_PAL))
 
-        list = List(followCountAdapt(AchievementMilestones.MILESTONE3)){" "}
+        list = List(AchievementMilestones.MILESTONE3 - 1){" "}
         firebaseProfileService.edit(id, profile.copy(following = list))
         firebaseProfileService.edit(id2, profile2.copy(followed = list))
         firebaseProfileService.followUser(firebaseProfileService.fetch(id)!!, id2)
         assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.achievements().contains(Achievement.PAL_TRACKER))
         assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.achievements().contains(Achievement.MASTER_OF_CATS))
 
-        list = List(followCountAdapt(AchievementMilestones.MILESTONE4)){" "}
+        list = List(AchievementMilestones.MILESTONE4- 1){" "}
         firebaseProfileService.edit(id, profile.copy(following = list))
         firebaseProfileService.edit(id2, profile2.copy(followed = list))
         firebaseProfileService.followUser(firebaseProfileService.fetch(id)!!, id2)
