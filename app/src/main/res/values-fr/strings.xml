@@ -232,5 +232,6 @@
     <string name="following_handle_title">Abonnements</string>
     <string name="followers_handle_title">Abonnés</string>
     <string name="profile_last_attended">Dernières participations</string>
+    <string name="tags_no_tag">Pas d\'étiquettes</string>
 
 </resources>
