@@ -104,7 +104,7 @@ class ProfileActivity : AppCompatActivity() {
      * binds the follow/unfollow button
      */
     private fun bindFollow(view: View?, profileViewed: ProfileUser) {
-        val followButton = findViewById<Button>(R.id.button_join_meetup)
+        val followButton = findViewById<Button>(R.id.button_follow_profile)
         val blockButton = findViewById<Button>(R.id.blackList)
         viewModel.logged_profile.observe(this) {
             when(it) {
