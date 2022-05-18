@@ -1,11 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout3"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <SearchView
+            android:id="@+id/search_list"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+        </SearchView>
+
+        <Button
+            android:id="@+id/sort_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:text="@string/list_sort_menu" />
+
+        <ImageButton
+            android:id="@+id/search_place"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="2dp"
+            android:src="@android:drawable/ic_dialog_map"
+            android:backgroundTint="?attr/colorPrimaryVariant" />
+    </LinearLayout>
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/distance_slider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:valueFrom="1.0"
+        android:valueTo="500.0">
+
+    </com.google.android.material.slider.Slider>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/list_select_tag"
@@ -14,40 +53,13 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="8dp"
         android:paddingVertical="4dp"
-        app:layout_constraintBottom_toTopOf="@id/distance_slider"
-        app:layout_constraintTop_toBottomOf="@id/sort_list"
-        tools:layout_editor_absoluteX="205dp" />
-
-    <Button
-        android:id="@+id/sort_list"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        android:text="@string/list_sort_menu"
-        app:layout_constraintBottom_toTopOf="@id/list_select_tag"
-        app:layout_constraintEnd_toStartOf="@+id/search_place"
-        app:layout_constraintLeft_toRightOf="@id/search_list"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
-        android:id="@+id/search_place"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
-        android:backgroundTint="?attr/colorPrimaryVariant"
-        app:layout_constraintBottom_toTopOf="@id/list_select_tag"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/search_list"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_dialog_map" />
+        tools:layout="@layout/fragment_tags_display" />
 
     <RadioGroup
         android:id="@+id/follower_options_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/distance_slider"
-        tools:layout_editor_absoluteX="178dp" >
+        android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/button_all"
@@ -78,41 +90,14 @@
             android:text="@string/only_joined" />
 
     </RadioGroup>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/meetup_list_recycler"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/follower_options_group">
+        android:layout_height="match_parent"
+        android:padding="8dp">
 
     </androidx.recyclerview.widget.RecyclerView>
 
-    <com.google.android.material.slider.Slider
-        android:id="@+id/distance_slider"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:valueFrom="1.0"
-        android:valueTo="500.0"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/list_select_tag">
 
-    </com.google.android.material.slider.Slider>
-
-    <SearchView
-        android:id="@+id/search_list"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/list_select_tag"
-        app:layout_constraintEnd_toStartOf="@+id/sort_list"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-    </SearchView>
-
-
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

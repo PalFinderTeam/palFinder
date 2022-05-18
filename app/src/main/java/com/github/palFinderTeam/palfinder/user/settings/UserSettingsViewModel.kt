@@ -244,19 +244,20 @@ class UserSettingsViewModel @Inject constructor(
                     _pfp.value = newPath!!
                 }
             }
-            val newUser = ProfileUser(
-                uuid = loggedUID,
-                username = username.value!!,
-                name = name.value!!,
-                surname = surname.value!!,
-                joinDate = _joinDate,
-                pfp = ImageInstance(pfp.value!!),
-                description = userBio.value!!,
-                birthday = birthday.value,
-                gender = gender.value,
-                privacySettings = privacySettings.value,
-            )
-            if (_isNewUser) {
+            val oldUser = profileService.fetch(loggedUID)
+            if (_isNewUser || oldUser == null) {
+                val newUser = ProfileUser(
+                    uuid = loggedUID,
+                    username = username.value!!,
+                    name = name.value!!,
+                    surname = surname.value!!,
+                    joinDate = _joinDate,
+                    pfp = ImageInstance(pfp.value!!),
+                    description = userBio.value!!,
+                    birthday = birthday.value,
+                    gender = gender.value,
+                    privacySettings = privacySettings.value,
+                )
 
                 // Notify result
                 if (profileService.create(newUser) != null) {
@@ -265,12 +266,19 @@ class UserSettingsViewModel @Inject constructor(
                     _updateStatus.postValue(UPDATE_ERROR)
                 }
             } else {
-                val oldUser = profileService.fetch(loggedUID)
 
-                // If user not found for some reason, fall back to adding new join date
-                val joinDate = oldUser?.joinDate ?: timeService.now()
+                val editedUser  = oldUser.copy(
+                    username = username.value!!,
+                    name = name.value!!,
+                    surname = surname.value!!,
+                    pfp = ImageInstance(pfp.value!!),
+                    description = userBio.value!!,
+                    birthday = birthday.value,
+                    gender = gender.value,
+                    privacySettings = privacySettings.value,
+                )
                 // Notify result
-                if (profileService.edit(loggedUID, newUser.copy(joinDate = joinDate)) != null) {
+                if (profileService.edit(loggedUID, editedUser) != null) {
                     _updateStatus.postValue(UPDATE_SUCCESS)
                 } else {
                     _updateStatus.postValue(UPDATE_ERROR)
