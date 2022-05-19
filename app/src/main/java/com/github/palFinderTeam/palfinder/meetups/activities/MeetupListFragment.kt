@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -52,8 +55,10 @@ class MeetupListFragment : Fragment() {
     private lateinit var selectStartTime: TextView
     private lateinit var selectEndTime: TextView
 
-    private lateinit var startTime: Calendar
-    private lateinit var endTime: Calendar
+    private lateinit var startTime: MutableLiveData<Calendar>
+    private lateinit var endTime: MutableLiveData<Calendar>
+    private var dateFormat = SimpleDateFormat()
+
 
     //viewModel to fetch the meetups and handle the localisation
     val viewModel: MapListViewModel by activityViewModels()
@@ -80,10 +85,10 @@ class MeetupListFragment : Fragment() {
         val searchField = view.findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
 
-        startTime = Calendar.getInstance()
+        startTime = MutableLiveData(Calendar.getInstance())
 
-        endTime = Calendar.getInstance()
-        context?.resources?.let { endTime.add(Calendar.DAY_OF_MONTH, it.getInteger(R.integer.base_day_interval)) }
+        endTime = MutableLiveData(Calendar.getInstance())
+        context?.resources?.let { endTime.value?.add(Calendar.DAY_OF_MONTH, it.getInteger(R.integer.base_day_interval)) }
 
         selectStartTime = view.findViewById(R.id.startDateFilter)
         selectEndTime = view.findViewById(R.id.endDateFilter)
@@ -95,6 +100,14 @@ class MeetupListFragment : Fragment() {
         selectEndTime.setOnClickListener {
             onEndTimeSelect()
         }
+
+        startTime.observe(viewLifecycleOwner) { newDate ->
+            view.findViewById<TextView>(R.id.startDateFilter).apply { this.text = dateFormat.format(newDate) }
+        }
+        endTime.observe(viewLifecycleOwner) { newDate ->
+            view.findViewById<TextView>(R.id.endDateFilter).apply { this.text = dateFormat.format(newDate) }
+        }
+
 
 
         radiusSlider = view.findViewById(R.id.distance_slider)
@@ -203,7 +216,7 @@ class MeetupListFragment : Fragment() {
         tags: Set<Category>?
     ) {
         currentDataSet.addAll(meetups.filter {
-            (tags == null || it.tags.containsAll(tags)) and filterDate(it)
+            (tags == null || it.tags.containsAll(tags))
         })
     }
 
@@ -278,14 +291,18 @@ class MeetupListFragment : Fragment() {
     private fun onStartTimeSelect() {
         askTime(
             childFragmentManager,
-            startTime.toSimpleDate(),
-            startTime.toSimpleTime(),
+            startTime.value?.toSimpleDate(),
+            startTime.value?.toSimpleTime(),
             minDate = Calendar.getInstance()
         ).thenAccept {
-            val interval = endTime.timeInMillis - startTime.timeInMillis
-            startTime = it.clone() as Calendar
-            endTime = it.clone() as Calendar
-            endTime.timeInMillis = it.timeInMillis + interval
+            val interval = startTime.value?.timeInMillis?.let { it1 ->
+                endTime.value?.timeInMillis?.minus(
+                    it1
+                )
+            }
+            startTime.value = it
+            endTime.value?.timeInMillis = it.timeInMillis + interval!!
+            endTime.value = endTime.value
         }
     }
 
@@ -293,11 +310,11 @@ class MeetupListFragment : Fragment() {
     private fun onEndTimeSelect() {
         askTime(
             childFragmentManager,
-            endTime.toSimpleDate(),
-            endTime.toSimpleTime(),
-            minDate = startTime
+            endTime.value?.toSimpleDate(),
+            endTime.value?.toSimpleTime(),
+            minDate = startTime.value
         ).thenAccept {
-            endTime = it.clone() as Calendar
+            endTime.value = it
         }
     }
 
