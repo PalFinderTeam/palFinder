@@ -1,9 +1,11 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +32,7 @@ class ProfileAdapter(
         val fullName: TextView = view.findViewById(R.id.fullName)
         val pic: ImageView = view.findViewById(R.id.userPic)
         val followButton: Button = view.findViewById(R.id.followButton)
-        val AchPic: ImageView = view.findViewById(R.id.AchPic1)
+        val badgePic: ImageView = view.findViewById(R.id.BadgePic)
 
         init {
             view.setOnClickListener(this)
@@ -106,11 +108,11 @@ class ProfileAdapter(
      * fill the 3 image placeholder with achievements pictures
      */
     private fun bindImages(holder: ProfileAdapter.ViewHolder, position: Int) {
-        val achievements = currentDataSet[position].achievements()
+        val achievements = currentDataSet[position].badges().sorted()
         if (achievements.isEmpty()) {
-            holder.AchPic.visibility = INVISIBLE
-        } else{
-            holder.AchPic.setImageResource(achievements[0].imageID)
+            holder.badgePic.visibility = INVISIBLE
+        } else {
+            holder.badgePic.setImageResource(achievements[0].imageID)
         }
     }
 

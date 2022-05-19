@@ -87,7 +87,8 @@ class ProfileActivityTest {
             "Bio",
             Calendar.getInstance(),
             ImageInstance(""),
-            ""
+            "",
+            achievements = Achievement.values().map{it.aName}
         )
 
         userPrivate = ProfileUser(

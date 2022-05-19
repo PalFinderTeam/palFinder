@@ -48,7 +48,7 @@
                     android:textSize="16dp" />
 
                 <ImageView
-                    android:id="@+id/AchPic1"
+                    android:id="@+id/BadgePic"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_gravity="center"

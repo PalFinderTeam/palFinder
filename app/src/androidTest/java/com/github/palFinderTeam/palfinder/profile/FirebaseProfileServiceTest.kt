@@ -232,8 +232,6 @@ class FirebaseProfileServiceTest {
         assert(db.collection(PROFILE_COLL).document(id!!).get().await().toProfileUser()!!.achievements().isEmpty())
 
         firebaseProfileService.followUser(firebaseProfileService.fetch(id)!!, id2!!)
-//        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.achievements().isEmpty())
-//        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.achievements().isEmpty())
 
         var list = List(AchievementMilestones.MILESTONE1 - 1) { " " }
         firebaseProfileService.edit(id, profile.copy(following = list))

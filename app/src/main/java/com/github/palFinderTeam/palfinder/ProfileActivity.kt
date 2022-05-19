@@ -6,9 +6,12 @@ import android.content.SharedPreferences
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.View.GONE
+import android.view.View.INVISIBLE
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -20,6 +23,8 @@ import com.ceylonlabs.imageviewpopup.ImagePopup
 import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
+import com.github.palFinderTeam.palfinder.profile.Achievement
+import com.github.palFinderTeam.palfinder.profile.AchievementCategory
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.Response
@@ -29,6 +34,7 @@ import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.util.stream.IntStream.range
 
 
 /**
@@ -94,6 +100,7 @@ class ProfileActivity : AppCompatActivity() {
                 is Response.Success -> {
                     injectUserInfo(it.data)
                     bindFollow(null, it.data)
+                    bindBadgesAndAchievements(it.data)
                 }
                 is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
             }
@@ -233,6 +240,39 @@ class ProfileActivity : AppCompatActivity() {
         val bitmap = barcodeEncoder.encodeBitmap(USER_ID+intent.getStringExtra(USER_ID), BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
 
         QRCode.shareQRcode(bitmap, this)
+
+    }
+
+    /**
+     * sets up the 2 badges and the height achievements, if necessary
+     */
+    private fun bindBadgesAndAchievements(user: ProfileUser) {
+        val badges = user.badges().sorted()
+        var images = listOf<ImageView>(findViewById(R.id.badgePic1), findViewById(R.id.badgePic2))
+        when (badges.size) {
+            0 -> images.forEach { it.visibility = INVISIBLE }
+            1 -> {
+                images[0].setImageResource(badges[0].imageID)
+                images[1].visibility = INVISIBLE
+            }
+            2 -> {
+                images[0].setImageResource(badges[0].imageID)
+                images[1].setImageResource(badges[1].imageID)
+            }
+        }
+        val achFollowers = user.achievements().filter{it.cat == AchievementCategory.FOLLOWER}.sorted()
+        Log.d("agent", achFollowers.toString())
+        images = listOf<ImageView>(findViewById(R.id.AchFollowing1), findViewById(R.id.AchFollowing2),
+            findViewById(R.id.AchFollowing3), findViewById(R.id.AchFollowing4))
+        for (i in range(0, achFollowers.size)) {
+            images[i].setImageResource(achFollowers[i].imageID)
+        }
+        val achFollowed = user.achievements().filter{it.cat == AchievementCategory.FOLLOWED}.sorted()
+        images = listOf<ImageView>(findViewById(R.id.AchFollowed1), findViewById(R.id.AchFollowed2),
+            findViewById(R.id.AchFollowed3), findViewById(R.id.AchFollowed4))
+        for (i in range(0, achFollowed.size)) {
+            images[i].setImageResource(achFollowed[i].imageID)
+        }
 
     }
 
