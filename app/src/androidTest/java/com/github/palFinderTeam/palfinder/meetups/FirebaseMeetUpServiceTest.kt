@@ -489,19 +489,6 @@ class FirebaseMeetUpServiceTest {
     }
 
     @Test
-    fun editNonExistingFieldReturnsNull() = runTest {
-        firebaseProfileService.create(user1)
-        val id = firebaseMeetUpService.create(meetUp)
-        assertThat(id, notNullValue())
-        id!!.let {
-            val idNull = firebaseMeetUpService.edit(it, "NotAField", "NotAValue")
-            assertThat(idNull, nullValue())
-            db.collection(MEETUP_COLL).document(it).delete().await()
-            db.collection(PROFILE_COLL).document(user1.uuid).delete().await()
-        }
-    }
-
-    @Test
     fun getAllUserMeetUpWorksCorrectly() = runTest {
         firebaseProfileService.create(user1)
         val meetUp2 = meetUp.copy(description = "baobab")

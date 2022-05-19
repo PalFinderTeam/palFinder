@@ -439,7 +439,7 @@ class MeetUpListTest {
                 it.viewModel.setSearchParamAndFetch(location = searchLocation, filterBlockedMeetups = true, forceFetch = true)
             }
 
-            val availableMeetUps = meetUpList.filter { !it.participantsId.contains(user1) }
+            val availableMeetUps = meetUpList.filter { it.creatorId != user1 }
                 .map { withText(it.name) }
 
             onView(withId(R.id.meetup_list_recycler)).check(
