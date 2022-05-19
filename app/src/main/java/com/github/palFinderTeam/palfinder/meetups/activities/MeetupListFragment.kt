@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
+import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
+import com.github.palFinderTeam.palfinder.meetups.fragments.MeetupFilterFragment
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
@@ -52,7 +54,7 @@ class MeetupListFragment : Fragment() {
     //allows the user to change the radius of search of meetUps around location
     private lateinit var radiusSlider: Slider
 
-
+    private lateinit var filterSelectButton: Button
 
 
     //viewModel to fetch the meetups and handle the localisation
@@ -147,6 +149,12 @@ class MeetupListFragment : Fragment() {
         viewModel.tags.observe(requireActivity()) {
             tagsViewModel.refreshTags()
             filter(it)
+        }
+
+        // Setup fragment filter window
+        filterSelectButton = view.findViewById(R.id.select_filters)
+        filterSelectButton.setOnClickListener {
+            MeetupFilterFragment(viewModel).show(childFragmentManager, getString(R.string.meetup_filter_title))
         }
 
         view.findViewById<Button>(R.id.sort_list).setOnClickListener { showMenu(it) }

@@ -30,7 +30,6 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
 
     private var dateFormat = SimpleDateFormat()
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -61,11 +60,11 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
             }
         }
 
+        // Dates, set to currently selected options
         viewModel.startTime = MutableLiveData(Calendar.getInstance())
-
         viewModel.endTime = MutableLiveData(Calendar.getInstance())
-        context?.resources?.let { viewModel.endTime.value?.add(Calendar.DAY_OF_MONTH, it.getInteger(R.integer.base_day_interval)) }
 
+        context?.resources?.let { viewModel.endTime.value?.add(Calendar.DAY_OF_MONTH, it.getInteger(R.integer.base_day_interval)) }
 
         selectStartTime = v.findViewById(R.id.tv_StartDate)
         selectEndTime = v.findViewById(R.id.tv_EndDate)
@@ -85,14 +84,12 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
             v.findViewById<TextView>(R.id.tv_EndDate).apply { this.text = dateFormat.format(newDate) }
         }
 
-
-
-
-
         return v
     }
 
-    //button to select the start Date of meetup
+    /**
+     * Button to select the start Date of meetup
+     */
     private fun onStartTimeSelect() {
         askTime(
             childFragmentManager,
@@ -111,7 +108,9 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
         }
     }
 
-    //button to select the end Date of meetup
+    /**
+     * Button to select the end Date of meetup
+     */
     private fun onEndTimeSelect() {
         askTime(
             childFragmentManager,
