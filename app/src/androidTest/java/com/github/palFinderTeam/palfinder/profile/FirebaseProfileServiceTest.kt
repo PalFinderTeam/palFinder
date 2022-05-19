@@ -231,11 +231,11 @@ class FirebaseProfileServiceTest {
         val meetup = "dummy"
         assert(!db.collection(PROFILE_COLL).document(id!!).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
         firebaseProfileService.unMuteMeetup(profile, meetup)
-        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
-        firebaseProfileService.muteMeetup(profile, meetup)
         assert(!db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
-        firebaseProfileService.unMuteMeetup(profile, meetup)
+        firebaseProfileService.muteMeetup(profile, meetup)
         assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
+        firebaseProfileService.unMuteMeetup(profile, meetup)
+        assert(!db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
     }
 
     @Test
@@ -243,7 +243,7 @@ class FirebaseProfileServiceTest {
         val id = firebaseProfileService.create(profile)
         val meetup = "dummy"
         firebaseProfileService.muteMeetup(profile, meetup!!)
-        assert(!db.collection(PROFILE_COLL).document(id!!).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
+        assert(db.collection(PROFILE_COLL).document(id!!).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
         firebaseProfileService.muteMeetup(firebaseProfileService.fetch(id)!!, meetup)
         assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
         firebaseProfileService.unMuteMeetup(firebaseProfileService.fetch(id)!!, meetup)

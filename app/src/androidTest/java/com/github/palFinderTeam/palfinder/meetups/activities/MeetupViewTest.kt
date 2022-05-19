@@ -781,8 +781,9 @@ class MeetupViewTest {
 
     @Test
     fun testMuteButton() = runTest {
-        val mid = meetUpRepository.create(meetup)
-        val uid = profileRepository.create(user2)
+        val uid = profileRepository.create(user)
+        val mid = meetUpRepository.create(meetup.copy(creatorId = uid!!, participantsId = listOf(uid!!)))
+        meetUpRepository.joinMeetUp(mid!!, uid, date1, profileRepository.fetch(uid)!!)
         (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
         (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
 
@@ -793,12 +794,12 @@ class MeetupViewTest {
         ActivityScenario.launch<MeetUpView>(intent)
 
         // Mute
-        onView(withId(R.id.bt_MuteMeetup)).perform(betterScrollTo()).perform(click())
-        assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid!!), `is`(true))
+        onView(withId(R.id.bt_MuteMeetup)).perform(click())
+        assertThat(profileRepository.fetch(uid!!)!!.canUnMuteMeetup(mid!!), `is`(true))
 
         // Unmute
-        onView(withId(R.id.bt_MuteMeetup)).perform(betterScrollTo()).perform(click())
-        assertThat(meetUpRepository.fetch(mid)!!.isParticipating(uid), `is`(false))
+        onView(withId(R.id.bt_MuteMeetup)).perform(click())
+        assertThat(profileRepository.fetch(uid!!)!!.canUnMuteMeetup(mid!!), `is`(false))
     }
 }
 
