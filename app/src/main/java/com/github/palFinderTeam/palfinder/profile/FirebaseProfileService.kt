@@ -103,7 +103,7 @@ open class FirebaseProfileService @Inject constructor(
     override suspend fun muteMeetup(user: ProfileUser, meetup: String): Response<Unit> {
         return try {
             if (!user.canMuteMeetup(meetup)) {
-                return Response.Failure("Cannot mute this user.")
+                return Response.Failure("Cannot mute this meetup.")
             }
             val batch = db.batch()
             batch.update(
@@ -120,7 +120,7 @@ open class FirebaseProfileService @Inject constructor(
     override suspend fun unMuteMeetup(user: ProfileUser, meetup: String): Response<Unit> {
         return try {
             if (!user.canUnMuteMeetup(meetup)) {
-                return Response.Failure("Cannot unmute this user.")
+                return Response.Failure("Cannot unmute this meetup.")
             }
             val batch = db.batch()
             batch.update(

@@ -26,6 +26,7 @@ import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import com.github.palFinderTeam.palfinder.utils.image.QRCode
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,7 +61,7 @@ class MeetUpView : AppCompatActivity() {
         sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
 
         val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
-        viewModel.loadMeetUp(meetupId)
+
         //button (image for design purpuses) to show the list of users participating in this meetUp
         val button = findViewById<ImageView>(R.id.show_qr_button)
         button.setOnClickListener { showProfileList() }
@@ -70,6 +71,8 @@ class MeetUpView : AppCompatActivity() {
             fillFields()
             handleButton()
         }
+
+        viewModel.loadMeetUp(meetupId)
 
         tagsViewModel = createTagFragmentModel(this, TagsViewModelFactory(viewModel.tagRepository))
         if (savedInstanceState == null) {
@@ -85,7 +88,6 @@ class MeetUpView : AppCompatActivity() {
     private fun handleButton(){
         val hasJoined = viewModel.hasJoin()
         val isCreator = viewModel.isCreator()
-        val canMuteUnMute = viewModel.canMute() || viewModel.canUnMute()
         findViewById<View>(R.id.bt_ChatMeetup).apply {
             this.isEnabled = hasJoined
             this.isVisible = hasJoined
@@ -101,9 +103,16 @@ class MeetUpView : AppCompatActivity() {
             this.isClickable = !isCreator
             this.text = if (hasJoined) getString(R.string.meetup_view_leave) else getString(R.string.meetup_view_join)
         }
-        findViewById<ImageView>(R.id.notification_button).apply {
-            this.isEnabled = !canMuteUnMute
-            this.isClickable = !canMuteUnMute
+        findViewById<FloatingActionButton>(R.id.bt_MuteMeetup).apply {
+            this.isEnabled = hasJoined
+            this.isClickable = hasJoined
+            this.isVisible = hasJoined
+            if (viewModel.canUnMute()){
+                this.setImageResource(R.drawable.ic_baseline_notifications_off_24)
+            }
+            else{
+                this.setImageResource(R.drawable.ic_baseline_notifications_active_24)
+            }
         }
     }
 

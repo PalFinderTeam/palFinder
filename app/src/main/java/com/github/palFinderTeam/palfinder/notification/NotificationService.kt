@@ -93,7 +93,9 @@ class NotificationService @Inject constructor(
                         val intent = Intent(context, MeetUpView::class.java).apply {
                             putExtra(MEETUP_SHOWN, m)
                         }
-                        NotificationHandler(context).post(meetup.name, meetup.description, R.drawable.icon_beer, intent)
+                        if (!loggedUser!!.isMeetupMuted(m)){
+                            NotificationHandler(context).post(meetup.name, meetup.description, R.drawable.icon_beer, intent)
+                        }
                         meta.sendStartNotification = true
                         meetupsMetaData.store(m, meta)
                     }

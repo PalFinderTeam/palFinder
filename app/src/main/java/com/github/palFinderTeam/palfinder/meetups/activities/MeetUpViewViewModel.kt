@@ -78,7 +78,7 @@ class MeetUpViewViewModel @Inject constructor(
      */
     fun hasJoin(): Boolean {
         val uuid = profileService.getLoggedInUserID()
-        return if (uuid != null){
+        return if (uuid != null && meetUp.value != null){
             meetUp.value!!.isParticipating(uuid)
         }
         else{
@@ -87,7 +87,7 @@ class MeetUpViewViewModel @Inject constructor(
     }
     fun isCreator(): Boolean {
         val uuid = profileService.getLoggedInUserID()
-        return if (uuid != null){
+        return if (uuid != null && meetUp.value != null){
             meetUp.value!!.creatorId == uuid
         }
         else{
@@ -95,14 +95,14 @@ class MeetUpViewViewModel @Inject constructor(
         }
     }
     fun canMute(): Boolean{
-        return if (loggedInUser.value != null){
+        return if (loggedInUser.value != null && meetUp.value != null){
             loggedInUser.value!!.canMuteMeetup(meetUp.value!!.uuid)
         } else{
             false
         }
     }
     fun canUnMute(): Boolean{
-        return if (loggedInUser.value != null){
+        return if (loggedInUser.value != null && meetUp.value != null){
             loggedInUser.value!!.canUnMuteMeetup(meetUp.value!!.uuid)
         } else{
             false
@@ -148,12 +148,12 @@ class MeetUpViewViewModel @Inject constructor(
                 if (canMute()) {
                     when(val ret = profileService.muteMeetup(loggedInUser.value!!, meetUp.value!!.uuid)){
                         is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
-                        else -> Toast.makeText(context, R.string.meetup_view_left, Toast.LENGTH_SHORT).show()
+                        else -> Toast.makeText(context, R.string.meetup_view_muted, Toast.LENGTH_SHORT).show()
                     }
                 } else if (canUnMute()) {
                     when(val ret = profileService.unMuteMeetup(loggedInUser.value!!, meetUp.value!!.uuid)){
                         is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
-                        else -> Toast.makeText(context, R.string.meetup_view_left, Toast.LENGTH_SHORT).show()
+                        else -> Toast.makeText(context, R.string.meetup_view_unmuted, Toast.LENGTH_SHORT).show()
                     }
                 }
                 loadMeetUp(meetUp.value!!.uuid)
