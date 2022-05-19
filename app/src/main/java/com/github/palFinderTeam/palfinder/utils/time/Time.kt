@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.utils.time
 
 import android.icu.util.Calendar
 import androidx.fragment.app.FragmentManager
+import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.fragment.picker.DatePickerFragment
 import com.github.palFinderTeam.palfinder.fragment.picker.TimePickerFragment
 import java.util.concurrent.CompletableFuture
@@ -106,3 +107,25 @@ fun askDate(supportFragmentManager: FragmentManager, date: SimpleDate? = null): 
         it.withTime(SimpleTime(0,0))
     }
 }
+
+/**
+ * Get the maximum starting date for a meetup
+ */
+val maxStartDate: Calendar
+    get() {
+        val maxDate = Calendar.getInstance()
+        //event start max 5 days after today
+        maxDate.add(Calendar.DAY_OF_MONTH, 7)
+        return maxDate
+    }
+
+/**
+ * Get the maximum end value for a meetup
+ */
+val maxEndDate: Calendar
+    get() {
+        val maxDate = maxStartDate
+        //event end max 7 days after today
+        maxDate.add(Calendar.DAY_OF_MONTH, 2)
+        return maxDate
+    }
