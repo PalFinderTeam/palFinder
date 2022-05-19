@@ -100,15 +100,22 @@ class MeetUpViewViewModel @Inject constructor(
                         else -> Toast.makeText(context, R.string.meetup_view_left, Toast.LENGTH_SHORT).show()
                     }
                 } else {
+                    val meetUp = meetUp.value!!
+                    val loggedUser = profileService.fetch(uuid)!!
                     val blockedUser = profileService.fetch(uuid)?.blockedUsers
-                    if (blockedUser?.contains(meetUp.value!!.creatorId) == true) {
+                    val blockedByCreator = profileService.fetch(meetUp.creatorId)?.blockedUsers
+                    if (blockedUser?.contains(meetUp.creatorId) == true) {
                         Toast.makeText(context, R.string.meetup_with_blocked, Toast.LENGTH_SHORT).show()
-                    } else if (!ignoreWarning && blockedUser?.intersect(meetUp.value!!.participantsId)?.isEmpty() == false) {
+                    }
+                    else if (blockedByCreator?.contains(uuid) == true) {
+                        Toast.makeText(context, R.string.meetup_where_you_are_blocked, Toast.LENGTH_SHORT).show()
+                    }
+                    else if (!ignoreWarning && blockedUser?.intersect(meetUp.participantsId)?.isEmpty() == false) {
                         _askPermissionToJoin.value = true
                     }
                     else {
-                        when(val ret = meetUpRepository.joinMeetUp(meetUp.value!!.uuid, uuid, timeService.now(),
-                            profileService.fetch(uuid)!!)){
+                        when(val ret = meetUpRepository.joinMeetUp(meetUp.uuid, uuid, timeService.now(),
+                            loggedUser)){
                             is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
                             else -> Toast.makeText(context, R.string.meetup_view_joined, Toast.LENGTH_SHORT).show()
                         }

@@ -100,6 +100,7 @@
     <string name="meetup_view_joined">You joined the meetup</string>
     <string name="meetup_view_left">You left the meetup</string>
     <string name="meetup_with_blocked">You cannot join this meetup, you blocked the creator.</string>
+    <string name="meetup_where_you_are_blocked">You cannot join this meetup, you are blocked by creator.</string>
     <string name="meetup_view_participation_unlimited">%d</string>
     <string name="meetup_view_participation_limited">%d (out of %d)</string>
     <string name="meetup_view_age_min">13</string>
