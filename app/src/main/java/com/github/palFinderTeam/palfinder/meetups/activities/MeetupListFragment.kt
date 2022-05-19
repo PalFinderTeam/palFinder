@@ -33,7 +33,7 @@ const val LOCATION_RESULT = "location"
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 /**
- * Fragment used to display the list of the meetUps available around a location, with several ways to filter it
+ * Fragment used to display a list of the meetUps, with several ways to filter it.
  */
 class MeetupListFragment : Fragment() {
     //recyclerView and adapter to handle the list and each meetup
@@ -81,7 +81,12 @@ class MeetupListFragment : Fragment() {
 
         //radioGroup to choose between the different options about followers
         val followerOptions: RadioGroup = view.findViewById(R.id.follower_options_group)
-        view.findViewById<RadioButton>(R.id.button_all).isChecked = true
+        when (args.showParam) {
+            ShowParam.ALL -> view.findViewById<RadioButton>(R.id.button_all).isChecked = true
+            ShowParam.ONLY_JOINED -> view.findViewById<RadioButton>(R.id.joinedButton).isChecked = true
+            ShowParam.PAL_PARTCIPATING -> view.findViewById<RadioButton>(R.id.participate_button).isChecked = true
+            ShowParam.PAL_CREATOR -> view.findViewById<RadioButton>(R.id.created_button).isChecked = true
+        }
         followerOptions.setOnCheckedChangeListener { _, checkedId ->
             val radio: RadioButton = view.findViewById(checkedId)
             when (followerOptions.indexOfChild(radio)) {
@@ -114,12 +119,14 @@ class MeetupListFragment : Fragment() {
 
         }
 
-        //live data of current user location, and update the parameters in real time accordingly
+        // Listen for result of the map fragment, when using the select precise location functionality.
         getNavigationResultLiveData<Location>(LOCATION_RESULT)?.observe(viewLifecycleOwner) { result ->
             viewModel.setSearchParamAndFetch(location = result)
             // Make sure to consume the value
             removeNavigationResult<Location>(LOCATION_RESULT)
         }
+
+        // Prepare and add tags fragment.
         tagsViewModel = createTagFragmentModel(this, TagsViewModelFactory(viewModel.tagRepository))
         if (savedInstanceState == null) {
             addTagsToFragmentManager(childFragmentManager, R.id.list_select_tag)

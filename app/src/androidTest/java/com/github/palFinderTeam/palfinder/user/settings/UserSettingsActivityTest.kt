@@ -8,8 +8,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.scrollTo
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
@@ -20,6 +19,7 @@ import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
+import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.ui.login.CREATE_ACCOUNT_PROFILE
 import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.PrivacySettings
@@ -29,8 +29,7 @@ import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.not
+import org.hamcrest.CoreMatchers.*
 import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
@@ -95,29 +94,46 @@ class UserSettingsActivityTest {
     }
 
 
-//    @Test
-//    fun loadSpecificUserIdYieldsCorrectValues() = runTest {
-//        assertThat(profileService.createProfile(user), notNullValue())
-//
-//        val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
-//            .apply{
-//                putExtra(USER_ID, user.uuid)
-//            }
-//
-//        val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
-//        scenario.use {
-//            onView(withId(R.id.SettingsUsernameText))
-//                .check(matches(withText(user.username)))
-//            onView(withId(R.id.SettingsNameText))
-//                .check(matches(withText(user.name)))
-//            onView(withId(R.id.SettingsSurnameText))
-//                .check(matches(withText(user.surname)))
-//            onView(withId(R.id.SettingsBioText))
-//                .check(matches(withText(user.description)))
-//            onView(withId(R.id.SettingsBirthdayText))
-//                .check(matches(withText(bdFormat.format(user.birthday))))
-//        }
-//    }
+    @Test
+    fun editExistingUserEditRightInDb() = runTest {
+
+        val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
+            .apply{
+                putExtra(USER_ID, profileService.getLoggedInUserID()!!)
+            }
+
+        val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.SettingsUsernameText))
+                .perform(clearText(), typeText("toto"))
+            onView(withId(R.id.SettingsSubmitButton)).perform(scrollTo(), click())
+            assertThat(profileService.fetch(profileService.getLoggedInUserID()!!)?.username, `is`("toto"))
+        }
+    }
+
+    @Test
+    fun loadExistingUserProfileYieldsCorrectValues() = runTest {
+
+        val intent = Intent(ApplicationProvider.getApplicationContext(), UserSettingsActivity::class.java)
+            .apply{
+                putExtra(USER_ID, profileService.getLoggedInUserID()!!)
+            }
+
+        val scenario = ActivityScenario.launch<UserSettingsActivity>(intent)
+        scenario.use {
+            onView(withId(R.id.SettingsUsernameText))
+                .check(matches(withText(user.username)))
+            onView(withId(R.id.SettingsNameText))
+                .check(matches(withText(user.name)))
+            onView(withId(R.id.SettingsSurnameText))
+                .check(matches(withText(user.surname)))
+            onView(withId(R.id.SettingsBioText))
+                .check(matches(withText(user.description)))
+            onView(withId(R.id.SettingsBirthdayText))
+                .perform(scrollTo())
+                .check(matches(withText(bdFormat.format(user.birthday))))
+        }
+    }
 
     @Test
     fun loadSpecificUserProfileYieldsCorrectValues() = runTest {
