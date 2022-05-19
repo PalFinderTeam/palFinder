@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.Button
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
@@ -84,7 +86,19 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
             v.findViewById<TextView>(R.id.tv_EndDate).apply { this.text = dateFormat.format(newDate) }
         }
 
+        // Close dialog
+        v.findViewById<Button>(R.id.filtersButtonDone).setOnClickListener{
+            dialog?.dismiss()
+        }
+
         return v
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Force the dialog to take whole width
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
     /**

@@ -79,7 +79,7 @@
     <!-- Strings used for meetupList -->
     <string name="meetup_filter_show_all">Toutes les rencontres</string>
     <string name="meetup_filter_only_participating">pal prenant part</string>
-    <string name="meetup_only_creators">Créé par pal</string>
+    <string name="meetup_only_creators">Créé par mes potes</string>
     <string name="meetup_filter_only_joined">rejoins</string>
 
     <!-- Strings used for meetup view -->

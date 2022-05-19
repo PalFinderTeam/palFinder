@@ -4,165 +4,153 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:scrollbars="vertical">
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/criterions_title"
+            android:fontFamily="@font/fredoka_bold"
+            android:textColor="?attr/colorPrimaryDark"
+            android:textSize="24sp"
+
+            android:gravity="center"
+            android:layout_marginBottom="18dp" />
+
+        <TextView
+            android:id="@+id/criterions_age_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/fredoka_normal"
+            android:gravity="center"
+            android:text="@string/criterions_age_title"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/criterions_age_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:alpha="0.6"
+            android:fontFamily="@font/fredoka_normal"
+            android:gravity="center"
+            android:text="@string/criterions_age_desc"
+            android:textSize="14sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:orientation="horizontal"
+            android:gravity="center">
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/minValueAge"
+                android:layout_width="45dp"
+                android:gravity="right"
                 android:layout_height="wrap_content"
-                android:text="@string/meetup_filter_title"
-                android:fontFamily="@font/fredoka_bold"
-                android:textColor="?attr/colorPrimaryDark"
-                android:textSize="24sp"
-                android:gravity="center"
-                android:layout_marginBottom="18dp" />
-
-            <TextView
-                android:id="@+id/criterions_age_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:fontFamily="@font/fredoka_normal"
-                android:gravity="center"
-                android:text="@string/meetup_filter_subtitle"
-                android:textSize="18sp" />
+                android:text="@string/criterions_age_min"
+                android:textSize="20sp" />
 
-            <RadioGroup
-                android:id="@+id/follower_options_group"
+            <com.google.android.material.slider.RangeSlider
+                android:id="@+id/rangeAgeSelector"
+                android:stepSize="1.0"
+                android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:valueFrom="@string/criterions_age_min"
+                android:valueTo="@string/criterions_age_max"
+                app:values="@array/initial_values">
 
-                <RadioButton
-                    android:id="@+id/button_all"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/meetup_filter_show_all"
-                    android:fontFamily="@font/fredoka_normal"/>
-
-                <RadioButton
-                    android:id="@+id/participate_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/meetup_filter_only_participating"
-                    android:fontFamily="@font/fredoka_normal"/>
-
-                <RadioButton
-                    android:id="@+id/created_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/meetup_only_creators"
-                    android:fontFamily="@font/fredoka_normal"/>
-
-                <RadioButton
-                    android:id="@+id/joinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/meetup_filter_only_joined"
-                    android:fontFamily="@font/fredoka_normal"/>
-
-            </RadioGroup>
+            </com.google.android.material.slider.RangeSlider>
 
             <TextView
-                android:id="@+id/gender_selection_title"
-                android:layout_width="match_parent"
-                android:layout_marginTop="10dp"
+                android:id="@+id/maxValueAge"
+                android:layout_width="45dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
                 android:fontFamily="@font/fredoka_normal"
-                android:gravity="center"
-                android:text="@string/meetup_filter_date_title"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/gender_selection_desc"
-                android:layout_width="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:fontFamily="@font/fredoka_normal"
-                android:gravity="center"
-                android:text="@string/meetup_filter_date_desc" />
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tv_StartDateLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:gravity="center"
-                android:hint="@string/meetup_creation_meetup_start_date"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/SettingsUsernameLayout"
-                app:startIconDrawable="@drawable/ic_baseline_calendar_month_24">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tv_StartDate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:fontFamily="@font/fredoka_normal"
-                    android:singleLine="true" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tv_EndDateLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-
-                android:gravity="center"
-                android:hint="@string/meetup_creation_meetup_end_date"
-                app:endIconMode="clear_text"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/SettingsUsernameLayout"
-                app:startIconDrawable="@drawable/ic_baseline_calendar_month_24">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/tv_EndDate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:fontFamily="@font/fredoka_normal"
-                    android:singleLine="true"
-                    app:counterMaxLength="60" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <Button
-                android:id="@+id/criterionButtonDone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:padding="12dp"
-                android:text="@string/meetup_filter_done" />
+                android:gravity="left"
+                android:text="@string/criterions_age_max_plus"
+                android:textSize="20sp" />
 
         </LinearLayout>
 
-    </ScrollView>
+        <TextView
+            android:id="@+id/gender_selection_title"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:fontFamily="@font/fredoka_normal"
+            android:gravity="center"
+            android:text="@string/criterions_gender_title"
+            android:textSize="20sp" />
+
+        <RadioGroup
+            android:id="@+id/radioSex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <RadioButton
+                android:id="@+id/radioFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/fredoka_normal"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:text="@string/radio_female"
+                android:textSize="16sp" />
+
+            <RadioButton
+                android:id="@+id/radioMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:fontFamily="@font/fredoka_normal"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:text="@string/radio_male"
+                android:textSize="16sp" />
+
+            <RadioButton
+                android:id="@+id/radioMaleAndFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:fontFamily="@font/fredoka_normal"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:text="@string/radio_male_and_female"
+                android:textSize="16sp" />
+
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/criterionButtonDone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="12dp"
+            android:text="@string/criterion_confirm" />
+
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
