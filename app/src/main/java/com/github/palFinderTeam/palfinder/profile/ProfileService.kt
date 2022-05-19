@@ -1,9 +1,5 @@
 package com.github.palFinderTeam.palfinder.profile
 
-import com.github.palFinderTeam.palfinder.profile.AchievementMilestones.MILESTONE1
-import com.github.palFinderTeam.palfinder.profile.AchievementMilestones.MILESTONE2
-import com.github.palFinderTeam.palfinder.profile.AchievementMilestones.MILESTONE3
-import com.github.palFinderTeam.palfinder.profile.AchievementMilestones.MILESTONE4
 import com.github.palFinderTeam.palfinder.profile.AchievementMilestones.followCountAdapt
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.generics.Repository
@@ -42,27 +38,16 @@ interface ProfileService: Repository<ProfileUser> {
     /**
      * check if the follower deserves an achievement by checking the number of pals he follows
      */
-    fun updateAchievementsFollower(follower: ProfileUser): String? {
-        Achievement.values().filter { it.cat == AchievementCategory.FOLLOWING }
-        return when (follower.following.size) {
-            followCountAdapt(MILESTONE1) -> Achievement.PAL_FINDER.aName
-            followCountAdapt(MILESTONE2) -> Achievement.PAL_MINER.aName
-            followCountAdapt(MILESTONE3) -> Achievement.PAL_TRACKER.aName
-            followCountAdapt(MILESTONE4) -> Achievement.PALDEX_COMPLETED.aName
-            else -> null
-        }
+    fun updateAchievementsFollower(follower: ProfileUser): List<String> {
+        return Achievement.values().filter { it.cat == AchievementCategory.FOLLOWER &&
+                followCountAdapt(it.milestone) == follower.following.size}.map{it.aName}
     }
 
     /**
      * check if the followed deserves an achievement by checking the number of pals follow him
      */
-    fun updateAchievementsFollowed(followed: ProfileUser): String? {
-        return when (followed.followed.size) {
-            followCountAdapt(MILESTONE1) -> Achievement.BEAUTY_AND_THE_PAL.aName
-            followCountAdapt(MILESTONE2) -> Achievement.CRYPTO_PAL.aName
-            followCountAdapt(MILESTONE3) -> Achievement.MASTER_OF_CATS.aName
-            followCountAdapt(MILESTONE4) -> Achievement.ULTIMATE_PAL.aName
-            else -> null
-        }
+    fun updateAchievementsFollowed(followed: ProfileUser): List<String> {
+        return Achievement.values().filter { it.cat == AchievementCategory.FOLLOWED &&
+                followCountAdapt(it.milestone) == followed.following.size}.map{it.aName}
     }
 }

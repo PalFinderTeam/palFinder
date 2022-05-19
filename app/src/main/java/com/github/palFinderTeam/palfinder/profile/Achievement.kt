@@ -11,15 +11,15 @@ enum class Achievement(val cat: AchievementCategory, val aName: String, val imag
     DEVELOPER(AchievementCategory.OTHER, "Dev", R.drawable.ic_badge_dev, AchievementMilestones.NOT_FOUND), //for the palfinder team
     VERIFIED(AchievementCategory.OTHER,"Verified user", R.drawable.ic_checkmark, AchievementMilestones.NOT_FOUND), //obtained when you are trustworthy
 
-    PAL_FINDER(AchievementCategory.FOLLOWING,"Pal finder", R.drawable.ic_badge_fan1, AchievementMilestones.MILESTONE1), //obtained when you follow the first milestone number
-    PAL_MINER(AchievementCategory.FOLLOWING,"Pal miner", R.drawable.ic_badge_fan2, AchievementMilestones.MILESTONE2), //obtained when you follow the second milestone number
-    PAL_TRACKER(AchievementCategory.FOLLOWING,"Pal tracker", R.drawable.ic_badge_fan3, AchievementMilestones.MILESTONE3), //obtained when you follow the third milestone number
-    PALDEX_COMPLETED(AchievementCategory.FOLLOWING,"Paldexpert", R.drawable.ic_badge_fan4, AchievementMilestones.MILESTONE4), //obtained when you follow the fourth milestone number
+    PAL_FINDER(AchievementCategory.FOLLOWER,"Pal finder", R.drawable.ic_badge_fan1, AchievementMilestones.MILESTONE1), //obtained when you follow the first milestone number
+    PAL_MINER(AchievementCategory.FOLLOWER,"Pal miner", R.drawable.ic_badge_fan2, AchievementMilestones.MILESTONE2), //obtained when you follow the second milestone number
+    PAL_TRACKER(AchievementCategory.FOLLOWER,"Pal tracker", R.drawable.ic_badge_fan3, AchievementMilestones.MILESTONE3), //obtained when you follow the third milestone number
+    PALDEX_COMPLETED(AchievementCategory.FOLLOWER,"Paldexpert", R.drawable.ic_badge_fan4, AchievementMilestones.MILESTONE4), //obtained when you follow the fourth milestone number
 
-    BEAUTY_AND_THE_PAL(AchievementCategory.FOLLOWER,"the beauty and the pal", R.drawable.ic_badge_pal1, AchievementMilestones.MILESTONE1), //obtained when you are followed by the first milestone number
-    CRYPTO_PAL(AchievementCategory.FOLLOWER,"cryptoPal", R.drawable.ic_badge_pal2, AchievementMilestones.MILESTONE2), //obtained when you are followed by the second milestone number
-    MASTER_OF_CATS(AchievementCategory.FOLLOWER,"master of cats", R.drawable.ic_badge_pal3, AchievementMilestones.MILESTONE3), //obtained when you are followed by the third milestone number
-    ULTIMATE_PAL(AchievementCategory.FOLLOWER,"verified user", R.drawable.ic_badge_pal4, AchievementMilestones.MILESTONE4), //obtained when you are followed by the fourth milestone number
+    BEAUTY_AND_THE_PAL(AchievementCategory.FOLLOWED,"the beauty and the pal", R.drawable.ic_badge_pal1, AchievementMilestones.MILESTONE1), //obtained when you are followed by the first milestone number
+    CRYPTO_PAL(AchievementCategory.FOLLOWED,"cryptoPal", R.drawable.ic_badge_pal2, AchievementMilestones.MILESTONE2), //obtained when you are followed by the second milestone number
+    MASTER_OF_CATS(AchievementCategory.FOLLOWED,"master of cats", R.drawable.ic_badge_pal3, AchievementMilestones.MILESTONE3), //obtained when you are followed by the third milestone number
+    ULTIMATE_PAL(AchievementCategory.FOLLOWED,"verified user", R.drawable.ic_badge_pal4, AchievementMilestones.MILESTONE4), //obtained when you are followed by the fourth milestone number
 
     NON_SPEC(AchievementCategory.OTHER,"what are you searching there ?", R.drawable.not_found, AchievementMilestones.NOT_FOUND); //used when the Achievement is not in this list
 
@@ -29,8 +29,8 @@ enum class Achievement(val cat: AchievementCategory, val aName: String, val imag
 }
 
 enum class AchievementCategory {
+    FOLLOWED,
     FOLLOWER,
-    FOLLOWING,
     OTHER
 }
 

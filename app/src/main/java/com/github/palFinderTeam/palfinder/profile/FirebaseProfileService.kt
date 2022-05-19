@@ -55,20 +55,20 @@ open class FirebaseProfileService @Inject constructor(
                 db.collection(PROFILE_COLL).document(user.uuid),
                 FOLLOWING_PROFILES, FieldValue.arrayUnion(targetId)
             )
-            if (updateAchievementsFollower(user) != null) {
+            if (updateAchievementsFollower(user).isNotEmpty()) {
                 batch.update(
                     db.collection(PROFILE_COLL).document(user.uuid),
-                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollower(user))
+                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollower(user)[0])
                 )
             }
             batch.update(
                 db.collection(PROFILE_COLL).document(targetId),
                 FOLLOWED_BY, FieldValue.arrayUnion(user.uuid)
             )
-            if (updateAchievementsFollowed(targetProfile) != null) {
+            if (updateAchievementsFollowed(targetProfile).isNotEmpty()) {
                 batch.update(
                     db.collection(PROFILE_COLL).document(targetId),
-                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollowed(targetProfile))
+                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollowed(targetProfile)[0])
                 )
             }
             batch.commit().await()

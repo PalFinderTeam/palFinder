@@ -461,18 +461,6 @@ class MeetupViewTest {
                     R.id.AchPic1
                 )
             ).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
-            onView(
-                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
-                    0,
-                    R.id.AchPic2
-                )
-            ).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
-            onView(
-                RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
-                    0,
-                    R.id.AchPic3
-                )
-            ).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         }
     }
 
