@@ -33,6 +33,8 @@ class MeetUpViewViewModel @Inject constructor(
 ) : ViewModel() {
     private var _meetUp: MutableLiveData<MeetUp> = MutableLiveData<MeetUp>()
     val meetUp: LiveData<MeetUp> = _meetUp
+    private var _askPermissionToJoin: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+    val askPermissionToJoin: LiveData<Boolean> = _askPermissionToJoin
 
     /**
      * Fetch given meetup and update corresponding livedata.
@@ -88,7 +90,7 @@ class MeetUpViewViewModel @Inject constructor(
     /**
      * test if the user is participating in the meetup and propagate the join/leave to the database
      */
-    fun joinOrLeave(context: Context){
+    fun joinOrLeave(context: Context, ignoreWarning: Boolean = false){
         val uuid = profileService.getLoggedInUserID()
         if (uuid != null) {
             viewModelScope.launch {
@@ -98,10 +100,13 @@ class MeetUpViewViewModel @Inject constructor(
                         else -> Toast.makeText(context, R.string.meetup_view_left, Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    val profile = profileService.fetch(uuid)
-                    if (profile?.blockedUsers?.intersect(meetUp.value!!.participantsId)?.isNotEmpty() == true) {
+                    val blockedUser = profileService.fetch(uuid)?.blockedUsers
+                    if (blockedUser?.contains(meetUp.value!!.creatorId) == true) {
                         Toast.makeText(context, R.string.meetup_with_blocked, Toast.LENGTH_SHORT).show()
-                    } else {
+                    } else if (!ignoreWarning && blockedUser?.intersect(meetUp.value!!.participantsId)?.isEmpty() == false) {
+                        _askPermissionToJoin.value = true
+                    }
+                    else {
                         when(val ret = meetUpRepository.joinMeetUp(meetUp.value!!.uuid, uuid, timeService.now(),
                             profileService.fetch(uuid)!!)){
                             is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
