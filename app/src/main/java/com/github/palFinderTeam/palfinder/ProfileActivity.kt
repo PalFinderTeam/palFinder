@@ -102,7 +102,7 @@ class ProfileActivity : AppCompatActivity() {
                     bindFollow(null, it.data)
                     bindBadgesAndAchievements(it.data)
                 }
-                is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
+                is Response.Failure -> printToast(it.errorMessage)
             }
         }
     }
@@ -118,7 +118,7 @@ class ProfileActivity : AppCompatActivity() {
                 is Response.Success -> {
                    followAndBlockSystem(it.data, profileViewed, followButton, blockButton)
                 }
-                is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
+                is Response.Failure -> printToast(it.errorMessage)
             }
         }
 
@@ -253,27 +253,38 @@ class ProfileActivity : AppCompatActivity() {
             0 -> images.forEach { it.visibility = INVISIBLE }
             1 -> {
                 images[0].setImageResource(badges[0].imageID)
+                images[0].setOnClickListener { printToast(badges[0].aName) }
                 images[1].visibility = INVISIBLE
             }
             2 -> {
                 images[0].setImageResource(badges[0].imageID)
+                images[0].setOnClickListener { printToast(badges[0].aName) }
                 images[1].setImageResource(badges[1].imageID)
+                images[1].setOnClickListener { printToast(badges[1].aName) }
             }
         }
         val achFollowers = user.achievements().filter{it.cat == AchievementCategory.FOLLOWER}.sorted()
-        Log.d("agent", achFollowers.toString())
         images = listOf<ImageView>(findViewById(R.id.AchFollowing1), findViewById(R.id.AchFollowing2),
             findViewById(R.id.AchFollowing3), findViewById(R.id.AchFollowing4))
         for (i in range(0, achFollowers.size)) {
             images[i].setImageResource(achFollowers[i].imageID)
+            images[i].setOnClickListener { printToast(achFollowers[i].aName) }
         }
         val achFollowed = user.achievements().filter{it.cat == AchievementCategory.FOLLOWED}.sorted()
         images = listOf<ImageView>(findViewById(R.id.AchFollowed1), findViewById(R.id.AchFollowed2),
             findViewById(R.id.AchFollowed3), findViewById(R.id.AchFollowed4))
         for (i in range(0, achFollowed.size)) {
             images[i].setImageResource(achFollowed[i].imageID)
+            images[i].setOnClickListener { printToast(achFollowed[i].aName) }
         }
 
+    }
+
+    /**
+     * print a text in toast
+     */
+    fun printToast(text: String) {
+        Toast.makeText(applicationContext, text, Toast.LENGTH_LONG).show()
     }
 
     /**

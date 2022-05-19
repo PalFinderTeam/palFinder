@@ -9,6 +9,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
+import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import kotlinx.coroutines.CoroutineScope
@@ -113,6 +114,7 @@ class ProfileAdapter(
             holder.badgePic.visibility = INVISIBLE
         } else {
             holder.badgePic.setImageResource(achievements[0].imageID)
+            holder.badgePic.setOnClickListener { Toast.makeText(context, achievements[0].aName, Toast.LENGTH_LONG).show()}
         }
     }
 
