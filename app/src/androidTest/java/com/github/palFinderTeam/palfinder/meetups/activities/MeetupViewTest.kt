@@ -793,11 +793,11 @@ class MeetupViewTest {
         ActivityScenario.launch<MeetUpView>(intent)
 
         // Mute
-        onView(withId(R.id.notification_button)).perform(betterScrollTo()).perform(click())
+        onView(withId(R.id.bt_MuteMeetup)).perform(betterScrollTo()).perform(click())
         assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid!!), `is`(true))
 
         // Unmute
-        onView(withId(R.id.notification_button)).perform(betterScrollTo()).perform(click())
+        onView(withId(R.id.bt_MuteMeetup)).perform(betterScrollTo()).perform(click())
         assertThat(meetUpRepository.fetch(mid)!!.isParticipating(uid), `is`(false))
     }
 }
