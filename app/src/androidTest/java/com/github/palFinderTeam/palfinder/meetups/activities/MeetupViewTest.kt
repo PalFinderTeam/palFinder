@@ -27,6 +27,7 @@ import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
+import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement
 import com.github.palFinderTeam.palfinder.ProfileActivity
@@ -727,7 +728,7 @@ class MeetupViewTest {
     }
 
     @Test
-    fun testCannotJoinWithBlockedUser() = runTest {
+    fun testCannotJoinCreatedByBlock() = runTest {
         val mid = meetUpRepository.create(meetup)
         val uid = profileRepository.create(user2.copy(blockedUsers = listOf("user")))
         (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
@@ -777,6 +778,71 @@ class MeetupViewTest {
         ActivityScenario.launch<MeetUpView>(intent)
 
         onView(withId(R.id.button_join_meetup)).check(matches(isNotClickable()))
+    }
+
+    @Test
+    fun testCannotJoinedWhenCreatorBlockUs() = runTest {
+        val uid1 = profileRepository.create(user)
+        val uid = profileRepository.create(user2.copy(blockedUsers = listOf(uid1!!)))
+        val mid = meetUpRepository.create(meetup.copy(creatorId = uid!!))
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid1)
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+
+        ActivityScenario.launch<MeetUpView>(intent)
+
+        // Join
+        onView(withId(R.id.button_join_meetup)).perform(betterScrollTo()).perform(click())
+        assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid), `is`(false))
+    }
+
+    @Test
+    fun testCanJoinedWhenBlockedParticipantsWithWarning() = runTest {
+        val uid2 = profileRepository.create(user2)
+        val uid1 = profileRepository.create(user.copy(blockedUsers = listOf(uid2!!)))
+        val mid = meetUpRepository.create(meetup.copy(participantsId = listOf(uid2!!), creatorId = "hh"))
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid1)
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+
+        ActivityScenario.launch<MeetUpView>(intent)
+
+        // Join
+        onView(withId(R.id.button_join_meetup)).perform(betterScrollTo()).perform(click())
+        onView(withId(R.id.continue_warning_button))
+            .inRoot(RootMatchers.isPlatformPopup())
+            .perform(click());
+
+        assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid1), `is`(true))
+    }
+
+    @Test
+    fun testJoinWithWarningAndRefuseNotJoin() = runTest {
+        val uid2 = profileRepository.create(user2)
+        val uid1 = profileRepository.create(user.copy(blockedUsers = listOf(uid2!!)))
+        val mid = meetUpRepository.create(meetup.copy(participantsId = listOf(uid2!!), creatorId = "hh"))
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid1)
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+
+        ActivityScenario.launch<MeetUpView>(intent)
+
+        // Join
+        onView(withId(R.id.button_join_meetup)).perform(betterScrollTo()).perform(click())
+        onView(withId(R.id.cancel_warning_button))
+            .inRoot(RootMatchers.isPlatformPopup())
+            .perform(click());
+
+        assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid1), `is`(false))
     }
 }
 

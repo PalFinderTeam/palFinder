@@ -298,9 +298,9 @@ class ProfileActivityTest {
 
             assert(!profileService.fetch(userid!!)!!.blockedUsers.contains(id2))
             onView(withId(R.id.blackList)).perform(scrollTo(), click())
-            assert(profileService.fetch(userid!!)!!.blockedUsers.contains(id2))
+            assert(profileService.fetch(userid)!!.blockedUsers.contains(id2))
             onView(withId(R.id.blackList)).perform(scrollTo(), click())
-            assert(!profileService.fetch(userid!!)!!.blockedUsers.contains(id2))
+            assert(!profileService.fetch(userid)!!.blockedUsers.contains(id2))
         }
     }
 }
