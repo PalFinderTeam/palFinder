@@ -1,15 +1,22 @@
 package com.github.palFinderTeam.palfinder.meetups.fragments
 
+import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.MutableLiveData
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
+import com.github.palFinderTeam.palfinder.utils.time.askTime
+import com.github.palFinderTeam.palfinder.utils.time.toSimpleDate
+import com.github.palFinderTeam.palfinder.utils.time.toSimpleTime
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -18,6 +25,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
 
     private lateinit var filterGroup: RadioGroup
+    private lateinit var selectStartTime: TextView
+    private lateinit var selectEndTime: TextView
+
+    private var dateFormat = SimpleDateFormat()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,7 +61,65 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
             }
         }
 
+        viewModel.startTime = MutableLiveData(Calendar.getInstance())
+
+        viewModel.endTime = MutableLiveData(Calendar.getInstance())
+        context?.resources?.let { viewModel.endTime.value?.add(Calendar.DAY_OF_MONTH, it.getInteger(R.integer.base_day_interval)) }
+
+
+        selectStartTime = v.findViewById(R.id.tv_StartDate)
+        selectEndTime = v.findViewById(R.id.tv_EndDate)
+
+        selectStartTime.setOnClickListener {
+            onStartTimeSelect()
+        }
+
+        selectEndTime.setOnClickListener {
+            onEndTimeSelect()
+        }
+
+        viewModel.startTime.observe(viewLifecycleOwner) { newDate ->
+            v.findViewById<TextView>(R.id.tv_StartDate).apply { this.text = dateFormat.format(newDate) }
+        }
+        viewModel.endTime.observe(viewLifecycleOwner) { newDate ->
+            v.findViewById<TextView>(R.id.tv_EndDate).apply { this.text = dateFormat.format(newDate) }
+        }
+
+
+
+
 
         return v
+    }
+
+    //button to select the start Date of meetup
+    private fun onStartTimeSelect() {
+        askTime(
+            childFragmentManager,
+            viewModel.startTime.value?.toSimpleDate(),
+            viewModel.startTime.value?.toSimpleTime(),
+            minDate = Calendar.getInstance()
+        ).thenAccept {
+            val interval = viewModel.startTime.value?.timeInMillis?.let { it1 ->
+                viewModel.endTime.value?.timeInMillis?.minus(
+                    it1
+                )
+            }
+            viewModel.startTime.value = it
+            viewModel.endTime.value?.timeInMillis = it.timeInMillis + interval!!
+            viewModel.endTime.value = viewModel.endTime.value
+        }
+    }
+
+    //button to select the end Date of meetup
+    private fun onEndTimeSelect() {
+        askTime(
+            childFragmentManager,
+            viewModel.endTime.value?.toSimpleDate(),
+            viewModel.endTime.value?.toSimpleTime(),
+            minDate = viewModel.startTime.value
+        ).thenAccept {
+            viewModel.endTime.value = it
+        }
     }
 }

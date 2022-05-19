@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.Manifest
 import android.app.Application
 import android.content.pm.PackageManager
+import android.icu.util.Calendar
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -82,6 +83,9 @@ class MapListViewModel @Inject constructor(
     var showParam: ShowParam = ShowParam.ALL
     private var showOnlyAvailableInTime = true
     private var filterBlockedUserMeetups = true
+
+    lateinit var startTime: MutableLiveData<Calendar>
+    lateinit var endTime: MutableLiveData<Calendar>
 
     //updates the userLocation
     init {

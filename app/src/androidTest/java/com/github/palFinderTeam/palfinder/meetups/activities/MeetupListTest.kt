@@ -26,6 +26,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.fragments.MeetupFilterFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
@@ -541,11 +542,11 @@ class MeetUpListTest {
         val expectDate2 = format.format(date2)
 
 
-        val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+        val scenario = launchFragmentInHiltContainer<MeetupFilterFragment>(Bundle().apply {
             putSerializable("ShowParam", ShowParam.ALL)
         }, navHostController = navController)
         scenario.use {
-            onView(withId(R.id.startDateFilter))
+            onView(withId(R.id.tv_StartDate))
                 .perform(ViewActions.click())
 
             onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
@@ -560,10 +561,10 @@ class MeetUpListTest {
                 PickerActions.setTime(date1.get(Calendar.HOUR_OF_DAY), date1.get(Calendar.MINUTE)),
             )
             onView(withText("OK")).perform(click())
-            onView(withId(R.id.startDateFilter)).check(matches(withText(expectDate1)))
+            onView(withId(R.id.tv_StartDate)).check(matches(withText(expectDate1)))
 
 
-            onView(withId(R.id.endDateFilter)).perform(click())
+            onView(withId(R.id.tv_EndDate)).perform(click())
 
             onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
                 PickerActions.setDate(
@@ -577,7 +578,7 @@ class MeetUpListTest {
                 PickerActions.setTime(date2.get(Calendar.HOUR_OF_DAY), date2.get(Calendar.MINUTE)),
             )
             onView(withText("OK")).perform(click())
-            onView(withId(R.id.endDateFilter)).check(matches(withText(expectDate2)))
+            onView(withId(R.id.tv_EndDate)).check(matches(withText(expectDate2)))
         }
     }
 }

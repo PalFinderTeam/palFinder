@@ -52,12 +52,7 @@ class MeetupListFragment : Fragment() {
     //allows the user to change the radius of search of meetUps around location
     private lateinit var radiusSlider: Slider
 
-    private lateinit var selectStartTime: TextView
-    private lateinit var selectEndTime: TextView
 
-    private lateinit var startTime: MutableLiveData<Calendar>
-    private lateinit var endTime: MutableLiveData<Calendar>
-    private var dateFormat = SimpleDateFormat()
 
 
     //viewModel to fetch the meetups and handle the localisation
@@ -84,30 +79,6 @@ class MeetupListFragment : Fragment() {
         //setup the searchField that will be given to the adapter as argument
         val searchField = view.findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
-
-        startTime = MutableLiveData(Calendar.getInstance())
-
-        endTime = MutableLiveData(Calendar.getInstance())
-        context?.resources?.let { endTime.value?.add(Calendar.DAY_OF_MONTH, it.getInteger(R.integer.base_day_interval)) }
-
-        selectStartTime = view.findViewById(R.id.startDateFilter)
-        selectEndTime = view.findViewById(R.id.endDateFilter)
-
-        selectStartTime.setOnClickListener {
-            onStartTimeSelect()
-        }
-
-        selectEndTime.setOnClickListener {
-            onEndTimeSelect()
-        }
-
-        startTime.observe(viewLifecycleOwner) { newDate ->
-            view.findViewById<TextView>(R.id.startDateFilter).apply { this.text = dateFormat.format(newDate) }
-        }
-        endTime.observe(viewLifecycleOwner) { newDate ->
-            view.findViewById<TextView>(R.id.endDateFilter).apply { this.text = dateFormat.format(newDate) }
-        }
-
 
 
         radiusSlider = view.findViewById(R.id.distance_slider)
@@ -195,7 +166,7 @@ class MeetupListFragment : Fragment() {
 
 
     private fun filterDate(meetup: MeetUp): Boolean{
-        return meetup.startDate.after(startTime) and meetup.endDate.before(endTime)
+        return meetup.startDate.after(viewModel.startTime) and meetup.endDate.before(viewModel.endTime)
     }
 
 
@@ -289,36 +260,7 @@ class MeetupListFragment : Fragment() {
         startActivity(intent)
     }
 
-    //button to select the start Date of meetup
-    private fun onStartTimeSelect() {
-        askTime(
-            childFragmentManager,
-            startTime.value?.toSimpleDate(),
-            startTime.value?.toSimpleTime(),
-            minDate = Calendar.getInstance()
-        ).thenAccept {
-            val interval = startTime.value?.timeInMillis?.let { it1 ->
-                endTime.value?.timeInMillis?.minus(
-                    it1
-                )
-            }
-            startTime.value = it
-            endTime.value?.timeInMillis = it.timeInMillis + interval!!
-            endTime.value = endTime.value
-        }
-    }
 
-    //button to select the end Date of meetup
-    private fun onEndTimeSelect() {
-        askTime(
-            childFragmentManager,
-            endTime.value?.toSimpleDate(),
-            endTime.value?.toSimpleTime(),
-            minDate = startTime.value
-        ).thenAccept {
-            endTime.value = it
-        }
-    }
 
 }
 
