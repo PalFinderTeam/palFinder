@@ -30,7 +30,7 @@ class ProfileAdapter(
         val fullName: TextView = view.findViewById(R.id.fullName)
         val pic: ImageView = view.findViewById(R.id.userPic)
         val followButton: Button = view.findViewById(R.id.followButton)
-        val listAchievement: List<ImageView> = listOf(view.findViewById(R.id.AchPic1), view.findViewById(R.id.AchPic2), view.findViewById(R.id.AchPic3))
+        val AchPic: ImageView = view.findViewById(R.id.AchPic1)
 
         init {
             view.setOnClickListener(this)
@@ -107,23 +107,10 @@ class ProfileAdapter(
      */
     private fun bindImages(holder: ProfileAdapter.ViewHolder, position: Int) {
         val achievements = currentDataSet[position].achievements()
-        when (achievements.size) {
-            0 -> holder.listAchievement.forEach { it.visibility = INVISIBLE }
-            1 -> {
-                holder.listAchievement[0].setImageResource(achievements[0].imageID)
-                holder.listAchievement.drop(1).forEach{it.visibility = INVISIBLE }
-            }
-            2 -> {
-                holder.listAchievement[0].setImageResource(achievements[0].imageID)
-                holder.listAchievement[1].setImageResource(achievements[1].imageID)
-                holder.listAchievement[2].visibility = INVISIBLE
-            }
-            else -> {
-                holder.listAchievement[0].setImageResource(achievements[0].imageID)
-                holder.listAchievement[1].setImageResource(achievements[1].imageID)
-                holder.listAchievement[2].setImageResource(achievements[2].imageID)
-            }
-
+        if (achievements.isEmpty()) {
+            holder.AchPic.visibility = INVISIBLE
+        } else{
+            holder.AchPic.setImageResource(achievements[0].imageID)
         }
     }
 

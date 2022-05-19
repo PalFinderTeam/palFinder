@@ -55,22 +55,6 @@
                     android:layout_marginStart="5dp"
                     app:srcCompat="@drawable/ic_checkmark" />
 
-                <ImageView
-                    android:id="@+id/AchPic2"
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="3dp"
-                    app:srcCompat="@drawable/ic_checkmark" />
-
-                <ImageView
-                    android:id="@+id/AchPic3"
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="3dp"
-                    app:srcCompat="@drawable/ic_checkmark" />
-
             </LinearLayout>
 
             <TextView

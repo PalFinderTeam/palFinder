@@ -43,6 +43,7 @@ interface ProfileService: Repository<ProfileUser> {
      * check if the follower deserves an achievement by checking the number of pals he follows
      */
     fun updateAchievementsFollower(follower: ProfileUser): String? {
+        Achievement.values().filter { it.cat == AchievementCategory.FOLLOWING }
         return when (follower.following.size) {
             followCountAdapt(MILESTONE1) -> Achievement.PAL_FINDER.aName
             followCountAdapt(MILESTONE2) -> Achievement.PAL_MINER.aName
