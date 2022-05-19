@@ -22,7 +22,7 @@ import com.github.palFinderTeam.palfinder.utils.context.ContextService
 import com.github.palFinderTeam.palfinder.utils.time.isBefore
 import com.github.palFinderTeam.palfinder.utils.time.RealTimeService
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 
@@ -56,7 +56,7 @@ class NotificationService @Inject constructor(
             }
         }
         val context = contextService.get()
-        runBlocking {
+        CoroutineScope(Dispatchers.Main).launch {
             // Notification For Follow
             val id = profileService.getLoggedInUserID()
             if (id != null){

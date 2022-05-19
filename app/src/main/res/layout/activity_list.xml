@@ -1,45 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout3"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/list_select_tag"
-        android:name="com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="4dp"
-        app:layout_constraintBottom_toTopOf="@id/distance_slider"
-        app:layout_constraintTop_toBottomOf="@id/sort_list"
-        tools:layout_editor_absoluteX="205dp" />
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/sort_list"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        android:text="@string/list_sort_menu"
-        app:layout_constraintBottom_toTopOf="@id/list_select_tag"
-        app:layout_constraintEnd_toStartOf="@+id/search_place"
-        app:layout_constraintLeft_toRightOf="@id/search_list"
-        app:layout_constraintTop_toTopOf="parent" />
+        <SearchView
+            android:id="@+id/search_list"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-    <ImageButton
-        android:id="@+id/search_place"
-        android:layout_width="0dp"
+        </SearchView>
+
+        <Button
+            android:id="@+id/sort_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:text="@string/list_sort_menu" />
+
+        <ImageButton
+            android:id="@+id/search_place"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="2dp"
+            android:src="@android:drawable/ic_dialog_map"
+            android:backgroundTint="?attr/colorPrimaryVariant" />
+    </LinearLayout>
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/distance_slider"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
-        android:backgroundTint="?attr/colorPrimaryVariant"
-        app:layout_constraintBottom_toTopOf="@id/list_select_tag"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/search_list"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_dialog_map" />
+        android:valueFrom="1.0"
+        android:valueTo="500.0">
+
+    </com.google.android.material.slider.Slider>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/startDateFilterLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:hint="@string/meetup_creation_meetup_start_date"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SettingsUsernameLayout"
+            app:startIconDrawable="@drawable/ic_baseline_calendar_month_24">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/startDateFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="false"
+                android:fontFamily="@font/fredoka_normal"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/endDateFilterLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:hint="@string/meetup_creation_meetup_end_date"
+            app:endIconMode="clear_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SettingsUsernameLayout"
+            app:startIconDrawable="@drawable/ic_baseline_calendar_month_24">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/endDateFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="false"
+                android:fontFamily="@font/fredoka_normal"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/list_select_tag"
+            android:name="com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            tools:layout="@layout/fragment_tags_display" />
 
     <Button
         android:id="@+id/select_filters"
@@ -56,9 +126,7 @@
         android:id="@+id/follower_options_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/distance_slider"
-        tools:layout_editor_absoluteX="178dp" >
+        android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/button_all"
@@ -89,41 +157,13 @@
             android:text="@string/meetup_filter_only_joined" />
 
     </RadioGroup>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/meetup_list_recycler"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/follower_options_group">
+        android:layout_height="match_parent"
+        android:padding="8dp">
 
     </androidx.recyclerview.widget.RecyclerView>
 
-    <com.google.android.material.slider.Slider
-        android:id="@+id/distance_slider"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:valueFrom="1.0"
-        android:valueTo="500.0"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/select_filters">
-
-    </com.google.android.material.slider.Slider>
-
-    <SearchView
-        android:id="@+id/search_list"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/list_select_tag"
-        app:layout_constraintEnd_toStartOf="@+id/sort_list"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-    </SearchView>
-
-
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
