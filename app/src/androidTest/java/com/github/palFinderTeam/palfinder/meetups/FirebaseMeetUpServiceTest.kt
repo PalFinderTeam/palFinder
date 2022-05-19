@@ -629,7 +629,7 @@ class FirebaseMeetUpServiceTest {
             firebaseMeetUpService.getMeetUpsAroundLocation(
                 meetUp.location,
                 630.0,
-                showParam = ShowParam.PAL_PARTCIPATING,
+                showParam = ShowParam.PAL_PARTICIPATING,
                 profile = user1
             )
         val fetchedMeetups = fetchedMeetupsFlow.take(2).toList()

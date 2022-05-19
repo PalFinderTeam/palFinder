@@ -80,17 +80,19 @@ class MeetupListFragment : Fragment() {
         }
 
         //radioGroup to choose between the different options about followers
+        /*
         val followerOptions: RadioGroup = view.findViewById(R.id.follower_options_group)
         view.findViewById<RadioButton>(R.id.button_all).isChecked = true
         followerOptions.setOnCheckedChangeListener { _, checkedId ->
             val radio: RadioButton = view.findViewById(checkedId)
             when (followerOptions.indexOfChild(radio)) {
                 0 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ALL)
-                1 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_PARTCIPATING)
+                1 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_PARTICIPATING)
                 2 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_CREATOR)
                 3 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ONLY_JOINED)
             }
         }
+         */
 
 
         //generate a new adapter for the recyclerView every time the meetUps dataset changes

@@ -84,11 +84,16 @@
     <string name="meetup_creation_icon_hint">Change the icon of the meetup directly on the map to make it stand out!</string>
 
     <!-- Strings used for meetupList -->
-    <string name="show_all">all meetups</string>
-    <string name="only_participating">pal taking part</string>
-    <string name="only_creators">created by pal</string>
-    <string name="only_joined">joined</string>
-
+    <string name="meetup_filter_show_all">All meetups</string>
+    <string name="meetup_filter_only_participating">My pals taking part</string>
+    <string name="meetup_only_creators">Created by my Pal</string>
+    <string name="meetup_filter_only_joined">Joined meetups only</string>
+    <string name="meetup_filter_title">Filter meetups</string>
+    <string name="meetup_filter_btn">Filter by</string>
+    <string name="meetup_filter_subtitle">Select an option to narrow down the displayed results</string>
+    <string name="meetup_filter_date_title">Select specific dates</string>
+    <string name="meetup_filter_date_desc">To not set any date constraints, leave the fields blank</string>
+    <string name="meetup_filter_done">Confirm filters</string>
 
 
     <!-- Strings used for meetup view -->
