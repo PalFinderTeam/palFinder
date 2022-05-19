@@ -1,6 +1,5 @@
 package com.github.palFinderTeam.palfinder.profile
 
-import com.github.palFinderTeam.palfinder.profile.AchievementMilestones.followCountAdapt
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.generics.Repository
 
@@ -40,7 +39,7 @@ interface ProfileService: Repository<ProfileUser> {
      */
     fun updateAchievementsFollower(follower: ProfileUser): List<String> {
         return Achievement.values().filter { it.cat == AchievementCategory.FOLLOWER &&
-                followCountAdapt(it.milestone) == follower.following.size}.map{it.aName}
+                it.milestone == follower.following.size}.map{it.aName}
     }
 
     /**
@@ -48,6 +47,6 @@ interface ProfileService: Repository<ProfileUser> {
      */
     fun updateAchievementsFollowed(followed: ProfileUser): List<String> {
         return Achievement.values().filter { it.cat == AchievementCategory.FOLLOWED &&
-                followCountAdapt(it.milestone) == followed.following.size}.map{it.aName}
+                it.milestone == followed.followed.size}.map{it.aName}
     }
 }

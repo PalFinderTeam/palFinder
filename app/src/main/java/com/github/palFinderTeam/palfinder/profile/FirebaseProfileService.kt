@@ -55,20 +55,22 @@ open class FirebaseProfileService @Inject constructor(
                 db.collection(PROFILE_COLL).document(user.uuid),
                 FOLLOWING_PROFILES, FieldValue.arrayUnion(targetId)
             )
-            if (updateAchievementsFollower(user).isNotEmpty()) {
+            val updatedUser = user.copy(following = user.following.plus("newUser"))
+            if (updateAchievementsFollower(updatedUser).isNotEmpty()) {
                 batch.update(
                     db.collection(PROFILE_COLL).document(user.uuid),
-                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollower(user)[0])
+                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollower(updatedUser)[0])
                 )
             }
             batch.update(
                 db.collection(PROFILE_COLL).document(targetId),
                 FOLLOWED_BY, FieldValue.arrayUnion(user.uuid)
             )
-            if (updateAchievementsFollowed(targetProfile).isNotEmpty()) {
+            val updatedTarget = targetProfile.copy(followed = targetProfile.followed.plus("newUser"))
+            if (updateAchievementsFollowed(updatedTarget).isNotEmpty()) {
                 batch.update(
                     db.collection(PROFILE_COLL).document(targetId),
-                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollowed(targetProfile)[0])
+                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollowed(updatedTarget)[0])
                 )
             }
             batch.commit().await()

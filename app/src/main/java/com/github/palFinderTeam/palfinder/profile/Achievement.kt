@@ -44,8 +44,4 @@ object AchievementMilestones {
     const val MILESTONE3 = 10
     const val MILESTONE4 = 25
 
-    /**
-     * To change the triggering milestone condition
-     */
-    fun followCountAdapt(milestone: Int) = milestone - 1
 }

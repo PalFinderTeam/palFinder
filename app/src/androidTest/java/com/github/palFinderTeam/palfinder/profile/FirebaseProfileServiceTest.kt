@@ -1,8 +1,8 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
+import android.util.Log
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
-import com.github.palFinderTeam.palfinder.profile.AchievementMilestones.followCountAdapt
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.USERNAME_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
