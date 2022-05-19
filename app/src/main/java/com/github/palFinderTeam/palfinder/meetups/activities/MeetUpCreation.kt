@@ -31,9 +31,7 @@ import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.pickProfileImage
-import com.github.palFinderTeam.palfinder.utils.time.askTime
-import com.github.palFinderTeam.palfinder.utils.time.toSimpleDate
-import com.github.palFinderTeam.palfinder.utils.time.toSimpleTime
+import com.github.palFinderTeam.palfinder.utils.time.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import com.maltaisn.icondialog.IconDialog
@@ -286,7 +284,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
             viewModel.startDate.value?.toSimpleDate(),
             viewModel.startDate.value?.toSimpleTime(),
             Calendar.getInstance(),
-            viewModel.maxStartDate
+            maxStartDate
         ).thenAccept {
             viewModel.setStartDate(it)
         }
@@ -299,7 +297,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
             viewModel.endDate.value?.toSimpleDate(),
             viewModel.endDate.value?.toSimpleTime(),
             viewModel.startDate.value,
-            viewModel.maxEndDate
+            maxEndDate
         ).thenAccept {
             viewModel.setEndDate(it)
         }

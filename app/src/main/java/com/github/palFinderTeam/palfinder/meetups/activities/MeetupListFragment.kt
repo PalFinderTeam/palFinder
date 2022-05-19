@@ -2,7 +2,10 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +13,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,9 +26,11 @@ import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.*
+import com.github.palFinderTeam.palfinder.utils.time.*
 import com.google.android.material.slider.Slider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.time.Period
 import kotlin.math.max
 import kotlin.math.min
 
@@ -44,6 +51,14 @@ class MeetupListFragment : Fragment() {
     private lateinit var tagsViewModel: TagsViewModel<Category>
     //allows the user to change the radius of search of meetUps around location
     private lateinit var radiusSlider: Slider
+
+    private lateinit var selectStartTime: TextView
+    private lateinit var selectEndTime: TextView
+
+    private lateinit var startTime: MutableLiveData<Calendar>
+    private lateinit var endTime: MutableLiveData<Calendar>
+    private var dateFormat = SimpleDateFormat()
+
 
     //viewModel to fetch the meetups and handle the localisation
     val viewModel: MapListViewModel by activityViewModels()
@@ -69,6 +84,31 @@ class MeetupListFragment : Fragment() {
         //setup the searchField that will be given to the adapter as argument
         val searchField = view.findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
+
+        startTime = MutableLiveData(Calendar.getInstance())
+
+        endTime = MutableLiveData(Calendar.getInstance())
+        context?.resources?.let { endTime.value?.add(Calendar.DAY_OF_MONTH, it.getInteger(R.integer.base_day_interval)) }
+
+        selectStartTime = view.findViewById(R.id.startDateFilter)
+        selectEndTime = view.findViewById(R.id.endDateFilter)
+
+        selectStartTime.setOnClickListener {
+            onStartTimeSelect()
+        }
+
+        selectEndTime.setOnClickListener {
+            onEndTimeSelect()
+        }
+
+        startTime.observe(viewLifecycleOwner) { newDate ->
+            view.findViewById<TextView>(R.id.startDateFilter).apply { this.text = dateFormat.format(newDate) }
+        }
+        endTime.observe(viewLifecycleOwner) { newDate ->
+            view.findViewById<TextView>(R.id.endDateFilter).apply { this.text = dateFormat.format(newDate) }
+        }
+
+
 
         radiusSlider = view.findViewById(R.id.distance_slider)
 
@@ -148,6 +188,12 @@ class MeetupListFragment : Fragment() {
      */
     private fun filterTags(meetup: MeetUp): Boolean {
         return meetup.tags.containsAll(viewModel.tags.value!!)
+    }
+
+
+
+    private fun filterDate(meetup: MeetUp): Boolean{
+        return meetup.startDate.after(startTime) and meetup.endDate.before(endTime)
     }
 
 
@@ -239,6 +285,37 @@ class MeetupListFragment : Fragment() {
                 )
             }
         startActivity(intent)
+    }
+
+    //button to select the start Date of meetup
+    private fun onStartTimeSelect() {
+        askTime(
+            childFragmentManager,
+            startTime.value?.toSimpleDate(),
+            startTime.value?.toSimpleTime(),
+            minDate = Calendar.getInstance()
+        ).thenAccept {
+            val interval = startTime.value?.timeInMillis?.let { it1 ->
+                endTime.value?.timeInMillis?.minus(
+                    it1
+                )
+            }
+            startTime.value = it
+            endTime.value?.timeInMillis = it.timeInMillis + interval!!
+            endTime.value = endTime.value
+        }
+    }
+
+    //button to select the end Date of meetup
+    private fun onEndTimeSelect() {
+        askTime(
+            childFragmentManager,
+            endTime.value?.toSimpleDate(),
+            endTime.value?.toSimpleTime(),
+            minDate = startTime.value
+        ).thenAccept {
+            endTime.value = it
+        }
     }
 
 }
