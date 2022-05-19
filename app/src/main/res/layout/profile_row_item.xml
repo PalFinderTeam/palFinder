@@ -87,11 +87,12 @@
 
     <Button
         android:id="@+id/followButton"
-        android:layout_width="76dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:fontFamily="@font/fredoka_bold"
         android:letterSpacing="0"
+        android:minWidth="0dp"
         android:paddingVertical="8dp"
         android:text="@string/follow"
         android:textAllCaps="false"

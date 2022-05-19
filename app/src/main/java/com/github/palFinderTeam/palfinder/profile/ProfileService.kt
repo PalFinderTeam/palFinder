@@ -1,5 +1,10 @@
 package com.github.palFinderTeam.palfinder.profile
 
+import com.github.palFinderTeam.palfinder.profile.AchievementMilestones.MILESTONE1
+import com.github.palFinderTeam.palfinder.profile.AchievementMilestones.MILESTONE2
+import com.github.palFinderTeam.palfinder.profile.AchievementMilestones.MILESTONE3
+import com.github.palFinderTeam.palfinder.profile.AchievementMilestones.MILESTONE4
+import com.github.palFinderTeam.palfinder.profile.AchievementMilestones.followCountAdapt
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.generics.Repository
 
@@ -55,10 +60,10 @@ interface ProfileService: Repository<ProfileUser> {
      */
     fun updateAchievementsFollower(follower: ProfileUser): String? {
         return when (follower.following.size) {
-            4 -> Achievement.PAL_FINDER.string
-            9 -> Achievement.PAL_MINER.string
-            29 -> Achievement.PAL_TRACKER.string
-            99 -> Achievement.PALDEX_COMPLETED.string
+            followCountAdapt(MILESTONE1) -> Achievement.PAL_FINDER.aName
+            followCountAdapt(MILESTONE2) -> Achievement.PAL_MINER.aName
+            followCountAdapt(MILESTONE3) -> Achievement.PAL_TRACKER.aName
+            followCountAdapt(MILESTONE4) -> Achievement.PALDEX_COMPLETED.aName
             else -> null
         }
     }
@@ -68,10 +73,10 @@ interface ProfileService: Repository<ProfileUser> {
      */
     fun updateAchievementsFollowed(followed: ProfileUser): String? {
         return when (followed.followed.size) {
-            4 -> Achievement.BEAUTY_AND_THE_PAL.string
-            9 -> Achievement.CRYPTOPAL.string
-            29 -> Achievement.MASTER_OF_CATS.string
-            99 -> Achievement.VERIFIED.string
+            followCountAdapt(MILESTONE1) -> Achievement.BEAUTY_AND_THE_PAL.aName
+            followCountAdapt(MILESTONE2) -> Achievement.CRYPTO_PAL.aName
+            followCountAdapt(MILESTONE3) -> Achievement.MASTER_OF_CATS.aName
+            followCountAdapt(MILESTONE4) -> Achievement.ULTIMATE_PAL.aName
             else -> null
         }
     }

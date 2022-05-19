@@ -23,6 +23,7 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.image.QRCode
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.BarcodeEncoder
@@ -94,7 +95,6 @@ class ProfileActivity : AppCompatActivity() {
                     injectUserInfo(it.data)
                     bindFollow(null, it.data)
                 }
-                is Response.Loading -> Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
                 is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
             }
         }
@@ -104,14 +104,13 @@ class ProfileActivity : AppCompatActivity() {
      * binds the follow/unfollow button
      */
     private fun bindFollow(view: View?, profileViewed: ProfileUser) {
-        val followButton = findViewById<Button>(R.id.button_join_meetup)
+        val followButton = findViewById<Button>(R.id.button_follow_profile)
         val blockButton = findViewById<Button>(R.id.blackList)
         viewModel.logged_profile.observe(this) {
             when(it) {
                 is Response.Success -> {
                    followAndBlockSystem(it.data, profileViewed, followButton, blockButton)
                 }
-                is Response.Loading -> Toast.makeText(applicationContext, "Fetching",  Toast.LENGTH_LONG).show()
                 is Response.Failure -> Toast.makeText(applicationContext, it.errorMessage, Toast.LENGTH_LONG).show()
             }
         }
@@ -233,14 +232,7 @@ class ProfileActivity : AppCompatActivity() {
         //Encode text in editText into QRCode image into the specified size using barcodeEncoder
         val bitmap = barcodeEncoder.encodeBitmap(USER_ID+intent.getStringExtra(USER_ID), BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
 
-        //Set up the popup image
-        val imagePopup = ImagePopup(this)
-        //Convert the bitmap(QR Code) into a drawable
-        val d: Drawable = BitmapDrawable(resources, bitmap)
-
-        //Displays the popup image
-        imagePopup.initiatePopup(d);
-        imagePopup.viewPopup()
+        QRCode.shareQRcode(bitmap, this)
 
     }
 

@@ -53,7 +53,6 @@ class TagsDisplayFragment<T: Tag>() : Fragment() {
             setEditableUI(isEditable)
         }
         plusButton.setOnClickListener { showTagSelector() }
-        placeholderText.setOnClickListener { showTagSelector() }
 
         viewModel.tagContainer.observe(viewLifecycleOwner) { newTags ->
             displayTags(newTags)
@@ -71,8 +70,10 @@ class TagsDisplayFragment<T: Tag>() : Fragment() {
 
         if (editable) {
             plusButton.visibility = VISIBLE
+            placeholderText.setOnClickListener { showTagSelector() }
         } else {
             plusButton.visibility = GONE
+            placeholderText.text = getString(R.string.tags_no_tag)
         }
     }
 

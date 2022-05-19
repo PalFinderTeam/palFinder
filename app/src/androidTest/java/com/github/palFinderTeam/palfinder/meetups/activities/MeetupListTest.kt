@@ -14,8 +14,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.BoundedMatcher
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
@@ -464,6 +463,67 @@ class MeetUpListTest {
         (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
             loggedUserId
         )
+    }
+
+    @Test
+    fun radioButtonReflectRightOptionOnStart() = runTest {
+        var scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+            putSerializable("ShowParam", ShowParam.ONLY_JOINED)
+        }, navHostController = navController)
+        scenario!!.use {
+            onView(withId(R.id.joinedButton)).check(matches(isChecked()))
+        }
+        scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+            putSerializable("ShowParam", ShowParam.ALL)
+        }, navHostController = navController)
+        scenario!!.use {
+            onView(withId(R.id.button_all)).check(matches(isChecked()))
+        }
+        scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+            putSerializable("ShowParam", ShowParam.PAL_CREATOR)
+        }, navHostController = navController)
+        scenario!!.use {
+            onView(withId(R.id.created_button)).check(matches(isChecked()))
+        }
+        scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+            putSerializable("ShowParam", ShowParam.PAL_PARTCIPATING)
+        }, navHostController = navController)
+        scenario!!.use {
+            onView(withId(R.id.participate_button)).check(matches(isChecked()))
+        }
+    }
+    @Test
+    fun radioButtonFiltersWorkAsExpected() = runTest {
+
+        meetUpList.forEach { meetUpRepository.create(it) }
+
+        val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+            putSerializable("ShowParam", ShowParam.ALL)
+        }, navHostController = navController)
+
+        scenario!!.use {
+
+            onView(withId(R.id.joinedButton)).perform(click())
+            val joinedMeetUps = meetUpList.filter { it.participantsId.contains(loggedUserId) }
+                .map { withText(it.name) }
+
+            onView(withId(R.id.meetup_list_recycler)).check(
+                matches(
+                    recyclerViewSizeMatcher(
+                        joinedMeetUps.size
+                    )
+                )
+            )
+            for (i in (joinedMeetUps.indices)) {
+                onView(
+                    RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
+                        i,
+                        R.id.meetup_title
+                    )
+                )
+                    .check(matches(anyOf(joinedMeetUps)))
+            }
+        }
     }
 }
 
