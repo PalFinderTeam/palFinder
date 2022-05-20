@@ -114,7 +114,7 @@ class ProfileAdapter(
             holder.badgePic.visibility = INVISIBLE
         } else {
             holder.badgePic.setImageResource(achievements[0].imageID)
-            holder.badgePic.setOnClickListener { Toast.makeText(context, achievements[0].aName, Toast.LENGTH_LONG).show()}
+            holder.badgePic.setOnClickListener { Toast.makeText(context, context.getString(achievements[0].descId), Toast.LENGTH_LONG).show()}
         }
     }
 
