@@ -46,117 +46,26 @@
 
     </com.google.android.material.slider.Slider>
 
-    <LinearLayout
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/list_select_tag"
+        android:name="com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/startDateFilterLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:hint="@string/meetup_creation_meetup_start_date"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/SettingsUsernameLayout"
-            app:startIconDrawable="@drawable/ic_baseline_calendar_month_24">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/startDateFilter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="false"
-                android:fontFamily="@font/fredoka_normal"
-                android:singleLine="true" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/endDateFilterLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:hint="@string/meetup_creation_meetup_end_date"
-            app:endIconMode="clear_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/SettingsUsernameLayout"
-            app:startIconDrawable="@drawable/ic_baseline_calendar_month_24">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/endDateFilter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="false"
-                android:fontFamily="@font/fredoka_normal"
-                android:singleLine="true" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-    </LinearLayout>
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/list_select_tag"
-            android:name="com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="4dp"
-            tools:layout="@layout/fragment_tags_display" />
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        tools:layout="@layout/fragment_tags_display" />
 
     <Button
         android:id="@+id/select_filters"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
+        android:layout_margin="8dp"
         android:text="@string/meetup_filter_btn"
         app:layout_constraintBottom_toTopOf="@id/list_select_tag"
         app:layout_constraintEnd_toStartOf="@+id/search_place"
         app:layout_constraintLeft_toRightOf="@id/sort_list"
         app:layout_constraintTop_toBottomOf="@id/list_select_tag" />
-
-    <RadioGroup
-        android:id="@+id/follower_options_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/button_all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/meetup_filter_show_all" />
-
-        <RadioButton
-            android:id="@+id/participate_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/meetup_filter_only_participating" />
-
-        <RadioButton
-            android:id="@+id/created_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/meetup_only_creators" />
-
-        <RadioButton
-            android:id="@+id/joinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/meetup_filter_only_joined" />
-
-    </RadioGroup>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/meetup_list_recycler"
