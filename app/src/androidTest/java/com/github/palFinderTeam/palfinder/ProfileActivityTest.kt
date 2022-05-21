@@ -2,6 +2,9 @@ package com.github.palFinderTeam.palfinder
 
 import android.content.Context
 import android.content.Intent
+import com.google.zxing.BarcodeFormat
+import com.journeyapps.barcodescanner.BarcodeEncoder
+import android.graphics.ImageDecoder
 import android.icu.util.Calendar
 import android.util.Log
 import androidx.test.InstrumentationRegistry
@@ -14,10 +17,13 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
+import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.profile.*
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
 import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.github.palFinderTeam.palfinder.utils.image.QRCode
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -81,7 +87,8 @@ class ProfileActivityTest {
             "Bio",
             Calendar.getInstance(),
             ImageInstance(""),
-            ""
+            "",
+            achievements = Achievement.values().map{it.aName}
         )
 
         userPrivate = ProfileUser(
@@ -302,5 +309,35 @@ class ProfileActivityTest {
             onView(withId(R.id.blackList)).perform(scrollTo(), click())
             assert(!profileService.fetch(userid!!)!!.blockedUsers.contains(id2))
         }
+    }
+
+        @Test
+        fun QRcodeSaveExternalWorks() = runTest {
+            val userid = profileService.create(userLouca)
+            val id2 = profileService.create(userCat)
+            (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userid)
+
+            val intent =
+                Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                    .apply { putExtra(USER_ID, id2) }
+            val scenario =
+                ActivityScenario.launch<ProfileActivity>(intent)
+            scenario.onActivity {
+                //Initiate the barcode encoder
+                val barcodeEncoder = BarcodeEncoder()
+                //Encode text in editText into QRCode image into the specified size using barcodeEncoder
+                val bitmap = barcodeEncoder.encodeBitmap(
+                    MEETUP_SHOWN,
+                    BarcodeFormat.QR_CODE,
+                    it.resources.getInteger(R.integer.QR_size),
+                    it.resources.getInteger(
+                        R.integer.QR_size
+                    )
+                )
+                val uri = QRCode.saveImageExternal(bitmap, it)
+                val decodedUri =
+                    ImageDecoder.decodeBitmap(ImageDecoder.createSource(it.contentResolver, uri!!));
+                assert(decodedUri.byteCount == bitmap.byteCount)
+            }
     }
 }
