@@ -838,12 +838,20 @@ class MeetupViewTest {
         val uid1 = profileRepository.create(user)
         val uid = profileRepository.create(user2.copy(blockedUsers = listOf(uid1!!)))
         val mid = meetUpRepository.create(meetup.copy(creatorId = uid!!))
-        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid1)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            uid1
+        )
         (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
 
         val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
             putExtra(MEETUP_SHOWN, mid)
-        onView(withId(R.id.button_join_meetup)).check(matches(isNotClickable()))
+        }
+
+        ActivityScenario.launch<MeetUpView>(intent)
+
+        // Join
+        onView(withId(R.id.button_join_meetup)).perform(betterScrollTo()).perform(click())
+        assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid), `is`(false))
     }
 
     @Test
@@ -867,14 +875,8 @@ class MeetupViewTest {
         // Unmute
         onView(withId(R.id.bt_MuteMeetup)).perform(click())
         assertThat(profileRepository.fetch(uid!!)!!.canUnMuteMeetup(mid!!), `is`(false))
-
-        ActivityScenario.launch<MeetUpView>(intent)
-
-        // Join
-        onView(withId(R.id.button_join_meetup)).perform(betterScrollTo()).perform(click())
-        assertThat(meetUpRepository.fetch(mid!!)!!.isParticipating(uid), `is`(false))
     }
-}
+
 
     @Test
     fun testCanJoinedWhenBlockedParticipantsWithWarning() = runTest {
