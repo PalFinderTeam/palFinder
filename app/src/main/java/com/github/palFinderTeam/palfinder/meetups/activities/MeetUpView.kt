@@ -188,8 +188,9 @@ class MeetUpView : AppCompatActivity() {
             viewModel.joinOrLeave(this)
         }
     }
+
     /**
-     * cannot mute/unmute a meetUp if you are not logged in
+     * Mute or Unmute the meetup
      */
     fun onMuteOrUnmute(v: View){
         viewModel.muteOrUnMute(this)
