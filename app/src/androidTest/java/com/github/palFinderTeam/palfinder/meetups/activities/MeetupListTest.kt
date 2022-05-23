@@ -1,16 +1,22 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.content.res.Resources
+import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
+import android.widget.DatePicker
+import android.widget.TimePicker
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelStore
 import androidx.navigation.testing.TestNavHostController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.BoundedMatcher
@@ -39,6 +45,7 @@ import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers
 import org.hamcrest.TypeSafeMatcher
 import org.junit.After
 import org.junit.Before
@@ -525,6 +532,54 @@ class MeetUpListTest {
             }
         }
     }
+
+    @Test
+    fun testTimePickers() = runTest {
+
+        val format = SimpleDateFormat()
+        val expectDate1 = format.format(date1)
+        val expectDate2 = format.format(date2)
+
+
+        val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+            putSerializable("ShowParam", ShowParam.ALL)
+        }, navHostController = navController)
+        scenario.use {
+            onView(withId(R.id.startDateFilter))
+                .perform(ViewActions.click())
+
+            onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
+                PickerActions.setDate(
+                    date1.get(Calendar.YEAR),
+                    date1.get(Calendar.MONTH) + 1,
+                    date1.get(Calendar.DAY_OF_MONTH)
+                ),
+            )
+            onView(withText("OK")).perform(click()) // Library is stupid and can't even press the f. button
+            onView(withClassName(Matchers.equalTo(TimePicker::class.java.name))).perform(
+                PickerActions.setTime(date1.get(Calendar.HOUR_OF_DAY), date1.get(Calendar.MINUTE)),
+            )
+            onView(withText("OK")).perform(click())
+            onView(withId(R.id.startDateFilter)).check(matches(withText(expectDate1)))
+
+
+            onView(withId(R.id.endDateFilter)).perform(click())
+
+            onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
+                PickerActions.setDate(
+                    date2.get(Calendar.YEAR),
+                    date2.get(Calendar.MONTH) + 1,
+                    date2.get(Calendar.DAY_OF_MONTH)
+                ),
+            )
+            onView(withText("OK")).perform(click()) // Library is stupid and can't even press the f. button
+            onView(withClassName(Matchers.equalTo(TimePicker::class.java.name))).perform(
+                PickerActions.setTime(date2.get(Calendar.HOUR_OF_DAY), date2.get(Calendar.MINUTE)),
+            )
+            onView(withText("OK")).perform(click())
+            onView(withId(R.id.endDateFilter)).check(matches(withText(expectDate2)))
+        }
+    }
 }
 
 class RecyclerViewMatcher(private val recyclerViewId: Int) {
@@ -572,6 +627,8 @@ class RecyclerViewMatcher(private val recyclerViewId: Int) {
             }
         }
     }
+
+
 }
 
 fun recyclerViewSizeMatcher(matcherSize: Int): Matcher<View?> {

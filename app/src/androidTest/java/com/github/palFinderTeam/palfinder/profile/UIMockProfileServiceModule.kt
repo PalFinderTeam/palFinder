@@ -138,12 +138,15 @@ object UIMockProfileServiceModule {
                 }
                 val targetProfile = fetch(targetId)!!
                 db[user.uuid] = user.copy(following = user.following.plus(targetId))
-                if (updateAchievementsFollower(user) != null) {
-                    db[user.uuid] = db[user.uuid]!!.copy(achievements = user.achievements().map{it.aName}.plus(updateAchievementsFollower(user)!!))
+                if (updateAchievementsFollower(db[user.uuid]!!).isNotEmpty()) {
+                    db[user.uuid] = db[user.uuid]!!.copy(achievements = user.achievements().map{it.aName}.
+                    plus(updateAchievementsFollower(db[user.uuid]!!)[0]))
                 }
                 db[targetId] = db[targetId]!!.copy(followed = db[targetId]!!.followed.plus(user.uuid))
-                if (updateAchievementsFollowed(targetProfile) != null) {
-                    db[targetId] = db[targetId]!!.copy(achievements = user.achievements().map{it.aName}.plus(updateAchievementsFollower(targetProfile)!!))
+                if (updateAchievementsFollowed(db[targetId]!!).isNotEmpty()) {
+                    db[targetId] = db[targetId]!!.copy(achievements = targetProfile.achievements().map{it.aName}.plus(
+                        updateAchievementsFollower(db[targetId]!!)[0]
+                    ))
                 }
                 Response.Success(Unit)
             } catch (e: Exception) {

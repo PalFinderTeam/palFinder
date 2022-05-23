@@ -20,6 +20,7 @@ import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.time.isBefore
 import com.github.palFinderTeam.palfinder.utils.time.isDeltaBefore
+import com.github.palFinderTeam.palfinder.utils.time.maxEndDate
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -78,22 +79,7 @@ class MeetUpCreationViewModel @Inject constructor(
     val criterionAge: LiveData<Pair<Int, Int>> = _criterionAge
     val criterionGender = _criterionGender
 
-    val maxStartDate: Calendar
-        get() {
-            val maxDate = Calendar.getInstance()
-            maxDate.add(Calendar.DAY_OF_MONTH, 7)
-            return maxDate
-        }
 
-    val maxEndDate: Calendar
-        get() {
-            val maxDate = Calendar.getInstance()
-            _startDate.value?.let {
-                maxDate.time = it.time
-            }
-            maxDate.add(Calendar.DAY_OF_MONTH, 2)
-            return maxDate
-        }
 
     val canEditStartDate: LiveData<Boolean> = _canEditStartDate
     val canEditEndDate: LiveData<Boolean> = _canEditEndDate

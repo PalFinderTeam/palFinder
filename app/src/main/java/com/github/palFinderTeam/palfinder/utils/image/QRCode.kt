@@ -21,7 +21,7 @@ object QRCode {
      * @param image Bitmap to save.
      * @return Uri of the saved file or null
      */
-    private fun saveImageExternal(image: Bitmap, parent: Activity): Uri? {
+    fun saveImageExternal(image: Bitmap, parent: Activity): Uri? {
         val imagesFolder = File(parent.cacheDir, "images")
         var uri: Uri? = null
         try {

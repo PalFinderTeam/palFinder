@@ -188,7 +188,7 @@ data class ProfileUser(
     }
 
     fun achievements(): List<Achievement> {
-        return achievements.reversed().map { Achievement.from(it) }
+        return achievements.map { Achievement.from(it) }
     }
 
     fun canBlock(uuid: String): Boolean {
@@ -205,5 +205,9 @@ data class ProfileUser(
 
     fun isMeetupMuted(uuid: String): Boolean{
         return mutedMeetups.contains(uuid)
+    }
+
+    fun badges(): List<Achievement> {
+        return achievements().filter { it.cat == AchievementCategory.OTHER }
     }
 }
