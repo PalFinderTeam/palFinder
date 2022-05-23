@@ -2,11 +2,8 @@ package com.github.palFinderTeam.palfinder
 
 import android.content.Context
 import android.content.Intent
-import com.google.zxing.BarcodeFormat
-import com.journeyapps.barcodescanner.BarcodeEncoder
 import android.graphics.ImageDecoder
 import android.icu.util.Calendar
-import android.util.Log
 import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -18,12 +15,13 @@ import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
-import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.profile.*
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
 import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.QRCode
+import com.google.zxing.BarcodeFormat
+import com.journeyapps.barcodescanner.BarcodeEncoder
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -88,7 +86,7 @@ class ProfileActivityTest {
             Calendar.getInstance(),
             ImageInstance(""),
             "",
-            achievements = Achievement.values().map{it.aName}
+            achievements = Achievement.values().map { it.aName }
         )
 
         userPrivate = ProfileUser(
@@ -109,11 +107,11 @@ class ProfileActivityTest {
             "one",
             Calendar.getInstance(),
             ImageInstance("")
-            )
+        )
     }
 
     @Before
-    fun setBaseUser() = runTest{
+    fun setBaseUser() = runTest {
         val id = profileService.create(someUser)
         (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(id)
     }
@@ -234,7 +232,7 @@ class ProfileActivityTest {
     }
 
     @Test
-    fun testPrivateUserProfile() = runTest{
+    fun testPrivateUserProfile() = runTest {
         val uuid = profileService.create(userPrivate)
 
         val intent =
@@ -253,9 +251,9 @@ class ProfileActivityTest {
     }
 
 
-    private fun getResourceString(id: Int): String? {
+    private fun getResourceString(id: Int): String {
         val targetContext: Context = InstrumentationRegistry.getTargetContext()
-        return targetContext.getResources().getString(id)
+        return targetContext.resources.getString(id)
     }
 
 
@@ -305,39 +303,39 @@ class ProfileActivityTest {
 
             assert(!profileService.fetch(userid!!)!!.blockedUsers.contains(id2))
             onView(withId(R.id.blackList)).perform(scrollTo(), click())
-            assert(profileService.fetch(userid!!)!!.blockedUsers.contains(id2))
+            assert(profileService.fetch(userid)!!.blockedUsers.contains(id2))
             onView(withId(R.id.blackList)).perform(scrollTo(), click())
-            assert(!profileService.fetch(userid!!)!!.blockedUsers.contains(id2))
+            assert(!profileService.fetch(userid)!!.blockedUsers.contains(id2))
         }
     }
 
-        @Test
-        fun QRcodeSaveExternalWorks() = runTest {
-            val userid = profileService.create(userLouca)
-            val id2 = profileService.create(userCat)
-            (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userid)
+    @Test
+    fun qrCodeSaveExternalWorks() = runTest {
+        val userid = profileService.create(userLouca)
+        val id2 = profileService.create(userCat)
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userid)
 
-            val intent =
-                Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
-                    .apply { putExtra(USER_ID, id2) }
-            val scenario =
-                ActivityScenario.launch<ProfileActivity>(intent)
-            scenario.onActivity {
-                //Initiate the barcode encoder
-                val barcodeEncoder = BarcodeEncoder()
-                //Encode text in editText into QRCode image into the specified size using barcodeEncoder
-                val bitmap = barcodeEncoder.encodeBitmap(
-                    MEETUP_SHOWN,
-                    BarcodeFormat.QR_CODE,
-                    it.resources.getInteger(R.integer.QR_size),
-                    it.resources.getInteger(
-                        R.integer.QR_size
-                    )
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, id2) }
+        val scenario =
+            ActivityScenario.launch<ProfileActivity>(intent)
+        scenario.onActivity {
+            //Initiate the barcode encoder
+            val barcodeEncoder = BarcodeEncoder()
+            //Encode text in editText into QRCode image into the specified size using barcodeEncoder
+            val bitmap = barcodeEncoder.encodeBitmap(
+                MEETUP_SHOWN,
+                BarcodeFormat.QR_CODE,
+                it.resources.getInteger(R.integer.QR_size),
+                it.resources.getInteger(
+                    R.integer.QR_size
                 )
-                val uri = QRCode.saveImageExternal(bitmap, it)
-                val decodedUri =
-                    ImageDecoder.decodeBitmap(ImageDecoder.createSource(it.contentResolver, uri!!));
-                assert(decodedUri.byteCount == bitmap.byteCount)
-            }
+            )
+            val uri = QRCode.saveImageExternal(bitmap, it)
+            val decodedUri =
+                ImageDecoder.decodeBitmap(ImageDecoder.createSource(it.contentResolver, uri!!));
+            assert(decodedUri.byteCount == bitmap.byteCount)
+        }
     }
 }
