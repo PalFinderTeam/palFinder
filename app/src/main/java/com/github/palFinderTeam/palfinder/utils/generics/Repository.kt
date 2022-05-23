@@ -30,7 +30,8 @@ interface Repository<T> {
     suspend fun edit(uuid: String, obj: T): String?
 
     /**
-     * Edit an existing object in db.
+     * Edit an existing object in db. If the [field] does
+     * not exists, will create it with the new [value].
      *
      * @param uuid of object.
      * @param field String key of field to update.
