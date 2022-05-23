@@ -116,10 +116,20 @@ class ProfileViewModel @Inject constructor(
      */
     fun block(userId: String, otherId: String) {
         viewModelScope.launch {
-            profileService.fetch(userId)?.let {
+            profileService.fetch(userId)?.let { user ->
                 // Sanity check
-                if (userId != otherId && !it.blockedUsers.contains(otherId)) {
-                    profileService.edit(it.uuid, BLOCKED_USERS, it.blockedUsers.plus(otherId))
+                if (userId != otherId && !user.blockedUsers.contains(otherId)) {
+                    val newBlockList = user.blockedUsers.plus(otherId)
+                    profileService.unfollowUser(user, otherId)
+                    profileService.edit(user.uuid, BLOCKED_USERS, newBlockList)
+                    // Leave all meetups organize by blocked user
+                    for (meetupId in user.joinedMeetUps) {
+                        meetUpService.fetch(meetupId)?.let { meetUp ->
+                            if (meetUp.creatorId == otherId) {
+                                meetUpService.leaveMeetUp(meetUp.uuid, user.uuid)
+                            }
+                        }
+                    }
                 }
             }
         }

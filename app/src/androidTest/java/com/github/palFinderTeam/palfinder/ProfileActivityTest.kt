@@ -14,9 +14,13 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
+import com.github.palFinderTeam.palfinder.meetups.MeetUp
+import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.profile.*
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOINED_MEETUPS_KEY
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
+import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.QRCode
@@ -46,6 +50,9 @@ class ProfileActivityTest {
 
     @Inject
     lateinit var profileService: ProfileService
+
+    @Inject
+    lateinit var meetupService: MeetUpRepository
 
     @Before
     fun getProfile() {
@@ -310,6 +317,40 @@ class ProfileActivityTest {
     }
 
     @Test
+    fun blockLeaveMeetupFromBlocked() = runTest {
+        val userid = profileService.create(userLouca)
+        val id2 = profileService.create(userCat)
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userid)
+        val meetup = MeetUp(
+            "",
+            id2!!,
+            null,
+            "fefe",
+            "efefe",
+            Calendar.getInstance(),
+            Calendar.getInstance(),
+            Location(1.0, 2.0),
+            emptySet(),
+            false,
+            33,
+            listOf(id2, userid!!)
+        )
+        val meetupId = meetupService.create(meetup)
+        profileService.edit(userid, JOINED_MEETUPS_KEY, listOf(meetupId!!))
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), ProfileActivity::class.java)
+                .apply { putExtra(USER_ID, id2) }
+        val scenario =
+            ActivityScenario.launch<ProfileActivity>(intent)
+        scenario!!.use {
+
+            assert(profileService.fetch(userid)!!.joinedMeetUps.contains(meetupId))
+            onView(withId(R.id.blackList)).perform(scrollTo(), click())
+            assert(!meetupService.fetch(meetupId)!!.participantsId.contains(userid))
+        }
+    }
+
+    @Test
     fun qrCodeSaveExternalWorks() = runTest {
         val userid = profileService.create(userLouca)
         val id2 = profileService.create(userCat)
@@ -320,6 +361,7 @@ class ProfileActivityTest {
                 .apply { putExtra(USER_ID, id2) }
         val scenario =
             ActivityScenario.launch<ProfileActivity>(intent)
+
         scenario.onActivity {
             //Initiate the barcode encoder
             val barcodeEncoder = BarcodeEncoder()

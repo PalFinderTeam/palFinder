@@ -44,10 +44,11 @@ class MapListViewModel @Inject constructor(
         const val INITIAL_RADIUS: Double = 400.0
         val START_LOCATION = Location(45.0, 45.0)
 
+        // Remove meetups created by blocked users
         private fun Response<List<MeetUp>>.filterBlocked(blockedUser: List<String>): Response<List<MeetUp>> {
             return if (this is Response.Success) {
                 val filtered = this.data.filter { meetUp ->
-                    meetUp.participantsId.intersect(blockedUser).isEmpty()
+                    !blockedUser.contains(meetUp.creatorId)
                 }
                 Response.Success(filtered)
             } else {
