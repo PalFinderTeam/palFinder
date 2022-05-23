@@ -2,6 +2,8 @@ package com.github.palFinderTeam.palfinder.chat
 
 import android.app.Application
 import android.icu.util.Calendar
+import android.opengl.Visibility
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.AndroidViewModel
@@ -20,7 +22,7 @@ class ChatViewModel @Inject constructor(
     var chatService: ChatService,
     val profileService: ProfileService,
     application: Application
-    ): AndroidViewModel(application) {
+) : AndroidViewModel(application) {
 
     val listOfMessage: MutableLiveData<MutableList<ChatMessage>> = MutableLiveData()
     val profilesData = HashMap<String, ProfileUser>()
@@ -32,7 +34,7 @@ class ChatViewModel @Inject constructor(
      *
      * @param content message to send
      */
-    fun sendMessage(content: String){
+    fun sendMessage(content: String) {
         val user = profileService.getLoggedInUserID()
         if (user != null) {
             val msg = ChatMessage(Calendar.getInstance(), user, content, false)
@@ -48,7 +50,7 @@ class ChatViewModel @Inject constructor(
      *
      * @param chatID meetup id of the chat
      */
-    fun connectToChat(chatID: String){
+    fun connectToChat(chatID: String) {
         this.chatID = chatID
         listOfMessage.value = mutableListOf()
         viewModelScope.launch {
@@ -65,11 +67,11 @@ class ChatViewModel @Inject constructor(
      * @param pictureBox ImageView where to put the profile picture
      * @param nameBox TextView where to put the user name
      */
-    suspend fun loadProfileData(userId: String, pictureBox: ImageView, nameBox: TextView){
-        if (!profilesData.containsKey(userId)){
+    suspend fun loadProfileData(userId: String, pictureBox: ImageView, nameBox: TextView) {
+        if (!profilesData.containsKey(userId)) {
             viewModelScope.launch {
                 profileService.fetchFlow(userId).collect {
-                    when(it) {
+                    when (it) {
                         is Response.Success -> {
                             profilesData[userId] = it.data
                             loadCachedUser(userId, pictureBox, nameBox)
@@ -80,14 +82,19 @@ class ChatViewModel @Inject constructor(
                     }
                 }
             }
-        }
-        else{
+        } else {
             loadCachedUser(userId, pictureBox, nameBox)
         }
     }
 
-    private suspend fun loadCachedUser(userId: String, pictureBox: ImageView, nameBox: TextView){
+    private suspend fun loadCachedUser(userId: String, pictureBox: ImageView, nameBox: TextView) {
         nameBox.text = profilesData[userId]!!.username
-        profilesData[userId]!!.pfp.loadImageInto(pictureBox, getApplication<Application>().applicationContext)
+        // Don't load own picture
+        if (profileService.getLoggedInUserID() != userId) {
+            profilesData[userId]!!.pfp.loadImageInto(
+                pictureBox,
+                getApplication<Application>().applicationContext
+            )
+        }
     }
 }
