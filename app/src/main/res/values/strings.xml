@@ -247,6 +247,9 @@
     <string name="following_content">%1$s is now following you!</string>
     <string name="following_title">New Follower!</string>
 
+    <string name="achievement_content">You unlock the %1$s achievement!</string>
+    <string name="achievement_title">New Achievement!</string>
+
     <string name="block_user">Block user</string>
     <string name="unblock_user">Unblock user</string>
 
