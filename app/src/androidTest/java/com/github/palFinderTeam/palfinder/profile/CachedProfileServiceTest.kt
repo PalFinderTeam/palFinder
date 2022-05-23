@@ -145,6 +145,31 @@ class CachedProfileServiceTest {
     }
 
     @Test
+    fun muteMeetupWork() = runTest {
+        val id = firebaseProfileService.create(profile)!!
+        val meetup = "dummy"
+        assert(!db.collection(PROFILE_COLL).document(id!!).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
+        firebaseProfileService.unMuteMeetup(firebaseProfileService.fetch(id)!!, meetup)
+        assert(!db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
+        firebaseProfileService.muteMeetup(firebaseProfileService.fetch(id)!!, meetup)
+        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
+        firebaseProfileService.unMuteMeetup(firebaseProfileService.fetch(id)!!, meetup)
+        assert(!db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
+    }
+
+    @Test
+    fun unMuteMeetupWork() = runTest {
+        val id = firebaseProfileService.create(profile)!!
+        val meetup = "dummy"
+        firebaseProfileService.muteMeetup(firebaseProfileService.fetch(id)!!, meetup!!)
+        assert(db.collection(PROFILE_COLL).document(id!!).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
+        firebaseProfileService.muteMeetup(firebaseProfileService.fetch(id)!!, meetup)
+        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
+        firebaseProfileService.unMuteMeetup(firebaseProfileService.fetch(id)!!, meetup)
+        assert(!db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.mutedMeetups.contains(meetup))
+    }
+
+    @Test
     fun fetchUserFlowReturnRightInfoAndBehaveAsExpected() = runTest {
         val id = firebaseProfileService.create(profile)
         assertThat(id, notNullValue())
