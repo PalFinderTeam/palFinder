@@ -322,7 +322,7 @@ class MeetupViewTest {
             Intents.init()
 
             scenario.onHiltFragment<MeetUpCreation> {
-                it.viewModel.setLatLng(LatLng(0.0,0.0))
+                it.viewModel.setLatLng(LatLng(0.0, 0.0))
             }
             onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
             onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
@@ -350,7 +350,9 @@ class MeetupViewTest {
                 }
         }
 
-        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userid!!)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            userid!!
+        )
 
         assertThat(userid, notNullValue())
         newMeetup = MeetUp(
@@ -403,7 +405,7 @@ class MeetupViewTest {
     }
 
     @Test
-    fun DisplayAchievementInFragment() = runTest {
+    fun displayAchievementInFragment() = runTest {
         val userid = profileRepository.create(user)
         val id2 = profileRepository.create(user2)
         val userListFactory = object : FragmentFactory() {
@@ -414,7 +416,9 @@ class MeetupViewTest {
                 }
         }
 
-        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userid!!)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            userid!!
+        )
 
         assertThat(userid, notNullValue())
         newMeetup = MeetUp(
@@ -440,40 +444,64 @@ class MeetupViewTest {
             onView(
                 RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
                     0,
-                    R.id.AchPic1
+                    R.id.BadgePic
                 )
             ).check(matches(withEffectiveVisibility(Visibility.INVISIBLE)))
             profileRepository.edit(
                 userid,
                 user.copy(
                     achievements = listOf(
-                        Achievement.VERIFIED.aName,
-                        Achievement.CRYPTO_PAL.aName,
-                        Achievement.PAL_MINER.aName
+                        Achievement.VERIFIED.aName
                     )
                 )
             )
         }
-        scenario = launchFragmentInHiltContainer<ProfileListFragment>(fragmentFactory = userListFactory)
+        scenario =
+            launchFragmentInHiltContainer<ProfileListFragment>(fragmentFactory = userListFactory)
         scenario!!.use {
             onView(
                 RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
                     0,
-                    R.id.AchPic1
+                    R.id.BadgePic
                 )
             ).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+            profileRepository.edit(
+                userid,
+                user.copy(
+                    achievements = listOf(
+                        Achievement.CRYPTO_PAL.aName
+                    )
+                )
+            )
+        }
+        scenario =
+            launchFragmentInHiltContainer<ProfileListFragment>(fragmentFactory = userListFactory)
+        scenario!!.use {
             onView(
                 RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
                     0,
-                    R.id.AchPic2
+                    R.id.BadgePic
                 )
-            ).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+            ).check(matches(withEffectiveVisibility(Visibility.INVISIBLE)))
+            profileRepository.edit(
+                userid,
+                user.copy(
+                    achievements = listOf(
+                        Achievement.DEVELOPER.aName
+                    )
+                )
+            )
+        }
+        scenario =
+            launchFragmentInHiltContainer<ProfileListFragment>(fragmentFactory = userListFactory)
+        scenario!!.use {
             onView(
                 RecyclerViewMatcher(R.id.profile_list_recycler).atPositionOnView(
                     0,
-                    R.id.AchPic3
+                    R.id.BadgePic
                 )
             ).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+
         }
     }
 
@@ -488,7 +516,7 @@ class MeetupViewTest {
             Intents.init()
 
             scenario.onHiltFragment<MeetUpCreation> {
-                it.viewModel.setLatLng(LatLng(0.0,0.0))
+                it.viewModel.setLatLng(LatLng(0.0, 0.0))
             }
 
             onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
@@ -533,7 +561,7 @@ class MeetupViewTest {
             Intents.init()
 
             scenario.onHiltFragment<MeetUpCreation> {
-                it.viewModel.setLatLng(LatLng(0.0,0.0))
+                it.viewModel.setLatLng(LatLng(0.0, 0.0))
             }
             onView(withId(R.id.et_EventName)).perform(typeText("Meetup name"), click())
             onView(withId(R.id.et_Description)).perform(typeText("Meetup description"), click())
@@ -573,7 +601,9 @@ class MeetupViewTest {
     @Test
     fun checkErrorWork() = runTest {
         val uid = profileRepository.create(user)
-        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            uid
+        )
 
         val id = meetUpRepository.create(meetup)
         assertThat(id, notNullValue())
@@ -597,7 +627,9 @@ class MeetupViewTest {
     fun testEditButton() = runTest {
         val uid = profileRepository.create(user)
         val mid = meetUpRepository.create(meetup.copy(creatorId = uid!!))
-        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            uid
+        )
 
         val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
             putExtra(MEETUP_SHOWN, mid)
@@ -625,7 +657,9 @@ class MeetupViewTest {
     fun testChatButton() = runTest {
         val uid = profileRepository.create(user)
         val mid = meetUpRepository.create(meetup.copy(participantsId = listOf(uid!!)))
-        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            uid
+        )
 
         val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
             putExtra(MEETUP_SHOWN, mid)
@@ -681,7 +715,10 @@ class MeetupViewTest {
             )
             onView(withText("OK")).perform(click()) // Library is stupid and can't even press the f. button
             onView(withClassName(Matchers.equalTo(TimePicker::class.java.name))).perform(
-                PickerActions.setTime(date1.get(Calendar.HOUR_OF_DAY), date1.get(Calendar.MINUTE)),
+                PickerActions.setTime(
+                    date1.get(Calendar.HOUR_OF_DAY),
+                    date1.get(Calendar.MINUTE)
+                ),
             )
             onView(withText("OK")).perform(click())
             onView(withId(R.id.tv_StartDate)).check(matches(withText(expectDate1)))
@@ -698,7 +735,10 @@ class MeetupViewTest {
             )
             onView(withText("OK")).perform(click()) // Library is stupid and can't even press the f. button
             onView(withClassName(Matchers.equalTo(TimePicker::class.java.name))).perform(
-                PickerActions.setTime(date2.get(Calendar.HOUR_OF_DAY), date2.get(Calendar.MINUTE)),
+                PickerActions.setTime(
+                    date2.get(Calendar.HOUR_OF_DAY),
+                    date2.get(Calendar.MINUTE)
+                ),
             )
             onView(withText("OK")).perform(click())
             onView(withId(R.id.tv_EndDate)).check(matches(withText(expectDate2)))
@@ -709,7 +749,9 @@ class MeetupViewTest {
     fun testJoinLeaveButton() = runTest {
         val mid = meetUpRepository.create(meetup)
         val uid = profileRepository.create(user2)
-        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            uid
+        )
         (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
 
         val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
@@ -731,7 +773,9 @@ class MeetupViewTest {
     fun testCannotJoinCreatedByBlock() = runTest {
         val mid = meetUpRepository.create(meetup)
         val uid = profileRepository.create(user2.copy(blockedUsers = listOf("user")))
-        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            uid
+        )
         (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
 
         val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
@@ -750,7 +794,9 @@ class MeetupViewTest {
         val mid = meetUpRepository.create(meetup)
         val uid = profileRepository.create(user)
 
-        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            uid
+        )
         (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
 
         Intents.init()
@@ -761,7 +807,12 @@ class MeetupViewTest {
         ActivityScenario.launch<MeetUpView>(intent)
         onView(withId(R.id.tv_ViewEventCreator)).perform(betterScrollTo()).perform(click())
 
-        Intents.intended(allOf(IntentMatchers.hasComponent(ProfileActivity::class.java.name), hasExtra(USER_ID, user.uuid)))
+        Intents.intended(
+            allOf(
+                IntentMatchers.hasComponent(ProfileActivity::class.java.name),
+                hasExtra(USER_ID, user.uuid)
+            )
+        )
         Intents.release()
     }
 
@@ -769,7 +820,9 @@ class MeetupViewTest {
     fun testJoinLeaveCreatorButton() = runTest {
         val uid = profileRepository.create(user)
         val mid = meetUpRepository.create(meetup.copy(creatorId = uid!!))
-        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(uid)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            uid
+        )
         (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
 
         val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
@@ -865,23 +918,23 @@ class ClickCloseIconAction : ViewAction {
 }
 
 
-
 // scroll-to action that also works with NestedScrollViews
-class BetterScrollToAction:ViewAction by ScrollToAction()
-{
-    override fun getConstraints():Matcher<View>
-    {
+class BetterScrollToAction : ViewAction by ScrollToAction() {
+    override fun getConstraints(): Matcher<View> {
         return allOf(
             withEffectiveVisibility(Visibility.VISIBLE),
-            isDescendantOfA(anyOf(
-                isAssignableFrom(ScrollView::class.java),
-                isAssignableFrom(HorizontalScrollView::class.java),
-                isAssignableFrom(NestedScrollView::class.java))))
+            isDescendantOfA(
+                anyOf(
+                    isAssignableFrom(ScrollView::class.java),
+                    isAssignableFrom(HorizontalScrollView::class.java),
+                    isAssignableFrom(NestedScrollView::class.java)
+                )
+            )
+        )
     }
 }
 
 // convenience method
-fun betterScrollTo():ViewAction
-{
+fun betterScrollTo(): ViewAction {
     return actionWithAssertions(BetterScrollToAction())
 }

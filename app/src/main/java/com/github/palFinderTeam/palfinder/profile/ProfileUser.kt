@@ -182,10 +182,14 @@ data class ProfileUser(
     }
 
     fun achievements(): List<Achievement> {
-        return achievements.reversed().map { Achievement.from(it) }
+        return achievements.map { Achievement.from(it) }
     }
 
     fun canBlock(uuid: String): Boolean {
         return !blockedUsers.contains(uuid)
+    }
+
+    fun badges(): List<Achievement> {
+        return achievements().filter { it.cat == AchievementCategory.OTHER }
     }
 }

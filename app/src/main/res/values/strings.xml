@@ -40,6 +40,18 @@
     <string name="qr_scan_join_meetup">Do you want to join this meetup ?</string>
 
 
+    <!-- String used for the achievements names -->
+    <string name="developer">You are the joyful cornerStone of the palFinderTeam !</string>
+    <string name="verified">Let me check.. Yes ! You are verified !</string>
+    <string name="pal_finder">Everyone must start somewhere.. (follow 1 pal)</string>
+    <string name="pal_miner">You are a pal and you\'re digging a hole.. (follow 5 pals)</string>
+    <string name="pal_tracker">We\'re missing paper to track your pals ! (follow 10 pals)</string>
+    <string name="paldex_completed">You\'re the ultimate fan, you have completed the paldex ! (follow 25 pals)</string>
+    <string name="the_beauty_and_the_pal">Ready for a date with your n°1 fan ? (1 fan)</string>
+    <string name="crypto_pal">Time to launch your own NFT ! To the moon ! (5 fans)</string>
+    <string name="master_of_cats">You\'re so famous even the catMaster has heard of you ! (10 fans)</string>
+    <string name="ultimate_pal">Your own religion will rise to the moon, conquer the solar system, fly to Andromeda ! (25 fans)</string>
+
     <!-- Strings used for meetup creation -->
     <string name="meetup_creation_meetup_name">Event Name</string>
     <string name="meetup_creation_meetup_name_example" translatable="false">Party with the boys!</string>
