@@ -267,5 +267,7 @@
     <string name="meetup_start_title">%1$s is starting!</string>
     <string name="tags_no_tag">No tags</string>
 
+    <string name="navigationUri" translatable="false">google.navigation:q=</string>
+    <string name="mapPackage" translatable="false">com.google.android.apps.maps</string>
 
 </resources>
