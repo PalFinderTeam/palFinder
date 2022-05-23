@@ -166,7 +166,7 @@ data class ProfileUser(
     }
 
     fun canFollow(profileId: String): Boolean {
-        return profileId != uuid && !following.contains(profileId)
+        return profileId != uuid && !following.contains(profileId) && !blockedUsers.contains(profileId)
     }
 
     fun canUnFollow(profileId: String): Boolean {

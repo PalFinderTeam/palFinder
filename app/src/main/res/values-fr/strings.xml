@@ -234,10 +234,10 @@
     <string name="title_attendees_list">Participants</string>
     <string name="search_user_hint">Chercher un utilisateur</string>
   
-    <string name="meetup_creation_icon_title">Appyuer pour choisir le repère</string>
+    <string name="meetup_creation_icon_title">Appuyer pour choisir le repère</string>
     <string name="meetup_creation_icon_hint">Changez l\'icone de la rencontre directement sur la carte!</string>
 
-    <string name="meetup_with_blocked">Vous ne pouvez pas rejoindre cette rencontre car vous avez bloqué un des membres.</string>
+    <string name="meetup_with_blocked">Vous ne pouvez pas rejoindre cette rencontre car vous avez bloqué son créateur.</string>
     <string name="block_user">Bloquer l\'utilisateur</string>
     <string name="unblock_user">Débloquer l\'utilisateur</string>
 
@@ -250,6 +250,8 @@
     <string name="followers_handle_title">Abonnés</string>
     <string name="profile_last_attended">Dernières participations</string>
     <string name="tags_no_tag">Pas d\'étiquettes</string>
+    <string name="meetup_with_blocked_warning">Un utilisateur que vous avez bloqué participe à la rencontre, voulez-vous continuer ?</string>
+    <string name="meetup_where_you_are_blocked">Vous ne pouvez pas rejoindre cette rencontre, vous avez été bloqués par son créateur</string>
 
 
 

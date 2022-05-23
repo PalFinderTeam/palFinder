@@ -91,17 +91,6 @@ class FirebaseProfileServiceTest {
     }
 
     @Test
-    fun editNonExistingFieldReturnsNull() = runTest {
-        val id = firebaseProfileService.create(profile)
-        id!!.let {
-            val idNull = firebaseProfileService.edit(it, "NotAField", "NotAValue")
-            assertThat(idNull, nullValue())
-            db.collection(FirebaseMeetUpService.MEETUP_COLL).document(it).delete().await()
-            db.collection(PROFILE_COLL).document(profile.uuid).delete().await()
-        }
-    }
-
-    @Test
     fun editNonExistingUserWithEntireNewProfileReturnsNull() = runTest {
         val nonExistingId = firebaseProfileService.edit("HAHA", profile)
         assertThat(nonExistingId, nullValue())

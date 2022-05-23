@@ -114,6 +114,8 @@
     <string name="meetup_view_muted">You muted the meetup</string>
     <string name="meetup_view_unmuted">You unmuted the meetup</string>
     <string name="meetup_with_blocked">You cannot join this meetup, you blocked one of the participant.</string>
+    <string name="meetup_with_blocked">You cannot join this meetup, you blocked the creator.</string>
+    <string name="meetup_where_you_are_blocked">You cannot join this meetup, you are blocked by creator.</string>
     <string name="meetup_view_participation_unlimited">%d</string>
     <string name="meetup_view_participation_limited">%d (out of %d)</string>
     <string name="meetup_view_age_min">13</string>
@@ -130,6 +132,7 @@
     <string name="meetup_view_age_text">Age</string>
     <string name="meetup_view_age">%s-%s years</string>
     <string name="meetup_view_gender_title">Gender</string>
+    <string name="meetup_with_blocked_warning">A user you blocked is participating in this meetup, are you sure you want to join ?</string>
 
 
     <string name="ok">OK</string>
