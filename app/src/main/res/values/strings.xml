@@ -129,7 +129,7 @@
     <string name="meetup_view_age_text">Age</string>
     <string name="meetup_view_age">%s-%s years</string>
     <string name="meetup_view_gender_title">Gender</string>
-    <string name="meetup_with_blocked_warning">A user you blocked participate in this meetup, are you sure you want to join ?</string>
+    <string name="meetup_with_blocked_warning">A user you blocked is participating in this meetup, are you sure you want to join ?</string>
 
 
     <string name="ok">OK</string>
