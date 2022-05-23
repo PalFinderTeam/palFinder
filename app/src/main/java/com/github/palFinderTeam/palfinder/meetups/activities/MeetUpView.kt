@@ -183,13 +183,7 @@ class MeetUpView : AppCompatActivity() {
      */
     fun onJoinOrLeave(v: View) {
         if (profileService.getLoggedInUserID() == null) {
-            createPopUp(
-                this,
-                { startActivity(Intent(this, LoginActivity::class.java)) },
-                textId = R.string.no_account_join,
-                continueButtonTextId = R.string.login
-            )
-
+            loginPopUp()
         } else {
             viewModel.joinOrLeave(this)
         }
@@ -198,15 +192,7 @@ class MeetUpView : AppCompatActivity() {
      * cannot mute/unmute a meetUp if you are not logged in
      */
     fun onMuteOrUnmute(v: View){
-        if(profileService.getLoggedInUserID() == null){
-            createPopUp(this,
-                { startActivity(Intent(this, LoginActivity::class.java)) },
-                textId = R.string.no_account_join,
-                continueButtonTextId = R.string.login
-            )
-        }else {
-            viewModel.muteOrUnMute(this)
-        }
+        viewModel.muteOrUnMute(this)
     }
 
     private fun onJoinWithBlockedUsers() {
@@ -217,5 +203,11 @@ class MeetUpView : AppCompatActivity() {
         )
     }
 
-
+    private fun loginPopUp(){
+        createPopUp(this,
+            { startActivity(Intent(this, LoginActivity::class.java)) },
+            textId = R.string.no_account_join,
+            continueButtonTextId = R.string.login
+        )
+    }
 }

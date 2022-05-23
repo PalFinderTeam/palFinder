@@ -60,18 +60,21 @@ open class FirebaseProfileService @Inject constructor(
             if (updateAchievementsFollower(updatedUser).isNotEmpty()) {
                 batch.update(
                     db.collection(PROFILE_COLL).document(user.uuid),
-                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollower(updatedUser)[0])
+                    ACHIEVEMENTS_OBTAINED,
+                    FieldValue.arrayUnion(updateAchievementsFollower(updatedUser)[0])
                 )
             }
             batch.update(
                 db.collection(PROFILE_COLL).document(targetId),
                 FOLLOWED_BY, FieldValue.arrayUnion(user.uuid)
             )
-            val updatedTarget = targetProfile.copy(followed = targetProfile.followed.plus("newUser"))
+            val updatedTarget =
+                targetProfile.copy(followed = targetProfile.followed.plus("newUser"))
             if (updateAchievementsFollowed(updatedTarget).isNotEmpty()) {
                 batch.update(
                     db.collection(PROFILE_COLL).document(targetId),
-                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollowed(updatedTarget)[0])
+                    ACHIEVEMENTS_OBTAINED,
+                    FieldValue.arrayUnion(updateAchievementsFollowed(updatedTarget)[0])
                 )
             }
             batch.commit().await()
@@ -107,12 +110,10 @@ open class FirebaseProfileService @Inject constructor(
             if (!user.canMuteMeetup(meetup)) {
                 return Response.Failure("Cannot mute this meetup.")
             }
-            val batch = db.batch()
-            batch.update(
-                db.collection(PROFILE_COLL).document(user.uuid),
-                MUTED_MEETUPS, FieldValue.arrayUnion(meetup)
-            )
-            batch.commit().await()
+
+            db.collection(PROFILE_COLL).document(user.uuid)
+                .update(MUTED_MEETUPS, FieldValue.arrayUnion(meetup)).await()
+
             Response.Success(Unit)
         } catch (e: Exception) {
             Response.Failure(e.message.orEmpty())
@@ -124,12 +125,8 @@ open class FirebaseProfileService @Inject constructor(
             if (!user.canUnMuteMeetup(meetup)) {
                 return Response.Failure("Cannot unmute this meetup.")
             }
-            val batch = db.batch()
-            batch.update(
-                db.collection(PROFILE_COLL).document(user.uuid),
-                MUTED_MEETUPS, FieldValue.arrayRemove(meetup)
-            )
-            batch.commit().await()
+            db.collection(PROFILE_COLL).document(user.uuid)
+                .update(MUTED_MEETUPS, FieldValue.arrayRemove(meetup)).await()
             Response.Success(Unit)
         } catch (e: Exception) {
             Response.Failure(e.message.orEmpty())
@@ -137,8 +134,6 @@ open class FirebaseProfileService @Inject constructor(
     }
 
     override fun getLoggedInUserID(): String? = Firebase.auth.currentUser?.uid
-
-
 
 
     companion object {

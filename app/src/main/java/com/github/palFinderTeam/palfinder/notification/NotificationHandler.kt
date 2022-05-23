@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat.getSystemService
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.cache.FileCache
-import com.github.palFinderTeam.palfinder.profile.USER_ID
 
 private const val CHANNEL_ID = "PalFinder"
 private const val NOTIFICATION = "notification"
@@ -33,18 +32,16 @@ class NotificationHandler (
         if (!hasCreateChannel){
             hasCreateChannel = true
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val name = context.getString(R.string.app_name)
-                val descriptionText = context.getString(R.string.app_name)
-                val importance = NotificationManager.IMPORTANCE_DEFAULT
-                val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                    description = descriptionText
-                }
-
-                val notificationManager: NotificationManager =
-                    getSystemService(context, NotificationManager::class.java)!!
-                notificationManager.createNotificationChannel(channel)
+            val name = context.getString(R.string.app_name)
+            val descriptionText = context.getString(R.string.app_name)
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
             }
+
+            val notificationManager: NotificationManager =
+                getSystemService(context, NotificationManager::class.java)!!
+            notificationManager.createNotificationChannel(channel)
         }
     }
 
