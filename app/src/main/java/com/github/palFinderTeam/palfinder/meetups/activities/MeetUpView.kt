@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -62,12 +60,12 @@ class MeetUpView : AppCompatActivity() {
 
         val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
         viewModel.loadMeetUp(meetupId)
-        //button (image for design purpuses) to show the list of users participating in this meetUp
+        //button (image for design purposes) to show the list of users participating in this meetUp
         val button = findViewById<ImageView>(R.id.show_qr_button)
         button.setOnClickListener { showProfileList() }
 
         //fill fields when the meetup is loaded from database
-        viewModel.meetUp.observe(this) { meetUp ->
+        viewModel.meetUp.observe(this) {
             fillFields()
             handleButton()
         }
@@ -76,6 +74,12 @@ class MeetUpView : AppCompatActivity() {
         if (savedInstanceState == null) {
             addTagsToFragmentManager(supportFragmentManager, R.id.fc_tags)
         }
+
+        viewModel.askPermissionToJoin.observe(this) {
+            if (it) {
+                onJoinWithBlockedUsers()
+            }
+        }
     }
 
     /**
@@ -83,7 +87,7 @@ class MeetUpView : AppCompatActivity() {
      * editButton, available only to meetUp creator
      * joinButton, available to all but the meetUp creator (cannot leave your own meetUp)
      */
-    private fun handleButton(){
+    private fun handleButton() {
         val hasJoined = viewModel.hasJoin()
         val isCreator = viewModel.isCreator()
         findViewById<View>(R.id.bt_ChatMeetup).apply {
@@ -99,7 +103,8 @@ class MeetUpView : AppCompatActivity() {
         findViewById<Button>(R.id.button_join_meetup).apply {
             this.isEnabled = !isCreator
             this.isClickable = !isCreator
-            this.text = if (hasJoined) getString(R.string.meetup_view_leave) else getString(R.string.meetup_view_join)
+            this.text =
+                if (hasJoined) getString(R.string.meetup_view_leave) else getString(R.string.meetup_view_join)
         }
     }
 
@@ -107,7 +112,10 @@ class MeetUpView : AppCompatActivity() {
      * launches the ProfileListFragment, a dialogFragment, from the participantsId of the meetup loaded
      */
     private fun showProfileList() {
-        ProfileListFragment(viewModel.meetUp.value?.participantsId!!).show(supportFragmentManager, "profile list")
+        ProfileListFragment(viewModel.meetUp.value?.participantsId!!).show(
+            supportFragmentManager,
+            "profile list"
+        )
     }
 
     private fun fillFields() {
@@ -145,7 +153,12 @@ class MeetUpView : AppCompatActivity() {
         //Initiate the barcode encoder
         val barcodeEncoder = BarcodeEncoder()
         //Encode text in editText into QRCode image into the specified size using barcodeEncoder
-        val bitmap = barcodeEncoder.encodeBitmap(MEETUP_SHOWN+intent.getSerializableExtra(MEETUP_SHOWN) as String, BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
+        val bitmap = barcodeEncoder.encodeBitmap(
+            MEETUP_SHOWN + intent.getSerializableExtra(MEETUP_SHOWN) as String,
+            BarcodeFormat.QR_CODE,
+            resources.getInteger(R.integer.QR_size),
+            resources.getInteger(R.integer.QR_size)
+        )
 
         QRCode.shareQRcode(bitmap, this)
 
@@ -155,20 +168,28 @@ class MeetUpView : AppCompatActivity() {
     /**
      * cannot join/leave a meetUp if you are not logged in
      */
-    fun onJoinOrLeave(v: View){
-        if(profileService.getLoggedInUserID() == null){
-            createPopUp(this,
+    fun onJoinOrLeave(v: View) {
+        if (profileService.getLoggedInUserID() == null) {
+            createPopUp(
+                this,
                 { startActivity(Intent(this, LoginActivity::class.java)) },
                 textId = R.string.no_account_join,
                 continueButtonTextId = R.string.login
             )
 
-        }else {
+        } else {
             viewModel.joinOrLeave(this)
         }
     }
 
 
+    private fun onJoinWithBlockedUsers() {
+        createPopUp(
+            this, {
+                viewModel.joinOrLeave(this, ignoreWarning = true)
+            }, R.string.meetup_with_blocked_warning
+        )
+    }
 
 
 }
