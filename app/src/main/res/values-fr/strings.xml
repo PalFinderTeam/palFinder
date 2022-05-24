@@ -89,10 +89,10 @@
 
 
     <!-- Strings used for meetupList -->
-    <string name="show_all">Toutes les rencontres</string>
-    <string name="only_participating">pal prenant part</string>
-    <string name="only_creators">Créé par pal</string>
-    <string name="only_joined">rejoins</string>
+    <string name="meetup_filter_show_all">Toutes les rencontres</string>
+    <string name="meetup_filter_only_participating">pal prenant part</string>
+    <string name="meetup_only_creators">Créé par mes potes</string>
+    <string name="meetup_filter_only_joined">rejoins</string>
 
     <!-- Strings used for meetup view -->
     <string name="meetup_view_meetup_start_at">Débute à</string>
@@ -245,8 +245,17 @@
     <string name="followers_handle_title">Abonnés</string>
     <string name="profile_last_attended">Dernières participations</string>
     <string name="tags_no_tag">Pas d\'étiquettes</string>
+
+    <string name="meetup_filter_title">Filtrer les rencontres</string>
+    <string name="meetup_filter_subtitle">Selectionner une option pour réduir les résultats montrés</string>
+    <string name="meetup_filter_date_title">Selectionner des dates spécifiques</string>
+    <string name="meetup_filter_done">Confirmer les filtres</string>
+    <string name="meetup_filter_date_desc">Pour ne pas mettre de contraintes, laisser les boîtes vides</string>
+    <string name="meetup_filter_btn">Filtrer par</string>
+
     <string name="meetup_with_blocked_warning">Un utilisateur que vous avez bloqué participe à la rencontre, voulez-vous continuer ?</string>
     <string name="meetup_where_you_are_blocked">Vous ne pouvez pas rejoindre cette rencontre, vous avez été bloqués par son créateur</string>
+
 
 
 
