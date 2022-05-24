@@ -153,7 +153,7 @@ class MeetUpViewViewModel @Inject constructor(
     }
 
     /**
-     * test if the user is participating in the meetup and propagate the join/leave to the database
+     * test if the meetup is muted and propagate the mute/unmute to the database
      */
     fun muteOrUnMute(context: Context){
         val uuid = profileService.getLoggedInUserID()

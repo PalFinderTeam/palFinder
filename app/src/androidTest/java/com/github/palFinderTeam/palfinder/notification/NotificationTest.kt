@@ -26,6 +26,7 @@ import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
+import com.github.palFinderTeam.palfinder.utils.context.ContextService
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -54,7 +55,6 @@ class NotificationTest {
     @JvmField
     val activityRule = ActivityScenarioRule(MainNavActivity::class.java)
 
-    @Inject
     lateinit var notificationService: NotificationService
 
     @Rule
@@ -63,6 +63,9 @@ class NotificationTest {
 
     @Inject
     lateinit var meetUpRepository: MeetUpRepository
+
+    @Inject
+    lateinit var contextService: ContextService
 
     @Inject
     lateinit var profileRepository: ProfileService
@@ -110,6 +113,8 @@ class NotificationTest {
             Pair(null, null),
             CriterionGender.ALL
         )
+
+        notificationService = NotificationService(contextService, timeService, meetUpRepository, profileRepository, chatService)
     }
 
 
@@ -169,6 +174,7 @@ class NotificationTest {
 
     @Test
     fun actionWorks() = runTest {
+        val context: Context = ApplicationProvider.getApplicationContext()
         val date1 = Calendar.getInstance().apply { time = Date(0) }
         val userId = profileRepository.create(user1)
         val userId2 = profileRepository.create(user2)
@@ -180,10 +186,13 @@ class NotificationTest {
         )
 
         val id = meetUpRepository.create(meetUp)
-        meetUpRepository.joinMeetUp(id!!, userId, date1, profileRepository.fetch(userId)!!)
         (meetUpRepository as UIMockMeetUpRepositoryModule.UIMockRepository).loggedUserID = userId
+        meetUpRepository.joinMeetUp(id!!, userId, date1, profileRepository.fetch(userId)!!)
 
         chatService.postMessage(id, ChatMessage(date1, userId2, "hello world"))
+
+        val handler = NotificationHandler(context)
+        handler.schedule(date1, R.string.testNotifTitle, R.string.testNotifContent, R.drawable.icon_beer)
 
         notificationService.action()
     }

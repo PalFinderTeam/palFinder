@@ -124,8 +124,8 @@
 
     <string name="date_long_format">EEEE, MMMM d, yyyy \'à\' h:mm a</string>
     <string name="date_very_short_format">h:mm</string>
-    <string name="date_short_format">MMMM d</string>
-    <string name="date_medium_format">MMMM d yyyy</string>
+    <string name="date_short_format">d MMMM</string>
+    <string name="date_medium_format">d MMMM yyyy</string>
 
     <string name="placeholder_username">\@username</string>
     <string name="placeholder_date">yyyy/mm/dd</string>

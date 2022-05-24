@@ -170,7 +170,7 @@ object UIMockProfileServiceModule {
         override suspend fun muteMeetup(user: ProfileUser, meetup: String): Response<Unit> {
             return try {
                 if (!user.canMuteMeetup(meetup)) {
-                    return Response.Failure("Cannot follow this meetup.")
+                    return Response.Failure("Cannot mute this meetup.")
                 }
                 db[user.uuid] = user.copy(mutedMeetups = user.mutedMeetups.plus(meetup))
 
