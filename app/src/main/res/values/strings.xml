@@ -40,6 +40,18 @@
     <string name="qr_scan_join_meetup">Do you want to join this meetup ?</string>
 
 
+    <!-- String used for the achievements names -->
+    <string name="developer">You are the joyful cornerStone of the palFinderTeam !</string>
+    <string name="verified">Let me check.. Yes ! You are verified !</string>
+    <string name="pal_finder">Everyone must start somewhere.. (follow 1 pal)</string>
+    <string name="pal_miner">You are a pal and you\'re digging a hole.. (follow 5 pals)</string>
+    <string name="pal_tracker">We\'re missing paper to track your pals ! (follow 10 pals)</string>
+    <string name="paldex_completed">You\'re the ultimate fan, you have completed the paldex ! (follow 25 pals)</string>
+    <string name="the_beauty_and_the_pal">Ready for a date with your n°1 fan ? (1 fan)</string>
+    <string name="crypto_pal">Time to launch your own NFT ! To the moon ! (5 fans)</string>
+    <string name="master_of_cats">You\'re so famous even the catMaster has heard of you ! (10 fans)</string>
+    <string name="ultimate_pal">Your own religion will rise to the moon, conquer the solar system, fly to Andromeda ! (25 fans)</string>
+
     <!-- Strings used for meetup creation -->
     <string name="meetup_creation_meetup_name">Event Name</string>
     <string name="meetup_creation_meetup_name_example" translatable="false">Party with the boys!</string>
@@ -84,11 +96,16 @@
     <string name="meetup_creation_icon_hint">Change the icon of the meetup directly on the map to make it stand out!</string>
 
     <!-- Strings used for meetupList -->
-    <string name="show_all">all meetups</string>
-    <string name="only_participating">pal taking part</string>
-    <string name="only_creators">created by pal</string>
-    <string name="only_joined">joined</string>
-
+    <string name="meetup_filter_show_all">All meetups</string>
+    <string name="meetup_filter_only_participating">My pals taking part</string>
+    <string name="meetup_only_creators">Created by my Pals</string>
+    <string name="meetup_filter_only_joined">Joined meetups only</string>
+    <string name="meetup_filter_title">Filter meetups</string>
+    <string name="meetup_filter_btn">Filter by</string>
+    <string name="meetup_filter_subtitle">Select an option to narrow down the displayed results</string>
+    <string name="meetup_filter_date_title">Select specific dates</string>
+    <string name="meetup_filter_date_desc">To not set any date constraints, leave the fields blank</string>
+    <string name="meetup_filter_done">Confirm filters</string>
 
 
     <!-- Strings used for meetup view -->
@@ -99,7 +116,8 @@
     <string name="meetup_view_leave">Leave</string>
     <string name="meetup_view_joined">You joined the meetup</string>
     <string name="meetup_view_left">You left the meetup</string>
-    <string name="meetup_with_blocked">You cannot join this meetup, you blocked one of the participant.</string>
+    <string name="meetup_with_blocked">You cannot join this meetup, you blocked the creator.</string>
+    <string name="meetup_where_you_are_blocked">You cannot join this meetup, you are blocked by creator.</string>
     <string name="meetup_view_participation_unlimited">%d</string>
     <string name="meetup_view_participation_limited">%d (out of %d)</string>
     <string name="meetup_view_age_min">13</string>
@@ -116,6 +134,7 @@
     <string name="meetup_view_age_text">Age</string>
     <string name="meetup_view_age">%s-%s years</string>
     <string name="meetup_view_gender_title">Gender</string>
+    <string name="meetup_with_blocked_warning">A user you blocked is participating in this meetup, are you sure you want to join ?</string>
 
 
     <string name="ok">OK</string>
@@ -253,5 +272,7 @@
     <string name="meetup_start_title">%1$s is starting!</string>
     <string name="tags_no_tag">No tags</string>
 
+    <string name="navigationUri" translatable="false">google.navigation:q=</string>
+    <string name="mapPackage" translatable="false">com.google.android.apps.maps</string>
 
 </resources>

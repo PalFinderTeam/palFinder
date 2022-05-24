@@ -12,8 +12,10 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
+import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
+import com.google.type.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,6 +35,8 @@ class MeetUpViewViewModel @Inject constructor(
 ) : ViewModel() {
     private var _meetUp: MutableLiveData<MeetUp> = MutableLiveData<MeetUp>()
     val meetUp: LiveData<MeetUp> = _meetUp
+    private var _askPermissionToJoin: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+    val askPermissionToJoin: LiveData<Boolean> = _askPermissionToJoin
 
     /**
      * Fetch given meetup and update corresponding livedata.
@@ -64,7 +68,7 @@ class MeetUpViewViewModel @Inject constructor(
     }
 
     /**
-     * helper functions for the chat/edit/join buttons
+     * helper functions for the chat/edit/join/openNavigation buttons
      */
     fun hasJoin(): Boolean {
         val uuid = profileService.getLoggedInUserID()
@@ -88,7 +92,7 @@ class MeetUpViewViewModel @Inject constructor(
     /**
      * test if the user is participating in the meetup and propagate the join/leave to the database
      */
-    fun joinOrLeave(context: Context){
+    fun joinOrLeave(context: Context, ignoreWarning: Boolean = false){
         val uuid = profileService.getLoggedInUserID()
         if (uuid != null) {
             viewModelScope.launch {
@@ -98,12 +102,22 @@ class MeetUpViewViewModel @Inject constructor(
                         else -> Toast.makeText(context, R.string.meetup_view_left, Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    val profile = profileService.fetch(uuid)
-                    if (profile?.blockedUsers?.intersect(meetUp.value!!.participantsId)?.isNotEmpty() == true) {
+                    val meetUp = meetUp.value!!
+                    val loggedUser = profileService.fetch(uuid)!!
+                    val blockedUser = profileService.fetch(uuid)?.blockedUsers
+                    val blockedByCreator = profileService.fetch(meetUp.creatorId)?.blockedUsers
+                    if (blockedUser?.contains(meetUp.creatorId) == true) {
                         Toast.makeText(context, R.string.meetup_with_blocked, Toast.LENGTH_SHORT).show()
-                    } else {
-                        when(val ret = meetUpRepository.joinMeetUp(meetUp.value!!.uuid, uuid, timeService.now(),
-                            profileService.fetch(uuid)!!)){
+                    }
+                    else if (blockedByCreator?.contains(uuid) == true) {
+                        Toast.makeText(context, R.string.meetup_where_you_are_blocked, Toast.LENGTH_SHORT).show()
+                    }
+                    else if (!ignoreWarning && blockedUser?.intersect(meetUp.participantsId)?.isEmpty() == false) {
+                        _askPermissionToJoin.value = true
+                    }
+                    else {
+                        when(val ret = meetUpRepository.joinMeetUp(meetUp.uuid, uuid, timeService.now(),
+                            loggedUser)){
                             is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
                             else -> Toast.makeText(context, R.string.meetup_view_joined, Toast.LENGTH_SHORT).show()
                         }

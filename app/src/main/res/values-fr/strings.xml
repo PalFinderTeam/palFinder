@@ -34,6 +34,18 @@
     <string name="qr_scan_join_meetup">Est-ce que vous voulez rejoindre cette rencontre?</string>
 
 
+    <!-- String used for the achievements names -->
+    <string name="developer">A quand l\'application tartine ?</string>
+    <string name="verified">On avait pensé faire une boutique pour ce badge, mais tu l\'as eu gratuitement, chanceux !</string>
+    <string name="pal_finder">Le début de la richesse ! (suis 1 pal)</string>
+    <string name="pal_miner">La liste de tes idoles ne fait que s\'agrandir dis donc (suis 5 pals)</string>
+    <string name="pal_tracker">Tu peux déjà faire un five ! (suis 10 pals)</string>
+    <string name="paldex_completed">Paldex national complété ! (suis 25 pals)</string>
+    <string name="the_beauty_and_the_pal">Tu as désormais un fan n°1 ! (1 fan)</string>
+    <string name="crypto_pal">Ton fanclub s\'agrandit, bientôt un NFT ? (5 fans)</string>
+    <string name="master_of_cats">Tu commences à concurrencer sérieusement Madonna ! (10 fans)</string>
+    <string name="ultimate_pal">La Terre commence à être un terrain de jeu trop petit pour toi, peut-être est-il temps de se lancer..vers les étoiles ? (25 fans)</string>
+
     <!-- Strings used for meetup creation -->
     <string name="meetup_creation_meetup_name">Nom de la rencontre</string>
     <string name="meetup_creation_meetup_description">Description de la rencontre</string>
@@ -77,10 +89,10 @@
 
 
     <!-- Strings used for meetupList -->
-    <string name="show_all">Toutes les rencontres</string>
-    <string name="only_participating">pal prenant part</string>
-    <string name="only_creators">Créé par pal</string>
-    <string name="only_joined">rejoins</string>
+    <string name="meetup_filter_show_all">Toutes les rencontres</string>
+    <string name="meetup_filter_only_participating">pal prenant part</string>
+    <string name="meetup_only_creators">Créé par mes potes</string>
+    <string name="meetup_filter_only_joined">rejoins</string>
 
     <!-- Strings used for meetup view -->
     <string name="meetup_view_meetup_start_at">Débute à</string>
@@ -217,10 +229,10 @@
     <string name="title_attendees_list">Participants</string>
     <string name="search_user_hint">Chercher un utilisateur</string>
   
-    <string name="meetup_creation_icon_title">Appyuer pour choisir le repère</string>
+    <string name="meetup_creation_icon_title">Appuyer pour choisir le repère</string>
     <string name="meetup_creation_icon_hint">Changez l\'icone de la rencontre directement sur la carte!</string>
 
-    <string name="meetup_with_blocked">Vous ne pouvez pas rejoindre cette rencontre car vous avez bloqué un des membres.</string>
+    <string name="meetup_with_blocked">Vous ne pouvez pas rejoindre cette rencontre car vous avez bloqué son créateur.</string>
     <string name="block_user">Bloquer l\'utilisateur</string>
     <string name="unblock_user">Débloquer l\'utilisateur</string>
 
@@ -233,6 +245,17 @@
     <string name="followers_handle_title">Abonnés</string>
     <string name="profile_last_attended">Dernières participations</string>
     <string name="tags_no_tag">Pas d\'étiquettes</string>
+
+    <string name="meetup_filter_title">Filtrer les rencontres</string>
+    <string name="meetup_filter_subtitle">Selectionner une option pour réduir les résultats montrés</string>
+    <string name="meetup_filter_date_title">Selectionner des dates spécifiques</string>
+    <string name="meetup_filter_done">Confirmer les filtres</string>
+    <string name="meetup_filter_date_desc">Pour ne pas mettre de contraintes, laisser les boîtes vides</string>
+    <string name="meetup_filter_btn">Filtrer par</string>
+
+    <string name="meetup_with_blocked_warning">Un utilisateur que vous avez bloqué participe à la rencontre, voulez-vous continuer ?</string>
+    <string name="meetup_where_you_are_blocked">Vous ne pouvez pas rejoindre cette rencontre, vous avez été bloqués par son créateur</string>
+
 
 
 

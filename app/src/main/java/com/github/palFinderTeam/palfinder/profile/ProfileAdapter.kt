@@ -1,12 +1,15 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
+import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +33,7 @@ class ProfileAdapter(
         val fullName: TextView = view.findViewById(R.id.fullName)
         val pic: ImageView = view.findViewById(R.id.userPic)
         val followButton: Button = view.findViewById(R.id.followButton)
-        val listAchievement: List<ImageView> = listOf(view.findViewById(R.id.AchPic1), view.findViewById(R.id.AchPic2), view.findViewById(R.id.AchPic3))
+        val badgePic: ImageView = view.findViewById(R.id.BadgePic)
 
         init {
             view.setOnClickListener(this)
@@ -106,24 +109,12 @@ class ProfileAdapter(
      * fill the 3 image placeholder with achievements pictures
      */
     private fun bindImages(holder: ProfileAdapter.ViewHolder, position: Int) {
-        val achievements = currentDataSet[position].achievements()
-        when (achievements.size) {
-            0 -> holder.listAchievement.forEach { it.visibility = INVISIBLE }
-            1 -> {
-                holder.listAchievement[0].setImageResource(achievements[0].imageID)
-                holder.listAchievement.drop(1).forEach{it.visibility = INVISIBLE }
-            }
-            2 -> {
-                holder.listAchievement[0].setImageResource(achievements[0].imageID)
-                holder.listAchievement[1].setImageResource(achievements[1].imageID)
-                holder.listAchievement[2].visibility = INVISIBLE
-            }
-            else -> {
-                holder.listAchievement[0].setImageResource(achievements[0].imageID)
-                holder.listAchievement[1].setImageResource(achievements[1].imageID)
-                holder.listAchievement[2].setImageResource(achievements[2].imageID)
-            }
-
+        val achievements = currentDataSet[position].badges().sorted()
+        if (achievements.isEmpty()) {
+            holder.badgePic.visibility = INVISIBLE
+        } else {
+            holder.badgePic.setImageResource(achievements[0].imageID)
+            holder.badgePic.setOnClickListener { Toast.makeText(context, context.getString(achievements[0].descId), Toast.LENGTH_LONG).show()}
         }
     }
 

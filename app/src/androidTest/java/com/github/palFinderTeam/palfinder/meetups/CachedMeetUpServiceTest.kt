@@ -252,18 +252,6 @@ class CachedMeetUpServiceTest {
     }
 
     @Test
-    fun editNonExistingFieldReturnsNull() = runTest {
-        val userId = firebaseProfileService.create(user1)
-        meetUp = meetUp.copy(creatorId = userId!!)
-        val id = firebaseMeetUpService.create(meetUp)
-        assertThat(id, notNullValue())
-        id!!.let {
-            val idNull = firebaseMeetUpService.edit(it, "NotAField", "NotAValue")
-            assertThat(idNull, nullValue())
-        }
-    }
-
-    @Test
     fun getAllContainsMeetup() = runTest {
         val userId = firebaseProfileService.create(user1)
         meetUp = meetUp.copy(creatorId = userId!!)

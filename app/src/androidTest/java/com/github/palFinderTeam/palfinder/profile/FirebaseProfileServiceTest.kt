@@ -1,8 +1,8 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
+import android.util.Log
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
-import com.github.palFinderTeam.palfinder.profile.AchievementMilestones.followCountAdapt
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.USERNAME_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
@@ -88,17 +88,6 @@ class FirebaseProfileServiceTest {
     fun editNonExistingUserReturnsNull() = runTest {
         val nonExistingId = firebaseProfileService.edit("HAHA", "dw", 4)
         assertThat(nonExistingId, nullValue())
-    }
-
-    @Test
-    fun editNonExistingFieldReturnsNull() = runTest {
-        val id = firebaseProfileService.create(profile)
-        id!!.let {
-            val idNull = firebaseProfileService.edit(it, "NotAField", "NotAValue")
-            assertThat(idNull, nullValue())
-            db.collection(FirebaseMeetUpService.MEETUP_COLL).document(it).delete().await()
-            db.collection(PROFILE_COLL).document(profile.uuid).delete().await()
-        }
     }
 
     @Test
@@ -232,8 +221,6 @@ class FirebaseProfileServiceTest {
         assert(db.collection(PROFILE_COLL).document(id!!).get().await().toProfileUser()!!.achievements().isEmpty())
 
         firebaseProfileService.followUser(firebaseProfileService.fetch(id)!!, id2!!)
-//        assert(db.collection(PROFILE_COLL).document(id).get().await().toProfileUser()!!.achievements().isEmpty())
-//        assert(db.collection(PROFILE_COLL).document(id2).get().await().toProfileUser()!!.achievements().isEmpty())
 
         var list = List(AchievementMilestones.MILESTONE1 - 1) { " " }
         firebaseProfileService.edit(id, profile.copy(following = list))

@@ -12,9 +12,11 @@ import androidx.lifecycle.ViewModelStore
 import androidx.navigation.testing.TestNavHostController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents.*
@@ -26,15 +28,13 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.fragments.MeetupFilterFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
 import com.github.palFinderTeam.palfinder.tag.Category
-import com.github.palFinderTeam.palfinder.utils.Location
-import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule
+import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
-import com.github.palFinderTeam.palfinder.utils.launchFragmentInHiltContainer
-import com.github.palFinderTeam.palfinder.utils.onHiltFragment
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -397,6 +397,7 @@ class MeetUpListTest {
     }
 
     @Test
+    //TODO fix
     fun showJoinedMeetupsOnlyShowJoinedMeetUps() = runTest {
         meetUpList.forEach { meetUpRepository.create(it) }
 
@@ -446,7 +447,7 @@ class MeetUpListTest {
                 it.viewModel.setSearchParamAndFetch(location = searchLocation, filterBlockedMeetups = true, forceFetch = true)
             }
 
-            val availableMeetUps = meetUpList.filter { !it.participantsId.contains(user1) }
+            val availableMeetUps = meetUpList.filter { it.creatorId != user1 }
                 .map { withText(it.name) }
 
             onView(withId(R.id.meetup_list_recycler)).check(
@@ -478,27 +479,32 @@ class MeetUpListTest {
             putSerializable("ShowParam", ShowParam.ONLY_JOINED)
         }, navHostController = navController)
         scenario!!.use {
+            onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.joinedButton)).check(matches(isChecked()))
         }
         scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
             putSerializable("ShowParam", ShowParam.ALL)
         }, navHostController = navController)
         scenario!!.use {
+            onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.button_all)).check(matches(isChecked()))
         }
         scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
             putSerializable("ShowParam", ShowParam.PAL_CREATOR)
         }, navHostController = navController)
         scenario!!.use {
+            onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.created_button)).check(matches(isChecked()))
         }
         scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
-            putSerializable("ShowParam", ShowParam.PAL_PARTCIPATING)
+            putSerializable("ShowParam", ShowParam.PAL_PARTICIPATING)
         }, navHostController = navController)
         scenario!!.use {
+            onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.participate_button)).check(matches(isChecked()))
         }
     }
+
     @Test
     fun radioButtonFiltersWorkAsExpected() = runTest {
 
@@ -509,8 +515,9 @@ class MeetUpListTest {
         }, navHostController = navController)
 
         scenario!!.use {
-
+            onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.joinedButton)).perform(click())
+            Espresso.pressBack()
             val joinedMeetUps = meetUpList.filter { it.participantsId.contains(loggedUserId) }
                 .map { withText(it.name) }
 
@@ -545,7 +552,8 @@ class MeetUpListTest {
             putSerializable("ShowParam", ShowParam.ALL)
         }, navHostController = navController)
         scenario.use {
-            onView(withId(R.id.startDateFilter))
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.tv_StartDate))
                 .perform(ViewActions.click())
 
             onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
@@ -560,10 +568,10 @@ class MeetUpListTest {
                 PickerActions.setTime(date1.get(Calendar.HOUR_OF_DAY), date1.get(Calendar.MINUTE)),
             )
             onView(withText("OK")).perform(click())
-            onView(withId(R.id.startDateFilter)).check(matches(withText(expectDate1)))
+            onView(withId(R.id.tv_StartDate)).check(matches(withText(expectDate1)))
 
 
-            onView(withId(R.id.endDateFilter)).perform(click())
+            onView(withId(R.id.tv_EndDate)).perform(click())
 
             onView(withClassName(Matchers.equalTo(DatePicker::class.java.name))).perform(
                 PickerActions.setDate(
@@ -577,7 +585,8 @@ class MeetUpListTest {
                 PickerActions.setTime(date2.get(Calendar.HOUR_OF_DAY), date2.get(Calendar.MINUTE)),
             )
             onView(withText("OK")).perform(click())
-            onView(withId(R.id.endDateFilter)).check(matches(withText(expectDate2)))
+            onView(withId(R.id.tv_EndDate)).check(matches(withText(expectDate2)))
+            Espresso.pressBack()
         }
     }
 }
