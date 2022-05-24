@@ -90,13 +90,6 @@ class MeetUpViewViewModel @Inject constructor(
     }
 
     /**
-     * getter for the location of the meetUp
-     */
-    fun getMeetupLocation(): Location? {
-        return meetUp.value?.location
-    }
-
-    /**
      * test if the user is participating in the meetup and propagate the join/leave to the database
      */
     fun joinOrLeave(context: Context, ignoreWarning: Boolean = false){
