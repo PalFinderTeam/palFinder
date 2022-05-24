@@ -494,6 +494,9 @@ class MeetUpListTest {
                 )
                     .check(matches(anyOf(palMeetUps)))
             }
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.trendButton)).perform(click())
+            onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
         }
     }
 
