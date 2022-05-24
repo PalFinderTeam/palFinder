@@ -8,6 +8,7 @@ import com.github.palFinderTeam.palfinder.notification.NotificationHandler
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.ACHIEVEMENTS_OBTAINED
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWED_BY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWING_PROFILES
+import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.MUTED_MEETUPS
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.generics.FirestoreRepository
@@ -59,18 +60,21 @@ open class FirebaseProfileService @Inject constructor(
             if (updateAchievementsFollower(updatedUser).isNotEmpty()) {
                 batch.update(
                     db.collection(PROFILE_COLL).document(user.uuid),
-                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollower(updatedUser)[0])
+                    ACHIEVEMENTS_OBTAINED,
+                    FieldValue.arrayUnion(updateAchievementsFollower(updatedUser)[0])
                 )
             }
             batch.update(
                 db.collection(PROFILE_COLL).document(targetId),
                 FOLLOWED_BY, FieldValue.arrayUnion(user.uuid)
             )
-            val updatedTarget = targetProfile.copy(followed = targetProfile.followed.plus("newUser"))
+            val updatedTarget =
+                targetProfile.copy(followed = targetProfile.followed.plus("newUser"))
             if (updateAchievementsFollowed(updatedTarget).isNotEmpty()) {
                 batch.update(
                     db.collection(PROFILE_COLL).document(targetId),
-                    ACHIEVEMENTS_OBTAINED, FieldValue.arrayUnion(updateAchievementsFollowed(updatedTarget)[0])
+                    ACHIEVEMENTS_OBTAINED,
+                    FieldValue.arrayUnion(updateAchievementsFollowed(updatedTarget)[0])
                 )
             }
             batch.commit().await()
@@ -101,9 +105,35 @@ open class FirebaseProfileService @Inject constructor(
         }
     }
 
+    override suspend fun muteMeetup(user: ProfileUser, meetup: String): Response<Unit> {
+        return try {
+            if (!user.canMuteMeetup(meetup)) {
+                return Response.Failure("Cannot mute this meetup.")
+            }
+
+            db.collection(PROFILE_COLL).document(user.uuid)
+                .update(MUTED_MEETUPS, FieldValue.arrayUnion(meetup)).await()
+
+            Response.Success(Unit)
+        } catch (e: Exception) {
+            Response.Failure(e.message.orEmpty())
+        }
+    }
+
+    override suspend fun unMuteMeetup(user: ProfileUser, meetup: String): Response<Unit> {
+        return try {
+            if (!user.canUnMuteMeetup(meetup)) {
+                return Response.Failure("Cannot unmute this meetup.")
+            }
+            db.collection(PROFILE_COLL).document(user.uuid)
+                .update(MUTED_MEETUPS, FieldValue.arrayRemove(meetup)).await()
+            Response.Success(Unit)
+        } catch (e: Exception) {
+            Response.Failure(e.message.orEmpty())
+        }
+    }
+
     override fun getLoggedInUserID(): String? = Firebase.auth.currentUser?.uid
-
-
 
 
     companion object {

@@ -10,6 +10,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.Location
@@ -37,6 +38,7 @@ class MeetUpViewViewModel @Inject constructor(
     val meetUp: LiveData<MeetUp> = _meetUp
     private var _askPermissionToJoin: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
     val askPermissionToJoin: LiveData<Boolean> = _askPermissionToJoin
+    var loggedInUser: MutableLiveData<ProfileUser?> = MutableLiveData<ProfileUser?>()
 
     /**
      * Fetch given meetup and update corresponding livedata.
@@ -45,6 +47,14 @@ class MeetUpViewViewModel @Inject constructor(
      */
     fun loadMeetUp(meetUpId: String) {
         viewModelScope.launch {
+            val id = profileService.getLoggedInUserID()
+            loggedInUser.value = if (id != null){
+                profileService.fetch(id)
+            }
+            else{
+                null
+            }
+
             val fetchedMeetUp = meetUpRepository.fetch(meetUpId)
             // TODO do something on error
             fetchedMeetUp?.let { _meetUp.value = it }
@@ -72,7 +82,7 @@ class MeetUpViewViewModel @Inject constructor(
      */
     fun hasJoin(): Boolean {
         val uuid = profileService.getLoggedInUserID()
-        return if (uuid != null){
+        return if (uuid != null && meetUp.value != null){
             meetUp.value!!.isParticipating(uuid)
         }
         else{
@@ -81,10 +91,24 @@ class MeetUpViewViewModel @Inject constructor(
     }
     fun isCreator(): Boolean {
         val uuid = profileService.getLoggedInUserID()
-        return if (uuid != null){
+        return if (uuid != null && meetUp.value != null){
             meetUp.value!!.creatorId == uuid
         }
         else{
+            false
+        }
+    }
+    fun canMute(): Boolean{
+        return if (loggedInUser.value != null && meetUp.value != null){
+            loggedInUser.value!!.canMuteMeetup(meetUp.value!!.uuid)
+        } else{
+            false
+        }
+    }
+    fun canUnMute(): Boolean{
+        return if (loggedInUser.value != null && meetUp.value != null){
+            loggedInUser.value!!.canUnMuteMeetup(meetUp.value!!.uuid)
+        } else{
             false
         }
     }
@@ -121,6 +145,29 @@ class MeetUpViewViewModel @Inject constructor(
                             is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
                             else -> Toast.makeText(context, R.string.meetup_view_joined, Toast.LENGTH_SHORT).show()
                         }
+                    }
+                }
+                loadMeetUp(meetUp.value!!.uuid)
+            }
+        }
+    }
+
+    /**
+     * test if the meetup is muted and propagate the mute/unmute to the database
+     */
+    fun muteOrUnMute(context: Context){
+        val uuid = profileService.getLoggedInUserID()
+        if (uuid != null) {
+            viewModelScope.launch {
+                if (canMute()) {
+                    when(val ret = profileService.muteMeetup(loggedInUser.value!!, meetUp.value!!.uuid)){
+                        is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
+                        else -> Toast.makeText(context, R.string.meetup_view_muted, Toast.LENGTH_SHORT).show()
+                    }
+                } else if (canUnMute()) {
+                    when(val ret = profileService.unMuteMeetup(loggedInUser.value!!, meetUp.value!!.uuid)){
+                        is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
+                        else -> Toast.makeText(context, R.string.meetup_view_unmuted, Toast.LENGTH_SHORT).show()
                     }
                 }
                 loadMeetUp(meetUp.value!!.uuid)

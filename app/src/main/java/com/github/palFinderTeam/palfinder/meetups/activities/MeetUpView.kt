@@ -25,6 +25,7 @@ import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import com.github.palFinderTeam.palfinder.utils.image.QRCode
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +37,6 @@ const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_
 const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
 
 
-@SuppressLint("SimpleDateFormat")
 @AndroidEntryPoint
 class MeetUpView : AppCompatActivity() {
     private val viewModel: MeetUpViewViewModel by viewModels()
@@ -60,8 +60,8 @@ class MeetUpView : AppCompatActivity() {
         sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
 
         val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
-        viewModel.loadMeetUp(meetupId)
-        //button (image for design purposes) to show the list of users participating in this meetUp
+
+        //button (image for design purpuses) to show the list of users participating in this meetUp
         val button = findViewById<ImageView>(R.id.show_qr_button)
         button.setOnClickListener { showProfileList() }
 
@@ -70,6 +70,8 @@ class MeetUpView : AppCompatActivity() {
             fillFields()
             handleButton()
         }
+
+        viewModel.loadMeetUp(meetupId)
 
         tagsViewModel = createTagFragmentModel(this, TagsViewModelFactory(viewModel.tagRepository))
         if (savedInstanceState == null) {
@@ -111,6 +113,17 @@ class MeetUpView : AppCompatActivity() {
             this.isClickable = !isCreator
             this.text =
                 if (hasJoined) getString(R.string.meetup_view_leave) else getString(R.string.meetup_view_join)
+        }
+        findViewById<FloatingActionButton>(R.id.bt_MuteMeetup).apply {
+            this.isEnabled = hasJoined
+            this.isClickable = hasJoined
+            this.isVisible = hasJoined
+            if (viewModel.canUnMute()){
+                this.setImageResource(R.drawable.ic_baseline_notifications_off_24)
+            }
+            else{
+                this.setImageResource(R.drawable.ic_baseline_notifications_active_24)
+            }
         }
     }
 
@@ -194,18 +207,18 @@ class MeetUpView : AppCompatActivity() {
      */
     fun onJoinOrLeave(v: View) {
         if (profileService.getLoggedInUserID() == null) {
-            createPopUp(
-                this,
-                { startActivity(Intent(this, LoginActivity::class.java)) },
-                textId = R.string.no_account_join,
-                continueButtonTextId = R.string.login
-            )
-
+            loginPopUp()
         } else {
             viewModel.joinOrLeave(this)
         }
     }
 
+    /**
+     * Mute or Unmute the meetup
+     */
+    fun onMuteOrUnmute(v: View){
+        viewModel.muteOrUnMute(this)
+    }
 
     private fun onJoinWithBlockedUsers() {
         createPopUp(
@@ -215,5 +228,11 @@ class MeetUpView : AppCompatActivity() {
         )
     }
 
-
+    private fun loginPopUp(){
+        createPopUp(this,
+            { startActivity(Intent(this, LoginActivity::class.java)) },
+            textId = R.string.no_account_join,
+            continueButtonTextId = R.string.login
+        )
+    }
 }

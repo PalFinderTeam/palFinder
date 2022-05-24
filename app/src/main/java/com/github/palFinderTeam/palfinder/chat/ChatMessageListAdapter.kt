@@ -2,6 +2,7 @@ package com.github.palFinderTeam.palfinder.chat
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.icu.util.Calendar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.time.PrettyDate
+import com.github.palFinderTeam.palfinder.utils.time.ShortDate
 import kotlinx.coroutines.launch
 
 
@@ -65,7 +67,7 @@ class ChatMessageListAdapter(
             holder.messageInSenderPic.isVisible = true
         }
         holder.messageInContent.text = msg.content
-        holder.messageInDate.text = prettyDate.timeDiff(msg.sentAt)
+        holder.messageInDate.text = ShortDate.format(context, msg.sentAt, Calendar.getInstance())
 
         holder.messageInSenderPic.setOnClickListener{
             val intent = Intent(it.context, ProfileActivity::class.java).apply {
