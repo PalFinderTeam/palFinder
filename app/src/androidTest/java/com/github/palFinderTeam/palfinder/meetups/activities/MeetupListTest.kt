@@ -435,14 +435,24 @@ class MeetUpListTest {
     @Test
     fun showPalParticipatingAndCreatorWorks() = runTest {
         meetUpList.forEach { meetUpRepository.create(it) }
+        val id = profileService.create(loggedUserId)
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+           id
+        )
+
 
         val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
             putSerializable("ShowParam", ShowParam.ALL)
         }, navHostController = navController)
 
         scenario!!.use {
+            scenario.onHiltFragment<MeetupListFragment> {
+                it.viewModel.setSearchParameters(location = searchLocation)
+                it.viewModel.fetchMeetUps()
+            }
             onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.participate_button)).perform(click())
+            onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
             var palMeetUps = meetUpList.filter { it.participantsId.intersect(loggedUserId.following).isNotEmpty() }
                 .map { withText(it.name) }
 
@@ -464,6 +474,7 @@ class MeetUpListTest {
             }
             onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.created_button)).perform(click())
+            onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
             palMeetUps = meetUpList.filter { loggedUserId.following.contains(it.creatorId) }
                 .map { withText(it.name) }
 
