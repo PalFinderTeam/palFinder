@@ -218,6 +218,7 @@ class MeetupViewTest {
         }
     }
 
+
     @Test
     fun editExistingMeetupEditTheRightOneInDB() = runTest {
 
@@ -651,6 +652,25 @@ class MeetupViewTest {
         }
         ActivityScenario.launch<MeetUpView>(intent)
         onView(withId(R.id.bt_EditMeetup)).check(matches(isNotClickable()))
+    }
+
+    @Test
+    fun openNavigationOpenActualLocation() = runTest {
+        val uid = profileRepository.create(user)
+        val mid = meetUpRepository.create(meetup.copy(participantsId = listOf(uid!!)))
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            uid
+        )
+
+        val intent = Intent(getApplicationContext(), MeetUpView::class.java).apply {
+            putExtra(MEETUP_SHOWN, mid)
+        }
+
+        Intents.init()
+        ActivityScenario.launch<MeetUpView>(intent)
+        onView(withId(R.id.bt_OpenNavigation)).perform(click())
+        Intents.intended(IntentMatchers.hasAction(Intent.ACTION_VIEW))
+        Intents.release()
     }
 
     @Test

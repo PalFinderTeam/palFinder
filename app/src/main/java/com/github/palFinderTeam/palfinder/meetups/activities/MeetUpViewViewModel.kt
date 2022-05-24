@@ -13,8 +13,10 @@ import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
+import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
+import com.google.type.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -76,7 +78,7 @@ class MeetUpViewViewModel @Inject constructor(
     }
 
     /**
-     * helper functions for the chat/edit/join buttons
+     * helper functions for the chat/edit/join/openNavigation buttons
      */
     fun hasJoin(): Boolean {
         val uuid = profileService.getLoggedInUserID()
