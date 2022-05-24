@@ -202,6 +202,7 @@
     <string name="nav_bar_find">Find</string>
     <string name="nav_bar_list">List</string>
     <string name="nav_bar_group">Groups</string>
+    <string name="nav_bar_profile">My Profile</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>

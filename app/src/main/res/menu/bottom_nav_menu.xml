@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/nav_bar_create"
-        android:icon="@android:drawable/ic_menu_edit"
+        android:icon="@drawable/ic_menu_create"
         android:title="@string/nav_bar_create" />
     <item
         android:id="@+id/nav_bar_find"
         android:enabled="true"
-        android:icon="@android:drawable/ic_menu_mylocation"
-        android:title="@string/nav_bar_find" />
+        android:icon="@drawable/ic_menu_position"
+        android:title="@string/nav_bar_find"/>
     <item
         android:id="@+id/nav_bar_groups"
-        android:icon="@android:drawable/sym_action_chat"
-        android:title="@string/nav_bar_group" />
+        android:icon="@drawable/ic_menu_person"
+        android:title="@string/nav_bar_profile"/>
 </menu>
