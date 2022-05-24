@@ -45,4 +45,14 @@ class CachedProfileService @Inject constructor(
 
     override suspend fun unfollowUser(user: ProfileUser, targetId: String): Response<Unit> =
         db.unfollowUser(user, targetId)
+
+    override suspend fun muteMeetup(user: ProfileUser, meetup: String): Response<Unit> {
+        cache.evict(user.uuid)
+        return db.muteMeetup(user, meetup)
+    }
+
+    override suspend fun unMuteMeetup(user: ProfileUser, meetup: String): Response<Unit> {
+        cache.evict(user.uuid)
+        return db.unMuteMeetup(user, meetup)
+    }
 }

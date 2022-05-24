@@ -47,7 +47,7 @@
 
                 <Button
                     android:id="@+id/button_join_meetup"
-                    android:layout_width="match_parent"
+                    android:layout_width="340dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
@@ -113,6 +113,7 @@
         android:layout_marginBottom="5dp"
         android:clickable="true"
         android:focusable="true"
+        android:onClick="onMuteOrUnmute"
         app:backgroundTint="?attr/colorPrimary"
         app:layout_constraintBottom_toTopOf="@id/bt_ChatMeetup"
         app:layout_constraintStart_toStartOf="parent"
