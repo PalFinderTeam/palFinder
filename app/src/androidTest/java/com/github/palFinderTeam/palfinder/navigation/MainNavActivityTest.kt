@@ -92,7 +92,7 @@ class MainNavActivityTest {
             )
         }
 
-        onView(withId(R.id.nav_bar_groups)).perform(click())
+        onView(withId(R.id.nav_bar_profile)).perform(click())
 
         scenario.onActivity {
             assertThat(

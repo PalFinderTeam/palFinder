@@ -80,7 +80,7 @@ class MainNavActivity : AppCompatActivity() {
         navController.currentDestination?.let {
             when (it.id) {
                 R.id.find_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_find
-                R.id.list_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_groups
+                R.id.list_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_profile
                 R.id.creation_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_create
             }
         }
@@ -125,12 +125,12 @@ class MainNavActivity : AppCompatActivity() {
                             )
                         }
                     }
-                    R.id.nav_bar_groups -> {
+                    R.id.nav_bar_profile -> {
                         if (profileService.getLoggedInUserID() == null) {
                             createPopUp(
                                 this,
                                 { startActivity(Intent(this, LoginActivity::class.java)) },
-                                textId = R.string.no_account_groups,
+                                textId = R.string.no_account_profile,
                                 continueButtonTextId = R.string.login
                             )
                             return@setOnItemSelectedListener false
@@ -281,7 +281,7 @@ class MainNavActivity : AppCompatActivity() {
         return when (itemId) {
             R.id.nav_bar_create -> 0
             R.id.nav_bar_find -> 1
-            R.id.nav_bar_groups -> 2
+            R.id.nav_bar_profile -> 2
             else -> -1
         }
     }

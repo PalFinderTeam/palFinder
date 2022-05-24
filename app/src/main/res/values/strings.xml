@@ -34,7 +34,7 @@
     <string name="no_account_warning">Without connecting with an account, you won\'t be able to join meetup.</string>
     <string name="no_account_create"> You need an account to create a meetup.</string>
     <string name="no_account_groups"> You need an account to join groups.</string>
-    <string name="no_account_join"> You need an accout to join a meetUp.</string>
+    <string name="no_account_join"> You need an account to join a meetUp.</string>
     <string name="no_account_profile"> You need an account to have a profile.</string>
     <string name="qr_scan_follow_account"> Do you want to follow this account?</string>
     <string name="qr_scan_join_meetup">Do you want to join this meetup ?</string>
