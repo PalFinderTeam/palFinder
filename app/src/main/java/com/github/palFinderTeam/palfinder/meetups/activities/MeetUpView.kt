@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -95,6 +96,11 @@ class MeetUpView : AppCompatActivity() {
             this.isVisible = hasJoined
             this.isClickable = hasJoined
         }
+        findViewById<View>(R.id.bt_OpenNavigation).apply {
+            this.isEnabled = hasJoined
+            this.isVisible = hasJoined
+            this.isClickable = hasJoined
+        }
         findViewById<View>(R.id.bt_EditMeetup).apply {
             this.isEnabled = isCreator
             this.isVisible = isCreator
@@ -122,6 +128,7 @@ class MeetUpView : AppCompatActivity() {
         tagsViewModel.refreshTags()
     }
 
+
     /**
      * restart the meetUp creation activity to edit it
      */
@@ -131,6 +138,23 @@ class MeetUpView : AppCompatActivity() {
                 putExtra(MEETUP_EDIT, viewModel.getMeetupID())
             }
             startActivity(intent)
+        }
+    }
+
+    /**
+     * open Google Maps with navigation from currentLocation to meetUpLocation
+     */
+    fun onOpenNavigation(v: View){
+        if(viewModel.hasJoin()){
+            val location = viewModel.meetUp.value?.location
+            if (location != null) {
+                val navigationIntentUri = Uri.parse(
+                    v.context.getString(R.string.navigationUri) + location.latitude.toString()+ "," + location.longitude.toString())
+                val mapIntent = Intent(Intent.ACTION_VIEW, navigationIntentUri)
+                mapIntent.setPackage(v.context.getString(R.string.mapPackage))
+                startActivity(mapIntent)
+
+            }
         }
     }
 
