@@ -224,7 +224,7 @@ class MapListViewModel @Inject constructor(
                 showParam,
                 if (userId == null) userId else profileService.fetch(userId)
             ).collect {
-                _listOfMeetUpResponse.postValue(it.filterBlocked(blockedUser))
+                _listOfMeetUpResponse.postValue(it.filterBlocked(blockedUser).orderByTrend(showParam))
             }
         }
     }
