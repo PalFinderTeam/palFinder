@@ -4,13 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
-import com.github.palFinderTeam.palfinder.MainActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
@@ -18,6 +17,7 @@ import com.github.palFinderTeam.palfinder.chat.ChatMessage
 import com.github.palFinderTeam.palfinder.chat.ChatService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
@@ -40,7 +40,7 @@ import org.junit.Test
 import java.util.*
 import javax.inject.Inject
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
 @HiltAndroidTest
 class NotificationTest {
     private val uiDevice by lazy { UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()) }
@@ -52,12 +52,13 @@ class NotificationTest {
 
     @Rule
     @JvmField
-    val activityRule = ActivityTestRule<MainActivity>(MainActivity::class.java)
+    val activityRule = ActivityScenarioRule(MainNavActivity::class.java)
 
     @Inject
     lateinit var notificationService: NotificationService
 
-    @get:Rule
+    @Rule
+    @JvmField
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
@@ -73,7 +74,7 @@ class NotificationTest {
     lateinit var timeService: TimeService
 
     @Before
-    fun setup(){
+    fun setup() {
         hiltRule.inject()
         val context: Context = ApplicationProvider.getApplicationContext()
         DictionaryCache.clearAllTempCaches(context)
@@ -113,14 +114,14 @@ class NotificationTest {
 
 
     @Test
-    fun postString()  = runTest {
+    fun postString() = runTest {
         val context: Context = ApplicationProvider.getApplicationContext()
 
         val expectedTitle = "title"
         val expectedContent = "content"
 
         val handler = NotificationHandler(context)
-        handler.post(expectedTitle,expectedContent, R.drawable.icon_beer)
+        handler.post(expectedTitle, expectedContent, R.drawable.icon_beer)
 
         uiDevice.openNotification()
         uiDevice.wait(Until.hasObject(By.textStartsWith(expectedTitle)), timeout)
@@ -132,14 +133,14 @@ class NotificationTest {
     }
 
     @Test
-    fun postID()  = runTest {
+    fun postID() = runTest {
         val context: Context = ApplicationProvider.getApplicationContext()
 
         val expectedTitle = "title"
         val expectedContent = "content"
 
         val handler = NotificationHandler(context)
-        handler.post(R.string.testNotifTitle,R.string.testNotifContent, R.drawable.icon_beer)
+        handler.post(R.string.testNotifTitle, R.string.testNotifContent, R.drawable.icon_beer)
 
         uiDevice.openNotification()
         uiDevice.wait(Until.hasObject(By.textStartsWith(expectedTitle)), timeout)
@@ -157,11 +158,13 @@ class NotificationTest {
     fun cachedNotification() = runTest {
         val context: Context = ApplicationProvider.getApplicationContext()
 
-        val expectedTitle = "title"
-        val expectedContent = "content"
-
         val handler = NotificationHandler(context)
-        handler.schedule(Calendar.getInstance(), R.string.testNotifTitle,R.string.testNotifContent, R.drawable.icon_beer)
+        handler.schedule(
+            Calendar.getInstance(),
+            R.string.testNotifTitle,
+            R.string.testNotifContent,
+            R.drawable.icon_beer
+        )
     }
 
     @Test
@@ -172,13 +175,15 @@ class NotificationTest {
         profileRepository.edit(userId2!!, "following", listOf(userId))
         profileRepository.edit(userId!!, "followed", listOf(userId2))
 
-        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(userId)
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            userId
+        )
 
         val id = meetUpRepository.create(meetUp)
         meetUpRepository.joinMeetUp(id!!, userId, date1, profileRepository.fetch(userId)!!)
         (meetUpRepository as UIMockMeetUpRepositoryModule.UIMockRepository).loggedUserID = userId
 
-        chatService.postMessage(id!!, ChatMessage(date1, userId2, "hello world"))
+        chatService.postMessage(id, ChatMessage(date1, userId2, "hello world"))
 
         notificationService.action()
     }
