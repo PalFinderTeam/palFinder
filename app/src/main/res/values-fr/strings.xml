@@ -103,6 +103,8 @@
     <string name="meetup_view_leave">Quitter</string>
     <string name="meetup_view_joined">Vous avez rejoins la rencontre</string>
     <string name="meetup_view_left">Vous avez quitté la rencontre</string>
+    <string name="meetup_view_muted">Vous avez desactivé les notivications pour la rencontre</string>
+    <string name="meetup_view_unmuted">Vous avez sactivé les notivications pour la rencontre</string>
     <string name="meetup_view_meetup">Rencontre</string>
     <string name="meetup_view_created_by">Organisée par \@%s</string>
     <string name="meetup_view_time_date">Dates et heures</string>
@@ -122,6 +124,9 @@
     <string name="ok">OK</string>
 
     <string name="date_long_format">EEEE, MMMM d, yyyy \'à\' h:mm a</string>
+    <string name="date_very_short_format">h:mm</string>
+    <string name="date_short_format">d MMMM</string>
+    <string name="date_medium_format">d MMMM yyyy</string>
 
     <string name="placeholder_username">\@username</string>
     <string name="placeholder_date">yyyy/mm/dd</string>

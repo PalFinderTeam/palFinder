@@ -141,5 +141,4 @@ class MeetupViewFragment : Fragment() {
         }
         startActivity(intent)
     }
-
 }
