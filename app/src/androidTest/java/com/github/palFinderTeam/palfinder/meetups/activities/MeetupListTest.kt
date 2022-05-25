@@ -497,6 +497,22 @@ class MeetUpListTest {
             onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.trendButton)).perform(click())
             onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
+            onView(withId(R.id.meetup_list_recycler)).check(
+                matches(
+                    recyclerViewSizeMatcher(
+                        meetUpList.size
+                    )
+                )
+            )
+            for (i in (meetUpList.indices)) {
+                onView(
+                    RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
+                        i,
+                        R.id.meetup_title
+                    )
+                )
+                    .check(matches(anyOf(meetUpList.map { withText(it.name) })))
+            }
         }
     }
 
