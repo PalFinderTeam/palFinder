@@ -504,15 +504,6 @@ class MeetUpListTest {
                     )
                 )
             )
-            for (i in (meetUpList.indices)) {
-                onView(
-                    RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
-                        i,
-                        R.id.meetup_title
-                    )
-                )
-                    .check(matches(anyOf(meetUpList.map { withText(it.name) })))
-            }
         }
     }
 
