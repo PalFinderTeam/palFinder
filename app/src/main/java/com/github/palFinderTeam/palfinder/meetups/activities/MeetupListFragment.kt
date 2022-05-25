@@ -2,7 +2,10 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +13,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,13 +22,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
+import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
+import com.github.palFinderTeam.palfinder.meetups.fragments.MeetupFilterFragment
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.*
+import com.github.palFinderTeam.palfinder.utils.time.*
 import com.google.android.material.slider.Slider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.time.Period
 import kotlin.math.max
 import kotlin.math.min
 
@@ -44,6 +53,9 @@ class MeetupListFragment : Fragment() {
     private lateinit var tagsViewModel: TagsViewModel<Category>
     //allows the user to change the radius of search of meetUps around location
     private lateinit var radiusSlider: Slider
+
+    private lateinit var filterSelectButton: Button
+
 
     //viewModel to fetch the meetups and handle the localisation
     val viewModel: MapListViewModel by activityViewModels()
@@ -70,6 +82,7 @@ class MeetupListFragment : Fragment() {
         val searchField = view.findViewById<SearchView>(R.id.search_list)
         searchField.imeOptions = EditorInfo.IME_ACTION_DONE
 
+
         radiusSlider = view.findViewById(R.id.distance_slider)
 
         radiusSlider.value = max(radiusSlider.valueFrom, min(radiusSlider.valueTo, viewModel.searchRadius.value!!.toFloat()))
@@ -80,6 +93,7 @@ class MeetupListFragment : Fragment() {
         }
 
         //radioGroup to choose between the different options about followers
+        /*
         val followerOptions: RadioGroup = view.findViewById(R.id.follower_options_group)
         when (args.showParam) {
             ShowParam.ALL -> view.findViewById<RadioButton>(R.id.button_all).isChecked = true
@@ -91,11 +105,12 @@ class MeetupListFragment : Fragment() {
             val radio: RadioButton = view.findViewById(checkedId)
             when (followerOptions.indexOfChild(radio)) {
                 0 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ALL)
-                1 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_PARTCIPATING)
+                1 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_PARTICIPATING)
                 2 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_CREATOR)
                 3 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ONLY_JOINED)
             }
         }
+         */
 
 
         //generate a new adapter for the recyclerView every time the meetUps dataset changes
@@ -136,6 +151,12 @@ class MeetupListFragment : Fragment() {
             filter(it)
         }
 
+        // Setup fragment filter window
+        filterSelectButton = view.findViewById(R.id.select_filters)
+        filterSelectButton.setOnClickListener {
+            MeetupFilterFragment(viewModel).show(childFragmentManager, getString(R.string.meetup_filter_title))
+        }
+
         view.findViewById<Button>(R.id.sort_list).setOnClickListener { showMenu(it) }
         view.findViewById<ImageButton>(R.id.search_place).setOnClickListener { searchOnMap() }
 
@@ -148,6 +169,12 @@ class MeetupListFragment : Fragment() {
      */
     private fun filterTags(meetup: MeetUp): Boolean {
         return meetup.tags.containsAll(viewModel.tags.value!!)
+    }
+
+
+
+    private fun filterDate(meetup: MeetUp): Boolean{
+        return meetup.startDate.after(viewModel.startTime) and meetup.endDate.before(viewModel.endTime)
     }
 
 
@@ -240,6 +267,8 @@ class MeetupListFragment : Fragment() {
             }
         startActivity(intent)
     }
+
+
 
 }
 

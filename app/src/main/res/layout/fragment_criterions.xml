@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/criterions_title"
-            android:fontFamily="@font/fredoka_bolder"
+            android:fontFamily="@font/fredoka_bold"
             android:textColor="?attr/colorPrimaryDark"
             android:textSize="24sp"
 

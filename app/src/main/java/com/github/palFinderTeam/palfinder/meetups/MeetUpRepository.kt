@@ -71,7 +71,7 @@ interface MeetUpRepository : Repository<MeetUp> {
      */
     fun additionalFilter(profile: ProfileUser?, meetUp: MeetUp, showParam: ShowParam?): Boolean {
         return when (showParam) {
-            ShowParam.PAL_PARTCIPATING -> profile!!.following.any { meetUp.isParticipating(it) }
+            ShowParam.PAL_PARTICIPATING -> profile!!.following.any { meetUp.isParticipating(it) }
             ShowParam.PAL_CREATOR -> profile!!.following.any{meetUp.creatorId == it}
             else -> true
         }

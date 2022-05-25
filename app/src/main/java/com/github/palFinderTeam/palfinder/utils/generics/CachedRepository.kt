@@ -70,6 +70,10 @@ class CachedRepository<T : FirebaseObject>(
         return rp.create(obj)
     }
 
+    fun evict(uuid: String) {
+        cache.delete(uuid)
+    }
+
     override suspend fun fetch(uuids: List<String>): List<T> {
         return uuids.mapNotNull { fetch(it) }
     }

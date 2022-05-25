@@ -2,8 +2,10 @@ package com.github.palFinderTeam.palfinder.notification
 
 import android.app.job.JobParameters
 import android.app.job.JobService
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.chat.CachedChatService
@@ -17,6 +19,9 @@ import com.github.palFinderTeam.palfinder.profile.Achievement
 import com.github.palFinderTeam.palfinder.profile.CachedProfileService
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
+import com.github.palFinderTeam.palfinder.profile.*
 import com.github.palFinderTeam.palfinder.utils.EndlessService
 import com.github.palFinderTeam.palfinder.utils.context.AppContextService
 import com.github.palFinderTeam.palfinder.utils.context.ContextService
@@ -61,14 +66,18 @@ class NotificationService @Inject constructor(
         CoroutineScope(Dispatchers.Main).launch {
             // Notification For Follow
             val id = profileService.getLoggedInUserID()
+            var loggedUser: ProfileUser? = null
             if (id != null){
-                val logged = profileService.fetch(id!!)
-                if (logged != null){
-                    for(p in logged!!.following){
+                loggedUser = profileService.fetch(id!!)
+                if (loggedUser != null){
+                    for(p in loggedUser!!.following){
                         val user = profileService.fetch(p)
                         if (!profileMetaData.contains(p) && user != null){
                             profileMetaData.store(p, ProfileMetaData(p, true))
-                            NotificationHandler(context).post(context.getString(R.string.following_title), context.getString(R.string.following_content).format(user.username), R.drawable.icon_beer)
+                            val intent = Intent(context, ProfileActivity::class.java).apply {
+                                putExtra(USER_ID, user.uuid)
+                            }
+                            NotificationHandler(context).post(context.getString(R.string.following_title), context.getString(R.string.following_content).format(user.username), R.drawable.icon_beer, intent)
                         }
                     }
                     for (a in Achievement.values()) {
@@ -92,7 +101,12 @@ class NotificationService @Inject constructor(
                 if (meetup != null) {
                     // Check if meetup started and notification not sent
                     if (!meta.sendStartNotification && meetup.startDate.isBefore(timeService.now())) {
-                        NotificationHandler(context).post(meetup.name, meetup.description, R.drawable.icon_beer)
+                        val intent = Intent(context, MeetUpView::class.java).apply {
+                            putExtra(MEETUP_SHOWN, m)
+                        }
+                        if (!loggedUser!!.isMeetupMuted(m)){
+                            NotificationHandler(context).post(meetup.name, meetup.description, R.drawable.icon_beer, intent)
+                        }
                         meta.sendStartNotification = true
                         meetupsMetaData.store(m, meta)
                     }
@@ -104,7 +118,7 @@ class NotificationService @Inject constructor(
                         val last = messages.takeLast(1)[0]
                         val hash = last.hashCode().toString()
 
-                        if (hash != meta.lastMessageNotification && last.sentBy != profileService.getLoggedInUserID()) {
+                        if (hash != meta.lastMessageNotification && last.sentBy != profileService.getLoggedInUserID() && loggedUser != null && !loggedUser.isMeetupMuted(m)) {
                             val name = profileService.fetch(last.sentBy)?.username?:""
                             if (ChatActivity.currentlyViewChat != m) {
                                 NotificationHandler(context).post(name, last.content, R.drawable.icon_beer)

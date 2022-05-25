@@ -4,8 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -26,6 +25,7 @@ import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
 import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import com.github.palFinderTeam.palfinder.utils.image.QRCode
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,7 +37,6 @@ const val MEETUP_SHOWN = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_
 const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_EDIT"
 
 
-@SuppressLint("SimpleDateFormat")
 @AndroidEntryPoint
 class MeetUpView : AppCompatActivity() {
     private val viewModel: MeetUpViewViewModel by viewModels()
@@ -61,20 +60,28 @@ class MeetUpView : AppCompatActivity() {
         sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
 
         val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
-        viewModel.loadMeetUp(meetupId)
+
         //button (image for design purpuses) to show the list of users participating in this meetUp
         val button = findViewById<ImageView>(R.id.show_qr_button)
         button.setOnClickListener { showProfileList() }
 
         //fill fields when the meetup is loaded from database
-        viewModel.meetUp.observe(this) { meetUp ->
+        viewModel.meetUp.observe(this) {
             fillFields()
             handleButton()
         }
 
+        viewModel.loadMeetUp(meetupId)
+
         tagsViewModel = createTagFragmentModel(this, TagsViewModelFactory(viewModel.tagRepository))
         if (savedInstanceState == null) {
             addTagsToFragmentManager(supportFragmentManager, R.id.fc_tags)
+        }
+
+        viewModel.askPermissionToJoin.observe(this) {
+            if (it) {
+                onJoinWithBlockedUsers()
+            }
         }
     }
 
@@ -83,10 +90,15 @@ class MeetUpView : AppCompatActivity() {
      * editButton, available only to meetUp creator
      * joinButton, available to all but the meetUp creator (cannot leave your own meetUp)
      */
-    private fun handleButton(){
+    private fun handleButton() {
         val hasJoined = viewModel.hasJoin()
         val isCreator = viewModel.isCreator()
         findViewById<View>(R.id.bt_ChatMeetup).apply {
+            this.isEnabled = hasJoined
+            this.isVisible = hasJoined
+            this.isClickable = hasJoined
+        }
+        findViewById<View>(R.id.bt_OpenNavigation).apply {
             this.isEnabled = hasJoined
             this.isVisible = hasJoined
             this.isClickable = hasJoined
@@ -99,7 +111,19 @@ class MeetUpView : AppCompatActivity() {
         findViewById<Button>(R.id.button_join_meetup).apply {
             this.isEnabled = !isCreator
             this.isClickable = !isCreator
-            this.text = if (hasJoined) getString(R.string.meetup_view_leave) else getString(R.string.meetup_view_join)
+            this.text =
+                if (hasJoined) getString(R.string.meetup_view_leave) else getString(R.string.meetup_view_join)
+        }
+        findViewById<FloatingActionButton>(R.id.bt_MuteMeetup).apply {
+            this.isEnabled = hasJoined
+            this.isClickable = hasJoined
+            this.isVisible = hasJoined
+            if (viewModel.canUnMute()){
+                this.setImageResource(R.drawable.ic_baseline_notifications_off_24)
+            }
+            else{
+                this.setImageResource(R.drawable.ic_baseline_notifications_active_24)
+            }
         }
     }
 
@@ -107,12 +131,16 @@ class MeetUpView : AppCompatActivity() {
      * launches the ProfileListFragment, a dialogFragment, from the participantsId of the meetup loaded
      */
     private fun showProfileList() {
-        ProfileListFragment(viewModel.meetUp.value?.participantsId!!).show(supportFragmentManager, "profile list")
+        ProfileListFragment(viewModel.meetUp.value?.participantsId!!).show(
+            supportFragmentManager,
+            "profile list"
+        )
     }
 
     private fun fillFields() {
         tagsViewModel.refreshTags()
     }
+
 
     /**
      * restart the meetUp creation activity to edit it
@@ -123,6 +151,23 @@ class MeetUpView : AppCompatActivity() {
                 putExtra(MEETUP_EDIT, viewModel.getMeetupID())
             }
             startActivity(intent)
+        }
+    }
+
+    /**
+     * open Google Maps with navigation from currentLocation to meetUpLocation
+     */
+    fun onOpenNavigation(v: View){
+        if(viewModel.hasJoin()){
+            val location = viewModel.meetUp.value?.location
+            if (location != null) {
+                val navigationIntentUri = Uri.parse(
+                    v.context.getString(R.string.navigationUri) + location.latitude.toString()+ "," + location.longitude.toString())
+                val mapIntent = Intent(Intent.ACTION_VIEW, navigationIntentUri)
+                mapIntent.setPackage(v.context.getString(R.string.mapPackage))
+                startActivity(mapIntent)
+
+            }
         }
     }
 
@@ -145,7 +190,12 @@ class MeetUpView : AppCompatActivity() {
         //Initiate the barcode encoder
         val barcodeEncoder = BarcodeEncoder()
         //Encode text in editText into QRCode image into the specified size using barcodeEncoder
-        val bitmap = barcodeEncoder.encodeBitmap(MEETUP_SHOWN+intent.getSerializableExtra(MEETUP_SHOWN) as String, BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
+        val bitmap = barcodeEncoder.encodeBitmap(
+            MEETUP_SHOWN + intent.getSerializableExtra(MEETUP_SHOWN) as String,
+            BarcodeFormat.QR_CODE,
+            resources.getInteger(R.integer.QR_size),
+            resources.getInteger(R.integer.QR_size)
+        )
 
         QRCode.shareQRcode(bitmap, this)
 
@@ -155,20 +205,34 @@ class MeetUpView : AppCompatActivity() {
     /**
      * cannot join/leave a meetUp if you are not logged in
      */
-    fun onJoinOrLeave(v: View){
-        if(profileService.getLoggedInUserID() == null){
-            createPopUp(this,
-                { startActivity(Intent(this, LoginActivity::class.java)) },
-                textId = R.string.no_account_join,
-                continueButtonTextId = R.string.login
-            )
-
-        }else {
+    fun onJoinOrLeave(v: View) {
+        if (profileService.getLoggedInUserID() == null) {
+            loginPopUp()
+        } else {
             viewModel.joinOrLeave(this)
         }
     }
 
+    /**
+     * Mute or Unmute the meetup
+     */
+    fun onMuteOrUnmute(v: View){
+        viewModel.muteOrUnMute(this)
+    }
 
+    private fun onJoinWithBlockedUsers() {
+        createPopUp(
+            this, {
+                viewModel.joinOrLeave(this, ignoreWarning = true)
+            }, R.string.meetup_with_blocked_warning
+        )
+    }
 
-
+    private fun loginPopUp(){
+        createPopUp(this,
+            { startActivity(Intent(this, LoginActivity::class.java)) },
+            textId = R.string.no_account_join,
+            continueButtonTextId = R.string.login
+        )
+    }
 }

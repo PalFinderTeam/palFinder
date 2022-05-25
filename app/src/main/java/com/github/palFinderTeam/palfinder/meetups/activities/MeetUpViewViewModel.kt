@@ -10,10 +10,13 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsRepository
+import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
+import com.google.type.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,6 +36,9 @@ class MeetUpViewViewModel @Inject constructor(
 ) : ViewModel() {
     private var _meetUp: MutableLiveData<MeetUp> = MutableLiveData<MeetUp>()
     val meetUp: LiveData<MeetUp> = _meetUp
+    private var _askPermissionToJoin: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
+    val askPermissionToJoin: LiveData<Boolean> = _askPermissionToJoin
+    var loggedInUser: MutableLiveData<ProfileUser?> = MutableLiveData<ProfileUser?>()
 
     /**
      * Fetch given meetup and update corresponding livedata.
@@ -41,6 +47,14 @@ class MeetUpViewViewModel @Inject constructor(
      */
     fun loadMeetUp(meetUpId: String) {
         viewModelScope.launch {
+            val id = profileService.getLoggedInUserID()
+            loggedInUser.value = if (id != null){
+                profileService.fetch(id)
+            }
+            else{
+                null
+            }
+
             val fetchedMeetUp = meetUpRepository.fetch(meetUpId)
             // TODO do something on error
             fetchedMeetUp?.let { _meetUp.value = it }
@@ -64,11 +78,11 @@ class MeetUpViewViewModel @Inject constructor(
     }
 
     /**
-     * helper functions for the chat/edit/join buttons
+     * helper functions for the chat/edit/join/openNavigation buttons
      */
     fun hasJoin(): Boolean {
         val uuid = profileService.getLoggedInUserID()
-        return if (uuid != null){
+        return if (uuid != null && meetUp.value != null){
             meetUp.value!!.isParticipating(uuid)
         }
         else{
@@ -77,10 +91,24 @@ class MeetUpViewViewModel @Inject constructor(
     }
     fun isCreator(): Boolean {
         val uuid = profileService.getLoggedInUserID()
-        return if (uuid != null){
+        return if (uuid != null && meetUp.value != null){
             meetUp.value!!.creatorId == uuid
         }
         else{
+            false
+        }
+    }
+    fun canMute(): Boolean{
+        return if (loggedInUser.value != null && meetUp.value != null){
+            loggedInUser.value!!.canMuteMeetup(meetUp.value!!.uuid)
+        } else{
+            false
+        }
+    }
+    fun canUnMute(): Boolean{
+        return if (loggedInUser.value != null && meetUp.value != null){
+            loggedInUser.value!!.canUnMuteMeetup(meetUp.value!!.uuid)
+        } else{
             false
         }
     }
@@ -88,7 +116,7 @@ class MeetUpViewViewModel @Inject constructor(
     /**
      * test if the user is participating in the meetup and propagate the join/leave to the database
      */
-    fun joinOrLeave(context: Context){
+    fun joinOrLeave(context: Context, ignoreWarning: Boolean = false){
         val uuid = profileService.getLoggedInUserID()
         if (uuid != null) {
             viewModelScope.launch {
@@ -98,15 +126,48 @@ class MeetUpViewViewModel @Inject constructor(
                         else -> Toast.makeText(context, R.string.meetup_view_left, Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    val profile = profileService.fetch(uuid)
-                    if (profile?.blockedUsers?.intersect(meetUp.value!!.participantsId)?.isNotEmpty() == true) {
+                    val meetUp = meetUp.value!!
+                    val loggedUser = profileService.fetch(uuid)!!
+                    val blockedUser = profileService.fetch(uuid)?.blockedUsers
+                    val blockedByCreator = profileService.fetch(meetUp.creatorId)?.blockedUsers
+                    if (blockedUser?.contains(meetUp.creatorId) == true) {
                         Toast.makeText(context, R.string.meetup_with_blocked, Toast.LENGTH_SHORT).show()
-                    } else {
-                        when(val ret = meetUpRepository.joinMeetUp(meetUp.value!!.uuid, uuid, timeService.now(),
-                            profileService.fetch(uuid)!!)){
+                    }
+                    else if (blockedByCreator?.contains(uuid) == true) {
+                        Toast.makeText(context, R.string.meetup_where_you_are_blocked, Toast.LENGTH_SHORT).show()
+                    }
+                    else if (!ignoreWarning && blockedUser?.intersect(meetUp.participantsId)?.isEmpty() == false) {
+                        _askPermissionToJoin.value = true
+                    }
+                    else {
+                        when(val ret = meetUpRepository.joinMeetUp(meetUp.uuid, uuid, timeService.now(),
+                            loggedUser)){
                             is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
                             else -> Toast.makeText(context, R.string.meetup_view_joined, Toast.LENGTH_SHORT).show()
                         }
+                    }
+                }
+                loadMeetUp(meetUp.value!!.uuid)
+            }
+        }
+    }
+
+    /**
+     * test if the meetup is muted and propagate the mute/unmute to the database
+     */
+    fun muteOrUnMute(context: Context){
+        val uuid = profileService.getLoggedInUserID()
+        if (uuid != null) {
+            viewModelScope.launch {
+                if (canMute()) {
+                    when(val ret = profileService.muteMeetup(loggedInUser.value!!, meetUp.value!!.uuid)){
+                        is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
+                        else -> Toast.makeText(context, R.string.meetup_view_muted, Toast.LENGTH_SHORT).show()
+                    }
+                } else if (canUnMute()) {
+                    when(val ret = profileService.unMuteMeetup(loggedInUser.value!!, meetUp.value!!.uuid)){
+                        is Response.Failure -> Toast.makeText(context, ret.errorMessage, Toast.LENGTH_SHORT).show()
+                        else -> Toast.makeText(context, R.string.meetup_view_unmuted, Toast.LENGTH_SHORT).show()
                     }
                 }
                 loadMeetUp(meetUp.value!!.uuid)
