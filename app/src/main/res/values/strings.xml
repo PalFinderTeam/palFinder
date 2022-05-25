@@ -116,6 +116,8 @@
     <string name="meetup_view_leave">Leave</string>
     <string name="meetup_view_joined">You joined the meetup</string>
     <string name="meetup_view_left">You left the meetup</string>
+    <string name="meetup_view_muted">You muted the meetup</string>
+    <string name="meetup_view_unmuted">You unmuted the meetup</string>
     <string name="meetup_with_blocked">You cannot join this meetup, you blocked the creator.</string>
     <string name="meetup_where_you_are_blocked">You cannot join this meetup, you are blocked by creator.</string>
     <string name="meetup_view_participation_unlimited">%d</string>
@@ -140,6 +142,9 @@
     <string name="ok">OK</string>
 
     <string name="date_long_format">EEEE, MMMM d, yyyy \'at\' h:mm a</string>
+    <string name="date_very_short_format">h:mm</string>
+    <string name="date_short_format">d MMMM</string>
+    <string name="date_medium_format">d MMMM yyyy</string>
 
     <string name="placeholder_name" translatable="false">someone</string>
     <string name="placeholder_username">\@username</string>

@@ -52,6 +52,31 @@ class MockProfileService : ProfileService {
             Response.Failure(e.message.orEmpty())
         }
     }
+
+    override suspend fun muteMeetup(user: ProfileUser, meetup: String): Response<Unit> {
+        return try {
+            if (!user.canMuteMeetup(meetup)) {
+                return Response.Failure("Cannot mute this meetup.")
+            }
+            db[user.uuid] = user.copy(mutedMeetups= user.following.plus(meetup))
+            Response.Success(Unit)
+        } catch (e: Exception) {
+            Response.Failure(e.message.orEmpty())
+        }
+    }
+
+    override suspend fun unMuteMeetup(user: ProfileUser, meetup: String): Response<Unit> {
+        return try {
+            if (!user.canUnMuteMeetup(meetup)) {
+                return Response.Failure("Cannot unfollow this user.")
+            }
+            db[user.uuid] = user.copy(mutedMeetups = user.following.minus(meetup))
+            Response.Success(Unit)
+        } catch (e: Exception) {
+            Response.Failure(e.message.orEmpty())
+        }
+    }
+
     override suspend fun fetch(uuid: String): ProfileUser? {
         return db[uuid]
     }
