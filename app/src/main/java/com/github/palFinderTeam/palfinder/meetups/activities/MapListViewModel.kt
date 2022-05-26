@@ -55,11 +55,11 @@ class MapListViewModel @Inject constructor(
     //store the fetched meetups in real time, separated in 2 to be immutable
     private val _listOfMeetUpResponse: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
     val filterer = ListTransformer<MeetUp>()
-    val listOfMeetUp: MutableLiveData<List<MeetUp>> = filterer.transform(_listOfMeetUpResponse)
+    val listOfMeetUp: MutableLiveData<List<MeetUp>> = filterer.transformResponseList(_listOfMeetUpResponse)
 
     //store the current tags filtering the data, separated in 2 as well
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
-    val tags: LiveData<Set<Category>> = _tags
+    val tags: MutableLiveData<Set<Category>> = _tags
 
     //stores the current user location and the client
     private val locationClient =
@@ -181,17 +181,6 @@ class MapListViewModel @Inject constructor(
         }
         else{
             filterer.removeFilter(DATE_UPPER_FILTER)
-        }
-    }
-
-    /**
-     * Filter By Text
-     */
-    fun filterByText(query: String?) {
-        if (query != null) {
-            filterer.setFilter(TEXT_FILTER) { it.containsString(query) }
-        } else {
-            filterer.removeFilter(TEXT_FILTER)
         }
     }
 

@@ -16,7 +16,8 @@ import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.ProfileViewModel
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.utils.Response
-import com.github.palFinderTeam.palfinder.utils.SearchedFilter
+import com.github.palFinderTeam.palfinder.utils.generics.filterByText
+import com.github.palFinderTeam.palfinder.utils.generics.setupSearchField
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -35,6 +36,7 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
         viewModel.profilesList.observe(this) {
             changeAdapter(it, v)
         }
+        setupSearchField(v, R.id.profile_list_search,viewModel.filterer)
         viewModel.fetchUsersProfile(usersId)
         return v
     }
@@ -71,7 +73,6 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
                 recyclerView.adapter = adapter
                 val searchField = v.findViewById<SearchView>(R.id.profile_list_search)
                 searchField.imeOptions = EditorInfo.IME_ACTION_DONE
-                SearchedFilter.setupSearchField(searchField, adapter.filter)
             }
         }
     }

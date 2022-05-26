@@ -30,6 +30,8 @@ import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.*
+import com.github.palFinderTeam.palfinder.utils.generics.filterByText
+import com.github.palFinderTeam.palfinder.utils.generics.setupSearchField
 import com.github.palFinderTeam.palfinder.utils.time.*
 import com.google.android.material.slider.Slider
 import dagger.hilt.android.AndroidEntryPoint
@@ -82,8 +84,7 @@ class MeetupListFragment : Fragment() {
         meetupList = view.findViewById(R.id.meetup_list_recycler)
         meetupList.layoutManager = LinearLayoutManager(requireContext())
 
-        setupSearchField(view)
-
+        setupSearchField(view, R.id.search_list,viewModel.filterer)
 
         radiusSlider = view.findViewById(R.id.distance_slider)
 
@@ -148,25 +149,6 @@ class MeetupListFragment : Fragment() {
     }
 
     /**
-     * bind the SearchField to the viewModel and set the listener to update the filter list
-     */
-    private fun setupSearchField(view: View) {
-        //setup the searchField that will be given to the adapter as argument
-        val searchField = view.findViewById<SearchView>(R.id.search_list)
-        searchField.imeOptions = EditorInfo.IME_ACTION_DONE
-        searchField.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                viewModel.filterByText(newText)
-                return true
-            }
-        })
-    }
-
-    /**
      * Sort the list of meetUps by capacity
      */
     private fun sortByCap() {
@@ -190,6 +172,13 @@ class MeetupListFragment : Fragment() {
                 viewModel.searchLocation.value ?: MapListViewModel.START_LOCATION
             )
         }
+    }
+
+    /**
+     * Set the tags. (Use for testing)
+     */
+    fun setTags(tags: Set<Category>) {
+        viewModel.tags.postValue(tags)
     }
 
     //button make a menu appears, with several sort options

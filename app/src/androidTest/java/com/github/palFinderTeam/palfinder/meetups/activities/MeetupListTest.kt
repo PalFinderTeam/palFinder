@@ -315,11 +315,11 @@ class MeetUpListTest {
                 listFrag.viewModel.fetchMeetUps()
             }
             scenario.onHiltFragment<MeetupListFragment> { listFrag ->
-                listFrag.filter(setOf(Category.CINEMA))
+                listFrag.setTags(setOf(Category.CINEMA))
                 assert(listFrag.adapter.currentDataSet.isEmpty())
-                listFrag.filter(setOf(Category.WORKING_OUT, Category.SPORTS))
+                listFrag.setTags(setOf(Category.WORKING_OUT, Category.SPORTS))
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(1))
-                listFrag.filter(setOf())
+                listFrag.setTags(setOf())
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(5))
             }
         }

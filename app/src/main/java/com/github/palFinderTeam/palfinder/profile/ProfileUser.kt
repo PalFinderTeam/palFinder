@@ -6,6 +6,7 @@ import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.time.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.generics.FirebaseObject
+import com.github.palFinderTeam.palfinder.utils.generics.StringFilterable
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.DocumentSnapshot
 import java.io.Serializable
@@ -35,7 +36,7 @@ data class ProfileUser(
     private val achievements: List<String> = emptyList(),
     val privacySettings: PrivacySettings? = PrivacySettings.PUBLIC,
     val mutedMeetups: List<String> = emptyList()
-) : Serializable, FirebaseObject {
+) : Serializable, FirebaseObject, StringFilterable {
 
     companion object {
         const val JOIN_FORMAT = "Joined %s"
@@ -209,5 +210,9 @@ data class ProfileUser(
 
     fun badges(): List<Achievement> {
         return achievements().filter { it.cat == AchievementCategory.OTHER }
+    }
+
+    override fun getAllText(): String {
+        return "$name $surname $username $description"
     }
 }

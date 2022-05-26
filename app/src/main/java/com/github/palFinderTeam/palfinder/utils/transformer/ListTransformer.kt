@@ -1,6 +1,5 @@
 package com.github.palFinderTeam.palfinder.utils.transformer
 
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import com.github.palFinderTeam.palfinder.utils.Response
 
@@ -20,7 +19,7 @@ class ListTransformer<T> {
      */
     private fun update(){
         if (input != null && input!!.value != null){
-            output.postValue(transform(input!!.value!!))
+            output.postValue(transformResponseList(input!!.value!!))
         }
     }
 
@@ -55,7 +54,7 @@ class ListTransformer<T> {
     /**
      * Transform the list by applying all filters and sorters
      */
-    fun transform(list: List<T>):List<T>{
+    fun transformResponseList(list: List<T>):List<T>{
         var lst = list
         for (filter in filters.values){
             lst = lst.filter { filter(it) }
@@ -70,7 +69,7 @@ class ListTransformer<T> {
      * Set the input of the transformer
      * @param list: List to be transformed with the filters and sorters
      */
-    fun transform(list: MutableLiveData<Response<List<T>>>): MutableLiveData<List<T>>{
+    fun transformResponseList(list: MutableLiveData<Response<List<T>>>): MutableLiveData<List<T>>{
         list.observeForever {
             when (it){
                 is Response.Success -> {
@@ -82,8 +81,18 @@ class ListTransformer<T> {
             }
         }
 
+        return transform(input)
+    }
+
+    /**
+     * Set the input of the transformer
+     * @param list: List to be transformed with the filters and sorters
+     */
+    fun transform(list: MutableLiveData<List<T>>): MutableLiveData<List<T>>{
+        input = list
+
         input.observeForever {
-            output.value = transform(it)
+            output.value = transformResponseList(it)
         }
         return output
     }
