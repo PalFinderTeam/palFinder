@@ -32,7 +32,6 @@ import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.addBorder
-import com.github.palFinderTeam.palfinder.utils.image.defaultMarker
 import com.github.palFinderTeam.palfinder.utils.setNavigationResult
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap

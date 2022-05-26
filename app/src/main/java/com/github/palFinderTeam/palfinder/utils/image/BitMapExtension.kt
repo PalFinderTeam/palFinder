@@ -3,6 +3,11 @@ package com.github.palFinderTeam.palfinder.utils.image
 import android.graphics.*
 
 
+/**
+ * create a circle border to a bitmap
+ * @param borderWidth width of the border, default is 5
+ * @param borderColor color of the border, default is RED
+ */
 fun Bitmap.addBorder(borderWidth: Int = 5, borderColor: Int = Color.RED): Bitmap?{
     val bitmap = Bitmap.createBitmap(this.width + width*2, this.height+width*2, Bitmap.Config.ARGB_8888)
 
