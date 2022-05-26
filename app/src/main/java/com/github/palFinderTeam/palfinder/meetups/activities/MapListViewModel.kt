@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.pm.PackageManager
 import android.icu.util.Calendar
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -22,6 +23,7 @@ import com.github.palFinderTeam.palfinder.utils.transformer.ListTransformer
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -258,6 +260,8 @@ class MapListViewModel @Inject constructor(
         val date = if (showOnlyAvailableInTime) timeService.now() else null
         viewModelScope.launch {
             val userId = profileService.getLoggedInUserID()
+
+            val blockedUser = getBlockedUser(userId)
             meetUpRepository.getMeetUpsAroundLocation(
                 position,
                 radiusInKm,
@@ -275,6 +279,24 @@ class MapListViewModel @Inject constructor(
             profileService.fetch(uuid)?.blockedUsers.orEmpty()
         } else {
             emptyList()
+        }
+    }
+
+    private suspend fun computeAverage(uuids: List<String>): Double {
+        val participants = profileService.fetch(uuids)
+        return participants!!.sumOf { it.followed.size }.toDouble() / participants.size
+    }
+
+    private suspend fun Response<List<MeetUp>>.orderByTrend(showParam: ShowParam): Response<List<MeetUp>> {
+        return if (this is Response.Success) {
+            if (showParam == ShowParam.TRENDS) {
+                val filtered = this.data.map { Pair(computeAverage(it.participantsId), it) }
+                Response.Success(filtered.sortedBy { it.first }.map { it.second })
+            } else {
+                Response.Success(this.data)
+            }
+        } else {
+            this
         }
     }
 

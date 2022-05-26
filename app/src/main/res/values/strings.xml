@@ -100,6 +100,7 @@
     <string name="meetup_filter_only_participating">My pals taking part</string>
     <string name="meetup_only_creators">Created by my Pals</string>
     <string name="meetup_filter_only_joined">Joined meetups only</string>
+    <string name="meetup_filter_trend">Trend list</string>
     <string name="meetup_filter_title">Filter meetups</string>
     <string name="meetup_filter_btn">Filter by</string>
     <string name="meetup_filter_subtitle">Select an option to narrow down the displayed results</string>
