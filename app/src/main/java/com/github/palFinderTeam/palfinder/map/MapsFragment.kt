@@ -197,8 +197,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
         if(viewModel.firstInit()) {
             viewModel.locationClient.lastLocation.addOnSuccessListener {
-                viewModel.setSearchParamAndFetch(location = Location(it.longitude, it.latitude))
-                map.moveCamera(CameraUpdateFactory.newLatLng(LatLng(it.latitude, it.longitude)))
+                if(it != null) {
+                    viewModel.setSearchParamAndFetch(location = Location(it.longitude, it.latitude))
+                    map.moveCamera(CameraUpdateFactory.newLatLng(LatLng(it.latitude, it.longitude)))
+                }
             }
             viewModel.firstInit()
         }
