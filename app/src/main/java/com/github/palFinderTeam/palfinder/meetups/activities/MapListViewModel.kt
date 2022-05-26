@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.pm.PackageManager
 import android.icu.util.Calendar
@@ -18,12 +19,14 @@ import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+@SuppressLint("MissingPermission")
 @ExperimentalCoroutinesApi
 @HiltViewModel
 /**
@@ -43,7 +46,8 @@ class MapListViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
     companion object {
         const val INITIAL_RADIUS: Double = 400.0
-        val START_LOCATION = Location(45.0, 45.0)
+        val START_LOCATION = Location(6.5657, 46.5197)
+
 
         // Remove meetups created by blocked users
         private fun Response<List<MeetUp>>.filterBlocked(blockedUser: List<String>): Response<List<MeetUp>> {
@@ -67,7 +71,7 @@ class MapListViewModel @Inject constructor(
     val tags: LiveData<Set<Category>> = _tags
 
     //stores the current user location and the client
-    private val locationClient =
+    val locationClient =
         LocationServices.getFusedLocationProviderClient(getApplication<Application>().applicationContext)
     private val _userLocation: MutableLiveData<Location> = MutableLiveData()
     val userLocation: LiveData<Location> = _userLocation
@@ -84,11 +88,13 @@ class MapListViewModel @Inject constructor(
     var showParam: ShowParam = ShowParam.ALL
     private var showOnlyAvailableInTime = true
     private var filterBlockedUserMeetups = true
+    private var isFirstInit = true
 
     lateinit var startTime: MutableLiveData<Calendar>
     lateinit var endTime: MutableLiveData<Calendar>
 
     //updates the userLocation
+
     init {
         if (ActivityCompat.checkSelfPermission(
                 getApplication<Application>().applicationContext,
@@ -105,6 +111,7 @@ class MapListViewModel @Inject constructor(
                     _userLocation.postValue(Location(location.longitude, location.latitude))
                 }
             }
+
         }
     }
 
@@ -283,4 +290,14 @@ class MapListViewModel @Inject constructor(
             }
         }
     }
+
+    fun firstInit(): Boolean{
+        return if(isFirstInit){
+            isFirstInit = false
+            true
+        }else false
+
+    }
+
+
 }
