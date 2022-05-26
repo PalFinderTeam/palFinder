@@ -24,6 +24,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel.Companion.TEXT_FILTER
+import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam.ONLY_JOINED
 import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
 import com.github.palFinderTeam.palfinder.meetups.fragments.MeetupFilterFragment
 import com.github.palFinderTeam.palfinder.tag.Category
@@ -62,6 +63,8 @@ class MeetupListFragment : Fragment() {
 
     private lateinit var filterSelectButton: Button
 
+    private lateinit var searchMapButton: ImageButton
+
 
     //viewModel to fetch the meetups and handle the localisation
     val viewModel: MapListViewModel by activityViewModels()
@@ -97,6 +100,20 @@ class MeetupListFragment : Fragment() {
         radiusSlider.addOnChangeListener { _, value, _ ->
             viewModel.setSearchParamAndFetch(radiusInKm = value.toDouble())
         }
+
+        searchMapButton = view.findViewById(R.id.search_place)
+        searchMapButton.setOnClickListener { searchOnMap() }
+
+        viewModel.showParam.observe(requireActivity()) {
+            val visibility = if (it == ONLY_JOINED) {
+                View.GONE
+            } else {
+                View.VISIBLE
+            }
+            radiusSlider.visibility = visibility
+            searchMapButton.visibility = visibility
+        }
+
 
         //generate a new adapter for the recyclerView every time the meetUps dataset changes
         viewModel.listOfMeetUp.observe(requireActivity()) { it ->
@@ -139,7 +156,6 @@ class MeetupListFragment : Fragment() {
         }
 
         view.findViewById<Button>(R.id.sort_list).setOnClickListener { showMenu(it) }
-        view.findViewById<ImageButton>(R.id.search_place).setOnClickListener { searchOnMap() }
 
         viewModel.setSearchParamAndFetch(
             showParam = args.showParam,

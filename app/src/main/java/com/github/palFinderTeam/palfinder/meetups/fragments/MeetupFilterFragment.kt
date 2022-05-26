@@ -44,7 +44,7 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
         filterGroup = v.findViewById(R.id.follower_options_group)
 
         // Check currently selected option
-        when (viewModel.showParam) {
+        when (viewModel.showParam.value!!) {
             ShowParam.ALL -> filterGroup.check(R.id.button_all)
             ShowParam.PAL_PARTICIPATING -> filterGroup.check(R.id.participate_button)
             ShowParam.PAL_CREATOR -> filterGroup.check(R.id.created_button)
