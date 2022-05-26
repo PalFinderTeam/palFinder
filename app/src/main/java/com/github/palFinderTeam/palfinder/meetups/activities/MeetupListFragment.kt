@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
+import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel.Companion.TEXT_FILTER
 import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
 import com.github.palFinderTeam.palfinder.meetups.fragments.MeetupFilterFragment
 import com.github.palFinderTeam.palfinder.tag.Category
@@ -32,6 +34,7 @@ import com.github.palFinderTeam.palfinder.utils.time.*
 import com.google.android.material.slider.Slider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import java.time.Period
 import kotlin.math.max
 import kotlin.math.min
@@ -51,6 +54,7 @@ class MeetupListFragment : Fragment() {
 
     //allows the user to add tags to filter the list
     private lateinit var tagsViewModel: TagsViewModel<Category>
+
     //allows the user to change the radius of search of meetUps around location
     private lateinit var radiusSlider: Slider
 
@@ -78,60 +82,31 @@ class MeetupListFragment : Fragment() {
         meetupList = view.findViewById(R.id.meetup_list_recycler)
         meetupList.layoutManager = LinearLayoutManager(requireContext())
 
-        //setup the searchField that will be given to the adapter as argument
-        val searchField = view.findViewById<SearchView>(R.id.search_list)
-        searchField.imeOptions = EditorInfo.IME_ACTION_DONE
+        setupSearchField(view)
 
 
         radiusSlider = view.findViewById(R.id.distance_slider)
 
-        radiusSlider.value = max(radiusSlider.valueFrom, min(radiusSlider.valueTo, viewModel.searchRadius.value!!.toFloat()))
+        radiusSlider.value = max(
+            radiusSlider.valueFrom,
+            min(radiusSlider.valueTo, viewModel.searchRadius.value!!.toFloat())
+        )
 
         //updates the meetUps at each slider change in real time
         radiusSlider.addOnChangeListener { _, value, _ ->
             viewModel.setSearchParamAndFetch(radiusInKm = value.toDouble())
         }
 
-        //radioGroup to choose between the different options about followers
-        /*
-        val followerOptions: RadioGroup = view.findViewById(R.id.follower_options_group)
-        when (args.showParam) {
-            ShowParam.ALL -> view.findViewById<RadioButton>(R.id.button_all).isChecked = true
-            ShowParam.ONLY_JOINED -> view.findViewById<RadioButton>(R.id.joinedButton).isChecked = true
-            ShowParam.PAL_PARTCIPATING -> view.findViewById<RadioButton>(R.id.participate_button).isChecked = true
-            ShowParam.PAL_CREATOR -> view.findViewById<RadioButton>(R.id.created_button).isChecked = true
-        }
-        followerOptions.setOnCheckedChangeListener { _, checkedId ->
-            val radio: RadioButton = view.findViewById(checkedId)
-            when (followerOptions.indexOfChild(radio)) {
-                0 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ALL)
-                1 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_PARTICIPATING)
-                2 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_CREATOR)
-                3 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ONLY_JOINED)
-            }
-        }
-         */
-
-
         //generate a new adapter for the recyclerView every time the meetUps dataset changes
-        viewModel.listOfMeetUpResponse.observe(requireActivity()) { it ->
-            if (it is Response.Success && viewModel.searchLocation.value != null) {
-                val meetups = it.data
-                adapter = MeetupListAdapter(
-                    meetups, meetups.toMutableList(),
-                    SearchedFilter(
-                        meetups, meetups.toMutableList(), ::filterTags
-                    ) {
-                        adapter.notifyDataSetChanged()
-                    },
-                    viewModel.searchLocation.value!!,
-                    requireContext()
-                )
-                { onListItemClick(it) }
-                meetupList.adapter = adapter
-                SearchedFilter.setupSearchField(searchField, adapter.filter)
-            }
-
+        viewModel.listOfMeetUp.observe(requireActivity()) { it ->
+            val meetups = it
+            adapter = MeetupListAdapter(
+                meetups, meetups.toMutableList(),
+                viewModel.searchLocation.value!!,
+                requireContext()
+            )
+            { onListItemClick(it) }
+            meetupList.adapter = adapter
         }
 
         // Listen for result of the map fragment, when using the select precise location functionality.
@@ -146,92 +121,75 @@ class MeetupListFragment : Fragment() {
         if (savedInstanceState == null) {
             addTagsToFragmentManager(childFragmentManager, R.id.list_select_tag)
         }
-        viewModel.tags.observe(requireActivity()) {
+        viewModel.tags.observe(requireActivity()) { tags ->
             tagsViewModel.refreshTags()
-            filter(it)
+            viewModel.filterer.setFilter("tags") { meetup ->
+                meetup.tags.containsAll(tags)
+            }
         }
 
         // Setup fragment filter window
         filterSelectButton = view.findViewById(R.id.select_filters)
         filterSelectButton.setOnClickListener {
-            MeetupFilterFragment(viewModel).show(childFragmentManager, getString(R.string.meetup_filter_title))
+            MeetupFilterFragment(viewModel).show(
+                childFragmentManager,
+                getString(R.string.meetup_filter_title)
+            )
         }
 
         view.findViewById<Button>(R.id.sort_list).setOnClickListener { showMenu(it) }
         view.findViewById<ImageButton>(R.id.search_place).setOnClickListener { searchOnMap() }
 
-        viewModel.setSearchParamAndFetch(showParam = args.showParam, showOnlyAvailable = true, forceFetch = true)
+        viewModel.setSearchParamAndFetch(
+            showParam = args.showParam,
+            showOnlyAvailable = true,
+            forceFetch = true
+        )
     }
 
     /**
-     * function used to filter one meetup according to the current list of tags of the viewModel
-     * @param meetup current meetup
+     * bind the SearchField to the viewModel and set the listener to update the filter list
      */
-    private fun filterTags(meetup: MeetUp): Boolean {
-        return meetup.tags.containsAll(viewModel.tags.value!!)
-    }
-
-
-
-    private fun filterDate(meetup: MeetUp): Boolean{
-        return meetup.startDate.after(viewModel.startTime) and meetup.endDate.before(viewModel.endTime)
-    }
-
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun filter(tags: Set<Category>?) {
-        if (::adapter.isInitialized) {
-            adapter.currentDataSet.clear()
-            viewModel.listOfMeetUpResponse.value?.let { meetups ->
-                if (meetups is Response.Success) {
-                    performFilter(meetups.data, adapter.currentDataSet, tags)
-                }
+    private fun setupSearchField(view: View) {
+        //setup the searchField that will be given to the adapter as argument
+        val searchField = view.findViewById<SearchView>(R.id.search_list)
+        searchField.imeOptions = EditorInfo.IME_ACTION_DONE
+        searchField.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
             }
-            adapter.notifyDataSetChanged()
-        }
-    }
 
-    private fun performFilter(
-        meetups: List<MeetUp>,
-        currentDataSet: MutableList<MeetUp>,
-        tags: Set<Category>?
-    ) {
-        currentDataSet.addAll(meetups.filter {
-            (tags == null || it.tags.containsAll(tags))
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.filterByText(newText)
+                return true
+            }
         })
     }
 
+    /**
+     * Sort the list of meetUps by capacity
+     */
     private fun sortByCap() {
-        if (::adapter.isInitialized) {
-            val sorted = adapter.currentDataSet.sortedBy { it.capacity }
-            sort(sorted)
-        }
+        viewModel.filterer.setSorter { it.capacity }
+
     }
 
+    /**
+     * Sort the list of meetUps by Name
+     */
     private fun sortByName() {
-        if (::adapter.isInitialized) {
-            val sorted = adapter.currentDataSet.sortedBy { it.name.lowercase() }
-            sort(sorted)
-        }
+        viewModel.filterer.setSorter { it.name.lowercase() }
     }
 
+    /**
+     * Sort the list of meetUps by distance
+     */
     private fun sortByDist() {
-        if (::adapter.isInitialized) {
-            val sorted =
-                adapter.currentDataSet.sortedBy {
-                    it.location.distanceInKm(
-                        viewModel.searchLocation.value ?: MapListViewModel.START_LOCATION
-                    )
-                }
-            sort(sorted)
+        viewModel.filterer.setSorter {
+            it.location.distanceInKm(
+                viewModel.searchLocation.value ?: MapListViewModel.START_LOCATION
+            )
         }
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun sort(sorted: List<MeetUp>) {
-        adapter.currentDataSet.clear()
-        viewModel.listOfMeetUpResponse.value?.let { adapter.currentDataSet.addAll(sorted) }
-        adapter.notifyDataSetChanged()
     }
 
     //button make a menu appears, with several sort options
@@ -243,7 +201,8 @@ class MeetupListFragment : Fragment() {
                 R.id.menu_sort_name -> sortByName()
                 R.id.menu_sort_cap -> sortByCap()
                 R.id.menu_sort_loc -> sortByDist()
-                else -> {}
+                else -> {
+                }
             }
             false
         })
@@ -262,12 +221,11 @@ class MeetupListFragment : Fragment() {
             .apply {
                 putExtra(
                     MEETUP_SHOWN,
-                    (viewModel.listOfMeetUpResponse.value as Response.Success).data[position].uuid
+                    viewModel.listOfMeetUp.value!![position].uuid
                 )
             }
         startActivity(intent)
     }
-
 
 
 }

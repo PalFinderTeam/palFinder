@@ -2,43 +2,87 @@ package com.github.palFinderTeam.palfinder.utils.transformer
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
+import com.github.palFinderTeam.palfinder.utils.Response
 
+/**
+ * Class to transform the data from the API to the data that is used in the UI
+ * by filtering and sorting the data
+ */
 class ListTransformer<T> {
-    private var filters = emptyList<(T) -> Boolean>().toMutableList()
-    private var sorter: ((T) -> Comparable<Any>)? = null
+    private var filters = emptyMap<String, (T) -> Boolean>().toMutableMap()
+    private var sorter: ((T) -> Any)? = null
 
     private var output = MutableLiveData<List<T>>()
-    private var input: MutableLiveData<List<T>>? = null
+    private var input: MutableLiveData<List<T>> = MutableLiveData()
 
+    /**
+     * Updates the list of items to be filtered and sorted.
+     */
     private fun update(){
         if (input != null && input!!.value != null){
-            output.value = transform(input!!.value!!)
+            output.postValue(transform(input!!.value!!))
         }
     }
 
-    fun addFilter(filter: (T) -> Boolean){
-        filters.add(filter)
+    /**
+     * set a filter
+     * @param uuid: Id of the filter (useful to remove it later)
+     * @param filter
+     */
+    fun setFilter(uuid: String, filter: (T) -> Boolean){
+        filters[uuid] = filter
         update()
     }
 
-    fun setSorter(sorter: (T) -> Comparable<Any>){
+    /**
+     * Remove a filter
+     * @param uuid: Id of the filter
+     */
+    fun removeFilter(uuid: String){
+        filters.remove(uuid)
+        update()
+    }
+
+    /**
+     * Set a sorter
+     * @param sorter
+     */
+    fun setSorter(sorter: (T) -> Any){
         this.sorter = sorter
         update()
     }
 
+    /**
+     * Transform the list by applying all filters and sorters
+     */
     fun transform(list: List<T>):List<T>{
         var lst = list
-        for (filter in filters){
-            lst = list.filter { filter(it) }
+        for (filter in filters.values){
+            lst = lst.filter { filter(it) }
         }
         if (sorter != null){
-            lst.sortedBy { sorter!!(it) }
+            lst = lst.sortedBy { sorter!!(it) as Comparable<Any> }
         }
         return lst
     }
 
-    fun transform(lifecycleOwner: LifecycleOwner, list: MutableLiveData<List<T>>): MutableLiveData<List<T>>{
-        list.observe(lifecycleOwner){
+    /**
+     * Set the input of the transformer
+     * @param list: List to be transformed with the filters and sorters
+     */
+    fun transform(list: MutableLiveData<Response<List<T>>>): MutableLiveData<List<T>>{
+        list.observeForever {
+            when (it){
+                is Response.Success -> {
+                    input.postValue(it.data!!)
+                }
+                else -> {
+                    input.postValue(emptyList())
+                }
+            }
+        }
+
+        input.observeForever {
             output.value = transform(it)
         }
         return output

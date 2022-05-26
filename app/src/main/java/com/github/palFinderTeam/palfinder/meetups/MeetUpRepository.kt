@@ -77,5 +77,8 @@ interface MeetUpRepository : Repository<MeetUp> {
         }
     }
 
+    /**
+     * Get all meetups that the user has Join.
+     */
     suspend fun getAllJoinedMeetupID(): List<String>
 }

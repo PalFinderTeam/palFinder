@@ -62,10 +62,6 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
             }
         }
 
-        // Dates, set to currently selected options
-        viewModel.startTime = MutableLiveData(Calendar.getInstance())
-        viewModel.endTime = MutableLiveData(Calendar.getInstance())
-
         context?.resources?.let { viewModel.endTime.value?.add(Calendar.DAY_OF_MONTH, it.getInteger(R.integer.base_day_interval)) }
 
         selectStartTime = v.findViewById(R.id.tv_StartDate)

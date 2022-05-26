@@ -81,7 +81,7 @@ class NotificationService @Inject constructor(
                         }
                     }
                     for (a in Achievement.values()) {
-                        if (a in logged.achievements() && !achievementMetaData.contains(a.toString())){
+                        if (a in loggedUser.achievements() && !achievementMetaData.contains(a.toString())){
                             achievementMetaData.store(a.toString(), AchievementMetaData(a.toString(), true))
                             NotificationHandler(context).post(context.getString(R.string.achievement_title), context.getString(R.string.achievement_content).format(a.aName), R.drawable.icon_beer)
                         }
