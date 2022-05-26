@@ -267,5 +267,7 @@
     <string name="editProfile"> Editer profil</string>
     <string name="settings"> Paramètres</string>
     <string name="Logout">Se déconnecter</string>
+    <string name="nav_bar_profile">Mon Profil</string>
+
 
 </resources>

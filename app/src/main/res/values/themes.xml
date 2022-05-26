@@ -1,4 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <!-- Base application theme. -->
     <style name="palFinder.default_theme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
@@ -17,6 +18,7 @@
         <item name="android:shape">@color/theme_darker</item>
         <item name="colorSurface">@color/message_in_coming_color</item>
 
+        <item name="android:itemTextAppearance">@style/CustomTextItems</item>
     </style>
 
     <style name="palFinder.warm_theme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
@@ -36,6 +38,8 @@
         <item name="android:shape">@color/theme_primary_default</item>
         <item name="colorSurface">@color/message_in_coming_color</item>
         <item name="android:buttonStyle">?attr/colorSecondary</item>
+
+        <item name="android:itemTextAppearance">@style/CustomTextItems</item>
     </style>
 
 
@@ -47,4 +51,9 @@
     <style name="Theme.PalFinder.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.PalFinder.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="CustomTextItems" parent="@android:style/TextAppearance.Widget.IconMenu.Item">
+        <item name="fontFamily">@font/fredoka_normal</item>
+    </style>
+
 </resources>
