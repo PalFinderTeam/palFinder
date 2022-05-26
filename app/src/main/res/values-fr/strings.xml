@@ -94,6 +94,7 @@
     <string name="meetup_filter_only_participating">pal prenant part</string>
     <string name="meetup_only_creators">Créé par mes potes</string>
     <string name="meetup_filter_only_joined">rejoins</string>
+    <string name="meetup_filter_trend">à la une de l\'actu ! Toujours sur la brèche</string>
 
     <!-- Strings used for meetup view -->
     <string name="meetup_view_meetup_start_at">Débute à</string>
@@ -111,12 +112,12 @@
     <string name="meetup_view_other_info">Autres informations</string>
     <string name="meetup_view_people">Personnes</string>
     <string name="meetup_view_participation_unlimited">%d</string>
-    <string name="meetup_view_participation_limited">%d (sur %d)</string>
+    <string name="meetup_view_participation_limited" formatted="true">%d (sur %d)</string>
     <string name="meetup_view_age_min">13</string>
     <string name="meetup_view_age_max">66</string>
     <string name="meetup_view_age_max_plus">66+</string>
     <string name="meetup_view_age_text">Age</string>
-    <string name="meetup_view_age">%s-%s ans</string>
+    <string name="meetup_view_age" formatted="true">%s-%s ans</string>
     <string name="meetup_view_gender_title">Genre</string>
 
 
