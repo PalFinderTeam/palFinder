@@ -1,12 +1,7 @@
-package com.github.palFinderTeam.palfinder
+package com.github.palFinderTeam.palfinder.profile
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.INVISIBLE
@@ -14,25 +9,21 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ceylonlabs.imageviewpopup.ImagePopup
+import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
-import com.github.palFinderTeam.palfinder.profile.Achievement
-import com.github.palFinderTeam.palfinder.profile.AchievementCategory
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
-import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.QRCode
 import com.google.zxing.BarcodeFormat
-import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.BarcodeEncoder
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.stream.IntStream.range
 
@@ -42,64 +33,59 @@ import java.util.stream.IntStream.range
  * be sent to from the previous page as an intent. A database query will be made
  * and the user info will be sent back
  */
-@AndroidEntryPoint
-class ProfileActivity : AppCompatActivity() {
+class ProfileFragment : Fragment(R.layout.activity_profile) {
 
     private lateinit var meetupList: RecyclerView
     private lateinit var adapter: MeetupListRootAdapter
-    private lateinit var intentIntegrator: IntentIntegrator
+    private lateinit var rootView: View
+    private lateinit var overflow : TextView
 
-    private val viewModel: ProfileViewModel by viewModels()
+
+    private val viewModel: ProfileViewModel by activityViewModels()
+    private val args: ProfileFragmentArgs by navArgs()
+
     companion object{
         const val EMPTY_FIELD = ""
         const val MAX_SHORT_BIO_DISPLAY_LINES = 2
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
-        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
-        setTheme(theme)
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_profile)
-        var sharedPreferenceChangeListener =
-            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                if (key == "theme") {
-                    recreate()
-                }
-            }
-        sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
-        if (intent.hasExtra(USER_ID)) {
-            val userId = intent.getStringExtra(USER_ID)!!
-            viewModel.fetchProfile(userId)
-            viewModel.fetchLoggedProfile()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-            // Fetch last Meetups list through adapter
-            meetupList = this.findViewById(R.id.meetup_list_recycler)
-            meetupList.layoutManager = LinearLayoutManager(this)
+        rootView = view
 
-            viewModel.fetchUserMeetups(userId)
+        val userId = args.userId
+        viewModel.fetchProfile(userId)
+        viewModel.fetchLoggedProfile()
 
-            // Bind the adapter to the RecyclerView
-            viewModel.meetupDataSet.observe(this) { dataResp ->
-                if (dataResp is Response.Success) {
-                    val meetups = dataResp.data
-                    adapter = MeetupListRootAdapter(
-                        meetups,
-                        meetups.toMutableList(),
-                        context = applicationContext
-                    ) { onListItemClick(it) }
-                    meetupList.adapter = adapter
-                }
+        // Fetch last Meetups list through adapter
+        meetupList = view.findViewById(R.id.meetup_list_recycler)
+        meetupList.layoutManager = LinearLayoutManager(requireContext())
+
+        viewModel.fetchUserMeetups(userId)
+
+        // Bind the adapter to the RecyclerView
+        viewModel.meetupDataSet.observe(viewLifecycleOwner) { dataResp ->
+            if (dataResp is Response.Success) {
+                val meetups = dataResp.data
+                adapter = MeetupListRootAdapter(
+                    meetups,
+                    meetups.toMutableList(),
+                    context = requireContext()
+                ) { onListItemClick(it) }
+                meetupList.adapter = adapter
             }
         }
 
-        intentIntegrator = IntentIntegrator(this)
+        view.findViewById<ImageView>(R.id.show_qr_button).setOnClickListener{ showQR() }
+        overflow = view.findViewById(R.id.userProfileDescOverflow)
+        overflow.setOnClickListener { showFullDesc() }
 
-        viewModel.profile.observe(this) {
+        viewModel.profile.observe(viewLifecycleOwner) {
             when(it) {
                 is Response.Success -> {
                     injectUserInfo(it.data)
-                    bindFollow(null, it.data)
+                    bindFollow(it.data)
                     bindBadgesAndAchievements(it.data)
                 }
                 is Response.Failure -> printToast(it.errorMessage)
@@ -110,10 +96,10 @@ class ProfileActivity : AppCompatActivity() {
     /**
      * binds the follow/unfollow button
      */
-    private fun bindFollow(view: View?, profileViewed: ProfileUser) {
-        val followButton = findViewById<Button>(R.id.button_follow_profile)
-        val blockButton = findViewById<Button>(R.id.blackList)
-        viewModel.logged_profile.observe(this) {
+    private fun bindFollow(profileViewed: ProfileUser) {
+        val followButton = rootView.findViewById<Button>(R.id.button_follow_profile)
+        val blockButton = rootView.findViewById<Button>(R.id.blackList)
+        viewModel.logged_profile.observe(viewLifecycleOwner) {
             when(it) {
                 is Response.Success -> {
                    followAndBlockSystem(it.data, profileViewed, followButton, blockButton)
@@ -173,27 +159,27 @@ class ProfileActivity : AppCompatActivity() {
      * @param user: ProfileUser
      */
     private fun injectUserInfo(user: ProfileUser) {
-        findViewById<TextView>(R.id.userProfileUsername).text = user.atUsername()
-        findViewById<TextView>(R.id.userProfileJoinDate).apply { text = user.prettyJoinTime() }
+        rootView.findViewById<TextView>(R.id.userProfileUsername).text = user.atUsername()
+        rootView.findViewById<TextView>(R.id.userProfileJoinDate).apply { text = user.prettyJoinTime() }
 
-        findViewById<TextView>(R.id.followers).text = String.format(
+        rootView.findViewById<TextView>(R.id.followers).text = String.format(
             getString(R.string.following_nb),
             user.followed.size
         )
-        findViewById<TextView>(R.id.following).text = String.format(
+        rootView.findViewById<TextView>(R.id.following).text = String.format(
             getString(R.string.followers_nb),
             user.following.size
         )
         if(user.canProfileBeSeenBy(viewModel.profileService.getLoggedInUserID()!!)) {
-            findViewById<TextView>(R.id.userProfileName).text = user.fullName()
+            rootView.findViewById<TextView>(R.id.userProfileName).text = user.fullName()
             injectBio(user.description)
         }else{
-            findViewById<TextView>(R.id.userProfileName).text = this.resources.getString(R.string.private_name)
+            rootView.findViewById<TextView>(R.id.userProfileName).text = this.resources.getString(R.string.private_name)
             injectBio(this.resources.getString(R.string.private_desc))
         }
 
         lifecycleScope.launch {
-            user.pfp.loadImageInto(findViewById(R.id.userProfileImage), applicationContext)
+            user.pfp.loadImageInto(rootView.findViewById(R.id.userProfileImage), requireContext())
         }
     }
 
@@ -204,17 +190,19 @@ class ProfileActivity : AppCompatActivity() {
      * @param bio: String
      */
     private fun injectBio(bio: String) {
-        val desc = findViewById<TextView>(R.id.userProfileDescription)
+        val desc = rootView.findViewById<TextView>(R.id.userProfileDescription)
         if (bio == EMPTY_FIELD) {
-            findViewById<TextView>(R.id.userProfileAboutTitle).text = this.resources.getString(R.string.no_desc)
+            rootView.findViewById<TextView>(R.id.userProfileAboutTitle).text = this.resources.getString(
+                R.string.no_desc
+            )
             desc.text = EMPTY_FIELD
-            showFullDesc(null)
+            showFullDesc()
         } else {
             desc.text = bio
             desc.post {
                 val lineCount: Int = desc.lineCount
                 if (lineCount < MAX_SHORT_BIO_DISPLAY_LINES) {
-                    showFullDesc(null)
+                    showFullDesc()
                 }
             }
         }
@@ -223,23 +211,24 @@ class ProfileActivity : AppCompatActivity() {
     /**
      * Clicking on Read More will reveal the entire text
      */
-    fun showFullDesc(view: View?) {
-        val overflow = findViewById<TextView>(R.id.userProfileDescOverflow)
+    private fun showFullDesc() {
         overflow.visibility = GONE
-        val desc = findViewById<TextView>(R.id.userProfileDescription)
+        val desc = rootView.findViewById<TextView>(R.id.userProfileDescription)
         desc.maxLines = Integer.MAX_VALUE
     }
 
     /**
      * Clicking on QR Code icon will show QR code
      */
-    fun showQR(view: View?) {
+    private fun showQR() {
         //Initiate the barcode encoder
         val barcodeEncoder = BarcodeEncoder()
         //Encode text in editText into QRCode image into the specified size using barcodeEncoder
-        val bitmap = barcodeEncoder.encodeBitmap(USER_ID+intent.getStringExtra(USER_ID), BarcodeFormat.QR_CODE, resources.getInteger(R.integer.QR_size), resources.getInteger(R.integer.QR_size))
+        val bitmap = barcodeEncoder.encodeBitmap(USER_ID+args.userId, BarcodeFormat.QR_CODE, resources.getInteger(
+            R.integer.QR_size
+        ), resources.getInteger(R.integer.QR_size))
 
-        QRCode.shareQRcode(bitmap, this)
+        QRCode.shareQRcode(bitmap, requireActivity())
 
     }
 
@@ -248,7 +237,9 @@ class ProfileActivity : AppCompatActivity() {
      */
     private fun bindBadgesAndAchievements(user: ProfileUser) {
         val badges = user.badges().sorted()
-        var images = listOf<ImageView>(findViewById(R.id.badgePic1), findViewById(R.id.badgePic2))
+        var images = listOf<ImageView>(rootView.findViewById(R.id.badgePic1), rootView.findViewById(
+            R.id.badgePic2
+        ))
         when (badges.size) {
             0 -> images.forEach { it.visibility = INVISIBLE }
             1 -> {
@@ -264,15 +255,17 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
         val achFollowers = user.achievements().filter{it.cat == AchievementCategory.FOLLOWER}.sorted()
-        images = listOf<ImageView>(findViewById(R.id.AchFollowing1), findViewById(R.id.AchFollowing2),
-            findViewById(R.id.AchFollowing3), findViewById(R.id.AchFollowing4))
+        images = listOf<ImageView>(rootView.findViewById(R.id.AchFollowing1), rootView.findViewById(
+            R.id.AchFollowing2
+        ),
+            rootView.findViewById(R.id.AchFollowing3), rootView.findViewById(R.id.AchFollowing4))
         for (i in range(0, achFollowers.size)) {
             images[i].setImageResource(achFollowers[i].imageID)
             images[i].setOnClickListener { printToast(getString(achFollowers[i].descId)) }
         }
         val achFollowed = user.achievements().filter{it.cat == AchievementCategory.FOLLOWED}.sorted()
-        images = listOf<ImageView>(findViewById(R.id.AchFollowed1), findViewById(R.id.AchFollowed2),
-            findViewById(R.id.AchFollowed3), findViewById(R.id.AchFollowed4))
+        images = listOf<ImageView>(rootView.findViewById(R.id.AchFollowed1), rootView.findViewById(R.id.AchFollowed2),
+            rootView.findViewById(R.id.AchFollowed3), rootView.findViewById(R.id.AchFollowed4))
         for (i in range(0, achFollowed.size)) {
             images[i].setImageResource(achFollowed[i].imageID)
             images[i].setOnClickListener { printToast(getString(achFollowed[i].descId)) }
@@ -283,15 +276,15 @@ class ProfileActivity : AppCompatActivity() {
     /**
      * print a text in toast
      */
-    fun printToast(text: String) {
-        Toast.makeText(applicationContext, text, Toast.LENGTH_LONG).show()
+    private fun printToast(text: String) {
+        Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()
     }
 
     /**
      * When clicking on a meetup list element
      */
     private fun onListItemClick(position: Int) {
-        val intent = Intent(this, MeetUpView::class.java)
+        val intent = Intent(requireContext(), MeetUpView::class.java)
             .apply {
                 putExtra(
                     MEETUP_SHOWN,
@@ -300,6 +293,4 @@ class ProfileActivity : AppCompatActivity() {
             }
         startActivity(intent)
     }
-
-
 }

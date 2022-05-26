@@ -5,7 +5,7 @@ import android.app.job.JobService
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.github.palFinderTeam.palfinder.ProfileActivity
+import com.github.palFinderTeam.palfinder.profile.ProfileFragment
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.chat.CachedChatService
@@ -69,7 +69,7 @@ class NotificationService @Inject constructor(
                         val user = profileService.fetch(p)
                         if (!profileMetaData.contains(p) && user != null){
                             profileMetaData.store(p, ProfileMetaData(p, true))
-                            val intent = Intent(context, ProfileActivity::class.java).apply {
+                            val intent = Intent(context, ProfileFragment::class.java).apply {
                                 putExtra(USER_ID, user.uuid)
                             }
                             NotificationHandler(context).post(context.getString(R.string.following_title), context.getString(R.string.following_content).format(user.username), R.drawable.icon_beer, intent)

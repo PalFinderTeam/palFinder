@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <ScrollView
@@ -124,10 +123,10 @@
                         android:layout_marginEnd="0dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/fredoka_bold"
-                        android:onClick="showQR"
                         android:paddingVertical="9dp"
                         android:src="@drawable/ic_qr"
-                        app:tint="?attr/colorPrimary"/>
+                        app:tint="?attr/colorPrimary"
+                        android:contentDescription="@string/profile_qr_code" />
 
                 </LinearLayout>
 
@@ -167,7 +166,6 @@
                         android:fontFamily="@font/fredoka_bold"
                         android:gravity="bottom|center"
                         android:maxLines="2"
-                        android:onClick="showFullDesc"
                         android:orientation="horizontal"
                         android:text="@string/read_more"
                         android:textAlignment="center"
