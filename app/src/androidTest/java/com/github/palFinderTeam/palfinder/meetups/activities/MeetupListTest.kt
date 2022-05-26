@@ -23,6 +23,7 @@ import androidx.test.espresso.contrib.PickerActions
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.BoundedMatcher
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
 import com.github.palFinderTeam.palfinder.R
@@ -580,6 +581,66 @@ class MeetUpListTest {
         scenario!!.use {
             onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.participate_button)).check(matches(isChecked()))
+        }
+    }
+
+    @Test
+    fun radioButtonFiltersWorkAsExpected() = runTest {
+
+        meetUpList.forEach { meetUpRepository.create(it) }
+
+        val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+            putSerializable("ShowParam", ShowParam.ALL)
+        }, navHostController = navController)
+
+        scenario!!.use {
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.joinedButton)).perform(click())
+            Espresso.pressBack()
+            val joinedMeetUps = meetUpList.filter { it.participantsId.contains(loggedUserId) }
+                .map { withText(it.name) }
+
+            onView(withId(R.id.meetup_list_recycler)).check(
+                matches(
+                    recyclerViewSizeMatcher(
+                        joinedMeetUps.size
+                    )
+                )
+            )
+            for (i in (joinedMeetUps.indices)) {
+                onView(
+                    RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
+                        i,
+                        R.id.meetup_title
+                    )
+                )
+                    .check(matches(anyOf(joinedMeetUps)))
+            }
+        }
+    }
+
+    @Test
+    fun showJoinedHideCertainOptions() = runTest {
+        meetUpList.forEach { meetUpRepository.create(it) }
+
+        val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+            putSerializable("ShowParam", ShowParam.ALL)
+        }, navHostController = navController)
+
+        scenario!!.use {
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.joinedButton)).perform(click())
+            Espresso.pressBack()
+
+            onView(withId(R.id.distance_slider)).check(matches(withEffectiveVisibility(Visibility.GONE)))
+            onView(withId(R.id.search_place)).check(matches(withEffectiveVisibility(Visibility.GONE)))
+
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.button_all)).perform(click())
+            Espresso.pressBack()
+
+            onView(withId(R.id.distance_slider)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+            onView(withId(R.id.search_place)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         }
     }
 

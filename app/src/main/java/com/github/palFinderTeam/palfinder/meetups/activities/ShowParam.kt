@@ -1,7 +1,5 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
-import com.github.palFinderTeam.palfinder.utils.Gender
-
 /**
  * simple enum class used to pass parameters to the meetup fetch and retrieve only those matching conditions
  */
