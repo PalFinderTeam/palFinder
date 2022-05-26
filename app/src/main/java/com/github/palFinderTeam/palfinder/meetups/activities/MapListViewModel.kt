@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+@SuppressLint("MissingPermission")
 @ExperimentalCoroutinesApi
 @HiltViewModel
 /**
@@ -83,7 +85,8 @@ class MapListViewModel @Inject constructor(
     private val _searchLocation = MutableLiveData(START_LOCATION)
     val searchLocation: LiveData<Location> = _searchLocation
     val searchRadius: LiveData<Double> = _searchRadius
-    var showParam: ShowParam = ShowParam.ALL
+    private val _showParam = MutableLiveData(ShowParam.ALL)
+    val showParam: LiveData<ShowParam> = _showParam
     private var showOnlyAvailableInTime = true
     private var filterBlockedUserMeetups = true
 
@@ -134,7 +137,7 @@ class MapListViewModel @Inject constructor(
             _searchRadius.value = it
         }
         showParam?.let {
-            this.showParam = it
+            _showParam.value = it
         }
         showOnlyAvailable?.let {
             showOnlyAvailableInTime = it
@@ -167,7 +170,7 @@ class MapListViewModel @Inject constructor(
             (!forceFetch)
             && (location == null || searchLocation.value == location)
             && (radiusInKm == null || searchRadius.value == radiusInKm)
-            && (this.showParam == showParam)
+            && (this.showParam.value == showParam)
             && (showOnlyAvailable == null || showOnlyAvailableInTime == showOnlyAvailable)
             && (filterBlockedMeetups == null || filterBlockedMeetups == filterBlockedUserMeetups)
         ) {
@@ -190,12 +193,12 @@ class MapListViewModel @Inject constructor(
      * call it by themself.
      */
     fun fetchMeetUps() {
-        when (showParam) {
+        when (showParam.value) {
             ShowParam.ONLY_JOINED -> fetchUserMeetUps()
             else -> getMeetupAroundLocation(
                 searchLocation.value!!,
                 searchRadius.value ?: INITIAL_RADIUS,
-                showParam
+                showParam.value!!
             )
         }
     }
