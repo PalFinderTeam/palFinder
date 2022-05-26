@@ -27,7 +27,9 @@ import com.github.palFinderTeam.palfinder.profile.Achievement
 import com.github.palFinderTeam.palfinder.profile.AchievementCategory
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.USER_ID
+import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.github.palFinderTeam.palfinder.utils.image.QRCode
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.integration.android.IntentIntegrator
@@ -148,8 +150,19 @@ class ProfileActivity : AppCompatActivity() {
         }
         followButton.setOnClickListener {
             if (followButton.text.equals(getString(R.string.follow))) {
-                viewModel.follow(loggedProfile.uuid, profileViewed.uuid)
-                followButton.text = getString(R.string.unfollow)
+                if(viewModel.profileService.getLoggedInUserID() == null){
+                    createPopUp(this,
+                        {
+                            startActivity(Intent(this, LoginActivity::class.java))
+                        },
+                        textId = R.string.no_account_follow,
+                        continueButtonTextId = R.string.login
+                    )
+
+                }else {
+                    viewModel.follow(loggedProfile.uuid, profileViewed.uuid)
+                    followButton.text = getString(R.string.unfollow)
+                }
             } else {
                 viewModel.unFollow(loggedProfile.uuid, profileViewed.uuid)
                 followButton.text = getString(R.string.follow)

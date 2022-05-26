@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.ProfileViewModel
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter
+import com.github.palFinderTeam.palfinder.utils.createPopUp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -65,7 +67,19 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
                     it.data,
                     requireContext(),
                     ::onListItemClick,
-                    { id -> viewModel.follow(it.data.uuid, id) },
+                    { id ->
+                        if(viewModel.profileService.getLoggedInUserID() == null){
+                            this.context?.let { it ->
+                                createPopUp(
+                                    it,
+                                    {
+                                        startActivity(Intent(it, LoginActivity::class.java))
+                                    },
+                                textId = R.string.no_account_follow,
+                                continueButtonTextId = R.string.login
+                                )
+                            }
+                        }else viewModel.follow(it.data.uuid, id) },
                     { id -> viewModel.unFollow(it.data.uuid, id) })
                 recyclerView.layoutManager = LinearLayoutManager(context)
                 recyclerView.adapter = adapter
