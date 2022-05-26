@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
+import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam.ONLY_JOINED
 import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
 import com.github.palFinderTeam.palfinder.meetups.fragments.MeetupFilterFragment
 import com.github.palFinderTeam.palfinder.tag.Category
@@ -55,6 +56,8 @@ class MeetupListFragment : Fragment() {
     private lateinit var radiusSlider: Slider
 
     private lateinit var filterSelectButton: Button
+
+    private lateinit var searchMapButton: ImageButton
 
 
     //viewModel to fetch the meetups and handle the localisation
@@ -92,31 +95,24 @@ class MeetupListFragment : Fragment() {
             viewModel.setSearchParamAndFetch(radiusInKm = value.toDouble())
         }
 
-        //radioGroup to choose between the different options about followers
-        /*
-        val followerOptions: RadioGroup = view.findViewById(R.id.follower_options_group)
-        when (args.showParam) {
-            ShowParam.ALL -> view.findViewById<RadioButton>(R.id.button_all).isChecked = true
-            ShowParam.ONLY_JOINED -> view.findViewById<RadioButton>(R.id.joinedButton).isChecked = true
-            ShowParam.PAL_PARTCIPATING -> view.findViewById<RadioButton>(R.id.participate_button).isChecked = true
-            ShowParam.PAL_CREATOR -> view.findViewById<RadioButton>(R.id.created_button).isChecked = true
-        }
-        followerOptions.setOnCheckedChangeListener { _, checkedId ->
-            val radio: RadioButton = view.findViewById(checkedId)
-            when (followerOptions.indexOfChild(radio)) {
-                0 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ALL)
-                1 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_PARTICIPATING)
-                2 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_CREATOR)
-                3 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ONLY_JOINED)
+        searchMapButton = view.findViewById(R.id.search_place)
+        searchMapButton.setOnClickListener { searchOnMap() }
+
+        viewModel.showParam.observe(requireActivity()) {
+            val visibility = if (it == ONLY_JOINED) {
+                View.GONE
+            } else {
+                View.VISIBLE
             }
+            radiusSlider.visibility = visibility
+            searchMapButton.visibility = visibility
         }
-         */
 
 
         //generate a new adapter for the recyclerView every time the meetUps dataset changes
-        viewModel.listOfMeetUpResponse.observe(requireActivity()) { it ->
-            if (it is Response.Success && viewModel.searchLocation.value != null) {
-                val meetups = it.data
+        viewModel.listOfMeetUpResponse.observe(requireActivity()) { meetupResponse ->
+            if (meetupResponse is Response.Success && viewModel.searchLocation.value != null) {
+                val meetups = meetupResponse.data
                 adapter = MeetupListAdapter(
                     meetups, meetups.toMutableList(),
                     SearchedFilter(
@@ -158,7 +154,6 @@ class MeetupListFragment : Fragment() {
         }
 
         view.findViewById<Button>(R.id.sort_list).setOnClickListener { showMenu(it) }
-        view.findViewById<ImageButton>(R.id.search_place).setOnClickListener { searchOnMap() }
 
         viewModel.setSearchParamAndFetch(showParam = args.showParam, showOnlyAvailable = true, forceFetch = true)
     }
