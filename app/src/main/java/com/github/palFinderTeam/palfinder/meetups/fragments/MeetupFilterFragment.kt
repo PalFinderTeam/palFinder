@@ -59,7 +59,6 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
                 1 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_PARTICIPATING)
                 2 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_CREATOR)
                 3 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ONLY_JOINED)
-                4 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.TRENDS)
             }
         }
 
