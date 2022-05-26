@@ -56,6 +56,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     private val BASE_ZOOM = 7.0
     private val MAX_ZOOM = 12.0
     private val GMAP_PIXEL_RATIO = 500
+    private val DEFAULT_MARKER_ID = 2
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var selectLocationButton: FloatingActionButton
     private lateinit var selectMapTypeButton: FloatingActionButton
@@ -289,7 +290,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
             val options = MarkerOptions().position(position).title(meetUp.uuid)
 
-            val markerId = meetUp.markerId ?: 2
+            val markerId = meetUp.markerId ?: DEFAULT_MARKER_ID
             if (iconPack != null) {
                 val icon = iconPack!!.getIcon(markerId)
 
