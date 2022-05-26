@@ -260,8 +260,7 @@
 
     <string name="meetup_with_blocked_warning">Un utilisateur que vous avez bloqué participe à la rencontre, voulez-vous continuer ?</string>
     <string name="meetup_where_you_are_blocked">Vous ne pouvez pas rejoindre cette rencontre, vous avez été bloqués par son créateur</string>
-
-
+    <string name="nav_bar_profile">Mon Profil</string>
 
 
 </resources>
