@@ -1,17 +1,21 @@
 package com.github.palFinderTeam.palfinder.map
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -27,6 +31,8 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.image.addBorder
+import com.github.palFinderTeam.palfinder.utils.image.defaultMarker
 import com.github.palFinderTeam.palfinder.utils.setNavigationResult
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -57,6 +63,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     private lateinit var context: Context
     private lateinit var map: GoogleMap
     private var iconPack: IconPack? = null
+    private lateinit var theme: Resources.Theme
 
     val viewModel: MapListViewModel by activityViewModels()
     private val args: MapsFragmentArgs by navArgs()
@@ -75,6 +82,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        theme = inflater.context.theme
         return inflater.inflate(R.layout.activity_maps, container, false).rootView
     }
 
@@ -282,11 +290,22 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
             val options = MarkerOptions().position(position).title(meetUp.uuid)
 
-            if (meetUp.markerId != null && iconPack != null) {
-                val icon = iconPack!!.getIcon(meetUp.markerId)
-                val bitmap = icon?.drawable?.toBitmap(64, 64)
-                if (bitmap != null) options.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-            }
+            val markerId = meetUp.markerId ?: 2
+            if (iconPack != null) {
+                val icon = iconPack!!.getIcon(markerId)
+
+                val bitmap = icon?.let { createBitmap(80, 80, Bitmap.Config.ARGB_8888) }
+                val canvas = bitmap?.let { Canvas(it) }
+                val typedValue = TypedValue()
+                theme.resolveAttribute(androidx.appcompat.R.attr.colorControlActivated, typedValue, true)
+                canvas?.drawColor(typedValue.data)
+                theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true)
+                icon?.drawable?.toBitmap(64, 64)
+                    ?.let { canvas?.drawBitmap(it, 8f, 8f, null) }
+                if (bitmap != null) options.icon(bitmap.addBorder(borderColor = typedValue.data)
+                    ?.let { BitmapDescriptorFactory.fromBitmap(it) })
+                else options.icon(defaultMarker()?.let { BitmapDescriptorFactory.fromBitmap(it) })
+            }else options.icon(defaultMarker()?.let { BitmapDescriptorFactory.fromBitmap(it) })
             val marker = map.addMarker(options)
                 ?.let { markers[meetUp.uuid] = it }
         }

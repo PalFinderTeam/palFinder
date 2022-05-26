@@ -3,6 +3,8 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 import android.Manifest
 import android.app.Application
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.icu.util.Calendar
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.AndroidViewModel
@@ -283,4 +285,5 @@ class MapListViewModel @Inject constructor(
             }
         }
     }
+
 }
