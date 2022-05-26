@@ -126,6 +126,7 @@ class MainNavActivity : AppCompatActivity() {
                         }
                     }
                     R.id.nav_bar_profile -> {
+                        //TODO change to switch to profile
                         if (profileService.getLoggedInUserID() == null) {
                             createPopUp(
                                 this,
@@ -139,10 +140,15 @@ class MainNavActivity : AppCompatActivity() {
                             val args = Bundle().apply {
                                 putSerializable("showParam", ShowParam.ONLY_JOINED)
                             }
-                            navController.navigate(
-                                R.id.list_fragment,
-                                args = args,
-                                navOptions = options
+                            //TODO: A simple activity intent that should be cleaned up to a working fragment
+//                            navController.navigate(
+//                                R.id.list_fragment,
+//                                args = args,
+//                                navOptions = options
+//                            )
+                            startActivity(
+                                Intent(this, ProfileActivity::class.java)
+                                .apply { putExtra(USER_ID, profileService.getLoggedInUserID()) }
                             )
                         }
                     }
