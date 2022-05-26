@@ -41,7 +41,9 @@ import com.maltaisn.icondialog.pack.IconPack
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.IOException
+import kotlin.math.cos
 import kotlin.math.ln
+import kotlin.math.log
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
@@ -50,7 +52,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
     private val BASE_ZOOM = 7.0
     private val MAX_ZOOM = 12.0
-    private val GMAP_PIXEL_RATIO = 500
+    private val EQUATOR_LENGTH = 40075.004
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var selectLocationButton: FloatingActionButton
     private lateinit var selectMapTypeButton: FloatingActionButton
@@ -388,10 +390,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     }
 
     private fun getZoomLevel(radius: Double?): Double {
-        val result = if (radius != null) {
-            val scale = radius / GMAP_PIXEL_RATIO
-            (16 - ln(scale)) / ln(2.0)
+        val result = if (radius != null){
+            val mapWidth = mapFragment.view?.width?.div(resources.displayMetrics.density)
+            val latitudinalAdjustment =
+                cos(Math.PI * map.cameraPosition.target.latitude / 180.0)
+            val arg =
+                EQUATOR_LENGTH * mapWidth!! * latitudinalAdjustment / (radius.times(256.0)!!)
+            log(arg, 2.0)-0.5
         } else BASE_ZOOM
-        return Math.min(result, MAX_ZOOM)
+        return result
     }
+
 }
