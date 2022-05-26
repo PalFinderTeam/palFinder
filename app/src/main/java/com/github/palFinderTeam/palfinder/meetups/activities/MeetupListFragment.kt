@@ -106,7 +106,6 @@ class MeetupListFragment : Fragment() {
 
         viewModel.showParam.observe(requireActivity()) {
             val visibility = if (it == ONLY_JOINED) {
-                viewModel.setSearchParamAndFetch(showParam = ONLY_JOINED)
                 View.GONE
             } else {
                 View.VISIBLE
@@ -125,6 +124,7 @@ class MeetupListFragment : Fragment() {
                 requireContext()
             )
             { onListItemClick(it) }
+            adapter.notifyDataSetChanged()
             meetupList.adapter = adapter
         }
 
