@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.DatePicker
 import android.widget.TimePicker
@@ -71,7 +72,7 @@ class MeetUpListTest {
     private lateinit var navController: TestNavHostController
 
     private val searchLocation = Location(-122.0, 37.0)
-    private val loggedUserId = "Marcel"
+    lateinit var loggedUserId: ProfileUser
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
@@ -87,13 +88,6 @@ class MeetUpListTest {
 
     @Before
     fun setup() {
-        hiltRule.inject()
-
-        (meetUpRepository as UIMockMeetUpRepositoryModule.UIMockRepository).clearDB()
-        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
-            loggedUserId
-        )
-
         dateNow = Calendar.getInstance()
         dateNow.set(2022,0,0)
         date1 = Calendar.getInstance()
@@ -104,6 +98,15 @@ class MeetUpListTest {
         date3.set(2022, 2, 1)
         date4 = Calendar.getInstance()
         date4.set(2022, 0, 1)
+
+        hiltRule.inject()
+        loggedUserId = ProfileUser("loggedUser", "dfdf", "dfdsfds",
+            "efsf",date1, ImageInstance("efe"), following = listOf("user2Id") )
+
+        (meetUpRepository as UIMockMeetUpRepositoryModule.UIMockRepository).clearDB()
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            loggedUserId.uuid
+        )
 
         (realTimeService as UIMockTimeServiceModule.UIMockTimeService).setDate(dateNow)
 
@@ -129,7 +132,7 @@ class MeetUpListTest {
                 hasMaxCapacity = true,
                 participantsId = listOf(
                     user2,
-                    loggedUserId
+                    loggedUserId.uuid
                 ),
                 uuid = "ce",
                 criterionAge = null,
@@ -147,7 +150,8 @@ class MeetUpListTest {
                 creatorId = user1,
                 hasMaxCapacity = true,
                 participantsId = listOf(
-                    user2
+                    user2,
+                    loggedUserId.uuid
                 ),
                 uuid = "ce",
                 criterionAge = null,
@@ -198,7 +202,7 @@ class MeetUpListTest {
                 location = Location(-122.0, 38.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 13,
-                creatorId = user1,
+                creatorId = user3.uuid,
                 hasMaxCapacity = true,
                 participantsId = listOf(
                     user2
@@ -398,7 +402,6 @@ class MeetUpListTest {
     }
 
     @Test
-    //TODO fix
     fun showJoinedMeetupsOnlyShowJoinedMeetUps() = runTest {
         meetUpList.forEach { meetUpRepository.create(it) }
 
@@ -408,7 +411,7 @@ class MeetUpListTest {
 
         scenario!!.use {
 
-            val joinedMeetUps = meetUpList.filter { it.participantsId.contains(loggedUserId) }
+            val joinedMeetUps = meetUpList.filter { it.participantsId.contains(loggedUserId.uuid) }
                 .map { withText(it.name) }
 
             onView(withId(R.id.meetup_list_recycler)).check(
@@ -427,6 +430,81 @@ class MeetUpListTest {
                 )
                     .check(matches(anyOf(joinedMeetUps)))
             }
+        }
+    }
+
+    @Test
+    fun showPalParticipatingAndCreatorWorks() = runTest {
+        meetUpList.forEach { meetUpRepository.create(it) }
+        val id = profileService.create(loggedUserId)
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+           id
+        )
+
+
+        val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+            putSerializable("ShowParam", ShowParam.ALL)
+        }, navHostController = navController)
+
+        scenario!!.use {
+            scenario.onHiltFragment<MeetupListFragment> {
+                it.viewModel.setSearchParameters(location = searchLocation)
+                it.viewModel.fetchMeetUps()
+            }
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.participate_button)).perform(click())
+            onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
+            var palMeetUps = meetUpList.filter { it.participantsId.intersect(loggedUserId.following).isNotEmpty() }
+                .map { withText(it.name) }
+
+            onView(withId(R.id.meetup_list_recycler)).check(
+                matches(
+                    recyclerViewSizeMatcher(
+                        palMeetUps.size
+                    )
+                )
+            )
+            for (i in (palMeetUps.indices)) {
+                onView(
+                    RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
+                        i,
+                        R.id.meetup_title
+                    )
+                )
+                    .check(matches(anyOf(palMeetUps)))
+            }
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.created_button)).perform(click())
+            onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
+            palMeetUps = meetUpList.filter { loggedUserId.following.contains(it.creatorId) }
+                .map { withText(it.name) }
+
+            onView(withId(R.id.meetup_list_recycler)).check(
+                matches(
+                    recyclerViewSizeMatcher(
+                        palMeetUps.size
+                    )
+                )
+            )
+            for (i in (palMeetUps.indices)) {
+                onView(
+                    RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
+                        i,
+                        R.id.meetup_title
+                    )
+                )
+                    .check(matches(anyOf(palMeetUps)))
+            }
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.trendButton)).perform(click())
+            onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
+            onView(withId(R.id.meetup_list_recycler)).check(
+                matches(
+                    recyclerViewSizeMatcher(
+                        meetUpList.size
+                    )
+                )
+            )
         }
     }
 
@@ -470,7 +548,7 @@ class MeetUpListTest {
         }
 
         (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
-            loggedUserId
+            loggedUserId.uuid
         )
     }
 
@@ -519,7 +597,7 @@ class MeetUpListTest {
             onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.joinedButton)).perform(click())
             Espresso.pressBack()
-            val joinedMeetUps = meetUpList.filter { it.participantsId.contains(loggedUserId) }
+            val joinedMeetUps = meetUpList.filter { it.participantsId.contains(loggedUserId.uuid) }
                 .map { withText(it.name) }
 
             onView(withId(R.id.meetup_list_recycler)).check(
