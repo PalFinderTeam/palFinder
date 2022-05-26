@@ -65,13 +65,3 @@ fun Bitmap.addBorder(borderWidth: Int = 5, borderColor: Int = Color.RED): Bitmap
     )
 }
 
-
-
-
-
-fun defaultMarker(width: Int = 64): Bitmap?{
-    val bitmap = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-    canvas.drawColor(Color.WHITE)
-    return bitmap.addBorder()
-}

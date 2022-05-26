@@ -304,8 +304,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                     ?.let { canvas?.drawBitmap(it, 8f, 8f, null) }
                 if (bitmap != null) options.icon(bitmap.addBorder(borderColor = typedValue.data)
                     ?.let { BitmapDescriptorFactory.fromBitmap(it) })
-                else options.icon(defaultMarker()?.let { BitmapDescriptorFactory.fromBitmap(it) })
-            }else options.icon(defaultMarker()?.let { BitmapDescriptorFactory.fromBitmap(it) })
+            }
             val marker = map.addMarker(options)
                 ?.let { markers[meetUp.uuid] = it }
         }
