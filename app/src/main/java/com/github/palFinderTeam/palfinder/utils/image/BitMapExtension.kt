@@ -7,6 +7,8 @@ import android.graphics.*
  * create a circle border to a bitmap
  * @param borderWidth width of the border, default is 5
  * @param borderColor color of the border, default is RED
+ *
+ * code is inspired from : https://www.android--code.com/2020/06/android-kotlin-circular-bitmap-with.html
  */
 fun Bitmap.addBorder(borderWidth: Int = 5, borderColor: Int = Color.RED): Bitmap?{
     val bitmap = Bitmap.createBitmap(this.width + width*2, this.height+width*2, Bitmap.Config.ARGB_8888)
