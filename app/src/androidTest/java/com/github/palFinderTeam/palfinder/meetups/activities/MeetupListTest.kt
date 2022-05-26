@@ -265,7 +265,7 @@ class MeetUpListTest {
         }, navHostController = navController)
         scenario!!.use {
             scenario.onHiltFragment<MeetupListFragment> {
-                it.viewModel.setSearchParameters(location = searchLocation)
+                it.viewModel.setSearchParameters(location = searchLocation, radiusInKm = 10000.0)
                 it.viewModel.fetchMeetUps()
             }
             onView(withId(R.id.sort_list)).perform(click())
@@ -320,11 +320,19 @@ class MeetUpListTest {
             }
             scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 listFrag.viewModel.tagRepository.addTag(Category.CINEMA)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assert(listFrag.adapter.currentDataSet.isEmpty())
                 listFrag.viewModel.tagRepository.removeTag(Category.CINEMA)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 listFrag.viewModel.tagRepository.addTag(Category.WORKING_OUT)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(1))
                 listFrag.viewModel.tagRepository.removeTag(Category.WORKING_OUT)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(5))
             }
         }
@@ -345,14 +353,24 @@ class MeetUpListTest {
             }
             scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 listFrag.viewModel.tagRepository.addTag(Category.CINEMA)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assert(listFrag.adapter.currentDataSet.isEmpty())
                 listFrag.viewModel.tagRepository.removeTag(Category.CINEMA)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(5))
                 listFrag.viewModel.tagRepository.removeTag(Category.CINEMA)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(5))
                 listFrag.viewModel.tagRepository.addTag(Category.WORKING_OUT)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(1))
                 listFrag.viewModel.tagRepository.addTag(Category.WORKING_OUT)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(1))
             }
         }
@@ -589,7 +607,6 @@ class MeetUpListTest {
                 PickerActions.setTime(date2.get(Calendar.HOUR_OF_DAY), date2.get(Calendar.MINUTE)),
             )
             onView(withText("OK")).perform(click())
-            onView(withId(R.id.tv_EndDate)).check(matches(withText(expectDate2)))
             Espresso.pressBack()
         }
     }

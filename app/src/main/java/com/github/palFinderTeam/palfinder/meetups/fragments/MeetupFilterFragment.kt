@@ -49,7 +49,6 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
             ShowParam.PAL_PARTICIPATING -> filterGroup.check(R.id.participate_button)
             ShowParam.PAL_CREATOR -> filterGroup.check(R.id.created_button)
             ShowParam.ONLY_JOINED -> filterGroup.check(R.id.joinedButton)
-            ShowParam.TRENDS -> filterGroup.check(R.id.trendButton)
         }
 
         // Change view model

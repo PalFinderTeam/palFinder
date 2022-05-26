@@ -2,43 +2,29 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.icu.text.SimpleDateFormat
-import android.icu.util.Calendar
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
-import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel.Companion.TEXT_FILTER
 import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam.ONLY_JOINED
-import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
 import com.github.palFinderTeam.palfinder.meetups.fragments.MeetupFilterFragment
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.*
-import com.github.palFinderTeam.palfinder.utils.generics.filterByText
 import com.github.palFinderTeam.palfinder.utils.generics.setupSearchField
-import com.github.palFinderTeam.palfinder.utils.time.*
 import com.google.android.material.slider.Slider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
-import java.time.Period
 import kotlin.math.max
 import kotlin.math.min
 
@@ -116,16 +102,15 @@ class MeetupListFragment : Fragment() {
 
 
         //generate a new adapter for the recyclerView every time the meetUps dataset changes
-        viewModel.listOfMeetUp.observe(requireActivity()) { it ->
-            val meetups = it
+        viewModel.listOfMeetUp.observe(requireActivity()) { meetups ->
             adapter = MeetupListAdapter(
                 meetups, meetups.toMutableList(),
                 viewModel.searchLocation.value!!,
                 requireContext()
             )
             { onListItemClick(it) }
-            adapter.notifyDataSetChanged()
             meetupList.adapter = adapter
+            adapter.notifyDataSetChanged()
         }
 
         // Listen for result of the map fragment, when using the select precise location functionality.
@@ -142,6 +127,9 @@ class MeetupListFragment : Fragment() {
         }
         viewModel.tags.observe(requireActivity()) { tags ->
             tagsViewModel.refreshTags()
+            viewModel.filterer.setFilter("tags") { meetup ->
+                meetup.tags.containsAll(tags)
+            }
         }
 
         // Setup fragment filter window
@@ -167,7 +155,6 @@ class MeetupListFragment : Fragment() {
      */
     private fun sortByCap() {
         viewModel.filterer.setSorter { it.capacity }
-
     }
 
     /**
@@ -188,6 +175,13 @@ class MeetupListFragment : Fragment() {
         }
     }
 
+    /**
+     * Sort the list of meetUps by distance
+     */
+    private fun sortByTrend() {
+        viewModel.sortByTrend()
+    }
+
     //button make a menu appears, with several sort options
     private fun showMenu(view: View?) {
         val popupMenu = PopupMenu(requireContext(), view) //View will be an anchor for PopupMenu
@@ -197,6 +191,7 @@ class MeetupListFragment : Fragment() {
                 R.id.menu_sort_name -> sortByName()
                 R.id.menu_sort_cap -> sortByCap()
                 R.id.menu_sort_loc -> sortByDist()
+                R.id.menu_sort_trend -> sortByTrend()
                 else -> {
                 }
             }

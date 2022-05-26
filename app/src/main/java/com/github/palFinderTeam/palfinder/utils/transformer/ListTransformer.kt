@@ -13,18 +13,13 @@ class ListTransformer<T> {
     private var sorter: ((T) -> Any)? = null
 
     private var output = MutableLiveData<List<T>>()
-    private var input: MutableLiveData<List<T>> = MutableLiveData()
+    private var input: MutableLiveData<List<T>> = MutableLiveData(listOf())
 
     /**
      * Updates the list of items to be filtered and sorted.
      */
     private fun update(){
-        if (input!!.value != null){
-            output.postValue(transform(input!!.value!!))
-        }
-        else{
-            output.postValue(emptyList())
-        }
+        output.postValue(transform(input.value!!))
     }
 
     /**
@@ -64,7 +59,7 @@ class ListTransformer<T> {
             lst = lst.filter { filter(it) }
         }
         if (sorter != null){
-            lst = lst.sortedByDescending { sorter!!(it) as Comparable<Any> }
+            lst = lst.sortedBy { sorter!!(it) as Comparable<Any> }
         }
         return lst
     }

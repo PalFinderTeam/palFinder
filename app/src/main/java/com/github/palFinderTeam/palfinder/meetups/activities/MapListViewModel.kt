@@ -25,6 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 
@@ -59,7 +60,7 @@ class MapListViewModel @Inject constructor(
     //store the fetched meetups in real time, separated in 2 to be immutable
     private val _listOfMeetUpResponse: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
     val filterer = ListTransformer<MeetUp>()
-    val listOfMeetUp: MutableLiveData<List<MeetUp>> = filterer.transformResponseList(_listOfMeetUpResponse)
+    val listOfMeetUp: LiveData<List<MeetUp>> = filterer.transformResponseList(_listOfMeetUpResponse)
 
     //store the current tags filtering the data, separated in 2 as well
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
@@ -107,21 +108,11 @@ class MapListViewModel @Inject constructor(
             }
         }
 
-        startTime.postValue(timeService.now())
-        val end = timeService.now()
-        end.add(Calendar.MONTH, 1)
-        endTime.postValue(end)
         startTime.observeForever {
             filterByDate()
         }
         endTime.observeForever {
             filterByDate()
-        }
-
-        tags.observeForever { tags ->
-            filterer.setFilter("tags") { meetup ->
-                meetup.tags.containsAll(tags)
-            }
         }
     }
 
@@ -267,7 +258,6 @@ class MapListViewModel @Inject constructor(
         viewModelScope.launch {
             val userId = profileService.getLoggedInUserID()
 
-            val blockedUser = getBlockedUser(userId)
             meetUpRepository.getMeetUpsAroundLocation(
                 position,
                 radiusInKm,
@@ -293,16 +283,21 @@ class MapListViewModel @Inject constructor(
         return participants!!.sumOf { it.followed.size }.toDouble() / participants.size
     }
 
-    private suspend fun Response<List<MeetUp>>.orderByTrend(showParam: ShowParam): Response<List<MeetUp>> {
-        return if (this is Response.Success) {
-            if (showParam == ShowParam.TRENDS) {
-                val filtered = this.data.map { Pair(computeAverage(it.participantsId), it) }
-                Response.Success(filtered.sortedBy { it.first }.map { it.second })
-            } else {
-                Response.Success(this.data)
-            }
-        } else {
-            this
+    private fun MeetUp.getTrendScore(): Double {
+        val meetUp = this
+        var score: Double
+        runBlocking {
+            score = computeAverage(meetUp.participantsId)
+        }
+        return score
+    }
+
+    /**
+     * Sort the list of meetUps by trend
+     */
+    fun sortByTrend() {
+        filterer.setSorter {
+            it.getTrendScore()
         }
     }
 
@@ -339,7 +334,7 @@ class MapListViewModel @Inject constructor(
             return if (tags == null || !tags.contains(tag)) {
                 false
             } else {
-                _tags.value = tags.minus(tag)
+                _tags.postValue(tags.minus(tag))
                 true
             }
         }
@@ -349,7 +344,7 @@ class MapListViewModel @Inject constructor(
             return if (tags == null || tags.contains(tag)) {
                 false
             } else {
-                _tags.value = tags.plus(tag)
+                _tags.postValue(tags.plus(tag))
                 true
             }
         }
