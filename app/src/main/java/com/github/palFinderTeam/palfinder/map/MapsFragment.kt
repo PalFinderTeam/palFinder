@@ -52,7 +52,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     SearchView.OnQueryTextListener {
 
     private val EQUATOR_LENGTH = 40075.004
-    private val BASE_ZOOM = 12.0
+    private val BASE_ZOOM = 8.0
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var selectLocationButton: FloatingActionButton
     private lateinit var selectMapTypeButton: FloatingActionButton
@@ -197,20 +197,14 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
         viewModel.searchLocation.value?.let {
             map.moveCamera(
-                CameraUpdateFactory.newLatLng(
-                    it.toLatLng()
+                CameraUpdateFactory.newLatLngZoom(
+                    it.toLatLng(),
+                    getZoomLevel(
+                        viewModel.searchRadius.value
+                    ).toFloat()
                 )
             )
         }
-
-        map.moveCamera(
-            CameraUpdateFactory.zoomTo(
-                getZoomLevel(
-                    viewModel.searchRadius.value
-                ).toFloat()
-            )
-        )
-
 
         map.setOnMarkerClickListener(this)
         when (context) {
