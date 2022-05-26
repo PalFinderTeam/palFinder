@@ -63,7 +63,7 @@ class MapListViewModel @Inject constructor(
 
     //store the current tags filtering the data, separated in 2 as well
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
-    val tags: MutableLiveData<Set<Category>> = _tags
+    val tags: LiveData<Set<Category>> = _tags
 
     //stores the current user location and the client
     private val locationClient =
@@ -116,6 +116,12 @@ class MapListViewModel @Inject constructor(
         }
         endTime.observeForever {
             filterByDate()
+        }
+
+        tags.observeForever { tags ->
+            filterer.setFilter("tags") { meetup ->
+                meetup.tags.containsAll(tags)
+            }
         }
     }
 

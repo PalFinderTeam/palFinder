@@ -150,8 +150,7 @@ class MeetUpListTest {
                 creatorId = user1,
                 hasMaxCapacity = true,
                 participantsId = listOf(
-                    user2,
-                    loggedUserId.uuid
+                    user2
                 ),
                 uuid = "ce",
                 criterionAge = null,
@@ -202,7 +201,7 @@ class MeetUpListTest {
                 location = Location(-122.0, 38.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 13,
-                creatorId = user3.uuid,
+                creatorId = user1,
                 hasMaxCapacity = true,
                 participantsId = listOf(
                     user2
@@ -320,11 +319,12 @@ class MeetUpListTest {
                 listFrag.viewModel.fetchMeetUps()
             }
             scenario.onHiltFragment<MeetupListFragment> { listFrag ->
-                listFrag.setTags(setOf(Category.CINEMA))
+                listFrag.viewModel.tagRepository.addTag(Category.CINEMA)
                 assert(listFrag.adapter.currentDataSet.isEmpty())
-                listFrag.setTags(setOf(Category.WORKING_OUT, Category.SPORTS))
+                listFrag.viewModel.tagRepository.removeTag(Category.CINEMA)
+                listFrag.viewModel.tagRepository.addTag(Category.WORKING_OUT)
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(1))
-                listFrag.setTags(setOf())
+                listFrag.viewModel.tagRepository.removeTag(Category.WORKING_OUT)
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(5))
             }
         }
@@ -434,81 +434,6 @@ class MeetUpListTest {
     }
 
     @Test
-    fun showPalParticipatingAndCreatorWorks() = runTest {
-        meetUpList.forEach { meetUpRepository.create(it) }
-        val id = profileService.create(loggedUserId)
-        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
-           id
-        )
-
-
-        val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
-            putSerializable("ShowParam", ShowParam.ALL)
-        }, navHostController = navController)
-
-        scenario!!.use {
-            scenario.onHiltFragment<MeetupListFragment> {
-                it.viewModel.setSearchParameters(location = searchLocation)
-                it.viewModel.fetchMeetUps()
-            }
-            onView(withId(R.id.select_filters)).perform(click())
-            onView(withId(R.id.participate_button)).perform(click())
-            onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
-            var palMeetUps = meetUpList.filter { it.participantsId.intersect(loggedUserId.following).isNotEmpty() }
-                .map { withText(it.name) }
-
-            onView(withId(R.id.meetup_list_recycler)).check(
-                matches(
-                    recyclerViewSizeMatcher(
-                        palMeetUps.size
-                    )
-                )
-            )
-            for (i in (palMeetUps.indices)) {
-                onView(
-                    RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
-                        i,
-                        R.id.meetup_title
-                    )
-                )
-                    .check(matches(anyOf(palMeetUps)))
-            }
-            onView(withId(R.id.select_filters)).perform(click())
-            onView(withId(R.id.created_button)).perform(click())
-            onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
-            palMeetUps = meetUpList.filter { loggedUserId.following.contains(it.creatorId) }
-                .map { withText(it.name) }
-
-            onView(withId(R.id.meetup_list_recycler)).check(
-                matches(
-                    recyclerViewSizeMatcher(
-                        palMeetUps.size
-                    )
-                )
-            )
-            for (i in (palMeetUps.indices)) {
-                onView(
-                    RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
-                        i,
-                        R.id.meetup_title
-                    )
-                )
-                    .check(matches(anyOf(palMeetUps)))
-            }
-            onView(withId(R.id.select_filters)).perform(click())
-            onView(withId(R.id.trendButton)).perform(click())
-            onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
-            onView(withId(R.id.meetup_list_recycler)).check(
-                matches(
-                    recyclerViewSizeMatcher(
-                        meetUpList.size
-                    )
-                )
-            )
-        }
-    }
-
-    @Test
     fun showFilterBlockedWorks() = runTest {
         meetUpList.forEach { meetUpRepository.create(it) }
         val user3Id = profileService.create(user3)
@@ -581,6 +506,41 @@ class MeetUpListTest {
         scenario!!.use {
             onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.participate_button)).check(matches(isChecked()))
+        }
+    }
+
+    @Test
+    fun radioButtonFiltersWorkAsExpected() = runTest {
+
+        meetUpList.forEach { meetUpRepository.create(it) }
+
+        val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+            putSerializable("ShowParam", ShowParam.ALL)
+        }, navHostController = navController)
+
+        scenario!!.use {
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.joinedButton)).perform(click())
+            Espresso.pressBack()
+            val joinedMeetUps = meetUpList.filter { it.participantsId.contains(loggedUserId.uuid) }
+                .map { withText(it.name) }
+
+            onView(withId(R.id.meetup_list_recycler)).check(
+                matches(
+                    recyclerViewSizeMatcher(
+                        joinedMeetUps.size
+                    )
+                )
+            )
+            for (i in (joinedMeetUps.indices)) {
+                onView(
+                    RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
+                        i,
+                        R.id.meetup_title
+                    )
+                )
+                    .check(matches(anyOf(joinedMeetUps)))
+            }
         }
     }
 

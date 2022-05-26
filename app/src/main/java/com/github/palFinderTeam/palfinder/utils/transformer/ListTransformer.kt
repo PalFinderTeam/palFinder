@@ -1,5 +1,6 @@
 package com.github.palFinderTeam.palfinder.utils.transformer
 
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import com.github.palFinderTeam.palfinder.utils.Response
 
@@ -18,8 +19,11 @@ class ListTransformer<T> {
      * Updates the list of items to be filtered and sorted.
      */
     private fun update(){
-        if (input != null && input!!.value != null){
-            output.postValue(transformResponseList(input!!.value!!))
+        if (input!!.value != null){
+            output.postValue(transform(input!!.value!!))
+        }
+        else{
+            output.postValue(emptyList())
         }
     }
 
@@ -54,13 +58,13 @@ class ListTransformer<T> {
     /**
      * Transform the list by applying all filters and sorters
      */
-    fun transformResponseList(list: List<T>):List<T>{
+    fun transform(list: List<T>):List<T>{
         var lst = list
         for (filter in filters.values){
             lst = lst.filter { filter(it) }
         }
         if (sorter != null){
-            lst = lst.sortedBy { sorter!!(it) as Comparable<Any> }
+            lst = lst.sortedByDescending { sorter!!(it) as Comparable<Any> }
         }
         return lst
     }
@@ -92,7 +96,7 @@ class ListTransformer<T> {
         input = list
 
         input.observeForever {
-            output.value = transformResponseList(it)
+            output.value = transform(it)
         }
         return output
     }

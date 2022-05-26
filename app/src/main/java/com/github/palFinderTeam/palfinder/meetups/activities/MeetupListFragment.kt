@@ -106,6 +106,7 @@ class MeetupListFragment : Fragment() {
 
         viewModel.showParam.observe(requireActivity()) {
             val visibility = if (it == ONLY_JOINED) {
+                viewModel.setSearchParamAndFetch(showParam = ONLY_JOINED)
                 View.GONE
             } else {
                 View.VISIBLE
@@ -141,9 +142,6 @@ class MeetupListFragment : Fragment() {
         }
         viewModel.tags.observe(requireActivity()) { tags ->
             tagsViewModel.refreshTags()
-            viewModel.filterer.setFilter("tags") { meetup ->
-                meetup.tags.containsAll(tags)
-            }
         }
 
         // Setup fragment filter window
@@ -188,13 +186,6 @@ class MeetupListFragment : Fragment() {
                 viewModel.searchLocation.value ?: MapListViewModel.START_LOCATION
             )
         }
-    }
-
-    /**
-     * Set the tags. (Use for testing)
-     */
-    fun setTags(tags: Set<Category>) {
-        viewModel.tags.postValue(tags)
     }
 
     //button make a menu appears, with several sort options
