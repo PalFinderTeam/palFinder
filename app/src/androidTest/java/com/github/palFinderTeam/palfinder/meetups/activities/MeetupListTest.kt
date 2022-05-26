@@ -597,7 +597,7 @@ class MeetUpListTest {
             onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.joinedButton)).perform(click())
             Espresso.pressBack()
-            val joinedMeetUps = meetUpList.filter { it.participantsId.contains(loggedUserId) }
+            val joinedMeetUps = meetUpList.filter { it.participantsId.contains(loggedUserId.uuid) }
                 .map { withText(it.name) }
 
             onView(withId(R.id.meetup_list_recycler)).check(
