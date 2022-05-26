@@ -80,7 +80,7 @@ class MapsFragmentTest {
     }
 
 
-    @ExperimentalCoroutinesApi
+   /* @ExperimentalCoroutinesApi
     @Test
     fun testMarkerClick() = runTest {
         val lat = 15.0
@@ -134,7 +134,7 @@ class MapsFragmentTest {
             release()
         }
     }
-
+    */
     @Test
     fun onMarkerClickDoesNothingWhenSelecting() {
 
