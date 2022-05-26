@@ -68,10 +68,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".profile.ProfileFragment"
-            android:exported="false"
-            android:parentActivityName=".navigation.MainNavActivity" />
-        <activity
             android:name=".user.settings.UserSettingsActivity"
             android:exported="false"
             android:parentActivityName=".navigation.MainNavActivity" />
