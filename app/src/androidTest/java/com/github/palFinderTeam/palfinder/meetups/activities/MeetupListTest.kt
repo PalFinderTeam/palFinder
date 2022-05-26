@@ -452,6 +452,80 @@ class MeetUpListTest {
     }
 
     @Test
+    fun showPalParticipatingAndCreatorWorks() = runTest {
+        meetUpList.forEach { meetUpRepository.create(it) }
+        val id = profileService.create(loggedUserId)
+        (profileService as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+           id
+        )
+
+
+        val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+            putSerializable("ShowParam", ShowParam.ALL)
+        }, navHostController = navController)
+
+        scenario!!.use {
+            scenario.onHiltFragment<MeetupListFragment> {
+                it.viewModel.setSearchParameters(location = searchLocation)
+                it.viewModel.fetchMeetUps()
+            }
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.participate_button)).perform(click())
+            onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
+            var palMeetUps = meetUpList.filter { it.participantsId.intersect(loggedUserId.following).isNotEmpty() }
+                .map { withText(it.name) }
+
+            onView(withId(R.id.meetup_list_recycler)).check(
+                matches(
+                    recyclerViewSizeMatcher(
+                        palMeetUps.size
+                    )
+                )
+            )
+            for (i in (palMeetUps.indices)) {
+                onView(
+                    RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
+                        i,
+                        R.id.meetup_title
+                    )
+                )
+                    .check(matches(anyOf(palMeetUps)))
+            }
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.created_button)).perform(click())
+            onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
+            palMeetUps = meetUpList.filter { loggedUserId.following.contains(it.creatorId) }
+                .map { withText(it.name) }
+
+            onView(withId(R.id.meetup_list_recycler)).check(
+                matches(
+                    recyclerViewSizeMatcher(
+                        palMeetUps.size
+                    )
+                )
+            )
+            for (i in (palMeetUps.indices)) {
+                onView(
+                    RecyclerViewMatcher(R.id.meetup_list_recycler).atPositionOnView(
+                        i,
+                        R.id.meetup_title
+                    )
+                )
+                    .check(matches(anyOf(palMeetUps)))
+            }
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
+            onView(withId(R.id.meetup_list_recycler)).check(
+                matches(
+                    recyclerViewSizeMatcher(
+                        meetUpList.size
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
     fun showFilterBlockedWorks() = runTest {
         meetUpList.forEach { meetUpRepository.create(it) }
         val user3Id = profileService.create(user3)
@@ -559,6 +633,31 @@ class MeetUpListTest {
                 )
                     .check(matches(anyOf(joinedMeetUps)))
             }
+        }
+    }
+
+    @Test
+    fun showJoinedHideCertainOptions() = runTest {
+        meetUpList.forEach { meetUpRepository.create(it) }
+
+        val scenario = launchFragmentInHiltContainer<MeetupListFragment>(Bundle().apply {
+            putSerializable("ShowParam", ShowParam.ALL)
+        }, navHostController = navController)
+
+        scenario!!.use {
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.joinedButton)).perform(click())
+            Espresso.pressBack()
+
+            onView(withId(R.id.distance_slider)).check(matches(withEffectiveVisibility(Visibility.GONE)))
+            onView(withId(R.id.search_place)).check(matches(withEffectiveVisibility(Visibility.GONE)))
+
+            onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.button_all)).perform(click())
+            Espresso.pressBack()
+
+            onView(withId(R.id.distance_slider)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+            onView(withId(R.id.search_place)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         }
     }
 
