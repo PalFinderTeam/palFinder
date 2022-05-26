@@ -18,4 +18,15 @@
         <item name="color">@color/theme_bright</item>
     </style>
 
+    <style name="BottomNavigationViewTextStyle" parent="Widget.Design.BottomNavigationView">
+        <item name="fontFamily">@font/fredoka_bold</item>
+    </style>
+
+    <style name="BottomNavigationViewTextStyleInactive" parent="Widget.Design.BottomNavigationView">
+        <item name="fontFamily">@font/fredoka_bold</item>
+        <item name="alpha">0.5</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+
 </resources>

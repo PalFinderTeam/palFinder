@@ -6,7 +6,6 @@ import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -118,7 +117,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         searchLocation.setOnQueryTextListener(this)
 
         val app = requireActivity().application
-        if(app is PalFinderApplication){
+        if (app is PalFinderApplication) {
             app.loadIconPack()
             iconPack = app.iconPack
         }
@@ -141,7 +140,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 }
                 return false
             }
-            else -> return false
+            // Consume and suppress default behavior
+            else -> return true
         }
     }
 
@@ -186,12 +186,17 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         mapReady = true
 
         viewModel.searchLocation.value?.let {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(it.toLatLng(), getZoomLevel(viewModel.searchRadius.value).toFloat()))
+            map.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    it.toLatLng(),
+                    getZoomLevel(viewModel.searchRadius.value).toFloat()
+                )
+            )
         }
 
+        map.setOnMarkerClickListener(this)
         when (context) {
             Context.MARKER -> {
-                map.setOnMarkerClickListener(this)
                 // Only update markers when camera is still
                 map.setOnCameraIdleListener {
                     fetchMeetUpsInView()
@@ -277,10 +282,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             val position = LatLng(meetUp.location.latitude, meetUp.location.longitude)
             val options = MarkerOptions().position(position).title(meetUp.uuid)
 
-            if(meetUp.markerId != null && iconPack!= null){
+            if (meetUp.markerId != null && iconPack != null) {
                 val icon = iconPack!!.getIcon(meetUp.markerId)
                 val bitmap = icon?.drawable?.toBitmap(64, 64)
-                if(bitmap != null) options.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                if (bitmap != null) options.icon(BitmapDescriptorFactory.fromBitmap(bitmap))
             }
             val marker = map.addMarker(options)
                 ?.let { markers[meetUp.uuid] = it }
@@ -329,7 +334,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         } / 1000
         val position: Location = map.cameraPosition.target.toLocation()
 
-        viewModel.setSearchParamAndFetch(location = position, radiusInKm = radiusInKm.toDouble(), forceFetch = forceFetch)
+        viewModel.setSearchParamAndFetch(
+            location = position,
+            radiusInKm = radiusInKm.toDouble(),
+            forceFetch = forceFetch
+        )
     }
 
     // The following methods make it easy to programmatically interact with the map,
@@ -378,11 +387,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         }
     }
 
-    private fun getZoomLevel(radius: Double?): Double{
-        val result = if(radius != null){
-            val scale = radius/GMAP_PIXEL_RATIO
-            (16- ln(scale))/ ln(2.0)
-        }else BASE_ZOOM
+    private fun getZoomLevel(radius: Double?): Double {
+        val result = if (radius != null) {
+            val scale = radius / GMAP_PIXEL_RATIO
+            (16 - ln(scale)) / ln(2.0)
+        } else BASE_ZOOM
         return Math.min(result, MAX_ZOOM)
     }
 }

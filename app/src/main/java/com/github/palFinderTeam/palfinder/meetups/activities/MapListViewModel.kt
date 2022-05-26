@@ -1,8 +1,10 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.pm.PackageManager
+import android.icu.util.Calendar
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -23,6 +25,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+@SuppressLint("MissingPermission")
 @ExperimentalCoroutinesApi
 @HiltViewModel
 /**
@@ -44,13 +47,16 @@ class MapListViewModel @Inject constructor(
         const val INITIAL_RADIUS: Double = 400.0
         val START_LOCATION = Location(45.0, 45.0)
 
+        // Remove meetups created by blocked users
         private fun Response<List<MeetUp>>.filterBlocked(blockedUser: List<String>): Response<List<MeetUp>> {
-           return if (this is Response.Success) {
-               val filtered = this.data.filter { meetUp -> meetUp.participantsId.intersect(blockedUser).isEmpty() }
-               Response.Success(filtered)
-           } else {
-               this
-           }
+            return if (this is Response.Success) {
+                val filtered = this.data.filter { meetUp ->
+                    !blockedUser.contains(meetUp.creatorId)
+                }
+                Response.Success(filtered)
+            } else {
+                this
+            }
         }
     }
 
@@ -77,9 +83,13 @@ class MapListViewModel @Inject constructor(
     private val _searchLocation = MutableLiveData(START_LOCATION)
     val searchLocation: LiveData<Location> = _searchLocation
     val searchRadius: LiveData<Double> = _searchRadius
-    var showParam: ShowParam = ShowParam.ALL
+    private val _showParam = MutableLiveData(ShowParam.ALL)
+    val showParam: LiveData<ShowParam> = _showParam
     private var showOnlyAvailableInTime = true
     private var filterBlockedUserMeetups = true
+
+    lateinit var startTime: MutableLiveData<Calendar>
+    lateinit var endTime: MutableLiveData<Calendar>
 
     //updates the userLocation
     init {
@@ -102,7 +112,6 @@ class MapListViewModel @Inject constructor(
     }
 
 
-
     /**
      * Set search parameters that you want to apply.
      *
@@ -115,7 +124,7 @@ class MapListViewModel @Inject constructor(
     fun setSearchParameters(
         location: Location? = null,
         radiusInKm: Double? = null,
-        showParam: ShowParam? = ShowParam.ALL,
+        showParam: ShowParam? = null,
         showOnlyAvailable: Boolean? = null,
         filterBlockedMeetups: Boolean? = null,
     ) {
@@ -126,7 +135,7 @@ class MapListViewModel @Inject constructor(
             _searchRadius.value = it
         }
         showParam?.let {
-            this.showParam = it
+            _showParam.value = it
         }
         showOnlyAvailable?.let {
             showOnlyAvailableInTime = it
@@ -149,7 +158,7 @@ class MapListViewModel @Inject constructor(
     fun setSearchParamAndFetch(
         location: Location? = null,
         radiusInKm: Double? = null,
-        showParam: ShowParam? = ShowParam.ALL,
+        showParam: ShowParam? = null,
         showOnlyAvailable: Boolean? = null,
         forceFetch: Boolean = false,
         filterBlockedMeetups: Boolean? = null,
@@ -159,7 +168,7 @@ class MapListViewModel @Inject constructor(
             (!forceFetch)
             && (location == null || searchLocation.value == location)
             && (radiusInKm == null || searchRadius.value == radiusInKm)
-            && (this.showParam == showParam)
+            && (this.showParam.value == showParam)
             && (showOnlyAvailable == null || showOnlyAvailableInTime == showOnlyAvailable)
             && (filterBlockedMeetups == null || filterBlockedMeetups == filterBlockedUserMeetups)
         ) {
@@ -182,12 +191,12 @@ class MapListViewModel @Inject constructor(
      * call it by themself.
      */
     fun fetchMeetUps() {
-        when (showParam) {
+        when (showParam.value) {
             ShowParam.ONLY_JOINED -> fetchUserMeetUps()
             else -> getMeetupAroundLocation(
                 searchLocation.value!!,
                 searchRadius.value ?: INITIAL_RADIUS,
-                showParam
+                showParam.value!!
             )
         }
     }
