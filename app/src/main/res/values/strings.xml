@@ -280,4 +280,9 @@
     <string name="navigationUri" translatable="false">google.navigation:q=</string>
     <string name="mapPackage" translatable="false">com.google.android.apps.maps</string>
 
+    <string name="scanQR"> Scan QR code</string>
+    <string name="editProfile"> Edit profile</string>
+    <string name="settings"> Settings</string>
+    <string name="Logout">Logout</string>
+
 </resources>

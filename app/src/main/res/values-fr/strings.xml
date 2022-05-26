@@ -262,6 +262,9 @@
     <string name="meetup_where_you_are_blocked">Vous ne pouvez pas rejoindre cette rencontre, vous avez été bloqués par son créateur</string>
 
 
-
+    <string name="scanQR"> Scanner QR code</string>
+    <string name="editProfile"> Editer profil</string>
+    <string name="settings"> Paramètres</string>
+    <string name="Logout">Se déconnecter</string>
 
 </resources>
