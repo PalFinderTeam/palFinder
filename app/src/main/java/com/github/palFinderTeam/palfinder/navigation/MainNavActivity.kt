@@ -231,7 +231,7 @@ class MainNavActivity : AppCompatActivity() {
                                     MEETUP_SHOWN)) }
                             startActivity(intent)
                     }
-                }, textId = R.string.qr_scan_follow_account,
+                }, textId = R.string.qr_scan_join_meetup,
                     continueButtonTextId = R.string.meetup_view_join)
             }
         }

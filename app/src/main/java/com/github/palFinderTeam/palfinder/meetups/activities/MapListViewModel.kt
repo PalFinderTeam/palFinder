@@ -23,6 +23,7 @@ import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.github.palFinderTeam.palfinder.utils.transformer.ListTransformer
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -56,7 +57,7 @@ class MapListViewModel @Inject constructor(
         const val TEXT_FILTER = "text"
 
         const val INITIAL_RADIUS: Double = 400.0
-        val START_LOCATION = Location(45.0, 45.0)
+        val START_LOCATION = Location(6.5657, 46.5197)
     }
 
     //store the fetched meetups in real time, separated in 2 to be immutable
@@ -69,7 +70,7 @@ class MapListViewModel @Inject constructor(
     val tags: LiveData<Set<Category>> = _tags
 
     //stores the current user location and the client
-    private val locationClient =
+    val locationClient =
         LocationServices.getFusedLocationProviderClient(getApplication<Application>().applicationContext)
     private val _userLocation: MutableLiveData<Location> = MutableLiveData()
     val userLocation: LiveData<Location> = _userLocation
@@ -87,11 +88,13 @@ class MapListViewModel @Inject constructor(
     val showParam: LiveData<ShowParam> = _showParam
     private var showOnlyAvailableInTime = true
     private var filterBlockedUserMeetups = true
+    private var isFirstInit = true
 
     var startTime: MutableLiveData<Calendar> = MutableLiveData()
     var endTime: MutableLiveData<Calendar> = MutableLiveData()
 
     //updates the userLocation
+
     init {
         if (ActivityCompat.checkSelfPermission(
                 getApplication<Application>().applicationContext,
@@ -108,6 +111,7 @@ class MapListViewModel @Inject constructor(
                     _userLocation.postValue(Location(location.longitude, location.latitude))
                 }
             }
+
         }
 
         startTime.observeForever {
@@ -350,6 +354,14 @@ class MapListViewModel @Inject constructor(
                 true
             }
         }
+    }
+
+    fun firstInit(): Boolean{
+        return if(isFirstInit){
+            isFirstInit = false
+            true
+        }else false
+
     }
 
 }

@@ -4,14 +4,14 @@
 
     <item
         android:id="@+id/miScanQR"
-        android:title="Scan QR code" />
+        android:title="@string/scanQR" />
     <item
         android:id="@+id/miUserSettings"
-        android:title="Edit profile" />
+        android:title="@string/editProfile" />
     <item
         android:id="@+id/miSettings"
-        android:title="Settings" />
+        android:title="@string/settings" />
     <item
         android:id="@+id/miLogout"
-        android:title="Logout" />
+        android:title="@string/Logout" />
 </menu>

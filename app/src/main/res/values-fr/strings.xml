@@ -30,6 +30,7 @@
     <string name="no_account_groups">Vous devez être connecté pour rejoindre un groupe.</string>
     <string name="no_account_join">Vous devez être connecté pour rejoindre une rencontre.</string>
     <string name="no_account_profile">Vous devez être connecté pour voir votre profil.</string>
+    <string name="no_account_follow"> Vous devez être connecté pour suivre un Pal.</string>
     <string name="qr_scan_follow_account">Est-ce que vous voulez suivre ce compte?</string>
     <string name="qr_scan_join_meetup">Est-ce que vous voulez rejoindre cette rencontre?</string>
 
@@ -264,6 +265,12 @@
 
     <string name="meetup_with_blocked_warning">Un utilisateur que vous avez bloqué participe à la rencontre, voulez-vous continuer ?</string>
     <string name="meetup_where_you_are_blocked">Vous ne pouvez pas rejoindre cette rencontre, vous avez été bloqués par son créateur</string>
+
+
+    <string name="scanQR"> Scanner QR code</string>
+    <string name="editProfile"> Editer profil</string>
+    <string name="settings"> Paramètres</string>
+    <string name="Logout">Se déconnecter</string>
     <string name="nav_bar_profile">Mon Profil</string>
 
 

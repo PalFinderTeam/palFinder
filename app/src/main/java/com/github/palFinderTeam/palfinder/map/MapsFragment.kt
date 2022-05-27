@@ -8,6 +8,7 @@ import android.graphics.Canvas
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -46,16 +47,17 @@ import com.maltaisn.icondialog.pack.IconPack
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.IOException
+import kotlin.math.cos
 import kotlin.math.ln
+import kotlin.math.log
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
     SearchView.OnQueryTextListener {
 
-    private val BASE_ZOOM = 7.0
-    private val MAX_ZOOM = 12.0
-    private val GMAP_PIXEL_RATIO = 500
+    private val EQUATOR_LENGTH = 40075.004
+    private val BASE_ZOOM = 8.0
     private val DEFAULT_MARKER_ID = 2
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var selectLocationButton: FloatingActionButton
@@ -191,11 +193,23 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
         mapReady = true
 
+        if(viewModel.firstInit()) {
+            viewModel.locationClient.lastLocation.addOnSuccessListener {
+                if(it != null) {
+                    viewModel.setSearchParamAndFetch(location = Location(it.longitude, it.latitude))
+                    map.moveCamera(CameraUpdateFactory.newLatLng(LatLng(it.latitude, it.longitude)))
+                }
+            }
+            viewModel.firstInit()
+        }
+
         viewModel.searchLocation.value?.let {
             map.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(
                     it.toLatLng(),
-                    getZoomLevel(viewModel.searchRadius.value).toFloat()
+                    getZoomLevel(
+                        viewModel.searchRadius.value
+                    ).toFloat()
                 )
             )
         }
@@ -224,6 +238,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
         mapFragment.requireView().contentDescription = "MAP READY"
     }
+
 
     override fun onQueryTextSubmit(p0: String?): Boolean {
         var addressList: List<Address>? = null
@@ -403,11 +418,19 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         }
     }
 
+
     private fun getZoomLevel(radius: Double?): Double {
-        val result = if (radius != null) {
-            val scale = radius / GMAP_PIXEL_RATIO
-            (16 - ln(scale)) / ln(2.0)
+        val result = if ( mapFragment.requireView().contentDescription == "MapReady" && radius != null){
+            val mapWidth = mapFragment.view?.width?.div(resources.displayMetrics.density)
+            val latitudinalAdjustment =
+                cos(Math.PI * map.cameraPosition.target.latitude / 180.0)
+            val arg =
+                EQUATOR_LENGTH * mapWidth!! * latitudinalAdjustment / (radius.times(256.0))
+            log(arg, 2.0)-0.5
         } else BASE_ZOOM
-        return Math.min(result, MAX_ZOOM)
+        return result
     }
+
+
+
 }

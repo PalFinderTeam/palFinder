@@ -120,6 +120,7 @@ class MapsFragmentTest {
                 it.viewModel.setSearchParameters(location = meetup.location, showParam = ShowParam.ALL)
                 it.viewModel.fetchMeetUps()
                 it.setMapLocation(meetup.location, instantaneous = true)
+                it.viewModel.firstInit()
             }
             init()
 
