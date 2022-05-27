@@ -125,8 +125,7 @@
                         android:fontFamily="@font/fredoka_bold"
                         android:paddingVertical="9dp"
                         android:src="@drawable/ic_qr"
-                        app:tint="?attr/colorPrimary"
-                        android:contentDescription="@string/profile_qr_code" />
+                        app:tint="?attr/colorPrimary" />
 
                 </LinearLayout>
 
