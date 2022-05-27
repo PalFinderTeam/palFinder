@@ -47,6 +47,9 @@
         <activity
             android:name=".chat.ChatActivity"
             android:exported="false" />
+        <activity
+            android:name=".profile.ProfileActivity"
+            android:exported="false" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
@@ -64,10 +67,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ProfileActivity"
-            android:exported="false"
-            android:parentActivityName=".navigation.MainNavActivity" />
         <activity
             android:name=".user.settings.UserSettingsActivity"
             android:exported="false"

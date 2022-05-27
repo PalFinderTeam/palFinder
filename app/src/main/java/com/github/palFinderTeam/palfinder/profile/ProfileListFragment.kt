@@ -12,8 +12,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.github.palFinderTeam.palfinder.ProfileActivity
-import com.github.palFinderTeam.palfinder.ProfileViewModel
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.SearchedFilter

@@ -13,12 +13,9 @@ import androidx.test.espresso.intent.Intents.init
 import androidx.test.espresso.intent.Intents.release
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
-import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.activities.RecyclerViewMatcher
-import com.github.palFinderTeam.palfinder.profile.ProfileService
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
-import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
+import com.github.palFinderTeam.palfinder.profile.*
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -81,8 +78,8 @@ class ChatActivityTest {
         val user2 = profileMock.syncCreateProfile(profile2)
         profileMock.setLoggedInUserID(user2)
 
-        messages1 = listOf(ChatMessage(date1,user1!!,"message 1", false),
-                        ChatMessage(date2,user2!!,"message 2", false),
+        messages1 = listOf(ChatMessage(date1, user1,"message 1", false),
+                        ChatMessage(date2, user2,"message 2", false),
                         ChatMessage(date3,"no","message 3", false))
 
         (chatService as UIMockChatServiceModule.UIMockChatService).clear()

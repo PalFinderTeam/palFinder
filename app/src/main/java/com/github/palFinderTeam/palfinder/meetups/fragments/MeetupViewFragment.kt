@@ -13,10 +13,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
-import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpViewViewModel
+import com.github.palFinderTeam.palfinder.profile.ProfileActivity
 import com.github.palFinderTeam.palfinder.profile.USER_ID
 import kotlinx.coroutines.launch
 
@@ -38,30 +38,35 @@ class MeetupViewFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_meetup_view_new, container, false)
     }
 
-    private fun setTextView(id: Int, value: String){
+    private fun setTextView(id: Int, value: String) {
         view?.findViewById<TextView>(id)?.apply { this.text = value }
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun fillFields(meetUp: MeetUp){
+    private fun fillFields(meetUp: MeetUp) {
         val format = SimpleDateFormat(getString(R.string.date_long_format))
         val startDate = format.format(meetUp.startDate.time)
         val endDate = format.format(meetUp.endDate.time)
 
-        setTextView(R.id.tv_ViewEventName,meetUp.name)
-        setTextView(R.id.tv_ViewEventDescritpion,meetUp.description)
+        setTextView(R.id.tv_ViewEventName, meetUp.name)
+        setTextView(R.id.tv_ViewEventDescritpion, meetUp.description)
 
         injectImage(meetUp)
 
-        viewModel.getUsernameOf(meetUp.creatorId){
-            if (it != null){
-                setTextView(R.id.tv_ViewEventCreator,
-                    getString(R.string.meetup_view_creator, it))
-            }
-            else{
-                setTextView(R.id.tv_ViewEventCreator,
-                    getString(R.string.meetup_view_creator,
-                        getString(R.string.invalid_username)))
+        viewModel.getUsernameOf(meetUp.creatorId) {
+            if (it != null) {
+                setTextView(
+                    R.id.tv_ViewEventCreator,
+                    getString(R.string.meetup_view_creator, it)
+                )
+            } else {
+                setTextView(
+                    R.id.tv_ViewEventCreator,
+                    getString(
+                        R.string.meetup_view_creator,
+                        getString(R.string.invalid_username)
+                    )
+                )
             }
         }
 
