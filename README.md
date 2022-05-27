@@ -9,6 +9,9 @@ All User Stories and features: https://docs.google.com/document/d/1tU0rLP7YBuYWO
 
 Git cheat sheet: https://education.github.com/git-cheat-sheet-education.pdf
 
+Final cut project: https://www.icloud.com/iclouddrive/0c1Md3P5CGYK1L0SwlraryxRA#17.05
+
+Video:
 # Other
 
 email: palfinder.sdp@gmail.com
