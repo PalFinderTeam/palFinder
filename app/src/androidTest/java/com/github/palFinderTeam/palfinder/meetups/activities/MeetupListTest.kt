@@ -469,6 +469,7 @@ class MeetUpListTest {
                 it.viewModel.setSearchParameters(location = searchLocation)
                 it.viewModel.fetchMeetUps()
             }
+
             onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.participate_button)).perform(click())
             onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
@@ -514,6 +515,7 @@ class MeetUpListTest {
                     .check(matches(anyOf(palMeetUps)))
             }
             onView(withId(R.id.select_filters)).perform(click())
+            onView(withId(R.id.button_all)).perform(scrollTo(), click())
             onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
             onView(withId(R.id.meetup_list_recycler)).check(
                 matches(
