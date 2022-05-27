@@ -2,19 +2,18 @@ package com.github.palFinderTeam.palfinder.meetups.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.icu.text.SimpleDateFormat
-import android.icu.util.Calendar
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.PopupMenu
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,17 +22,14 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetupListAdapter
 import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam.ONLY_JOINED
-import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
 import com.github.palFinderTeam.palfinder.meetups.fragments.MeetupFilterFragment
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 import com.github.palFinderTeam.palfinder.utils.*
-import com.github.palFinderTeam.palfinder.utils.time.*
 import com.google.android.material.slider.Slider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.time.Period
 import kotlin.math.max
 import kotlin.math.min
 
@@ -52,6 +48,7 @@ class MeetupListFragment : Fragment() {
 
     //allows the user to add tags to filter the list
     private lateinit var tagsViewModel: TagsViewModel<Category>
+
     //allows the user to change the radius of search of meetUps around location
     private lateinit var radiusSlider: Slider
 
@@ -88,7 +85,10 @@ class MeetupListFragment : Fragment() {
 
         radiusSlider = view.findViewById(R.id.distance_slider)
 
-        radiusSlider.value = max(radiusSlider.valueFrom, min(radiusSlider.valueTo, viewModel.searchRadius.value!!.toFloat()))
+        radiusSlider.value = max(
+            radiusSlider.valueFrom,
+            min(radiusSlider.valueTo, viewModel.searchRadius.value!!.toFloat())
+        )
 
         //updates the meetUps at each slider change in real time
         radiusSlider.addOnChangeListener { _, value, _ ->
@@ -150,12 +150,19 @@ class MeetupListFragment : Fragment() {
         // Setup fragment filter window
         filterSelectButton = view.findViewById(R.id.select_filters)
         filterSelectButton.setOnClickListener {
-            MeetupFilterFragment(viewModel).show(childFragmentManager, getString(R.string.meetup_filter_title))
+            MeetupFilterFragment(viewModel).show(
+                childFragmentManager,
+                getString(R.string.meetup_filter_title)
+            )
         }
 
         view.findViewById<Button>(R.id.sort_list).setOnClickListener { showMenu(it) }
 
-        viewModel.setSearchParamAndFetch(showParam = args.showParam, showOnlyAvailable = true, forceFetch = true)
+        viewModel.setSearchParamAndFetch(
+            showParam = args.showParam,
+            showOnlyAvailable = true,
+            forceFetch = true
+        )
     }
 
     /**
@@ -167,8 +174,7 @@ class MeetupListFragment : Fragment() {
     }
 
 
-
-    private fun filterDate(meetup: MeetUp): Boolean{
+    private fun filterDate(meetup: MeetUp): Boolean {
         return meetup.startDate.after(viewModel.startTime) and meetup.endDate.before(viewModel.endTime)
     }
 
@@ -262,7 +268,6 @@ class MeetupListFragment : Fragment() {
             }
         startActivity(intent)
     }
-
 
 
 }
