@@ -11,4 +11,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_sort_loc"
         android:title="@string/list_sort_by_location" />
+    <item
+        android:id="@+id/menu_sort_trend"
+        android:title="@string/meetup_filter_trend" />
 </menu>

@@ -150,8 +150,7 @@ class MeetUpListTest {
                 creatorId = user1,
                 hasMaxCapacity = true,
                 participantsId = listOf(
-                    user2,
-                    loggedUserId.uuid
+                    user2
                 ),
                 uuid = "ce",
                 criterionAge = null,
@@ -202,7 +201,7 @@ class MeetUpListTest {
                 location = Location(-122.0, 38.0),
                 tags = setOf(Category.DRINKING),
                 capacity = 13,
-                creatorId = user3.uuid,
+                creatorId = user1,
                 hasMaxCapacity = true,
                 participantsId = listOf(
                     user2
@@ -266,7 +265,7 @@ class MeetUpListTest {
         }, navHostController = navController)
         scenario!!.use {
             scenario.onHiltFragment<MeetupListFragment> {
-                it.viewModel.setSearchParameters(location = searchLocation)
+                it.viewModel.setSearchParameters(location = searchLocation, radiusInKm = 10000.0)
                 it.viewModel.fetchMeetUps()
             }
             onView(withId(R.id.sort_list)).perform(click())
@@ -320,11 +319,20 @@ class MeetUpListTest {
                 listFrag.viewModel.fetchMeetUps()
             }
             scenario.onHiltFragment<MeetupListFragment> { listFrag ->
-                listFrag.filter(setOf(Category.CINEMA))
+                listFrag.viewModel.tagRepository.addTag(Category.CINEMA)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assert(listFrag.adapter.currentDataSet.isEmpty())
-                listFrag.filter(setOf(Category.WORKING_OUT, Category.SPORTS))
+                listFrag.viewModel.tagRepository.removeTag(Category.CINEMA)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
+                listFrag.viewModel.tagRepository.addTag(Category.WORKING_OUT)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(1))
-                listFrag.filter(setOf())
+                listFrag.viewModel.tagRepository.removeTag(Category.WORKING_OUT)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(5))
             }
         }
@@ -345,14 +353,24 @@ class MeetUpListTest {
             }
             scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 listFrag.viewModel.tagRepository.addTag(Category.CINEMA)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assert(listFrag.adapter.currentDataSet.isEmpty())
                 listFrag.viewModel.tagRepository.removeTag(Category.CINEMA)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(5))
                 listFrag.viewModel.tagRepository.removeTag(Category.CINEMA)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(5))
                 listFrag.viewModel.tagRepository.addTag(Category.WORKING_OUT)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(1))
                 listFrag.viewModel.tagRepository.addTag(Category.WORKING_OUT)
+            }
+            scenario.onHiltFragment<MeetupListFragment> { listFrag ->
                 assertThat(listFrag.adapter.currentDataSet.size, `is`(1))
             }
         }
@@ -451,6 +469,7 @@ class MeetUpListTest {
                 it.viewModel.setSearchParameters(location = searchLocation)
                 it.viewModel.fetchMeetUps()
             }
+
             onView(withId(R.id.select_filters)).perform(click())
             onView(withId(R.id.participate_button)).perform(click())
             onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
@@ -496,7 +515,7 @@ class MeetUpListTest {
                     .check(matches(anyOf(palMeetUps)))
             }
             onView(withId(R.id.select_filters)).perform(click())
-            onView(withId(R.id.trendButton)).perform(click())
+            onView(withId(R.id.button_all)).perform(scrollTo(), click())
             onView(withId(R.id.filtersButtonDone)).perform(scrollTo(), click())
             onView(withId(R.id.meetup_list_recycler)).check(
                 matches(
@@ -689,7 +708,6 @@ class MeetUpListTest {
                 PickerActions.setTime(date2.get(Calendar.HOUR_OF_DAY), date2.get(Calendar.MINUTE)),
             )
             onView(withText("OK")).perform(click())
-            onView(withId(R.id.tv_EndDate)).check(matches(withText(expectDate2)))
             Espresso.pressBack()
         }
     }

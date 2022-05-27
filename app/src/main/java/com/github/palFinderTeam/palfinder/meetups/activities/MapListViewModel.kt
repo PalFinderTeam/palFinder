@@ -21,11 +21,13 @@ import com.github.palFinderTeam.palfinder.tag.TagsRepository
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
+import com.github.palFinderTeam.palfinder.utils.transformer.ListTransformer
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 
@@ -48,25 +50,19 @@ class MapListViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
     companion object {
+        const val BLOCKED_USER_FILTER = "blocked_user"
+        const val DATE_UPPER_FILTER = "upper_date"
+        const val DATE_LOWER_FILTER = "lower_date"
+        const val TEXT_FILTER = "text"
+
         const val INITIAL_RADIUS: Double = 400.0
         val START_LOCATION = Location(45.0, 45.0)
-
-        // Remove meetups created by blocked users
-        private fun Response<List<MeetUp>>.filterBlocked(blockedUser: List<String>): Response<List<MeetUp>> {
-            return if (this is Response.Success) {
-                val filtered = this.data.filter { meetUp ->
-                    !blockedUser.contains(meetUp.creatorId)
-                }
-                Response.Success(filtered)
-            } else {
-                this
-            }
-        }
     }
 
     //store the fetched meetups in real time, separated in 2 to be immutable
     private val _listOfMeetUpResponse: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
-    val listOfMeetUpResponse: LiveData<Response<List<MeetUp>>> = _listOfMeetUpResponse
+    val filterer = ListTransformer<MeetUp>()
+    val listOfMeetUp: LiveData<List<MeetUp>> = filterer.transformResponseList(_listOfMeetUpResponse)
 
     //store the current tags filtering the data, separated in 2 as well
     private val _tags: MutableLiveData<Set<Category>> = MutableLiveData(setOf())
@@ -92,8 +88,8 @@ class MapListViewModel @Inject constructor(
     private var showOnlyAvailableInTime = true
     private var filterBlockedUserMeetups = true
 
-    lateinit var startTime: MutableLiveData<Calendar>
-    lateinit var endTime: MutableLiveData<Calendar>
+    var startTime: MutableLiveData<Calendar> = MutableLiveData()
+    var endTime: MutableLiveData<Calendar> = MutableLiveData()
 
     //updates the userLocation
     init {
@@ -112,6 +108,13 @@ class MapListViewModel @Inject constructor(
                     _userLocation.postValue(Location(location.longitude, location.latitude))
                 }
             }
+        }
+
+        startTime.observeForever {
+            filterByDate()
+        }
+        endTime.observeForever {
+            filterByDate()
         }
     }
 
@@ -144,8 +147,44 @@ class MapListViewModel @Inject constructor(
         showOnlyAvailable?.let {
             showOnlyAvailableInTime = it
         }
-        filterBlockedMeetups?.let {
-            filterBlockedUserMeetups = it
+        filterBlockedMeetups?.let { filterByBlocked(it) }
+    }
+
+    /**
+     * Add or remove Blocked User Filter
+     */
+    fun filterByBlocked(it: Boolean) {
+        if (it) {
+            viewModelScope.launch {
+                val userId = profileService.getLoggedInUserID()
+                val blockedUser = getBlockedUser(userId)
+                filterer.setFilter(BLOCKED_USER_FILTER) { !blockedUser.contains(it.creatorId) }
+            }
+        } else {
+            filterer.removeFilter(BLOCKED_USER_FILTER)
+        }
+    }
+
+    /**
+     * Add Date Filter
+     */
+    fun filterByDate() {
+        if (startTime.value != null){
+            filterer.setFilter(DATE_LOWER_FILTER) {
+                it.endDate.after(startTime.value!!)
+            }
+        }
+        else{
+            filterer.removeFilter(DATE_LOWER_FILTER)
+        }
+
+        if (endTime.value != null){
+            filterer.setFilter(DATE_UPPER_FILTER) {
+                it.startDate.before(endTime.value!!)
+            }
+        }
+        else{
+            filterer.removeFilter(DATE_UPPER_FILTER)
         }
     }
 
@@ -221,7 +260,6 @@ class MapListViewModel @Inject constructor(
         viewModelScope.launch {
             val userId = profileService.getLoggedInUserID()
 
-            val blockedUser = getBlockedUser(userId)
             meetUpRepository.getMeetUpsAroundLocation(
                 position,
                 radiusInKm,
@@ -229,7 +267,7 @@ class MapListViewModel @Inject constructor(
                 showParam,
                 if (userId == null) userId else profileService.fetch(userId)
             ).collect {
-                _listOfMeetUpResponse.postValue(it.filterBlocked(blockedUser).orderByTrend(showParam))
+                _listOfMeetUpResponse.postValue(it)
             }
         }
     }
@@ -247,16 +285,21 @@ class MapListViewModel @Inject constructor(
         return participants!!.sumOf { it.followed.size }.toDouble() / participants.size
     }
 
-    private suspend fun Response<List<MeetUp>>.orderByTrend(showParam: ShowParam): Response<List<MeetUp>> {
-        return if (this is Response.Success) {
-            if (showParam == ShowParam.TRENDS) {
-                val filtered = this.data.map { Pair(computeAverage(it.participantsId), it) }
-                Response.Success(filtered.sortedBy { it.first }.map { it.second })
-            } else {
-                Response.Success(this.data)
-            }
-        } else {
-            this
+    private fun MeetUp.getTrendScore(): Double {
+        val meetUp = this
+        var score: Double
+        runBlocking {
+            score = computeAverage(meetUp.participantsId)
+        }
+        return score
+    }
+
+    /**
+     * Sort the list of meetUps by trend
+     */
+    fun sortByTrend() {
+        filterer.setSorter {
+            it.getTrendScore()
         }
     }
 
@@ -268,10 +311,9 @@ class MapListViewModel @Inject constructor(
         val date = if (showOnlyAvailableInTime) timeService.now() else null
         if (userId != null) {
             viewModelScope.launch {
-                val blockedUser = getBlockedUser(userId)
                 meetUpRepository.getUserMeetups(userId, date)
                     .collect {
-                        _listOfMeetUpResponse.postValue(it.filterBlocked(blockedUser))
+                        _listOfMeetUpResponse.postValue(it)
                     }
             }
         } else {
@@ -294,7 +336,7 @@ class MapListViewModel @Inject constructor(
             return if (tags == null || !tags.contains(tag)) {
                 false
             } else {
-                _tags.value = tags.minus(tag)
+                _tags.postValue(tags.minus(tag))
                 true
             }
         }
@@ -304,7 +346,7 @@ class MapListViewModel @Inject constructor(
             return if (tags == null || tags.contains(tag)) {
                 false
             } else {
-                _tags.value = tags.plus(tag)
+                _tags.postValue(tags.plus(tag))
                 true
             }
         }

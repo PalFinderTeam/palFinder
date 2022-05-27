@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,8 +19,7 @@ class ProfileAdapter(
     private val onItemClicked: (position: Int) -> Unit,
     private val onFollow: (uuid: String) -> Unit,
     private val onUnFollow: (uuid: String) -> Unit,
-) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(),
-    Filterable {
+) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(){
     val currentDataSet = dataSet.toMutableList()
 
     class ViewHolder(val view: View, private val onItemClicked: (position: Int) -> Unit) :
@@ -116,7 +114,4 @@ class ProfileAdapter(
     }
 
     override fun getItemCount(): Int = currentDataSet.size
-    override fun getFilter(): Filter =
-        SearchedFilter(dataSet, currentDataSet, null) { notifyDataSetChanged() }
-
 }
