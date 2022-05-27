@@ -8,17 +8,18 @@ import android.content.Context
 import android.content.Intent
 import com.github.palFinderTeam.palfinder.notification.NotificationService
 
-
-const val START_SERVICE = "com.github.palFinderTeam.palFinder.service.start"
-const val STOP_SERVICE = "com.github.palFinderTeam.palFinder.service.stop"
-private var isServiceStarted = false
-
+/**
+ * Class that handles the start of the service
+ */
 class StartServiceReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         EndlessService.scheduleJob(context)
     }
 }
 
+/**
+ * Service that runs in the background and access the database
+ */
 abstract class EndlessService{
     companion object{
         fun scheduleJob(context: Context) {

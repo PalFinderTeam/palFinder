@@ -5,6 +5,9 @@ import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.github.palFinderTeam.palfinder.utils.time.isBefore
 import java.io.File
 
+/**
+ * @return a filter that returns true if the file is older than the given time -[delta] minutes
+ */
 fun evictAfterXMinutes(delta: Int, time: TimeService): (File)->Boolean =
 {
     val expirationDate = time.now()

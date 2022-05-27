@@ -8,10 +8,18 @@ package com.github.palFinderTeam.palfinder.utils
 sealed class Response<out T> {
     class Loading<out T>: Response<T>()
 
+    /**
+     * Successful response.
+     * @param data the data of the response
+     */
     data class Success<out T>(
         val data: T
     ): Response<T>()
 
+    /**
+     * Error response.
+     * @param error the error of the response
+     */
     data class Failure<out T>(
         val errorMessage: String
     ): Response<T>()

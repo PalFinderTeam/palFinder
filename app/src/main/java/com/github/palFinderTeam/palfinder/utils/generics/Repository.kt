@@ -4,6 +4,9 @@ import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.utils.Response
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Represents a generic interface for a data source.
+ */
 interface Repository<T> {
     suspend fun exists(uuid: String): Boolean
 

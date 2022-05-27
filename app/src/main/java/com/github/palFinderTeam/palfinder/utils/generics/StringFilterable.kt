@@ -1,5 +1,8 @@
 package com.github.palFinderTeam.palfinder.utils.generics
 
+/**
+ * Represents an object that can be filtered by text.
+ */
 interface StringFilterable {
     /**
      * Return a string containing all the text contains in the object

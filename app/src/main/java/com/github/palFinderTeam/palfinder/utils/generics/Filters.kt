@@ -11,6 +11,9 @@ object Filters{
     val TEXT_FILTER = "text"
 }
 
+/**
+ * Add a text filter to the filterer
+ */
 fun <T: StringFilterable> filterByText(filterer: ListTransformer<T>, query: String?) {
     if (query != null) {
         filterer.setFilter(Filters.TEXT_FILTER) { it.containsString(query) }
