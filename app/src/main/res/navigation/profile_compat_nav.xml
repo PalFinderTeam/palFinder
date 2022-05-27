@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/profile_compat_nav"
+    app:startDestination="@id/profile_fragment">
+
+    <fragment
+        android:id="@+id/profile_fragment"
+        android:name="com.github.palFinderTeam.palfinder.profile.ProfileFragment"
+        android:label="ProfileFragment"
+        tools:layout="@layout/activity_profile" >
+        <argument
+            android:name="ShowNavBar"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="UserId"
+            app:argType="string"
+            />
+    </fragment>
+</navigation>

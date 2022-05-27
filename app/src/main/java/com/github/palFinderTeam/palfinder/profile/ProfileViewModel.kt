@@ -1,4 +1,4 @@
-package com.github.palFinderTeam.palfinder
+package com.github.palFinderTeam.palfinder.profile
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -105,6 +105,7 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
     fun unFollow(userId: String, otherId: String) {
         viewModelScope.launch {
             profileService.fetch(userId)?.let {
@@ -138,6 +139,7 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
     fun unBlock(userId: String, otherId: String) {
         viewModelScope.launch {
             profileService.fetch(userId)?.let {

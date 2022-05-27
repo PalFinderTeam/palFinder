@@ -13,8 +13,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
-import com.github.palFinderTeam.palfinder.ProfileActivity
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.profile.ProfileActivity
 import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.utils.time.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.time.ShortDate
@@ -24,7 +24,8 @@ import kotlinx.coroutines.launch
 class ChatMessageListAdapter(
     private val viewModel: ChatViewModel,
     private val dataSet: List<ChatMessage>,
-    private val onItemClicked: (position: Int) -> Unit) :
+    private val onItemClicked: (position: Int) -> Unit
+) :
     RecyclerView.Adapter<ChatMessageListAdapter.ViewHolder>() {
 
     private val currentDataSet = dataSet.toMutableList()
@@ -58,25 +59,28 @@ class ChatMessageListAdapter(
         val msg = currentDataSet[position]
         val context = holder.messageInContent.context
 
-        if (msg.sentBy == viewModel.profileService.getLoggedInUserID()){
+        if (msg.sentBy == viewModel.profileService.getLoggedInUserID()) {
             holder.messageInLayout.background = context.getDrawable(R.drawable.out_going_message)
             holder.messageInSenderPic.isVisible = false
-        }
-        else{
+        } else {
             holder.messageInLayout.background = context.getDrawable(R.drawable.in_coming_message)
             holder.messageInSenderPic.isVisible = true
         }
         holder.messageInContent.text = msg.content
         holder.messageInDate.text = ShortDate.format(context, msg.sentAt, Calendar.getInstance())
 
-        holder.messageInSenderPic.setOnClickListener{
+        holder.messageInSenderPic.setOnClickListener {
             val intent = Intent(it.context, ProfileActivity::class.java).apply {
                 putExtra(USER_ID, msg.sentBy)
             }
             ContextCompat.startActivity(it.context, intent, null)
         }
         viewModel.viewModelScope.launch {
-            viewModel.loadProfileData(msg.sentBy, holder.messageInSenderPic, holder.messageInSenderName)
+            viewModel.loadProfileData(
+                msg.sentBy,
+                holder.messageInSenderPic,
+                holder.messageInSenderName
+            )
         }
     }
 
