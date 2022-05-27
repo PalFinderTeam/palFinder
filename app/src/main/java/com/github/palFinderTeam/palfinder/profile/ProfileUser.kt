@@ -6,6 +6,7 @@ import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.time.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.generics.FirebaseObject
+import com.github.palFinderTeam.palfinder.utils.generics.StringFilterable
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.google.firebase.firestore.DocumentSnapshot
 import java.io.Serializable
@@ -35,7 +36,7 @@ data class ProfileUser(
     private val achievements: List<String> = emptyList(),
     val privacySettings: PrivacySettings? = PrivacySettings.PUBLIC,
     val mutedMeetups: List<String> = emptyList()
-) : Serializable, FirebaseObject {
+) : Serializable, FirebaseObject, StringFilterable {
 
     companion object {
         const val JOIN_FORMAT = "Joined %s"
@@ -142,10 +143,16 @@ data class ProfileUser(
 
     override fun getUUID(): String = uuid
 
+    /**
+     * @return the full name of the user
+     */
     fun fullName(): String {
         return "$name $surname"
     }
 
+    /**
+     * @return the age of the user, or -1 if the user has not set their birthday.
+     */
     fun getAge(): Int {
         return if (birthday == null) {
             -1
@@ -161,18 +168,30 @@ data class ProfileUser(
         }
     }
 
+    /**
+     * @return the @username of the user
+     */
     fun atUsername(): String {
         return "@$username"
     }
 
+    /**
+     * @return if the user can follow the given user
+     */
     fun canFollow(profileId: String): Boolean {
         return profileId != uuid && !following.contains(profileId) && !blockedUsers.contains(profileId)
     }
 
+    /**
+     * @return if the user can unfollowed the given user
+     */
     fun canUnFollow(profileId: String): Boolean {
         return following.contains(profileId)
     }
 
+    /**
+     * @return if the user profile can be seen by the given user
+     */
     fun canProfileBeSeenBy(profileId: String): Boolean{
         return when (privacySettings) {
             PrivacySettings.PRIVATE -> false
@@ -182,32 +201,57 @@ data class ProfileUser(
         }
     }
 
+    /**
+     * @return the joined time of the user
+     */
     fun prettyJoinTime(): String {
         val prettyDate = PrettyDate()
         return String.format(JOIN_FORMAT, prettyDate.timeDiff(joinDate))
     }
 
+    /**
+     * @return the achievements of the user
+     */
     fun achievements(): List<Achievement> {
         return achievements.map { Achievement.from(it) }
     }
 
+    /**
+     * @return if the user can block the given user
+     */
     fun canBlock(uuid: String): Boolean {
         return !blockedUsers.contains(uuid)
     }
 
+    /**
+     * @return if the user can muted the given meetup
+     */
     fun canMuteMeetup(uuid: String): Boolean{
         return !mutedMeetups.contains(uuid)
     }
 
+    /**
+     * @return if the user can unmuted the given meetup
+     */
     fun canUnMuteMeetup(uuid: String): Boolean{
         return mutedMeetups.contains(uuid)
     }
 
+    /**
+     * @return if the user has muted the given meetup
+     */
     fun isMeetupMuted(uuid: String): Boolean{
         return mutedMeetups.contains(uuid)
     }
 
+    /**
+     * @return the badges of the user
+     */
     fun badges(): List<Achievement> {
         return achievements().filter { it.cat == AchievementCategory.OTHER }
+    }
+
+    override fun getAllText(): String {
+        return "$name $surname $username $description"
     }
 }

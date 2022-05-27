@@ -80,14 +80,6 @@
                     android:fontFamily="@font/fredoka_normal"
                     android:text="@string/meetup_filter_only_joined" />
 
-                <RadioButton
-                    android:id="@+id/trendButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/fredoka_normal"
-                    android:text="@string/meetup_filter_trend" />
-
             </RadioGroup>
 
             <TextView

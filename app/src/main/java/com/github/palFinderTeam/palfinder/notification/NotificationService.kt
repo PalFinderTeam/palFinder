@@ -15,6 +15,10 @@ import com.github.palFinderTeam.palfinder.di.FirestoreModule
 import com.github.palFinderTeam.palfinder.meetups.CachedMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.Achievement
+import com.github.palFinderTeam.palfinder.profile.CachedProfileService
+import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
+import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.*
@@ -48,6 +52,7 @@ class NotificationService @Inject constructor(
     private val notifications = DictionaryCache("notification", CachedNotification::class.java, false, contextService.get())
     private val meetupsMetaData = DictionaryCache("meetup_meta", MeetupMetaData::class.java, false, contextService.get())
     private val profileMetaData = DictionaryCache("profile_meta", ProfileMetaData::class.java, false, contextService.get())
+    private val achievementMetaData = DictionaryCache("achievement_meta", AchievementMetaData::class.java, false, contextService.get())
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun action(){
@@ -73,6 +78,12 @@ class NotificationService @Inject constructor(
                                 putExtra(USER_ID, user.uuid)
                             }
                             NotificationHandler(context).post(context.getString(R.string.following_title), context.getString(R.string.following_content).format(user.username), R.drawable.icon_beer, intent)
+                        }
+                    }
+                    for (a in Achievement.values()) {
+                        if (a in loggedUser.achievements() && !achievementMetaData.contains(a.toString())){
+                            achievementMetaData.store(a.toString(), AchievementMetaData(a.toString(), true))
+                            NotificationHandler(context).post(context.getString(R.string.achievement_title), context.getString(R.string.achievement_content).format(a.aName), R.drawable.icon_beer)
                         }
                     }
                 }
@@ -134,4 +145,5 @@ class NotificationService @Inject constructor(
 
     data class MeetupMetaData(var uuid: String, var sendStartNotification: Boolean, var lastMessageNotification: String)
     data class ProfileMetaData(var uuid: String, var sendStartNotification: Boolean)
+    data class AchievementMetaData(var uuid: String, var sendStartNotification: Boolean)
 }

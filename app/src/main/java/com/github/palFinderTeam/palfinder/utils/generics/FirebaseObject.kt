@@ -1,5 +1,8 @@
 package com.github.palFinderTeam.palfinder.utils.generics
 
+/**
+ * Object that can be put in firebase
+ */
 interface FirebaseObject {
     /**
      * @return a representation which is Firestore friendly.

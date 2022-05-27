@@ -10,6 +10,7 @@ import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.generics.FirebaseObject
+import com.github.palFinderTeam.palfinder.utils.generics.StringFilterable
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.time.isBefore
 import com.google.firebase.firestore.DocumentSnapshot
@@ -46,7 +47,7 @@ data class MeetUp(
     val criterionAge: Pair<Int?, Int?>? = null,
     val criterionGender: CriterionGender? = null,
     val markerId: Int? = null,
-) : java.io.Serializable, FirebaseObject {
+) : java.io.Serializable, FirebaseObject, StringFilterable {
 
     /**
      * @param currentLocation
@@ -150,6 +151,14 @@ data class MeetUp(
             CRITERION_AGE_SECOND to criterionAge?.second?.toLong(),
             CRITERION_GENDER to criterionGender?.genderName,
         )
+    }
+
+    /**
+     * Return a string containing all the text contains in the object
+     */
+    override fun getAllText(): String{
+        val tagsString = tags.map { it.tagName }.ifEmpty { listOf("") }.reduce{x, y -> "$x $y"}
+        return "$name $description $tagsString"
     }
 
     companion object {

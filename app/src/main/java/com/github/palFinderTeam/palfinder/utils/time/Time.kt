@@ -51,6 +51,9 @@ fun Calendar.isDeltaBefore(other: Calendar, delta: Int): Boolean {
     return this.timeInMillis + delta <= other.timeInMillis
 }
 
+/**
+ * Transform this Calendar to SimpleDate
+ */
 fun Calendar.toSimpleDate(): SimpleDate {
     return SimpleDate(
         this.get(Calendar.YEAR),
@@ -59,6 +62,10 @@ fun Calendar.toSimpleDate(): SimpleDate {
     )
 }
 
+
+/**
+ * Transform this Calendar to SimpleTime
+ */
 fun Calendar.toSimpleTime(): SimpleTime {
     return SimpleTime(this.get(Calendar.HOUR_OF_DAY), this.get(Calendar.MINUTE))
 }

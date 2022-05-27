@@ -38,6 +38,9 @@ data class Location(val longitude: Double, val latitude: Double): Serializable{
         }
     }
 
+    /**
+     * Distance in kilometers
+     */
     fun distanceInKm(other: Location): Double{
         val phi1 = latitude * degToRad
         val phi2 = other.latitude * degToRad
@@ -64,6 +67,9 @@ data class Location(val longitude: Double, val latitude: Double): Serializable{
         return "${longitude},${latitude}"
     }
 
+    /**
+     * Format the distance in a human readable way
+     */
     fun prettyDistanceTo(context: Context, other: Location):String{
         val dist = distanceInKm(other)
         return when {
@@ -81,6 +87,9 @@ data class Location(val longitude: Double, val latitude: Double): Serializable{
         }
     }
 
+    /**
+     * Transform a location to a LatLng
+     */
     fun toLatLng(): LatLng {
         return LatLng(latitude, longitude)
     }

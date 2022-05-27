@@ -7,8 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
+import com.github.palFinderTeam.palfinder.meetups.*
+import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
+import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel.Companion.TEXT_FILTER
+import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.BLOCKED_USERS
 import com.github.palFinderTeam.palfinder.utils.Response
+import com.github.palFinderTeam.palfinder.utils.transformer.ListTransformer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,9 +30,10 @@ class ProfileViewModel @Inject constructor(
     val profile: LiveData<Response<ProfileUser>> = _profile
 
     // For multiple users
+    val filterer = ListTransformer<ProfileUser>()
     private val _profilesList: MutableLiveData<List<ProfileUser>> =
         MutableLiveData<List<ProfileUser>>(listOf())
-    val profilesList: LiveData<List<ProfileUser>> = _profilesList
+    val profilesList: MutableLiveData<List<ProfileUser>> = filterer.transform(_profilesList)
 
     // For the User's meetup list
     private var _adapter: MutableLiveData<MeetupListRootAdapter> = MutableLiveData()
@@ -143,5 +150,4 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-
 }

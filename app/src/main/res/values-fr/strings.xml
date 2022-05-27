@@ -246,6 +246,9 @@
     <string name="following_content">%1$s vous suis!</string>
     <string name="following_title">Nouvel abonné!</string>
 
+    <string name="achievement_content">Vous avez debloqué le success %1$s!</string>
+    <string name="achievement_title">Nouveau Success!</string>
+
     <string name="meetup_start_title">%1$s commence!</string>
 
     <string name="following_handle_title">Abonnements</string>

@@ -112,10 +112,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         when (context) {
             Context.MARKER -> {
 
-                viewModel.listOfMeetUpResponse.observe(viewLifecycleOwner) {
-                    if (it is Response.Success) {
-                        refreshMarkers(it.data)
-                    }
+                viewModel.listOfMeetUp.observe(viewLifecycleOwner) {
+                    refreshMarkers(it)
                 }
             }
             Context.SELECT_LOCATION -> {

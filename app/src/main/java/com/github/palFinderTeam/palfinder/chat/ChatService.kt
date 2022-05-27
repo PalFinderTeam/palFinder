@@ -2,6 +2,9 @@ package com.github.palFinderTeam.palfinder.chat
 
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Interface for chat service
+ */
 interface ChatService {
 
     /**

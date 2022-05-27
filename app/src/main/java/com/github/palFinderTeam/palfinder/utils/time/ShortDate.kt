@@ -7,6 +7,9 @@ import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.R
 import java.util.*
 
+/**
+ * Class for formatting time in different ways
+ */
 object ShortDate {
     /**
      * Return a short string version of the date

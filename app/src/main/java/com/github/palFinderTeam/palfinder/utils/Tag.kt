@@ -10,6 +10,9 @@ import com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
 
+/**
+ * Create a [TagsViewModel] for the given [that] and [tagsViewModelFactory].
+ */
 fun createTagFragmentModel(
     that: ViewModelStoreOwner,
     tagsViewModelFactory: TagsViewModelFactory<Category>
@@ -20,6 +23,9 @@ fun createTagFragmentModel(
     ).get(TagsViewModel::class.java) as TagsViewModel<Category>
 }
 
+/**
+ * Adds supportFragmentManager to the [FragmentManager]
+ */
 fun addTagsToFragmentManager(supportFragmentManager: FragmentManager, id: Int){
     supportFragmentManager.commit {
         setReorderingAllowed(true)

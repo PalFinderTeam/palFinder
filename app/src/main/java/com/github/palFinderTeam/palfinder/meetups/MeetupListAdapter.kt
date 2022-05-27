@@ -10,11 +10,12 @@ import com.github.palFinderTeam.palfinder.utils.SearchedFilter
 /**
  * extends the MeetupListRootAdapter by adding the distance to the current location and the filter
  */
-class MeetupListAdapter(private val dataSet: List<MeetUp>, override val currentDataSet: MutableList<MeetUp>,
-                        private var filter: SearchedFilter<MeetUp>, private var currentLocation: Location,
+class MeetupListAdapter(private val dataSet: List<MeetUp>,
+                        override val currentDataSet: MutableList<MeetUp>,
+                        private var currentLocation: Location,
                         private val context: Context,
                         private val onItemClicked: (position: Int) -> Unit) :
-    MeetupListRootAdapter(dataSet, currentDataSet, context, onItemClicked), Filterable {
+    MeetupListRootAdapter(dataSet, currentDataSet, context, onItemClicked) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
@@ -26,8 +27,6 @@ class MeetupListAdapter(private val dataSet: List<MeetUp>, override val currentD
 
         meetupDistance.visibility = VISIBLE
     }
-
-    override fun getFilter(): Filter = filter
 }
 
 
