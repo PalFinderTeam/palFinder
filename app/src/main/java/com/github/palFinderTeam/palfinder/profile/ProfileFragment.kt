@@ -47,6 +47,7 @@ class ProfileFragment : Fragment(R.layout.activity_profile) {
     companion object{
         const val EMPTY_FIELD = ""
         const val MAX_SHORT_BIO_DISPLAY_LINES = 2
+        const val PROFILE_ID_ARG = "UserId"
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

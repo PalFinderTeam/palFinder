@@ -19,6 +19,8 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
+import com.github.palFinderTeam.palfinder.profile.ProfileFragment.Companion.PROFILE_ID_ARG
+import com.github.palFinderTeam.palfinder.profile.ProfileFragmentArgs
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
@@ -46,6 +48,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainNavActivity : AppCompatActivity() {
 
+    companion object {
+        const val SHOW_NAVBAR_ARG = "ShowNavBar"
+    }
+
     private lateinit var auth: FirebaseAuth
     private lateinit var bottomNavigationView: BottomNavigationView
     @Inject
@@ -72,7 +78,7 @@ class MainNavActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, _, arguments ->
             // Hide navbar when needed
-            hideShowNavBar(arguments?.getBoolean("ShowNavBar", false) == true)
+            hideShowNavBar(arguments?.getBoolean(SHOW_NAVBAR_ARG, false) == true)
         }
 
         // Make sure that selected item is the one displayed to the user
@@ -137,7 +143,7 @@ class MainNavActivity : AppCompatActivity() {
                         } else {
                             navController.popBackStack()
                             val args = Bundle().apply {
-                                putSerializable("UserId", loggedUser)
+                                putSerializable(PROFILE_ID_ARG, loggedUser)
                             }
                             navController.navigate(
                                 R.id.profile_fragment,

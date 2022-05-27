@@ -10,6 +10,7 @@ import androidx.fragment.app.commit
 import androidx.navigation.fragment.NavHostFragment
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_EDIT
+import com.github.palFinderTeam.palfinder.profile.ProfileFragment.Companion.PROFILE_ID_ARG
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -37,7 +38,7 @@ class ProfileActivity : AppCompatActivity() {
             (supportFragmentManager.findFragmentById(R.id.profile_compat_content) as NavHostFragment).navController
         navController.setGraph(
             R.navigation.profile_compat_nav, bundleOf(
-                Pair("UserId", intent.getStringExtra(USER_ID))
+                Pair(PROFILE_ID_ARG, intent.getStringExtra(USER_ID))
             )
         )
     }
