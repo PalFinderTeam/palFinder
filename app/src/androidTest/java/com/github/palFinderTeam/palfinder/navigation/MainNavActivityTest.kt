@@ -1,25 +1,22 @@
 package com.github.palFinderTeam.palfinder.navigation
 
 import android.content.Intent
-import android.content.res.Resources
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
-import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.palFinderTeam.palfinder.ProfileActivity
+import com.github.palFinderTeam.palfinder.profile.ProfileFragment
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
@@ -107,15 +104,13 @@ class MainNavActivityTest {
         }
 
         // Change test to fragment check instead of intent when updated
-        init()
         onView(withId(R.id.nav_bar_profile)).perform(click())
-        intended(
-            CoreMatchers.allOf(
-                hasComponent(ProfileActivity::class.java.name),
-                IntentMatchers.hasExtra(USER_ID, profileRepository.getLoggedInUserID())
+        scenario.onActivity {
+            assertThat(
+                it.findNavController(R.id.main_content).currentDestination?.id,
+                `is`(R.id.profile_fragment)
             )
-        )
-        release()
+        }
     }
 
     @Test

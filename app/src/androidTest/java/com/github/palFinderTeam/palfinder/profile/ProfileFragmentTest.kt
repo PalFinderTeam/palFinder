@@ -1,4 +1,4 @@
-package com.github.palFinderTeam.palfinder
+package com.github.palFinderTeam.palfinder.profile
 
 import android.content.Context
 import android.content.Intent
@@ -14,6 +14,7 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
+import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
@@ -36,7 +37,7 @@ import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 @HiltAndroidTest
-class ProfileActivityTest {
+class ProfileFragmentTest {
 
     private lateinit var userLouca: ProfileUser
     private lateinit var userCat: ProfileUser

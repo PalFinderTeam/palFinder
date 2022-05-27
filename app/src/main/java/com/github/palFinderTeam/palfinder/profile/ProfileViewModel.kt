@@ -1,4 +1,4 @@
-package com.github.palFinderTeam.palfinder
+package com.github.palFinderTeam.palfinder.profile
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,9 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
-import com.github.palFinderTeam.palfinder.meetups.*
-import com.github.palFinderTeam.palfinder.profile.ProfileService
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.BLOCKED_USERS
 import com.github.palFinderTeam.palfinder.utils.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -101,6 +98,7 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
     fun unFollow(userId: String, otherId: String) {
         viewModelScope.launch {
             profileService.fetch(userId)?.let {
@@ -134,6 +132,7 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
     fun unBlock(userId: String, otherId: String) {
         viewModelScope.launch {
             profileService.fetch(userId)?.let {

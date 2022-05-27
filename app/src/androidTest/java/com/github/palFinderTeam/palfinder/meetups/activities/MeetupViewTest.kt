@@ -30,7 +30,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement
-import com.github.palFinderTeam.palfinder.ProfileActivity
+import com.github.palFinderTeam.palfinder.profile.ProfileFragment
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.chat.CHAT

@@ -61,7 +61,7 @@ class MeetUpView : AppCompatActivity() {
 
         val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
 
-        //button (image for design purpuses) to show the list of users participating in this meetUp
+        //button (image for design purposes) to show the list of users participating in this meetUp
         val button = findViewById<ImageView>(R.id.show_qr_button)
         button.setOnClickListener { showProfileList() }
 

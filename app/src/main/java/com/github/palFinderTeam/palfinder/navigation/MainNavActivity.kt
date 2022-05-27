@@ -13,13 +13,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
-import com.github.palFinderTeam.palfinder.ProfileActivity
+import com.github.palFinderTeam.palfinder.profile.ProfileFragment
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
-import com.github.palFinderTeam.palfinder.profile.ProfileAdapter
+import com.github.palFinderTeam.palfinder.profile.ProfileFragment.Companion.PROFILE_ID_ARG
+import com.github.palFinderTeam.palfinder.profile.ProfileFragmentArgs
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
@@ -47,6 +48,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainNavActivity : AppCompatActivity() {
 
+    companion object {
+        const val SHOW_NAVBAR_ARG = "ShowNavBar"
+    }
+
     private lateinit var auth: FirebaseAuth
     private lateinit var bottomNavigationView: BottomNavigationView
     @Inject
@@ -73,14 +78,14 @@ class MainNavActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, _, arguments ->
             // Hide navbar when needed
-            hideShowNavBar(arguments?.getBoolean("ShowNavBar", false) == true)
+            hideShowNavBar(arguments?.getBoolean(SHOW_NAVBAR_ARG, false) == true)
         }
 
         // Make sure that selected item is the one displayed to the user
         navController.currentDestination?.let {
             when (it.id) {
                 R.id.find_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_find
-                R.id.list_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_profile
+                R.id.profile_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_profile
                 R.id.creation_fragment -> bottomNavigationView.selectedItemId = R.id.nav_bar_create
             }
         }
@@ -126,8 +131,8 @@ class MainNavActivity : AppCompatActivity() {
                         }
                     }
                     R.id.nav_bar_profile -> {
-                        //TODO change to switch to profile
-                        if (profileService.getLoggedInUserID() == null) {
+                        val loggedUser = profileService.getLoggedInUserID()
+                        if (loggedUser == null) {
                             createPopUp(
                                 this,
                                 { startActivity(Intent(this, LoginActivity::class.java)) },
@@ -138,17 +143,12 @@ class MainNavActivity : AppCompatActivity() {
                         } else {
                             navController.popBackStack()
                             val args = Bundle().apply {
-                                putSerializable("showParam", ShowParam.ONLY_JOINED)
+                                putSerializable(PROFILE_ID_ARG, loggedUser)
                             }
-                            //TODO: A simple activity intent that should be cleaned up to a working fragment
-//                            navController.navigate(
-//                                R.id.list_fragment,
-//                                args = args,
-//                                navOptions = options
-//                            )
-                            startActivity(
-                                Intent(this, ProfileActivity::class.java)
-                                .apply { putExtra(USER_ID, profileService.getLoggedInUserID()) }
+                            navController.navigate(
+                                R.id.profile_fragment,
+                                args = args,
+                                navOptions = options
                             )
                         }
                     }
@@ -213,7 +213,7 @@ class MainNavActivity : AppCompatActivity() {
                             result.contents.removePrefix(USER_ID)
                         )
                     }.invokeOnCompletion {
-                            val intent = Intent(this, ProfileActivity::class.java)
+                            val intent = Intent(this, ProfileFragment::class.java)
                                 .apply { putExtra(USER_ID, result.contents.removePrefix(USER_ID)) }
                             startActivity(intent)
                     }
