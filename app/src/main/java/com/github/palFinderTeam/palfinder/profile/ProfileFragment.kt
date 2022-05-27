@@ -142,9 +142,9 @@ class ProfileFragment : Fragment(R.layout.activity_profile) {
         followButton.setOnClickListener {
             if (followButton.text.equals(getString(R.string.follow))) {
                 if(viewModel.profileService.getLoggedInUserID() == null){
-                    createPopUp(this,
+                    createPopUp(requireContext(),
                         {
-                            startActivity(Intent(this, LoginActivity::class.java))
+                            startActivity(Intent(requireContext(), LoginActivity::class.java))
                         },
                         textId = R.string.no_account_follow,
                         continueButtonTextId = R.string.login
