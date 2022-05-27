@@ -49,6 +49,7 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
             ShowParam.PAL_PARTICIPATING -> filterGroup.check(R.id.participate_button)
             ShowParam.PAL_CREATOR -> filterGroup.check(R.id.created_button)
             ShowParam.ONLY_JOINED -> filterGroup.check(R.id.joinedButton)
+            ShowParam.TRENDS -> filterGroup.check(R.id.trendButton)
         }
 
         // Change view model
@@ -59,6 +60,7 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
                 1 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_PARTICIPATING)
                 2 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.PAL_CREATOR)
                 3 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.ONLY_JOINED)
+                4 -> viewModel.setSearchParamAndFetch(showParam = ShowParam.TRENDS)
             }
         }
 

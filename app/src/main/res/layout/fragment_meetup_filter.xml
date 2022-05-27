@@ -53,32 +53,40 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/meetup_filter_show_all"
-                    android:fontFamily="@font/fredoka_normal"/>
+                    android:fontFamily="@font/fredoka_normal"
+                    android:text="@string/meetup_filter_show_all" />
 
                 <RadioButton
                     android:id="@+id/participate_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/meetup_filter_only_participating"
-                    android:fontFamily="@font/fredoka_normal"/>
+                    android:fontFamily="@font/fredoka_normal"
+                    android:text="@string/meetup_filter_only_participating" />
 
                 <RadioButton
                     android:id="@+id/created_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/meetup_only_creators"
-                    android:fontFamily="@font/fredoka_normal"/>
+                    android:fontFamily="@font/fredoka_normal"
+                    android:text="@string/meetup_only_creators" />
 
                 <RadioButton
                     android:id="@+id/joinedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/meetup_filter_only_joined"
-                    android:fontFamily="@font/fredoka_normal"/>
+                    android:fontFamily="@font/fredoka_normal"
+                    android:text="@string/meetup_filter_only_joined" />
+
+                <RadioButton
+                    android:id="@+id/trendButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/fredoka_normal"
+                    android:text="@string/meetup_filter_trend" />
 
             </RadioGroup>
 
