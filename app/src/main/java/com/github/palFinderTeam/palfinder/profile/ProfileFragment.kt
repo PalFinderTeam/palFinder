@@ -3,8 +3,7 @@ package com.github.palFinderTeam.palfinder.profile
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.View.GONE
-import android.view.View.INVISIBLE
+import android.view.View.*
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -25,7 +24,6 @@ import com.github.palFinderTeam.palfinder.utils.image.QRCode
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import kotlinx.coroutines.launch
-import java.util.stream.IntStream.range
 
 
 /**
@@ -252,46 +250,38 @@ class ProfileFragment : Fragment(R.layout.activity_profile) {
      */
     private fun bindBadgesAndAchievements(user: ProfileUser) {
         val badges = user.badges().sorted()
-        var images = listOf<ImageView>(
-            rootView.findViewById(R.id.badgePic1), rootView.findViewById(
-                R.id.badgePic2
-            )
-        )
-        when (badges.size) {
-            0 -> images.forEach { it.visibility = INVISIBLE }
-            1 -> {
-                images[0].setImageResource(badges[0].imageID)
-                images[0].setOnClickListener { printToast(getString(badges[0].descId)) }
-                images[1].visibility = INVISIBLE
-            }
-            2 -> {
-                images[0].setImageResource(badges[0].imageID)
-                images[0].setOnClickListener { printToast(getString(badges[0].descId)) }
-                images[1].setImageResource(badges[1].imageID)
-                images[1].setOnClickListener { printToast(getString(badges[1].descId)) }
-            }
-        }
+        val badgeImages = getImages(R.id.badgePic1, R.id.badgePic2)
+        mapImageAchievement(badgeImages, badges)
+
         val achFollowers =
             user.achievements().filter { it.cat == AchievementCategory.FOLLOWER }.sorted()
-        images = listOf<ImageView>(
-            rootView.findViewById(R.id.AchFollowing1), rootView.findViewById(
-                R.id.AchFollowing2
-            ),
-            rootView.findViewById(R.id.AchFollowing3), rootView.findViewById(R.id.AchFollowing4)
+        val followingImages = getImages(
+            R.id.AchFollowing1,
+            R.id.AchFollowing2,
+            R.id.AchFollowing3,
+            R.id.AchFollowing4
         )
-        for (i in range(0, achFollowers.size)) {
-            images[i].setImageResource(achFollowers[i].imageID)
-            images[i].setOnClickListener { printToast(getString(achFollowers[i].descId)) }
-        }
+        mapImageAchievement(followingImages, achFollowers)
+
         val achFollowed =
             user.achievements().filter { it.cat == AchievementCategory.FOLLOWED }.sorted()
-        images = listOf<ImageView>(
-            rootView.findViewById(R.id.AchFollowed1), rootView.findViewById(R.id.AchFollowed2),
-            rootView.findViewById(R.id.AchFollowed3), rootView.findViewById(R.id.AchFollowed4)
-        )
-        for (i in range(0, achFollowed.size)) {
-            images[i].setImageResource(achFollowed[i].imageID)
-            images[i].setOnClickListener { printToast(getString(achFollowed[i].descId)) }
+        val followedImages =
+            getImages(R.id.AchFollowed1, R.id.AchFollowed2, R.id.AchFollowed3, R.id.AchFollowed4)
+        mapImageAchievement(followedImages, achFollowed)
+    }
+
+    private fun getImages(vararg ids: Int): List<ImageView> {
+        return ids.map { rootView.findViewById(it) }
+    }
+
+    private fun mapImageAchievement(images: List<ImageView>, badges: List<Achievement>) {
+        images.map {
+            it.visibility = INVISIBLE
+            it
+        }.zip(badges).map { (image, ach) ->
+            image.visibility = VISIBLE
+            image.setImageResource(ach.imageID)
+            image.setOnClickListener { printToast(getString(ach.descId)) }
         }
 
     }
