@@ -88,6 +88,7 @@ class ProfileFragment : Fragment(R.layout.activity_profile) {
                     bindBadgesAndAchievements(it.data)
                 }
                 is Response.Failure -> printToast(it.errorMessage)
+                else -> {}
             }
         }
     }
@@ -104,6 +105,7 @@ class ProfileFragment : Fragment(R.layout.activity_profile) {
                     followAndBlockSystem(it.data, profileViewed, followButton, blockButton)
                 }
                 is Response.Failure -> printToast(it.errorMessage)
+                else -> {}
             }
         }
 
