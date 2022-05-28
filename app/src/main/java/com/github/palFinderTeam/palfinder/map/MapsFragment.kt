@@ -237,7 +237,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     override fun onQueryTextSubmit(p0: String?): Boolean {
         var addressList: List<Address>? = null
 
-        if (p0 == null || p0 == "") {
+        if (p0 == null || p0.isEmpty()) {
             Toast.makeText(
                 requireContext(),
                 getString(R.string.search_no_location),

@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.view.isVisible
+import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
@@ -59,13 +60,15 @@ class MainNavActivity : PalFinderBaseActivity() {
     @Inject
     lateinit var meetUpRepository: MeetUpRepository
 
+    private lateinit var navController: NavController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_nav)
 
         auth = Firebase.auth
 
-        val navController =
+        navController =
             (supportFragmentManager.findFragmentById(R.id.main_content) as NavHostFragment).navController
         bottomNavigationView = findViewById(R.id.bottom_nav)
 
@@ -101,12 +104,7 @@ class MainNavActivity : PalFinderBaseActivity() {
                             createNoAccountPopUp(this, R.string.no_account_create)
                             return@setOnItemSelectedListener false
                         } else {
-                            navController.popBackStack()
-                            navController.navigate(
-                                R.id.creation_fragment,
-                                args = null,
-                                navOptions = options
-                            )
+                            navBarNavigate(R.id.creation_fragment, null, options)
                         }
                     }
                     R.id.nav_bar_profile -> {
@@ -115,24 +113,14 @@ class MainNavActivity : PalFinderBaseActivity() {
                             createNoAccountPopUp(this, R.string.no_account_profile)
                             return@setOnItemSelectedListener false
                         } else {
-                            navController.popBackStack()
                             val args = Bundle().apply {
                                 putSerializable(PROFILE_ID_ARG, loggedUser)
                             }
-                            navController.navigate(
-                                R.id.profile_fragment,
-                                args = args,
-                                navOptions = options
-                            )
+                            navBarNavigate(R.id.profile_fragment, args, options)
                         }
                     }
                     R.id.nav_bar_find -> {
-                        navController.popBackStack()
-                        navController.navigate(
-                            R.id.find_fragment,
-                            args = null,
-                            navOptions = options
-                        )
+                        navBarNavigate(R.id.find_fragment, null, options)
                     }
                 }
             }
@@ -141,6 +129,17 @@ class MainNavActivity : PalFinderBaseActivity() {
 
     }
 
+    /**
+     * Navigate to one of the nav bar tab
+     */
+    private fun navBarNavigate(fragmentId: Int, args: Bundle?, navOptions: NavOptions) {
+        navController.popBackStack()
+        navController.navigate(
+            fragmentId,
+            args = args,
+            navOptions = navOptions
+        )
+    }
     /**
      * Create the necessary options to animate a transition
      */
