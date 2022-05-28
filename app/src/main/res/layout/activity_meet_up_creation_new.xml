@@ -9,7 +9,7 @@
     <ScrollView
         android:id="@+id/sv_meetupcreation"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true"
         android:scrollbars="vertical">
@@ -212,7 +212,8 @@
                     android:id="@+id/bt_markerType"
                     android:layout_width="120dp"
                     android:layout_height="100dp"
-                    app:srcCompat="@drawable/ic_meetup_icons" />
+                    app:srcCompat="@drawable/ic_meetup_icons"
+                    tools:ignore="ContentDescription" />
 
             </LinearLayout>
 
@@ -295,7 +296,7 @@
                     android:id="@+id/tv_EndDateLayout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
 
                     android:layout_weight="0.5"
                     android:gravity="center"
@@ -469,7 +470,7 @@
 
                     <TextView
                         android:id="@+id/iv_CriterHint"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"

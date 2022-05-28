@@ -34,7 +34,8 @@
             android:layout_height="match_parent"
             android:layout_marginEnd="2dp"
             android:src="@android:drawable/ic_dialog_map"
-            android:backgroundTint="?attr/colorPrimaryVariant" />
+            android:backgroundTint="?attr/colorPrimaryVariant"
+            tools:ignore="ContentDescription" />
     </LinearLayout>
 
     <com.google.android.material.slider.Slider

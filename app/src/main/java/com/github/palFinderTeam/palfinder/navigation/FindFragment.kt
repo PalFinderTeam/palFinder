@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.navigation.MainNavActivity.Companion.SHOW_NAVBAR_ARG
 import com.google.android.material.tabs.TabLayout
 
 class FindFragment : Fragment(R.layout.fragment_find) {
@@ -27,7 +28,7 @@ class FindFragment : Fragment(R.layout.fragment_find) {
         navController.addOnDestinationChangedListener { _, _, arguments ->
             (requireActivity() as MainNavActivity).hideShowNavBar(
                 arguments?.getBoolean(
-                    "ShowNavBar",
+                    SHOW_NAVBAR_ARG,
                     false
                 ) == true
             )

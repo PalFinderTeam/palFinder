@@ -1,32 +1,29 @@
 package com.github.palFinderTeam.palfinder.navigation
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
-import com.github.palFinderTeam.palfinder.profile.ProfileFragment
+import com.github.palFinderTeam.palfinder.PalFinderBaseActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
-import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
+import com.github.palFinderTeam.palfinder.profile.ProfileFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileFragment.Companion.PROFILE_ID_ARG
-import com.github.palFinderTeam.palfinder.profile.ProfileFragmentArgs
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.login.LoginActivity.Companion.HIDE_ONE_TAP
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
+import com.github.palFinderTeam.palfinder.utils.createNoAccountPopUp
 import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -46,7 +43,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainNavActivity : AppCompatActivity() {
+class MainNavActivity : PalFinderBaseActivity() {
 
     companion object {
         const val SHOW_NAVBAR_ARG = "ShowNavBar"
@@ -54,20 +51,16 @@ class MainNavActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var bottomNavigationView: BottomNavigationView
+
     @Inject
     lateinit var profileService: ProfileService
+
     @Inject
     lateinit var meetUpRepository: MeetUpRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
-        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
-        setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_nav)
-
-
-        sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
 
         auth = Firebase.auth
 
@@ -114,12 +107,7 @@ class MainNavActivity : AppCompatActivity() {
                 when (item.itemId) {
                     R.id.nav_bar_create -> {
                         if (profileService.getLoggedInUserID() == null) {
-                            createPopUp(
-                                this,
-                                { startActivity(Intent(this, LoginActivity::class.java)) },
-                                textId = R.string.no_account_create,
-                                continueButtonTextId = R.string.login
-                            )
+                            createNoAccountPopUp(this, R.string.no_account_create)
                             return@setOnItemSelectedListener false
                         } else {
                             navController.popBackStack()
@@ -133,12 +121,7 @@ class MainNavActivity : AppCompatActivity() {
                     R.id.nav_bar_profile -> {
                         val loggedUser = profileService.getLoggedInUserID()
                         if (loggedUser == null) {
-                            createPopUp(
-                                this,
-                                { startActivity(Intent(this, LoginActivity::class.java)) },
-                                textId = R.string.no_account_profile,
-                                continueButtonTextId = R.string.login
-                            )
+                            createNoAccountPopUp(this, R.string.no_account_profile)
                             return@setOnItemSelectedListener false
                         } else {
                             navController.popBackStack()
@@ -167,13 +150,6 @@ class MainNavActivity : AppCompatActivity() {
 
     }
 
-    var sharedPreferenceChangeListener =
-        OnSharedPreferenceChangeListener { _, key ->
-            if (key == "theme") {
-                recreate()
-            }
-        }
-
     fun hideShowNavBar(show: Boolean) {
         bottomNavigationView.isVisible = show
     }
@@ -184,8 +160,8 @@ class MainNavActivity : AppCompatActivity() {
         return true
     }
 
-    // Register the launcher and result handler
-    private val barcodeLauncher: ActivityResultLauncher<ScanOptions?>? = registerForActivityResult(
+    // Register the launcher and result handler for the qr code reader
+    private val barcodeLauncher: ActivityResultLauncher<ScanOptions?> = registerForActivityResult(
         ScanContract()
     ) { result: ScanIntentResult ->
         if (result.contents == null) {
@@ -202,37 +178,52 @@ class MainNavActivity : AppCompatActivity() {
         } else {
             Toast.makeText(
                 applicationContext,
-                getString(R.string.scanned)+ ": " + result.contents,
+                getString(R.string.scanned) + ": " + result.contents,
                 Toast.LENGTH_LONG
             ).show()
             if (result.contents.startsWith(USER_ID)) {
-                createPopUp(this, {
+                createPopUp(
+                    this,
+                    textId = R.string.qr_scan_follow_account,
+                    continueButtonTextId = R.string.follow
+                )
+                {
                     CoroutineScope(Dispatchers.IO).launch {
                         profileService.followUser(
                             profileService.fetch(profileService.getLoggedInUserID()!!)!!,
                             result.contents.removePrefix(USER_ID)
                         )
                     }.invokeOnCompletion {
-                            val intent = Intent(this, ProfileFragment::class.java)
-                                .apply { putExtra(USER_ID, result.contents.removePrefix(USER_ID)) }
-                            startActivity(intent)
+                        val intent = Intent(this, ProfileFragment::class.java)
+                            .apply { putExtra(USER_ID, result.contents.removePrefix(USER_ID)) }
+                        startActivity(intent)
                     }
-                }, textId = R.string.qr_scan_follow_account,
-                    continueButtonTextId = R.string.follow)
+                }
             } else {
-                createPopUp(this, {
+                createPopUp(
+                    this,
+                    textId = R.string.qr_scan_join_meetup,
+                    continueButtonTextId = R.string.meetup_view_join
+                )
+                {
                     CoroutineScope(Dispatchers.IO).launch {
-                        meetUpRepository.joinMeetUp(result.contents.removePrefix(MEETUP_SHOWN),
+                        meetUpRepository.joinMeetUp(
+                            result.contents.removePrefix(MEETUP_SHOWN),
                             profileService.getLoggedInUserID()!!, Calendar.getInstance(),
-                            profileService.fetch(profileService.getLoggedInUserID()!!)!!)
+                            profileService.fetch(profileService.getLoggedInUserID()!!)!!
+                        )
                     }.invokeOnCompletion {
-                            val intent = Intent(this, MeetUpView::class.java)
-                                .apply { putExtra(MEETUP_SHOWN, result.contents.removePrefix(
-                                    MEETUP_SHOWN)) }
-                            startActivity(intent)
+                        val intent = Intent(this, MeetUpView::class.java)
+                            .apply {
+                                putExtra(
+                                    MEETUP_SHOWN, result.contents.removePrefix(
+                                        MEETUP_SHOWN
+                                    )
+                                )
+                            }
+                        startActivity(intent)
                     }
-                }, textId = R.string.qr_scan_join_meetup,
-                    continueButtonTextId = R.string.meetup_view_join)
+                }
             }
         }
     }
@@ -250,7 +241,8 @@ class MainNavActivity : AppCompatActivity() {
 
                 val client = GoogleSignIn.getClient(this, gso)
                 client.signOut()
-                val logoutIntent = Intent(this, LoginActivity::class.java).apply { putExtra(HIDE_ONE_TAP, true) }
+                val logoutIntent =
+                    Intent(this, LoginActivity::class.java).apply { putExtra(HIDE_ONE_TAP, true) }
                 logoutIntent.flags =
                     Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(logoutIntent)
@@ -260,12 +252,7 @@ class MainNavActivity : AppCompatActivity() {
             }
             R.id.miUserSettings -> {
                 if (profileService.getLoggedInUserID() == null) {
-                    createPopUp(
-                        this,
-                        { startActivity(Intent(this, LoginActivity::class.java)) },
-                        textId = R.string.no_account_profile,
-                        continueButtonTextId = R.string.login
-                    )
+                    createNoAccountPopUp(this, R.string.no_account_profile)
                 } else {
                     //super.onOptionsItemSelected(item)
                     startActivity(Intent(this, UserSettingsActivity::class.java))
@@ -274,7 +261,7 @@ class MainNavActivity : AppCompatActivity() {
             R.id.miScanQR -> {
                 val options = ScanOptions()
                 options.setOrientationLocked(false);
-                barcodeLauncher!!.launch(options)
+                barcodeLauncher.launch(options)
             }
             else -> {
                 return super.onOptionsItemSelected(item)

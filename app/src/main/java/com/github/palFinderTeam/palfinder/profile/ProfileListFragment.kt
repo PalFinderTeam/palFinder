@@ -13,11 +13,8 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.Response
-import com.github.palFinderTeam.palfinder.utils.SearchedFilter
-import com.github.palFinderTeam.palfinder.utils.createPopUp
-import com.github.palFinderTeam.palfinder.utils.generics.filterByText
+import com.github.palFinderTeam.palfinder.utils.createNoAccountPopUp
 import com.github.palFinderTeam.palfinder.utils.generics.setupSearchField
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,7 +34,7 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
         viewModel.profilesList.observe(this) {
             changeAdapter(it, v)
         }
-        setupSearchField(v, R.id.profile_list_search,viewModel.filterer)
+        setupSearchField(v, R.id.profile_list_search, viewModel.filterer)
         viewModel.fetchUsersProfile(usersId)
         return v
     }
@@ -55,7 +52,12 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
 
     private fun onListItemClick(position: Int) {
         val intent = Intent(activity?.applicationContext, ProfileActivity::class.java)
-            .apply { putExtra(USER_ID, (recyclerView.adapter as ProfileAdapter).currentDataSet[position].uuid) }
+            .apply {
+                putExtra(
+                    USER_ID,
+                    (recyclerView.adapter as ProfileAdapter).currentDataSet[position].uuid
+                )
+            }
         startActivity(intent)
     }
 
@@ -69,18 +71,12 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
                     requireContext(),
                     ::onListItemClick,
                     { id ->
-                        if(viewModel.profileService.getLoggedInUserID() == null){
+                        if (viewModel.profileService.getLoggedInUserID() == null) {
                             this.context?.let { it ->
-                                createPopUp(
-                                    it,
-                                    {
-                                        startActivity(Intent(it, LoginActivity::class.java))
-                                    },
-                                textId = R.string.no_account_follow,
-                                continueButtonTextId = R.string.login
-                                )
+                                createNoAccountPopUp(it, R.string.no_account_follow)
                             }
-                        }else viewModel.follow(it.data.uuid, id) },
+                        } else viewModel.follow(it.data.uuid, id)
+                    },
                     { id -> viewModel.unFollow(it.data.uuid, id) })
                 recyclerView.layoutManager = LinearLayoutManager(context)
                 recyclerView.adapter = adapter
