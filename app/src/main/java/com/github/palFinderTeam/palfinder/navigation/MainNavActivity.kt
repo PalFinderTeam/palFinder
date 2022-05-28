@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.view.isVisible
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.github.palFinderTeam.palfinder.PalFinderBaseActivity
@@ -83,18 +84,8 @@ class MainNavActivity : PalFinderBaseActivity() {
             }
         }
 
-        val animateLeftOptions = navOptions {
-            this.anim {
-                enter = R.anim.slide_in_right
-                exit = R.anim.slide_out_left
-            }
-        }
-        val animateRightOptions = navOptions {
-            this.anim {
-                enter = R.anim.slide_in_left
-                exit = R.anim.slide_out_right
-            }
-        }
+        val animateLeftOptions = transitionAnimation(R.anim.slide_in_right, R.anim.slide_out_left)
+        val animateRightOptions = transitionAnimation(R.anim.slide_in_left, R.anim.slide_out_right)
 
         // Bottom navigation behaviour
         bottomNavigationView.setOnItemSelectedListener { item ->
@@ -150,6 +141,18 @@ class MainNavActivity : PalFinderBaseActivity() {
 
     }
 
+    /**
+     * Create the necessary options to animate a transition
+     */
+    private fun transitionAnimation(enterId: Int, exitId: Int): NavOptions {
+        return navOptions {
+            this.anim {
+                enter = enterId
+                exit = exitId
+            }
+        }
+    }
+
     fun hideShowNavBar(show: Boolean) {
         bottomNavigationView.isVisible = show
     }
@@ -167,7 +170,11 @@ class MainNavActivity : PalFinderBaseActivity() {
         if (result.contents == null) {
             val originalIntent = result.originalIntent
             if (originalIntent == null) {
-                Toast.makeText(applicationContext, getString(R.string.cancelled_scan), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    applicationContext,
+                    getString(R.string.cancelled_scan),
+                    Toast.LENGTH_LONG
+                ).show()
             } else if (originalIntent.hasExtra(Intents.Scan.MISSING_CAMERA_PERMISSION)) {
                 Toast.makeText(
                     applicationContext,

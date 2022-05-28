@@ -181,14 +181,11 @@ class ProfileFragment : Fragment(R.layout.activity_profile) {
             getString(R.string.followers_nb),
             user.following.size
         )
-        if (user.canProfileBeSeenBy(viewModel.profileService.getLoggedInUserID()!!)) {
-            rootView.findViewById<TextView>(R.id.userProfileName).text = user.fullName()
-            injectBio(user.description)
-        } else {
-            rootView.findViewById<TextView>(R.id.userProfileName).text =
-                this.resources.getString(R.string.private_name)
-            injectBio(this.resources.getString(R.string.private_desc))
-        }
+
+        val canBeSeen = user.canProfileBeSeenBy(viewModel.profileService.getLoggedInUserID()!!)
+        rootView.findViewById<TextView>(R.id.userProfileName).text =
+            if (canBeSeen) user.fullName() else resources.getString(R.string.private_name)
+        injectBio(if (canBeSeen) user.description else resources.getString(R.string.private_desc))
 
         lifecycleScope.launch {
             user.pfp.loadImageInto(rootView.findViewById(R.id.userProfileImage), requireContext())
