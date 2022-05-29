@@ -168,7 +168,7 @@ class MeetUpView : PalFinderBaseActivity() {
     /**
      * start the chatActivity of this meetUp (identified by the meetupId)
      */
-    fun onChat() {
+    private fun onChat() {
         if (viewModel.hasJoin()) {
             val intent = Intent(this, ChatActivity::class.java).apply {
                 putExtra(CHAT, viewModel.getMeetupID())
