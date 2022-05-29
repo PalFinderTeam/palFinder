@@ -30,13 +30,17 @@ class SettingsActivity : PalFinderBaseActivity(),
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.settings_preferences, rootKey)
 
-            bindPreferenceSummaryToValue(findPreference("list_color"))
+            bindPreferenceSummaryToValue(findPreference(COLOR_KEY))
 
         }
     }
 
 
     companion object {
+        const val DEF_THEME = "Default"
+        const val WARM_THEME = "Warm"
+        const val COLOR_KEY = "list_color"
+        const val THEME_KEY = "theme"
 
         /**
          * A preference value change listener that updates the preference's summary
@@ -52,7 +56,6 @@ class SettingsActivity : PalFinderBaseActivity(),
                     // the preference's 'entries' list.
                     val index = preference.findIndexOfValue(stringValue)
 
-
                     // Set the summary to reflect the new value.
                     preference.setSummary(
                         if (index >= 0)
@@ -60,11 +63,6 @@ class SettingsActivity : PalFinderBaseActivity(),
                         else
                             null
                     )
-
-
-                } else {
-                    // For all other preferences, set the summary to the value's
-                    // simple string representation.
                 }
 
                 true
@@ -90,22 +88,22 @@ class SettingsActivity : PalFinderBaseActivity(),
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         when (key) {
-            "list_color" -> {
-                if (sharedPreferences.getString(key, "Default") == "Default") {
-                    val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
-                    with(sharedPref.edit()) {
-                        putInt(getString(R.string.theme), R.style.palFinder_default_theme)
-                        apply()
+            COLOR_KEY -> {
+                val themeId = when(sharedPreferences.getString(key, DEF_THEME)) {
+                    WARM_THEME -> {
+                        R.style.palFinder_warm_theme
                     }
-                    recreate()
-                } else if (sharedPreferences.getString(key, "Warm") == "Warm") {
-                    val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
-                    with(sharedPref.edit()) {
-                        putInt(getString(R.string.theme), R.style.palFinder_warm_theme)
-                        apply()
+                    else -> {
+                        R.style.palFinder_default_theme
                     }
-                    recreate()
                 }
+
+                val sharedPref = getSharedPreferences(THEME_KEY, Context.MODE_PRIVATE) ?: return
+                with(sharedPref.edit()) {
+                    putInt(THEME_KEY, themeId)
+                    apply()
+                }
+                recreate()
             }
         }
     }

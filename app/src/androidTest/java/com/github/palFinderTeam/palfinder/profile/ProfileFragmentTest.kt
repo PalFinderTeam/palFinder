@@ -23,6 +23,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.activities.betterScrollTo
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOINED_MEETUPS_KEY
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
 import com.github.palFinderTeam.palfinder.utils.Location
@@ -220,7 +221,7 @@ class ProfileFragmentTest {
 
         scenario.use {
             onView(withId(R.id.userProfileDescOverflow)).perform(
-                NestedScrollViewScrollTo(),
+                betterScrollTo(),
                 click()
             )
             onView(withId(R.id.userProfileDescription)).check(matches(withText(userLongBio.description)))
@@ -319,9 +320,9 @@ class ProfileFragmentTest {
         scenario!!.use {
 
             assert(!profileService.fetch(userid!!)!!.blockedUsers.contains(id2))
-            onView(withId(R.id.blackList)).perform(NestedScrollViewScrollTo(), click())
+            onView(withId(R.id.blackList)).perform(betterScrollTo(), click())
             assert(profileService.fetch(userid)!!.blockedUsers.contains(id2))
-            onView(withId(R.id.blackList)).perform(NestedScrollViewScrollTo(), click())
+            onView(withId(R.id.blackList)).perform(betterScrollTo(), click())
             assert(!profileService.fetch(userid)!!.blockedUsers.contains(id2))
         }
     }
@@ -355,7 +356,7 @@ class ProfileFragmentTest {
         scenario!!.use {
 
             assert(profileService.fetch(userid)!!.joinedMeetUps.contains(meetupId))
-            onView(withId(R.id.blackList)).perform(NestedScrollViewScrollTo(), click())
+            onView(withId(R.id.blackList)).perform(betterScrollTo(), click())
             assert(!meetupService.fetch(meetupId)!!.participantsId.contains(userid))
         }
     }
@@ -389,25 +390,5 @@ class ProfileFragmentTest {
                 ImageDecoder.decodeBitmap(ImageDecoder.createSource(it.contentResolver, uri!!));
             assert(decodedUri.byteCount == bitmap.byteCount)
         }
-    }
-}
-
-/**
- * Taken from https://medium.com/@devasierra/espresso-nestedscrollview-scrolling-via-kotlin-delegation-5e7f0aa64c09
- */
-class NestedScrollViewScrollTo(scrollToAction: ViewAction = scrollTo()) :
-    ViewAction by scrollToAction {
-    override fun getConstraints(): Matcher<View> {
-        return Matchers.allOf(
-            withEffectiveVisibility(Visibility.VISIBLE),
-            isDescendantOfA(
-                Matchers.anyOf(
-                    isAssignableFrom(NestedScrollView::class.java),
-                    isAssignableFrom(ScrollView::class.java),
-                    isAssignableFrom(HorizontalScrollView::class.java),
-                    isAssignableFrom(ListView::class.java)
-                )
-            )
-        )
     }
 }

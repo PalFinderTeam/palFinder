@@ -4,15 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity.Companion.THEME_KEY
 
 /**
  * This is the activity that all of our activities extend from, in order to share the logic for the
  * app theme.
  */
 abstract class PalFinderBaseActivity : AppCompatActivity() {
-    companion object {
-        private const val THEME_KEY = "theme"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val sharedPref = getSharedPreferences(THEME_KEY, Context.MODE_PRIVATE) ?: return
