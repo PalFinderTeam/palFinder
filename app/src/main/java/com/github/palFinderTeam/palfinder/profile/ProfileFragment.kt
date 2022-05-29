@@ -117,6 +117,9 @@ class ProfileFragment : Fragment(R.layout.activity_profile) {
         followButton: Button,
         blockButton: Button
     ) {
+        // Cannot follow someone you block
+        followButton.isEnabled = !loggedProfile.blockedUsers.contains(profileViewed.uuid)
+
         when {
             viewModel.profileService.getLoggedInUserID() == null -> {
                 followButton.isEnabled = true
@@ -134,9 +137,6 @@ class ProfileFragment : Fragment(R.layout.activity_profile) {
             loggedProfile.canUnFollow(profileViewed.uuid) -> followButton.text = getString(R.string.unfollow)
             loggedProfile.blockedUsers.contains(profileViewed.uuid) -> followButton.text = getString(R.string.follow)
         }
-
-        // Cannot follow someone you block
-        followButton.isEnabled = !loggedProfile.blockedUsers.contains(profileViewed.uuid)
 
         // Initial block state
         if (loggedProfile.canBlock(profileViewed.uuid)) {
