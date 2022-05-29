@@ -56,12 +56,12 @@ class ProfileFragment : Fragment(R.layout.activity_profile) {
         val userId = args.userId
         viewModel.fetchProfile(userId)
         viewModel.fetchLoggedProfile()
+        viewModel.fetchUserMeetups(userId)
 
         // Fetch last Meetups list through adapter
         meetupList = view.findViewById(R.id.meetup_list_recycler)
         meetupList.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.fetchUserMeetups(userId)
 
         // Bind the adapter to the RecyclerView
         viewModel.meetupDataSet.observe(viewLifecycleOwner) { dataResp ->
@@ -99,7 +99,7 @@ class ProfileFragment : Fragment(R.layout.activity_profile) {
     private fun bindFollow(profileViewed: ProfileUser) {
         val followButton = rootView.findViewById<Button>(R.id.button_follow_profile)
         val blockButton = rootView.findViewById<Button>(R.id.blackList)
-        viewModel.logged_profile.observe(viewLifecycleOwner) {
+        viewModel.loggedProfile.observe(viewLifecycleOwner) {
             when (it) {
                 is Response.Success -> {
                     followAndBlockSystem(it.data, profileViewed, followButton, blockButton)
@@ -122,35 +122,43 @@ class ProfileFragment : Fragment(R.layout.activity_profile) {
                 followButton.isEnabled = true
                 blockButton.isEnabled = true
             }
+            // Cannot follow/block yourself
             profileViewed.uuid == viewModel.profileService.getLoggedInUserID() -> {
                 followButton.isEnabled = false
                 blockButton.isEnabled = false
             }
-            loggedProfile.canFollow(profileViewed.uuid) -> {
-                followButton.text = getString(R.string.follow)
-            }
-            loggedProfile.canUnFollow(profileViewed.uuid) -> {
-                followButton.text = getString(R.string.unfollow)
-            }
         }
+        // Initial follow state
+        when {
+            loggedProfile.canFollow(profileViewed.uuid) -> followButton.text = getString(R.string.follow)
+            loggedProfile.canUnFollow(profileViewed.uuid) -> followButton.text = getString(R.string.unfollow)
+            loggedProfile.blockedUsers.contains(profileViewed.uuid) -> followButton.text = getString(R.string.follow)
+        }
+
+        // Cannot follow someone you block
+        followButton.isEnabled = !loggedProfile.blockedUsers.contains(profileViewed.uuid)
+
+        // Initial block state
         if (loggedProfile.canBlock(profileViewed.uuid)) {
             blockButton.text = getString(R.string.block_user)
         } else {
             blockButton.text = getString(R.string.unblock_user)
         }
+
         followButton.setOnClickListener {
             if (followButton.text.equals(getString(R.string.follow))) {
                 if (viewModel.profileService.getLoggedInUserID() == null) {
                     createNoAccountPopUp(requireContext(), R.string.no_account_follow)
                 } else {
-                    viewModel.follow(loggedProfile.uuid, profileViewed.uuid)
+                    viewModel.followUnFollow(loggedProfile.uuid, profileViewed.uuid, follow = true)
                     followButton.text = getString(R.string.unfollow)
                 }
             } else {
-                viewModel.unFollow(loggedProfile.uuid, profileViewed.uuid)
+                viewModel.followUnFollow(loggedProfile.uuid, profileViewed.uuid, follow = false)
                 followButton.text = getString(R.string.follow)
             }
         }
+
         blockButton.setOnClickListener {
             if (blockButton.text.equals(getString(R.string.block_user))) {
                 viewModel.block(loggedProfile.uuid, profileViewed.uuid)

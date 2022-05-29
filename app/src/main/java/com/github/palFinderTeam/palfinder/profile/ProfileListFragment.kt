@@ -63,7 +63,7 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
 
     private fun changeAdapter(list: List<ProfileUser>, v: View) {
         viewModel.fetchLoggedProfile()
-        viewModel.logged_profile.observe(this) {
+        viewModel.loggedProfile.observe(this) {
             if (it is Response.Success) {
                 val adapter = ProfileAdapter(
                     list,
@@ -75,9 +75,9 @@ class ProfileListFragment(private val usersId: List<String>) : DialogFragment() 
                             this.context?.let { it ->
                                 createNoAccountPopUp(it, R.string.no_account_follow)
                             }
-                        } else viewModel.follow(it.data.uuid, id)
+                        } else viewModel.followUnFollow(it.data.uuid, id, follow = true)
                     },
-                    { id -> viewModel.unFollow(it.data.uuid, id) })
+                    { id -> viewModel.followUnFollow(it.data.uuid, id, follow = false) })
                 recyclerView.layoutManager = LinearLayoutManager(context)
                 recyclerView.adapter = adapter
                 val searchField = v.findViewById<SearchView>(R.id.profile_list_search)
