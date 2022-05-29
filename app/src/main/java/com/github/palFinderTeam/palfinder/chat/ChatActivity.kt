@@ -1,21 +1,19 @@
 package com.github.palFinderTeam.palfinder.chat
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.palFinderTeam.palfinder.PalFinderBaseActivity
 import com.github.palFinderTeam.palfinder.R
 import dagger.hilt.android.AndroidEntryPoint
 
 const val CHAT = "com.github.palFinderTeam.palFinder.meetup_view.CHAT"
 
 @AndroidEntryPoint
-class ChatActivity : AppCompatActivity() {
+class ChatActivity : PalFinderBaseActivity() {
     private lateinit var chatList: RecyclerView
     lateinit var adapter: ChatMessageListAdapter
     private val viewModel: ChatViewModel by viewModels()
@@ -23,7 +21,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var chatBox: TextView
 
 
-    private fun loadChat(){
+    private fun loadChat() {
         if (intent.hasExtra(CHAT)) {
             val meetupId = intent.getStringExtra(CHAT)
             viewModel.connectToChat(meetupId!!)
@@ -47,18 +45,8 @@ class ChatActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
-        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
-        setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
-        var sharedPreferenceChangeListener =
-            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                if (key == "theme") {
-                    recreate()
-                }
-            }
-        sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
 
         loadChat()
 
@@ -66,26 +54,24 @@ class ChatActivity : AppCompatActivity() {
         chatList.layoutManager = LinearLayoutManager(this)
 
         viewModel.listOfMessage.observe(this) { messages ->
-            adapter = ChatMessageListAdapter(viewModel, messages) { onListItemClick(it) }
+            adapter = ChatMessageListAdapter(viewModel, messages)
             chatList.adapter = adapter
             chatList.scrollToPosition(messages.size - 1)
         }
 
         chatBox = findViewById(R.id.et_ChatMessageEdit)
+
+        findViewById<View>(R.id.bt_SendMessage).setOnClickListener{ onMessageSend() }
     }
 
-    private fun onListItemClick(position: Int) {
-
-    }
-
-    fun onMessageSend(v: View){
+    private fun onMessageSend() {
         if (chatBox.text.toString() != "") {
             viewModel.sendMessage(chatBox.text.toString())
             chatBox.text = ""
         }
     }
 
-    companion object{
+    companion object {
         var currentlyViewChat: String? = ""
     }
 }

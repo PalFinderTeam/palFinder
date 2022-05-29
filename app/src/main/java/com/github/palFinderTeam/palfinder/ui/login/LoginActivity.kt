@@ -1,6 +1,5 @@
 package com.github.palFinderTeam.palfinder.ui.login
 
-import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.icu.util.Calendar
@@ -10,8 +9,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.github.palFinderTeam.palfinder.PalFinderBaseActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileService
@@ -36,7 +35,7 @@ import javax.inject.Inject
 const val CREATE_ACCOUNT_PROFILE = "com.github.palFinderTeam.palFinder.CREATE_ACCOUNT_PROFILE"
 
 @AndroidEntryPoint
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : PalFinderBaseActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var oneTapClient: SignInClient
@@ -72,9 +71,6 @@ class LoginActivity : AppCompatActivity() {
 
     // onCreate One Tap version
     override fun onCreate(savedInstanceState: Bundle?) {
-        val sharedPref = getSharedPreferences("theme",Context.MODE_PRIVATE) ?: return
-        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
-        setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
@@ -389,12 +385,13 @@ class LoginActivity : AppCompatActivity() {
 
     private fun configureNoAccountButton(noAccount: Button) {
         noAccount.setOnClickListener {
-            createPopUp(this,
-                {
-                    startActivity(Intent(this, MainNavActivity::class.java))
-                    finish()
-                }
+            createPopUp(
+                this
             )
+            {
+                startActivity(Intent(this, MainNavActivity::class.java))
+                finish()
+            }
         }
     }
 }

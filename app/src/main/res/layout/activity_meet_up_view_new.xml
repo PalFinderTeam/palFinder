@@ -52,7 +52,6 @@
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/fredoka_bolder"
-                    android:onClick="onJoinOrLeave"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
                     android:text="@string/meetup_view_join"
@@ -68,11 +67,11 @@
                     android:layout_weight="1"
                     android:elevation="0dp"
                     android:fontFamily="@font/fredoka_bold"
-                    android:onClick="onJoinOrLeave"
                     android:paddingTop="14dp"
                     android:paddingBottom="14dp"
                     android:src="@drawable/ic_baseline_people_alt_24"
-                    app:tint="?attr/colorPrimary"/>
+                    app:tint="?attr/colorPrimary"
+                    tools:ignore="ContentDescription" />
 
                 <ImageView
                     android:id="@+id/qr_code_button"
@@ -82,8 +81,8 @@
                     android:layout_marginStart="11dp"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
-                    android:onClick="showQR"
-                    app:srcCompat="@drawable/ic_qr" />
+                    app:srcCompat="@drawable/ic_qr"
+                    tools:ignore="ContentDescription" />
             </LinearLayout>
 
         </LinearLayout>
@@ -98,12 +97,12 @@
         android:layout_marginBottom="5dp"
         android:clickable="true"
         android:focusable="true"
-        android:onClick="onChat"
         app:backgroundTint="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_baseline_message_24"
-        app:tint="@android:color/white" />
+        app:tint="@android:color/white"
+        tools:ignore="ContentDescription" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/bt_MuteMeetup"
@@ -113,12 +112,12 @@
         android:layout_marginBottom="5dp"
         android:clickable="true"
         android:focusable="true"
-        android:onClick="onMuteOrUnmute"
         app:backgroundTint="?attr/colorPrimary"
         app:layout_constraintBottom_toTopOf="@id/bt_ChatMeetup"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_baseline_notifications_active_24"
-        app:tint="@android:color/white" />
+        app:tint="@android:color/white"
+        tools:ignore="ContentDescription" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/bt_EditMeetup"
@@ -130,12 +129,12 @@
         android:clickable="true"
         android:focusable="true"
 
-        android:onClick="onEdit"
         app:backgroundTint="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_baseline_edit_24"
-        app:tint="@android:color/white" />
+        app:tint="@android:color/white"
+        tools:ignore="ContentDescription" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/bt_OpenNavigation"
@@ -147,13 +146,11 @@
         android:clickable="true"
         android:focusable="true"
 
-        android:onClick="onOpenNavigation"
         app:backgroundTint="?attr/colorPrimary"
         app:layout_constraintBottom_toTopOf="@id/bt_EditMeetup"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_dialog_map"
-        app:tint="@android:color/white" />
-
-
+        app:tint="@android:color/white"
+        tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

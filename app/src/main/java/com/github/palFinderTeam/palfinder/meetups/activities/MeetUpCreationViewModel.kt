@@ -12,7 +12,7 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
-import com.github.palFinderTeam.palfinder.tag.TagsRepository
+import com.github.palFinderTeam.palfinder.tag.TagFilterRepository
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
@@ -78,7 +78,6 @@ class MeetUpCreationViewModel @Inject constructor(
     val iconUrl: LiveData<String> = _iconUrl
     val criterionAge: LiveData<Pair<Int, Int>> = _criterionAge
     val criterionGender = _criterionGender
-
 
 
     val canEditStartDate: LiveData<Boolean> = _canEditStartDate
@@ -285,33 +284,7 @@ class MeetUpCreationViewModel @Inject constructor(
     /**
      *  Provides the tagContainer with the necessary tags and allows it to edit them.
      */
-    val tagRepository = object : TagsRepository<Category> {
-        override val tags: Set<Category>
-            get() = _tags.value ?: setOf()
-
-        override val isEditable = true
-        override val allTags = Category.values().toSet()
-
-        override fun removeTag(tag: Category): Boolean {
-            val tags = _tags.value
-            return if (tags == null || !tags.contains(tag)) {
-                false
-            } else {
-                _tags.value = tags.minus(tag)
-                true
-            }
-        }
-
-        override fun addTag(tag: Category): Boolean {
-            val tags = _tags.value
-            return if (tags == null || tags.contains(tag)) {
-                false
-            } else {
-                _tags.value = tags.plus(tag)
-                true
-            }
-        }
-    }
+    val tagRepository = TagFilterRepository(_tags, Category.values().toSet())
 
     fun setLatLng(p0: LatLng) {
         _location.value = p0.toLocation()

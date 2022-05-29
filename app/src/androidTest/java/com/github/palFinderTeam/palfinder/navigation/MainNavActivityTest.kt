@@ -13,6 +13,7 @@ import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.intent.Intents.*
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -25,6 +26,8 @@ import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
@@ -33,6 +36,7 @@ import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 @HiltAndroidTest
 class MainNavActivityTest {
     @get:Rule
@@ -50,7 +54,7 @@ class MainNavActivityTest {
 
 
     @Test
-    fun logoutMenuButtonActuallyLogout() {
+    fun logoutMenuButtonActuallyLogout() = runTest {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), MainNavActivity::class.java)
         init()
@@ -66,7 +70,7 @@ class MainNavActivityTest {
 
 
     @Test
-    fun settingsMenuButtonBringsToSettings() {
+    fun settingsMenuButtonBringsToSettings() = runTest {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), MainNavActivity::class.java)
         init()
@@ -81,7 +85,7 @@ class MainNavActivityTest {
     }
 
     @Test
-    fun navBarNavigateCorrectly() {
+    fun navBarNavigateCorrectly() = runTest {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), MainNavActivity::class.java)
         val scenario = launch<MainNavActivity>(intent)
@@ -114,7 +118,7 @@ class MainNavActivityTest {
     }
 
     @Test
-    fun findTabsWorkAsExpected() {
+    fun findTabsWorkAsExpected() = runTest {
         val intent =
             Intent(ApplicationProvider.getApplicationContext(), MainNavActivity::class.java)
         val scenario = launch<MainNavActivity>(intent)
@@ -131,5 +135,26 @@ class MainNavActivityTest {
             onView(withText(R.string.map)).perform(scrollTo(), click())
             assertThat(navController?.currentDestination?.id, `is`(R.id.maps_fragment))
         }
+    }
+
+    @Test
+    fun createWithNoAccountAskForLogin() = runTest {
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(null)
+
+        val intent =
+            Intent(ApplicationProvider.getApplicationContext(), MainNavActivity::class.java)
+
+        launch<MainNavActivity>(intent)
+        onView(withId(R.id.nav_bar_create)).perform(click())
+
+        init()
+
+        onView(withId(R.id.continue_warning_button))
+            .inRoot(RootMatchers.isPlatformPopup())
+            .perform(click());
+
+        intended(hasComponent(LoginActivity::class.java.name))
+
+        release()
     }
 }

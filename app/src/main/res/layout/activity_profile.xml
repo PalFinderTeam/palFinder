@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -54,14 +55,16 @@
                         android:layout_height="30dp"
                         android:layout_marginHorizontal="8dp"
                         android:src="@drawable/ic_badge_dev"
-                        android:visibility="visible" />
+                        android:visibility="visible"
+                        tools:ignore="ContentDescription" />
 
                     <ImageView
                         android:id="@+id/badgePic2"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginHorizontal="8dp"
-                        android:visibility="visible" />
+                        android:visibility="visible"
+                        tools:ignore="ContentDescription" />
 
 
                 </LinearLayout>
@@ -125,7 +128,8 @@
                         android:fontFamily="@font/fredoka_bold"
                         android:paddingVertical="9dp"
                         android:src="@drawable/ic_qr"
-                        app:tint="?attr/colorPrimary" />
+                        app:tint="?attr/colorPrimary"
+                        tools:ignore="ContentDescription" />
 
                 </LinearLayout>
 
@@ -181,7 +185,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="10dp">
+                    android:layout_marginTop="10dp"
+                    android:baselineAligned="false">
 
                     <LinearLayout
                         android:gravity="center"
@@ -201,7 +206,7 @@
                             android:id="@+id/following"
                             android:layout_weight="1"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="0dp"
                             android:text="@string/placeholder_follows"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/userProfileDescOverflow"
@@ -264,7 +269,7 @@
                             android:id="@+id/followers"
                             android:layout_weight="1"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="0dp"
                             android:text="@string/placeholder_follows"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/userProfileDescOverflow"
@@ -281,28 +286,32 @@
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:layout_marginHorizontal="8dp"
-                                android:visibility="visible" />
+                                android:visibility="visible"
+                                tools:ignore="ContentDescription" />
 
                             <ImageView
                                 android:id="@+id/AchFollowed2"
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:layout_marginHorizontal="8dp"
-                                android:visibility="visible" />
+                                android:visibility="visible"
+                                tools:ignore="ContentDescription" />
 
                             <ImageView
                                 android:id="@+id/AchFollowed3"
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:layout_marginHorizontal="8dp"
-                                android:visibility="visible" />
+                                android:visibility="visible"
+                                tools:ignore="ContentDescription" />
 
                             <ImageView
                                 android:id="@+id/AchFollowed4"
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:layout_marginHorizontal="8dp"
-                                android:visibility="visible" />
+                                android:visibility="visible"
+                                tools:ignore="ContentDescription" />
                         </LinearLayout>
 
                         <!-- ADD LIST OF BADGES -->
@@ -329,6 +338,7 @@
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:paddingTop="0dp"
+                android:nestedScrollingEnabled="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -355,6 +365,6 @@
             </FrameLayout>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

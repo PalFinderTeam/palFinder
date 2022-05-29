@@ -2,9 +2,6 @@ package com.github.palFinderTeam.palfinder.profile
 
 
 import android.icu.util.Calendar
-import android.util.Log
-import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.notification.NotificationHandler
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.ACHIEVEMENTS_OBTAINED
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWED_BY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.FOLLOWING_PROFILES
@@ -106,27 +103,28 @@ open class FirebaseProfileService @Inject constructor(
     }
 
     override suspend fun muteMeetup(user: ProfileUser, meetup: String): Response<Unit> {
-        return try {
-            if (!user.canMuteMeetup(meetup)) {
-                return Response.Failure("Cannot mute this meetup.")
-            }
-
-            db.collection(PROFILE_COLL).document(user.uuid)
-                .update(MUTED_MEETUPS, FieldValue.arrayUnion(meetup)).await()
-
-            Response.Success(Unit)
-        } catch (e: Exception) {
-            Response.Failure(e.message.orEmpty())
-        }
+        return muteUnMute(user, meetup, mute = true)
     }
 
     override suspend fun unMuteMeetup(user: ProfileUser, meetup: String): Response<Unit> {
+        return muteUnMute(user, meetup, mute = false)
+    }
+
+    private suspend fun muteUnMute(
+        user: ProfileUser,
+        meetup: String,
+        mute: Boolean
+    ): Response<Unit> {
         return try {
-            if (!user.canUnMuteMeetup(meetup)) {
-                return Response.Failure("Cannot unmute this meetup.")
+            if ((mute && !user.canMuteMeetup(meetup)) || (!mute && !user.canUnMuteMeetup(meetup))) {
+                val muteMsg = "Cannot mute this meetup."
+                val unMuteMsg = "Cannot un-mute this meetup."
+                return Response.Failure(if (mute) muteMsg else unMuteMsg)
             }
+            val operation =
+                if (mute) FieldValue.arrayUnion(meetup) else FieldValue.arrayRemove(meetup)
             db.collection(PROFILE_COLL).document(user.uuid)
-                .update(MUTED_MEETUPS, FieldValue.arrayRemove(meetup)).await()
+                .update(MUTED_MEETUPS, operation).await()
             Response.Success(Unit)
         } catch (e: Exception) {
             Response.Failure(e.message.orEmpty())

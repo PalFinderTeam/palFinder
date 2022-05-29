@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/creation_fragment"
         android:name="com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation"
-        tools:layout="@layout/activity_meet_up_creation"
+        tools:layout="@layout/activity_meet_up_creation_new"
         android:label="activity_meet_up_creation">
         <argument
             android:name="ShowNavBar"
