@@ -2,38 +2,35 @@ package com.github.palFinderTeam.palfinder.user.settings
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
-import android.view.View
 import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.github.dhaval2404.imagepicker.ImagePicker
-import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
+import com.github.palFinderTeam.palfinder.PalFinderBaseActivity
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.USER_ID
 import com.github.palFinderTeam.palfinder.ui.login.CREATE_ACCOUNT_PROFILE
 import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.LiveDataExtension.observeOnce
 import com.github.palFinderTeam.palfinder.utils.PrivacySettings
-import com.github.palFinderTeam.palfinder.utils.time.askDate
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
 import com.github.palFinderTeam.palfinder.utils.image.pickProfileImage
+import com.github.palFinderTeam.palfinder.utils.time.askDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 @SuppressLint("SimpleDateFormat")
-class UserSettingsActivity : AppCompatActivity() {
+class UserSettingsActivity : PalFinderBaseActivity() {
 
     val viewModel: UserSettingsViewModel by viewModels()
 
@@ -46,23 +43,17 @@ class UserSettingsActivity : AppCompatActivity() {
     private lateinit var removeBirthdayButton: ImageView
     private lateinit var genderRadio: RadioGroup
     private lateinit var privacySettingsRadio: RadioGroup
+    private lateinit var submitButton: Button
 
     private var dateFormat = SimpleDateFormat()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
-        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
-        setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_settings)
-        var sharedPreferenceChangeListener =
-            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                if (key == "theme") {
-                    recreate()
-                }
-            }
-        sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
+
         dateFormat = SimpleDateFormat(getString(R.string.userSettingsBdayPattern))
+
+        submitButton = findViewById(R.id.SettingsSubmitButton)
 
         // Force user id
         if (intent.hasExtra(USER_ID)) {
@@ -75,7 +66,7 @@ class UserSettingsActivity : AppCompatActivity() {
         if (intent.hasExtra(CREATE_ACCOUNT_PROFILE)) {
             preProfile = intent.getSerializableExtra(CREATE_ACCOUNT_PROFILE) as ProfileUser
             viewModel.loggedUID = preProfile.uuid
-            findViewById<Button>(R.id.SettingsSubmitButton).text =
+            submitButton.text =
                 getString(R.string.userSettingsButtonCreate)
         }
 
@@ -84,6 +75,7 @@ class UserSettingsActivity : AppCompatActivity() {
         initiateFieldRefs()
         bindFieldsToData()
         initiateSuccessIndicator()
+
     }
 
     /**
@@ -129,20 +121,21 @@ class UserSettingsActivity : AppCompatActivity() {
         imageField.setOnClickListener {
             pickProfileImage(this, onResultFromIntent::launch)
         }
+        submitButton.setOnClickListener { submitData() }
+        removeBirthdayButton.setOnClickListener { deletePickedBirthday() }
         genderRadio.setOnCheckedChangeListener { _, checkedId ->
-            when (findViewById<RadioButton>(checkedId).text) {
-                getString(R.string.radio_male) -> viewModel.setGender(Gender.MALE)
-                getString(R.string.radio_female) -> viewModel.setGender(Gender.FEMALE)
-                getString(R.string.radio_other) -> viewModel.setGender(Gender.OTHER)
+            when (checkedId) {
+                R.id.radioMale -> viewModel.setGender(Gender.MALE)
+                R.id.radioFemale -> viewModel.setGender(Gender.FEMALE)
+                R.id.radioOther -> viewModel.setGender(Gender.OTHER)
             }
         }
         privacySettingsRadio.setOnCheckedChangeListener { _, checkedId ->
-            when (findViewById<RadioButton>(checkedId).text) {
-                getString(R.string.radio_public) -> viewModel.setPrivacySetting(PrivacySettings.PUBLIC)
-                getString(R.string.radio_friends) -> viewModel.setPrivacySetting(PrivacySettings.FRIENDS)
-                getString(R.string.radio_private) -> viewModel.setPrivacySetting(PrivacySettings.PRIVATE)
+            when (checkedId) {
+                R.id.radioPublic -> viewModel.setPrivacySetting(PrivacySettings.PUBLIC)
+                R.id.radioFriends -> viewModel.setPrivacySetting(PrivacySettings.FRIENDS)
+                R.id.radioPrivate -> viewModel.setPrivacySetting(PrivacySettings.PRIVATE)
             }
-
         }
 
         // NOTE: We don't have an observer for the text changing because
@@ -204,6 +197,7 @@ class UserSettingsActivity : AppCompatActivity() {
         } else {
             birthdayField.setText(dateFormat.format(calendar))
         }
+        birthdayField.setOnClickListener { openDatePickerFragment() }
     }
 
     /**
@@ -254,7 +248,7 @@ class UserSettingsActivity : AppCompatActivity() {
     /**
      * Called when the save button is clicked
      */
-    fun submitData(view: View?) {
+    private fun submitData() {
         val respMsg = viewModel.checkAllFields()
         if (respMsg == UserSettingsViewModel.MSG_NO_MSG) {
             viewModel.saveValuesIntoDatabase()
@@ -275,13 +269,13 @@ class UserSettingsActivity : AppCompatActivity() {
         bioField.isEnabled = status
         imageField.isEnabled = status
         removeBirthdayButton.isEnabled = status
-        findViewById<Button>(R.id.SettingsSubmitButton).isEnabled = status
+        submitButton.isEnabled = status
     }
 
     /**
      * Open date fragment by clicking on the birthday field
      */
-    fun openDatePickerFragment(view: View?) {
+    private fun openDatePickerFragment() {
         askDate(supportFragmentManager).thenAccept {
             viewModel.setBirthday(it)
             updateBDayField(it)
@@ -292,7 +286,7 @@ class UserSettingsActivity : AppCompatActivity() {
      * Click on the delete button on the right to clear birthday
      * field, if it hasn't been cleared yet
      */
-    fun deletePickedBirthday(view: View?) {
+    private fun deletePickedBirthday() {
         if (viewModel.birthday.value != null) {
             viewModel.setBirthday(null)
             updateBDayField(null)

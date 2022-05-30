@@ -23,14 +23,13 @@ import kotlinx.coroutines.launch
 
 class ChatMessageListAdapter(
     private val viewModel: ChatViewModel,
-    private val dataSet: List<ChatMessage>,
-    private val onItemClicked: (position: Int) -> Unit
+    dataSet: List<ChatMessage>
 ) :
     RecyclerView.Adapter<ChatMessageListAdapter.ViewHolder>() {
 
     private val currentDataSet = dataSet.toMutableList()
 
-    class ViewHolder(view: View, private val onItemClicked: (position: Int) -> Unit) :
+    class ViewHolder(view: View) :
         RecyclerView.ViewHolder(view) {
 
         val messageInLayout: ConstraintLayout = view.findViewById(R.id.msg_in_layout)
@@ -45,12 +44,7 @@ class ChatMessageListAdapter(
         //create a new view for each message
         return ViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.message_listview, parent, false)
-        ) {
-            val item = currentDataSet[it]
-            val originalItemPos = dataSet.indexOf(item)
-
-            onItemClicked(originalItemPos)
-        }
+        )
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")

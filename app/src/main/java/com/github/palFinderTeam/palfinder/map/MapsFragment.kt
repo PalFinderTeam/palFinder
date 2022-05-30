@@ -8,7 +8,6 @@ import android.graphics.Canvas
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +30,6 @@ import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
 import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
-import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.addBorder
 import com.github.palFinderTeam.palfinder.utils.setNavigationResult
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -48,7 +46,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.IOException
 import kotlin.math.cos
-import kotlin.math.ln
 import kotlin.math.log
 
 @ExperimentalCoroutinesApi
@@ -56,9 +53,6 @@ import kotlin.math.log
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
     SearchView.OnQueryTextListener {
 
-    private val EQUATOR_LENGTH = 40075.004
-    private val BASE_ZOOM = 8.0
-    private val DEFAULT_MARKER_ID = 2
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var selectLocationButton: FloatingActionButton
     private lateinit var selectMapTypeButton: FloatingActionButton
@@ -193,9 +187,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
         mapReady = true
 
-        if(viewModel.firstInit()) {
+        if (viewModel.firstInit()) {
             viewModel.locationClient.lastLocation.addOnSuccessListener {
-                if(it != null) {
+                if (it != null) {
                     viewModel.setSearchParamAndFetch(location = Location(it.longitude, it.latitude))
                     map.moveCamera(CameraUpdateFactory.newLatLng(LatLng(it.latitude, it.longitude)))
                 }
@@ -243,7 +237,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     override fun onQueryTextSubmit(p0: String?): Boolean {
         var addressList: List<Address>? = null
 
-        if (p0 == null || p0 == "") {
+        if (p0 == null || p0.isEmpty()) {
             Toast.makeText(
                 requireContext(),
                 getString(R.string.search_no_location),
@@ -310,7 +304,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 val bitmap = icon?.let { createBitmap(80, 80, Bitmap.Config.ARGB_8888) }
                 val canvas = bitmap?.let { Canvas(it) }
                 val typedValue = TypedValue()
-                theme.resolveAttribute(androidx.appcompat.R.attr.colorControlActivated, typedValue, true)
+                theme.resolveAttribute(
+                    androidx.appcompat.R.attr.colorControlActivated,
+                    typedValue,
+                    true
+                )
                 canvas?.drawColor(typedValue.data)
                 theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true)
                 icon?.drawable?.toBitmap(64, 64)
@@ -318,7 +316,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 if (bitmap != null) options.icon(bitmap.addBorder(borderColor = typedValue.data)
                     ?.let { BitmapDescriptorFactory.fromBitmap(it) })
             }
-            val marker = map.addMarker(options)
+            map.addMarker(options)
                 ?.let { markers[meetUp.uuid] = it }
         }
     }
@@ -420,17 +418,23 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
 
     private fun getZoomLevel(radius: Double?): Double {
-        val result = if ( mapFragment.requireView().contentDescription == "MapReady" && radius != null){
-            val mapWidth = mapFragment.view?.width?.div(resources.displayMetrics.density)
-            val latitudinalAdjustment =
-                cos(Math.PI * map.cameraPosition.target.latitude / 180.0)
-            val arg =
-                EQUATOR_LENGTH * mapWidth!! * latitudinalAdjustment / (radius.times(256.0))
-            log(arg, 2.0)-0.5
-        } else BASE_ZOOM
+        val result =
+            if (mapFragment.requireView().contentDescription == "MapReady" && radius != null) {
+                val mapWidth = mapFragment.view?.width?.div(resources.displayMetrics.density)
+                val latitudinalAdjustment =
+                    cos(Math.PI * map.cameraPosition.target.latitude / 180.0)
+                val arg =
+                    EQUATOR_LENGTH * mapWidth!! * latitudinalAdjustment / (radius.times(256.0))
+                log(arg, 2.0) - 0.5
+            } else BASE_ZOOM
         return result
     }
 
+    companion object {
+        private const val EQUATOR_LENGTH = 40075.004
+        private const val BASE_ZOOM = 8.0
+        private const val DEFAULT_MARKER_ID = 2
+    }
 
 
 }

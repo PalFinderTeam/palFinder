@@ -1,17 +1,13 @@
 package com.github.palFinderTeam.palfinder.meetups.activities
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.github.palFinderTeam.palfinder.PalFinderBaseActivity
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
@@ -20,8 +16,8 @@ import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
 import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
-import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
 import com.github.palFinderTeam.palfinder.utils.addTagsToFragmentManager
+import com.github.palFinderTeam.palfinder.utils.createNoAccountPopUp
 import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.github.palFinderTeam.palfinder.utils.createTagFragmentModel
 import com.github.palFinderTeam.palfinder.utils.image.QRCode
@@ -38,7 +34,7 @@ const val MEETUP_EDIT = "com.github.palFinderTeam.palFinder.meetup_view.MEETUP_E
 
 
 @AndroidEntryPoint
-class MeetUpView : AppCompatActivity() {
+class MeetUpView : PalFinderBaseActivity() {
     private val viewModel: MeetUpViewViewModel by viewModels()
     private lateinit var tagsViewModel: TagsViewModel<Category>
 
@@ -46,24 +42,12 @@ class MeetUpView : AppCompatActivity() {
     lateinit var profileService: ProfileService
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val sharedPref = getSharedPreferences("theme", Context.MODE_PRIVATE) ?: return
-        val theme = sharedPref.getInt("theme", R.style.palFinder_default_theme)
-        setTheme(theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meet_up_view_new)
-        var sharedPreferenceChangeListener =
-            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                if (key == "theme") {
-                    recreate()
-                }
-            }
-        sharedPref.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
 
         val meetupId = intent.getSerializableExtra(MEETUP_SHOWN) as String
 
-        //button (image for design purposes) to show the list of users participating in this meetUp
-        val button = findViewById<ImageView>(R.id.show_qr_button)
-        button.setOnClickListener { showProfileList() }
+        bindButton()
 
         //fill fields when the meetup is loaded from database
         viewModel.meetUp.observe(this) {
@@ -83,6 +67,16 @@ class MeetUpView : AppCompatActivity() {
                 onJoinWithBlockedUsers()
             }
         }
+    }
+
+    private fun bindButton() {
+        findViewById<View>(R.id.show_qr_button).setOnClickListener { showProfileList() }
+        findViewById<View>(R.id.bt_MuteMeetup).setOnClickListener { onMuteOrUnmute() }
+        findViewById<View>(R.id.button_join_meetup).setOnClickListener { onJoinOrLeave() }
+        findViewById<View>(R.id.qr_code_button).setOnClickListener { showQR() }
+        findViewById<View>(R.id.bt_ChatMeetup).setOnClickListener { onChat() }
+        findViewById<View>(R.id.bt_EditMeetup).setOnClickListener { onEdit() }
+        findViewById<View>(R.id.bt_OpenNavigation).setOnClickListener { onOpenNavigation(it) }
     }
 
     /**
@@ -118,10 +112,9 @@ class MeetUpView : AppCompatActivity() {
             this.isEnabled = hasJoined
             this.isClickable = hasJoined
             this.isVisible = hasJoined
-            if (viewModel.canUnMute()){
+            if (viewModel.canUnMute()) {
                 this.setImageResource(R.drawable.ic_baseline_notifications_off_24)
-            }
-            else{
+            } else {
                 this.setImageResource(R.drawable.ic_baseline_notifications_active_24)
             }
         }
@@ -145,7 +138,7 @@ class MeetUpView : AppCompatActivity() {
     /**
      * restart the meetUp creation activity to edit it
      */
-    fun onEdit(v: View) {
+    private fun onEdit() {
         if (viewModel.isCreator()) {
             val intent = Intent(this, MeetUpEditCompat::class.java).apply {
                 putExtra(MEETUP_EDIT, viewModel.getMeetupID())
@@ -157,12 +150,13 @@ class MeetUpView : AppCompatActivity() {
     /**
      * open Google Maps with navigation from currentLocation to meetUpLocation
      */
-    fun onOpenNavigation(v: View){
-        if(viewModel.hasJoin()){
+    private fun onOpenNavigation(v: View) {
+        if (viewModel.hasJoin()) {
             val location = viewModel.meetUp.value?.location
             if (location != null) {
                 val navigationIntentUri = Uri.parse(
-                    v.context.getString(R.string.navigationUri) + location.latitude.toString()+ "," + location.longitude.toString())
+                    v.context.getString(R.string.navigationUri) + location.latitude.toString() + "," + location.longitude.toString()
+                )
                 val mapIntent = Intent(Intent.ACTION_VIEW, navigationIntentUri)
                 mapIntent.setPackage(v.context.getString(R.string.mapPackage))
                 startActivity(mapIntent)
@@ -174,7 +168,7 @@ class MeetUpView : AppCompatActivity() {
     /**
      * start the chatActivity of this meetUp (identified by the meetupId)
      */
-    fun onChat(v: View) {
+    private fun onChat() {
         if (viewModel.hasJoin()) {
             val intent = Intent(this, ChatActivity::class.java).apply {
                 putExtra(CHAT, viewModel.getMeetupID())
@@ -186,7 +180,7 @@ class MeetUpView : AppCompatActivity() {
     /**
      * Clicking on QR Code icon will show QR code
      */
-    fun showQR(view: View?) {
+    private fun showQR() {
         //Initiate the barcode encoder
         val barcodeEncoder = BarcodeEncoder()
         //Encode text in editText into QRCode image into the specified size using barcodeEncoder
@@ -205,7 +199,7 @@ class MeetUpView : AppCompatActivity() {
     /**
      * cannot join/leave a meetUp if you are not logged in
      */
-    fun onJoinOrLeave(v: View) {
+    private fun onJoinOrLeave() {
         if (profileService.getLoggedInUserID() == null) {
             loginPopUp()
         } else {
@@ -216,23 +210,19 @@ class MeetUpView : AppCompatActivity() {
     /**
      * Mute or Unmute the meetup
      */
-    fun onMuteOrUnmute(v: View){
+    private fun onMuteOrUnmute() {
         viewModel.muteOrUnMute(this)
     }
 
     private fun onJoinWithBlockedUsers() {
         createPopUp(
-            this, {
-                viewModel.joinOrLeave(this, ignoreWarning = true)
-            }, R.string.meetup_with_blocked_warning
-        )
+            this, R.string.meetup_with_blocked_warning
+        ) {
+            viewModel.joinOrLeave(this, ignoreWarning = true)
+        }
     }
 
-    private fun loginPopUp(){
-        createPopUp(this,
-            { startActivity(Intent(this, LoginActivity::class.java)) },
-            textId = R.string.no_account_join,
-            continueButtonTextId = R.string.login
-        )
+    private fun loginPopUp() {
+        createNoAccountPopUp(this, R.string.no_account_join)
     }
 }

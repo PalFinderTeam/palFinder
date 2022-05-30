@@ -102,7 +102,7 @@ class MeetupViewFragment : Fragment() {
      * @param meetUp
      */
     private fun getAgeRange(meetUp: MeetUp): String {
-        var marginStart = meetUp.criterionAge?.first.toString()
+        val marginStart = meetUp.criterionAge?.first.toString()
         var marginEnd = meetUp.criterionAge?.second.toString()
         if (meetUp.criterionAge?.second == Int.MAX_VALUE) {
             // Display 66+ if second is MAX_INT

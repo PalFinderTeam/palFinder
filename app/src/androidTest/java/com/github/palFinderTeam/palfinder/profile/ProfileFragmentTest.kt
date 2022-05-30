@@ -4,12 +4,17 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.ImageDecoder
 import android.icu.util.Calendar
+import android.view.View
+import android.widget.HorizontalScrollView
+import android.widget.ListView
+import android.widget.ScrollView
+import androidx.core.widget.NestedScrollView
 import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -18,7 +23,7 @@ import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
-import com.github.palFinderTeam.palfinder.profile.*
+import com.github.palFinderTeam.palfinder.meetups.activities.betterScrollTo
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOINED_MEETUPS_KEY
 import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
 import com.github.palFinderTeam.palfinder.utils.Location
@@ -31,6 +36,8 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers
 import org.hamcrest.Matchers.notNullValue
 import org.junit.*
 import javax.inject.Inject
@@ -213,7 +220,10 @@ class ProfileFragmentTest {
         val scenario = ActivityScenario.launch<ProfileActivity>(intent)
 
         scenario.use {
-            onView(withId(R.id.userProfileDescOverflow)).perform(scrollTo(), ViewActions.click())
+            onView(withId(R.id.userProfileDescOverflow)).perform(
+                betterScrollTo(),
+                click()
+            )
             onView(withId(R.id.userProfileDescription)).check(matches(withText(userLongBio.description)))
         }
     }
@@ -310,9 +320,9 @@ class ProfileFragmentTest {
         scenario!!.use {
 
             assert(!profileService.fetch(userid!!)!!.blockedUsers.contains(id2))
-            onView(withId(R.id.blackList)).perform(scrollTo(), click())
+            onView(withId(R.id.blackList)).perform(betterScrollTo(), click())
             assert(profileService.fetch(userid)!!.blockedUsers.contains(id2))
-            onView(withId(R.id.blackList)).perform(scrollTo(), click())
+            onView(withId(R.id.blackList)).perform(betterScrollTo(), click())
             assert(!profileService.fetch(userid)!!.blockedUsers.contains(id2))
         }
     }
@@ -346,7 +356,7 @@ class ProfileFragmentTest {
         scenario!!.use {
 
             assert(profileService.fetch(userid)!!.joinedMeetUps.contains(meetupId))
-            onView(withId(R.id.blackList)).perform(scrollTo(), click())
+            onView(withId(R.id.blackList)).perform(betterScrollTo(), click())
             assert(!meetupService.fetch(meetupId)!!.participantsId.contains(userid))
         }
     }

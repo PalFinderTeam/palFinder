@@ -20,7 +20,7 @@ fun createTagFragmentModel(
     return ViewModelProvider(
         that,
         tagsViewModelFactory
-    ).get(TagsViewModel::class.java) as TagsViewModel<Category>
+    )[TagsViewModel::class.java] as TagsViewModel<Category>
 }
 
 /**

@@ -10,7 +10,7 @@
     <ScrollView
         android:id="@+id/SCROLLER_ID"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true"
         android:scrollbars="vertical">
@@ -18,7 +18,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:scrollbars="vertical">
 
 
@@ -84,7 +84,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/SettingsUsernameLayout">
+                app:layout_constraintTop_toBottomOf="@+id/SettingsUsernameLayout"
+                android:baselineAligned="false">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/SettingsNameLayout"
@@ -302,7 +303,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:onClick="submitData"
                 android:text="@string/userSettingsButtonSave"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -327,7 +327,7 @@
                     android:id="@+id/SettingsBirthdayLayout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
 
-                    android:layout_width="fill_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
 
@@ -349,7 +349,6 @@
                         android:clickable="true"
                         android:focusable="false"
                         android:fontFamily="@font/fredoka_normal"
-                        android:onClick="openDatePickerFragment"
                         android:singleLine="true"
                         app:counterMaxLength="32" />
 
@@ -360,9 +359,9 @@
                     android:layout_width="55dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:onClick="deletePickedBirthday"
                     android:padding="10dp"
-                    app:srcCompat="@drawable/ic_baseline_cancel_24" />
+                    app:srcCompat="@drawable/ic_baseline_cancel_24"
+                    tools:ignore="ContentDescription" />
 
             </LinearLayout>
 

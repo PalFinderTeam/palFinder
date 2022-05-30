@@ -36,7 +36,7 @@
         android:id="@+id/creation_fragment"
         android:name="com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation"
         android:label="activity_meet_up_creation"
-        tools:layout="@layout/activity_meet_up_creation" >
+        tools:layout="@layout/activity_meet_up_creation_new" >
         <argument
             android:name="ShowNavBar"
             app:argType="boolean"

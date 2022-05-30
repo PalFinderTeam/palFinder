@@ -1,5 +1,7 @@
 package com.github.palFinderTeam.palfinder.tag
 
+import androidx.lifecycle.MutableLiveData
+
 /**
  * Provide the way data should be transfer to the tag viewModel.
  *
@@ -27,35 +29,29 @@ interface TagsRepository<T: Tag> {
     fun addTag(tag: T): Boolean
 }
 
-/**
- * Simple implementation if the tags should be readonly.
- */
-/*class NonEditableTags<T: Tag>(override val tags: Set<T>, override val allTags: Set<T>) : TagsRepository<T> {
-    override val isEditable = false
+class TagFilterRepository<T: Tag>(private val tagsLiveData: MutableLiveData<Set<T>>, override val allTags: Set<T>) : TagsRepository<T> {
+    override val tags: Set<T>
+        get() = tagsLiveData.value ?: setOf()
 
-    override fun removeTag(tag: T): Boolean {
-        // Immutable, cannot remove
-        return false
-    }
-
-    override fun addTag(tag: T): Boolean {
-        // Immutable, cannot add
-        return false
-    }
-}*/
-
-/**
- * Simple implementation if the tags should be editable.
- */
-/*class EditableTags<T: Tag>(private val _tags: MutableSet<T>, override val allTags: Set<T>) : TagsRepository<T> {
     override val isEditable = true
-    override val tags: Set<T> = _tags
 
     override fun removeTag(tag: T): Boolean {
-        return _tags.remove(tag)
+        val tags = tagsLiveData.value
+        return if (tags == null || !tags.contains(tag)) {
+            false
+        } else {
+            tagsLiveData.value = tags.minus(tag)
+            true
+        }
     }
 
     override fun addTag(tag: T): Boolean {
-        return _tags.add(tag)
+        val tags = tagsLiveData.value
+        return if (tags == null || tags.contains(tag)) {
+            false
+        } else {
+            tagsLiveData.value = tags.plus(tag)
+            true
+        }
     }
-}*/
+}

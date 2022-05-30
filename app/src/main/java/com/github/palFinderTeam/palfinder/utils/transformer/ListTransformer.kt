@@ -75,7 +75,9 @@ class ListTransformer<T> {
                     input.postValue(it.data!!)
                 }
                 else -> {
-                    input.postValue(emptyList())
+                    if (input.value == null){
+                        input.postValue(emptyList())
+                    }
                 }
             }
         }

@@ -28,6 +28,7 @@ import com.github.palFinderTeam.palfinder.utils.image.ImageUploader
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.Matchers
@@ -38,6 +39,7 @@ import org.junit.Test
 import javax.inject.Inject
 
 
+@ExperimentalCoroutinesApi
 @HiltAndroidTest
 class UserSettingsActivityTest {
 
