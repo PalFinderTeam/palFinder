@@ -419,7 +419,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
 
     companion object {
         private const val ICON_DIALOG_TAG = "icon-dialog"
-        private const val EASTER_NAME = "TARTiNE"
+        private const val EASTER_NAME = "TARTINE"
         private const val EASTER_DESC = "CATOGATOS THE MASTER OF DOGGOS"
     }
 }
