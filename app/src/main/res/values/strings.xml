@@ -108,6 +108,7 @@
     <string name="meetup_filter_date_title">Select specific dates</string>
     <string name="meetup_filter_date_desc">To not set any date constraints, leave the fields blank</string>
     <string name="meetup_filter_done">Confirm filters</string>
+    <string name="meetup_new_participant">\@%s joined your meetup!</string>
 
 
     <!-- Strings used for meetup view -->

@@ -119,7 +119,7 @@
     <string name="meetup_view_age_text">Age</string>
     <string name="meetup_view_age" formatted="true">%s-%s ans</string>
     <string name="meetup_view_gender_title">Genre</string>
-
+    <string name="meetup_new_participant">\@%s a rejoint votre rencontre!</string>
 
 
     <string name="ok">OK</string>
