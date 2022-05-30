@@ -26,8 +26,6 @@ class ManeameaFragment : DialogFragment(){
         val videoView = v.findViewById<VideoView>(R.id.easter_egg_video)
         val uri = Uri.parse("https://i.imgur.com/Daoab5M.mp4")
         videoView.setVideoURI(uri)
-        //videoView.scaleX = 2.0F
-        //videoView.scaleY = 2.0F
         videoView.setOnPreparedListener { videoView.start() }
         videoView.setOnCompletionListener {
             dialog?.dismiss()
