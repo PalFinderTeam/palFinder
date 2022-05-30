@@ -109,6 +109,8 @@
     <string name="meetup_filter_date_desc">To not set any date constraints, leave the fields blank</string>
     <string name="meetup_filter_done">Confirm filters</string>
 
+    <string name="easter_egg_fragment_text">Watch out and take notes !</string>
+
 
     <!-- Strings used for meetup view -->
     <string name="meetup_view_meetup_start_at">Starts</string>

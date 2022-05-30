@@ -29,6 +29,9 @@ class ManeameaFragment : DialogFragment(){
         videoView.scaleX = 2.0F
         videoView.scaleY = 2.0F
         videoView.setOnPreparedListener { videoView.start() }
+        videoView.setOnCompletionListener {
+            dialog?.dismiss()
+        }
         return v
     }
 
