@@ -328,7 +328,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
         val name = nameEditText.text.toString()
         val description = descriptionEditText.text.toString()
         //if (easterEggChecked(name, description)) {
-        if (true) {
+        if (easterEggChecked(name, description)) {
             ManeameaFragment().show(childFragmentManager, "")
         } else {
             val location = viewModel.location.value
