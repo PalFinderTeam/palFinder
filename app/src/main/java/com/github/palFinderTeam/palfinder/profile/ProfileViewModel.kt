@@ -7,11 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.MeetupListRootAdapter
-import com.github.palFinderTeam.palfinder.meetups.*
-import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
-import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel.Companion.TEXT_FILTER
-import com.github.palFinderTeam.palfinder.profile.ProfileService
-import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.BLOCKED_USERS
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.transformer.ListTransformer
@@ -43,8 +38,8 @@ class ProfileViewModel @Inject constructor(
     private var _meetupDataSet: MutableLiveData<Response<List<MeetUp>>> = MutableLiveData()
     var meetupDataSet: LiveData<Response<List<MeetUp>>> = _meetupDataSet
 
-    private val _logged_profile: MutableLiveData<Response<ProfileUser>> = MutableLiveData()
-    val logged_profile: LiveData<Response<ProfileUser>> = _logged_profile
+    private val _loggedProfile: MutableLiveData<Response<ProfileUser>> = MutableLiveData()
+    val loggedProfile: LiveData<Response<ProfileUser>> = _loggedProfile
 
     /**
      * Fetch user profile and post its value
@@ -52,19 +47,22 @@ class ProfileViewModel @Inject constructor(
      */
     fun fetchProfile(userId: String) {
         viewModelScope.launch {
-            profileService.fetchFlow(userId).collect {
-                _profile.postValue(it)
-            }
+            fetchProfileInto(userId, _profile)
         }
     }
 
     fun fetchLoggedProfile() {
         viewModelScope.launch {
-            if (profileService.getLoggedInUserID() != null) {
-                profileService.fetchFlow(profileService.getLoggedInUserID()!!).collect {
-                    _logged_profile.postValue(it)
-                }
+            val logged = profileService.getLoggedInUserID()
+            if (logged != null) {
+                fetchProfileInto(logged, _loggedProfile)
             }
+        }
+    }
+
+    private suspend fun fetchProfileInto(userId: String, dest: MutableLiveData<Response<ProfileUser>>) {
+        profileService.fetchFlow(userId).collect {
+            dest.postValue(it)
         }
     }
 
@@ -93,24 +91,29 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    private suspend fun refresh(userId: String) {
+        val logged = profileService.getLoggedInUserID()
+        if (logged != null) {
+            fetchProfileInto(logged, _loggedProfile)
+        }
+        fetchProfileInto(userId, _profile)
+    }
+
     /**
      * We handle the follow/unfollow logic here to avoid handling coroutines in
      * the adapter. Notice that we need to fetch again the user who wants to follow,
      * that's because we need to have the more up to date info.
      */
-    fun follow(userId: String, otherId: String) {
+    fun followUnFollow(userId: String, otherId: String, follow: Boolean) {
         viewModelScope.launch {
             profileService.fetch(userId)?.let {
-                profileService.followUser(it, otherId)
+                if (follow) {
+                    profileService.followUser(it, otherId)
+                } else {
+                    profileService.unfollowUser(it, otherId)
+                }
             }
-        }
-    }
-
-    fun unFollow(userId: String, otherId: String) {
-        viewModelScope.launch {
-            profileService.fetch(userId)?.let {
-                profileService.unfollowUser(it, otherId)
-            }
+            refresh(otherId)
         }
     }
 
@@ -137,6 +140,7 @@ class ProfileViewModel @Inject constructor(
                     }
                 }
             }
+            refresh(otherId)
         }
     }
 
@@ -148,6 +152,7 @@ class ProfileViewModel @Inject constructor(
                     profileService.edit(it.uuid, BLOCKED_USERS, it.blockedUsers.minus(otherId))
                 }
             }
+            refresh(otherId)
         }
     }
 }

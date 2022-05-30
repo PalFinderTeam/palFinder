@@ -4,10 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Color
 import android.icu.util.Calendar
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -17,16 +14,14 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
 import com.github.palFinderTeam.palfinder.profile.ProfileService
 import com.github.palFinderTeam.palfinder.tag.Category
-import com.github.palFinderTeam.palfinder.tag.TagsRepository
+import com.github.palFinderTeam.palfinder.tag.TagFilterRepository
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import com.github.palFinderTeam.palfinder.utils.transformer.ListTransformer
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -157,7 +152,7 @@ class MapListViewModel @Inject constructor(
     /**
      * Add or remove Blocked User Filter
      */
-    fun filterByBlocked(it: Boolean) {
+    private fun filterByBlocked(it: Boolean) {
         if (it) {
             viewModelScope.launch {
                 val userId = profileService.getLoggedInUserID()
@@ -172,22 +167,20 @@ class MapListViewModel @Inject constructor(
     /**
      * Add Date Filter
      */
-    fun filterByDate() {
-        if (startTime.value != null){
+    private fun filterByDate() {
+        if (startTime.value != null) {
             filterer.setFilter(DATE_LOWER_FILTER) {
                 it.endDate.after(startTime.value!!)
             }
-        }
-        else{
+        } else {
             filterer.removeFilter(DATE_LOWER_FILTER)
         }
 
-        if (endTime.value != null){
+        if (endTime.value != null) {
             filterer.setFilter(DATE_UPPER_FILTER) {
                 it.startDate.before(endTime.value!!)
             }
-        }
-        else{
+        } else {
             filterer.removeFilter(DATE_UPPER_FILTER)
         }
     }
@@ -328,39 +321,13 @@ class MapListViewModel @Inject constructor(
     /**
      *  Provides the tagContainer with the necessary tags and allows it to edit them.
      */
-    val tagRepository = object : TagsRepository<Category> {
-        override val tags: Set<Category>
-            get() = _tags.value ?: setOf()
+    val tagRepository = TagFilterRepository(_tags, Category.values().toSet())
 
-        override val isEditable = true
-        override val allTags = Category.values().toSet()
-
-        override fun removeTag(tag: Category): Boolean {
-            val tags = _tags.value
-            return if (tags == null || !tags.contains(tag)) {
-                false
-            } else {
-                _tags.postValue(tags.minus(tag))
-                true
-            }
-        }
-
-        override fun addTag(tag: Category): Boolean {
-            val tags = _tags.value
-            return if (tags == null || tags.contains(tag)) {
-                false
-            } else {
-                _tags.postValue(tags.plus(tag))
-                true
-            }
-        }
-    }
-
-    fun firstInit(): Boolean{
-        return if(isFirstInit){
+    fun firstInit(): Boolean {
+        return if (isFirstInit) {
             isFirstInit = false
             true
-        }else false
+        } else false
 
     }
 

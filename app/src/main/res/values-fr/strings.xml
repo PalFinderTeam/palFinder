@@ -223,8 +223,6 @@
     <string name="list">liste</string>
     <string name="show_profiles">montrer les profiles</string>
 
-    <string name="theme">thème</string>
-
     <string name="hint_username">nom d\'utilisateur</string>
     <string name="hint_password">mot de passe</string>
     <string name="select_icon">Sélection de l\'icône</string>

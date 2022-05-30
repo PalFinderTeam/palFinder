@@ -261,8 +261,6 @@
     <string name="list">list</string>
     <string name="show_profiles">show profiles</string>
 
-    <string name="theme">theme</string>
-
     <string name="hint_username">username</string>
     <string name="hint_password">password</string>
     <string name="select_icon">Select Icon</string>
