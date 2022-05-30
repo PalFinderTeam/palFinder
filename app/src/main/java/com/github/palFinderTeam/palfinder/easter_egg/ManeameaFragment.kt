@@ -1,8 +1,5 @@
 package com.github.palFinderTeam.palfinder.easter_egg
 
-import android.content.Context
-import android.content.SharedPreferences
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,11 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.VideoView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import com.github.palFinderTeam.palfinder.R
 
-
+/**
+ * easter egg fragment, simply plays a video
+ */
 class ManeameaFragment : DialogFragment(){
 
     override fun onCreateView(
