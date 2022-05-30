@@ -23,6 +23,7 @@ import androidx.navigation.navOptions
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.github.palFinderTeam.palfinder.PalFinderApplication
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.easter_egg.ManeameaFragment
 import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment
 import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.tag.TagsViewModel
@@ -325,23 +326,27 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
     private fun onDone(v: View) {
         // Check field validity
         val name = nameEditText.text.toString()
-        val description = descriptionEditText.text.toString()
-        val location = viewModel.location.value
-        if (!checkFieldValid(name, description, location)) return
+        if (name == "123") {
+            ManeameaFragment().show(childFragmentManager, "")
+        } else {
+            val description = descriptionEditText.text.toString()
+            val location = viewModel.location.value
+            if (!checkFieldValid(name, description, location)) return
 
-        // Listen on DB response to move forward.
-        viewModel.sendSuccess.observe(viewLifecycleOwner) { isSuccessFull ->
-            if (isSuccessFull) {
-                val intent = Intent(requireContext(), MeetUpView::class.java).apply {
-                    putExtra(MEETUP_SHOWN, viewModel.getMeetUpId())
+            // Listen on DB response to move forward.
+            viewModel.sendSuccess.observe(viewLifecycleOwner) { isSuccessFull ->
+                if (isSuccessFull) {
+                    val intent = Intent(requireContext(), MeetUpView::class.java).apply {
+                        putExtra(MEETUP_SHOWN, viewModel.getMeetUpId())
+                    }
+                    startActivity(intent)
+                } else {
+                    Snackbar.make(v, getString(R.string.DB_error_msg), 4).show()
                 }
-                startActivity(intent)
-            } else {
-                Snackbar.make(v, getString(R.string.DB_error_msg), 4).show()
             }
-        }
 
-        viewModel.sendMeetUp()
+            viewModel.sendMeetUp()
+        }
     }
 
     /**

@@ -44,6 +44,7 @@
             android:name=".ui.settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
+
         <activity
             android:name=".chat.ChatActivity"
             android:exported="false" />
@@ -56,6 +57,10 @@
 
         <activity
             android:name=".meetups.activities.MeetUpView"
+            android:exported="false"
+            android:parentActivityName=".navigation.MainNavActivity" />
+        <activity
+            android:name=".easter_egg.ManeameaActivity"
             android:exported="false"
             android:parentActivityName=".navigation.MainNavActivity" />
         <activity
