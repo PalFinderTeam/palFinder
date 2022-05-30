@@ -60,10 +60,6 @@
             android:exported="false"
             android:parentActivityName=".navigation.MainNavActivity" />
         <activity
-            android:name=".easter_egg.ManeameaActivity"
-            android:exported="false"
-            android:parentActivityName=".navigation.MainNavActivity" />
-        <activity
             android:name=".ui.login.LoginActivity"
             android:exported="true">
             <intent-filter>

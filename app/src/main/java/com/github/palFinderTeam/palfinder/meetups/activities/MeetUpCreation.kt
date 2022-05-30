@@ -326,10 +326,11 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
     private fun onDone(v: View) {
         // Check field validity
         val name = nameEditText.text.toString()
-        if (name == "123") {
+        val description = descriptionEditText.text.toString()
+        //if (easterEggChecked(name, description)) {
+        if (true) {
             ManeameaFragment().show(childFragmentManager, "")
         } else {
-            val description = descriptionEditText.text.toString()
             val location = viewModel.location.value
             if (!checkFieldValid(name, description, location)) return
 
@@ -347,6 +348,13 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
 
             viewModel.sendMeetUp()
         }
+    }
+
+    /**
+     * checks if the current arguments match the easter_egg constants
+     */
+    private fun easterEggChecked(name: String, description: String): Boolean {
+        return name == EASTER_NAME && description == EASTER_DESC
     }
 
     /**
@@ -411,5 +419,7 @@ class MeetUpCreation : Fragment(R.layout.activity_meet_up_creation_new), IconDia
 
     companion object {
         private const val ICON_DIALOG_TAG = "icon-dialog"
+        private const val EASTER_NAME = "TARTiNE"
+        private const val EASTER_DESC = "CATOGATOS THE MASTER OF DOGGOS"
     }
 }
