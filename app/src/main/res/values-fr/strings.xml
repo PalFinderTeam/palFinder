@@ -121,6 +121,8 @@
     <string name="meetup_view_gender_title">Genre</string>
     <string name="meetup_new_participant">\@%s a rejoint votre rencontre!</string>
 
+    <string name="easter_egg_fragment_text">On va pas en faire tout un plat..</string>
+
 
     <string name="ok">OK</string>
 
