@@ -70,7 +70,7 @@ class NotificationService @Inject constructor(
             if (id != null){
                 loggedUser = profileService.fetch(id!!)
                 if (loggedUser != null){
-                    for(p in loggedUser!!.following){
+                    for(p in loggedUser!!.followed){
                         val user = profileService.fetch(p)
                         if (!profileMetaData.contains(p) && user != null){
                             profileMetaData.store(p, ProfileMetaData(p, true))
@@ -94,11 +94,25 @@ class NotificationService @Inject constructor(
                 val meta = if (meetupsMetaData.contains(m)) {
                     meetupsMetaData.get(m)
                 } else {
-                    val ret = MeetupMetaData(m, false, "")
+                    val ret = MeetupMetaData(m, false, "", mutableListOf())
                     meetupsMetaData.store(m, ret)
                     ret
                 }
                 if (meetup != null) {
+                    if (meetup.creatorId == id){
+                        val data = meetupsMetaData.get(m)
+                        val news = meetup.participantsId.subtract(data.participant)
+                        if (news.isNotEmpty()) {
+                            val names = profileService.fetch(news.toList())!!.map { it.name }.reduce{ x,y -> "$x, $y" }
+                            data.participant.addAll(news)
+                            meetupsMetaData.store(m, data)
+
+                            if (!loggedUser!!.isMeetupMuted(m)){
+                                NotificationHandler(context).post(meetup.name, context.getString(R.string.meetup_new_participant).format(names), R.drawable.icon_beer)
+                            }
+                        }
+                    }
+
                     // Check if meetup started and notification not sent
                     if (!meta.sendStartNotification && meetup.startDate.isBefore(timeService.now())) {
                         val intent = Intent(context, MeetUpView::class.java).apply {
@@ -143,7 +157,7 @@ class NotificationService @Inject constructor(
         return true
     }
 
-    data class MeetupMetaData(var uuid: String, var sendStartNotification: Boolean, var lastMessageNotification: String)
+    data class MeetupMetaData(var uuid: String, var sendStartNotification: Boolean, var lastMessageNotification: String, var participant: MutableList<String>)
     data class ProfileMetaData(var uuid: String, var sendStartNotification: Boolean)
     data class AchievementMetaData(var uuid: String, var sendStartNotification: Boolean)
 }

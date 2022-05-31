@@ -195,5 +195,9 @@ class NotificationTest {
         handler.schedule(date1, R.string.testNotifTitle, R.string.testNotifContent, R.drawable.icon_beer)
 
         notificationService.action()
+
+        uiDevice.openNotification()
+        uiDevice.wait(Until.hasObject(By.textStartsWith("Clear all")), timeout)
+        uiDevice.findObject(By.textStartsWith("Clear all")).click()
     }
 }
