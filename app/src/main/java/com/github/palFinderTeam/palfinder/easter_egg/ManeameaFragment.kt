@@ -10,6 +10,7 @@ import android.widget.VideoView
 import androidx.fragment.app.DialogFragment
 import com.github.palFinderTeam.palfinder.R
 
+
 /**
  * easter egg fragment, simply plays a video
  */
@@ -22,7 +23,12 @@ class ManeameaFragment : DialogFragment(){
     ): View? {
         val v: View = inflater.inflate(R.layout.activity_video, container, false)
         val videoView = v.findViewById<VideoView>(R.id.easter_egg_video)
-        val uri = Uri.parse("https://i.imgur.com/Daoab5M.mp4")
+        val uri = Uri.parse(
+            "android.resource://"
+                    + context?.packageName
+                    + "/"
+                    + R.raw.maneamea
+        )
         videoView.setVideoURI(uri)
         videoView.setOnPreparedListener { videoView.start() }
         videoView.setOnCompletionListener {
