@@ -197,6 +197,7 @@ class NotificationTest {
         notificationService.action()
 
         uiDevice.openNotification()
+        uiDevice.wait(Until.hasObject(By.textStartsWith("Clear all")), timeout)
         uiDevice.findObject(By.textStartsWith("Clear all")).click()
     }
 }
