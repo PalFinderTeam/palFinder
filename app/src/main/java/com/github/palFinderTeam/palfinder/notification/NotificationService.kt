@@ -101,14 +101,23 @@ class NotificationService @Inject constructor(
                 if (meetup != null) {
                     if (meetup.creatorId == id){
                         val data = meetupsMetaData.get(m)
-                        val news = meetup.participantsId.subtract(data.participant)
-                        if (news.isNotEmpty()) {
-                            val names = profileService.fetch(news.toList())!!.map { it.name }.reduce{ x,y -> "$x, $y" }
+                        if (data.participant != null) {
+                            val news = meetup.participantsId.subtract(data.participant)
                             data.participant.addAll(news)
                             meetupsMetaData.store(m, data)
+                            if (news.isNotEmpty()) {
+                                val names = profileService.fetch(news.toList())!!.map { it.name }
+                                    .reduce { x, y -> "$x, $y" }
+                                data.participant.addAll(news)
+                                meetupsMetaData.store(m, data)
 
-                            if (!loggedUser!!.isMeetupMuted(m)){
-                                NotificationHandler(context).post(meetup.name, context.getString(R.string.meetup_new_participant).format(names), R.drawable.icon_beer)
+                                if (!loggedUser!!.isMeetupMuted(m)) {
+                                    NotificationHandler(context).post(meetup.name,
+                                        context.getString(R.string.meetup_new_participant)
+                                            .format(names),
+                                        R.drawable.icon_beer
+                                    )
+                                }
                             }
                         }
                     }

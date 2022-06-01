@@ -40,6 +40,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.*
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 @ExperimentalCoroutinesApi
 @HiltAndroidTest
@@ -83,23 +84,24 @@ class NotificationTest {
         DictionaryCache.clearAllTempCaches(context)
 
         user1 = ProfileUser(
-            "userId", "Michel", "Jordan", "Surimi", Calendar.getInstance(),
+            "0", "Michel", "Jordan", "Surimi", Calendar.getInstance(),
             ImageInstance(""), following = listOf("userId2")
         )
         user2 = ProfileUser(
-            "userId", "Michel", "Jordan", "Surimi", Calendar.getInstance(),
+            "1", "Michel", "Jordan", "Surimi", Calendar.getInstance(),
             ImageInstance(""), following = listOf("userId2")
         )
 
         val date1 = Calendar.getInstance().apply { time = Date(0) }
-        val date2 = Calendar.getInstance().apply { time = Date(1) }
-        val date3 = Calendar.getInstance().apply { time = Date(3) }
+        val date2 = Calendar.getInstance().apply { time = Date(10) }
+        val date3 = Calendar.getInstance().apply { time = Date(2) }
 
         (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date3)
+        (meetUpRepository as UIMockMeetUpRepositoryModule.UIMockRepository).timeService = timeService
 
         meetUp = MeetUp(
             "dummy",
-            "userId",
+            "0",
             null,
             "dummy",
             "dummy",
@@ -109,7 +111,7 @@ class NotificationTest {
             setOf(Category.DRINKING),
             true,
             3,
-            listOf("userId"),
+            listOf("0"),
             Pair(null, null),
             CriterionGender.ALL
         )
@@ -173,31 +175,84 @@ class NotificationTest {
     }
 
     @Test
-    fun actionWorks() = runTest {
+    fun followerWorks() = runTest {
         val context: Context = ApplicationProvider.getApplicationContext()
         val date1 = Calendar.getInstance().apply { time = Date(0) }
         val userId = profileRepository.create(user1)
         val userId2 = profileRepository.create(user2)
+
+        uiDevice.openNotification()
+
+        // Test Follower
         profileRepository.edit(userId2!!, "following", listOf(userId))
         profileRepository.edit(userId!!, "followed", listOf(userId2))
 
         (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
             userId
         )
-
-        val id = meetUpRepository.create(meetUp)
         (meetUpRepository as UIMockMeetUpRepositoryModule.UIMockRepository).loggedUserID = userId
-        meetUpRepository.joinMeetUp(id!!, userId, date1, profileRepository.fetch(userId)!!)
-
-        chatService.postMessage(id, ChatMessage(date1, userId2, "hello world"))
-
-        val handler = NotificationHandler(context)
-        handler.schedule(date1, R.string.testNotifTitle, R.string.testNotifContent, R.drawable.icon_beer)
 
         notificationService.action()
 
-        uiDevice.openNotification()
         uiDevice.wait(Until.hasObject(By.textStartsWith("Clear all")), timeout)
+
+
+        val newFollowerNotif: UiObject2? =
+            uiDevice.findObject(By.text(context.getString(R.string.following_title)))
+        assertTrue(newFollowerNotif != null)
+
+        uiDevice.findObject(By.textStartsWith("Clear all")).click()
+    }
+    @Test
+    fun meetupWorks() = runTest {
+        val date1 = Calendar.getInstance().apply { time = Date(0) }
+        val userId = profileRepository.create(user1)!!
+        val userId2 = profileRepository.create(user2)!!
+
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            userId
+        )
+        (meetUpRepository as UIMockMeetUpRepositoryModule.UIMockRepository).loggedUserID = userId
+
+        // Test MeetUp
+        val id = meetUpRepository.create(meetUp.copy(creatorId = userId))
+        meetUpRepository.joinMeetUp(id!!, userId, date1, profileRepository.fetch(userId)!!)
+        meetUpRepository.joinMeetUp(id!!, userId2, date1, profileRepository.fetch(userId2)!!)
+
+        uiDevice.openNotification()
+        notificationService.action()
+        uiDevice.wait(Until.hasObject(By.textStartsWith("Clear all")), timeout)
+
+        val meetupNotif: UiObject2? = uiDevice.findObject(By.text(meetUp.name))
+        assertTrue(meetupNotif != null)
+
+        uiDevice.findObject(By.textStartsWith("Clear all")).click()
+
+    }
+    @Test
+    fun chatWorks() = runTest {
+        val date1 = Calendar.getInstance().apply { time = Date(0) }
+        val userId = profileRepository.create(user1)!!
+        val userId2 = profileRepository.create(user2)!!
+
+        (profileRepository as UIMockProfileServiceModule.UIMockProfileService).setLoggedInUserID(
+            userId
+        )
+        (meetUpRepository as UIMockMeetUpRepositoryModule.UIMockRepository).loggedUserID = userId
+
+        val id = meetUpRepository.create(meetUp.copy(creatorId = userId))
+        meetUpRepository.joinMeetUp(id!!, userId, date1, profileRepository.fetch(userId)!!)
+        meetUpRepository.joinMeetUp(id!!, userId2, date1, profileRepository.fetch(userId2)!!)
+
+        // Test Chat
+        chatService.postMessage(id, ChatMessage(date1, userId2, "hello world"))
+
+        uiDevice.openNotification()
+        notificationService.action()
+        uiDevice.wait(Until.hasObject(By.textStartsWith("Clear all")), timeout)
+        val chatNotif: UiObject2? = uiDevice.findObject(By.text("hello world"))
+        assertTrue(chatNotif != null)
+
         uiDevice.findObject(By.textStartsWith("Clear all")).click()
     }
 }
