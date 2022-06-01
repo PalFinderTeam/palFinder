@@ -205,7 +205,7 @@ class NotificationTest {
     }
     @Test
     fun meetupWorks() = runTest {
-        val date1 = Calendar.getInstance().apply { time = Date(0) }
+        val date1 = Calendar.getInstance().apply { time = Date(-1) }
         val userId = profileRepository.create(user1)!!
         val userId2 = profileRepository.create(user2)!!
 
@@ -217,7 +217,7 @@ class NotificationTest {
         // Test MeetUp
         val id = meetUpRepository.create(meetUp.copy(creatorId = userId))
         meetUpRepository.joinMeetUp(id!!, userId, date1, profileRepository.fetch(userId)!!)
-        meetUpRepository.joinMeetUp(id!!, userId2, date1, profileRepository.fetch(userId2)!!)
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
 
         uiDevice.openNotification()
         notificationService.action()
@@ -231,7 +231,7 @@ class NotificationTest {
     }
     @Test
     fun chatWorks() = runTest {
-        val date1 = Calendar.getInstance().apply { time = Date(0) }
+        val date1 = Calendar.getInstance().apply { time = Date(-1) }
         val userId = profileRepository.create(user1)!!
         val userId2 = profileRepository.create(user2)!!
 
@@ -242,7 +242,7 @@ class NotificationTest {
 
         val id = meetUpRepository.create(meetUp.copy(creatorId = userId))
         meetUpRepository.joinMeetUp(id!!, userId, date1, profileRepository.fetch(userId)!!)
-        meetUpRepository.joinMeetUp(id!!, userId2, date1, profileRepository.fetch(userId2)!!)
+        (timeService as UIMockTimeServiceModule.UIMockTimeService).setDate(date1)
 
         // Test Chat
         chatService.postMessage(id, ChatMessage(date1, userId2, "hello world"))
