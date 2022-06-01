@@ -201,7 +201,7 @@ object UIMockMeetUpRepositoryModule {
             return uuids.mapNotNull { db[it] }
         }
 
-        private suspend fun getRankingScore(meetUp: MeetUp): Double {
+        private fun getRankingScore(meetUp: MeetUp): Double {
             return meetUp.participantsId.size.toDouble()
         }
 
