@@ -44,8 +44,19 @@ Palfinder is the application to create, search and join meetups, all around the 
 It was created as part of the Software Development Project [CS-306](https://edu.epfl.ch/coursebook/en/software-development-project-CS-306-1)
 class at EPFL.
 
+You can find a small promotional video other [here](https://www.youtube.com/watch?v=bKBTz7Wq6eg).
+
 ## Key Features
 
 ## How To Use
 
+
 ## The team
+| Name                |                                     GitHub username |
+|---------------------|-----------------------------------------------------|
+| Zacharie Tevaearai  | [zaclegarssure](https://github.com/zaclegarssure)   |
+| Louca Gerussi       | [Gerussi](https://github.com/Gerussi)               |
+| Patrick Gilliard    | [pgilliard](https://github.com/pgilliar)            |
+| Christian Fattebert | [TheblueMan003](https://github.com/TheblueMan003)   |
+| Daniel Demko        | [TruddyTheDuddi](https://github.com/TruddyTheDuddi) |
+| Antoine Tappy       | [atappy](https://github.com/atappy)                 |
