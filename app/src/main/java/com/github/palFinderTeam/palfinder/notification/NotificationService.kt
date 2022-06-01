@@ -101,7 +101,7 @@ class NotificationService @Inject constructor(
                 if (meetup != null) {
                     if (meetup.creatorId == id){
                         val data = meetupsMetaData.get(m)
-                        val news = meetup.participantsId.subtract(data.participant)
+                        val news = meetup.participantsId.subtract(data.participant).filter { it != id }
                         data.participant.addAll(news)
                         meetupsMetaData.store(m, data)
                         if (news.isNotEmpty()) {

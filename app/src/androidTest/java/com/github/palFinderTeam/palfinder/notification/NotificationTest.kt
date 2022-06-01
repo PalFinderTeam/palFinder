@@ -111,7 +111,7 @@ class NotificationTest {
             setOf(Category.DRINKING),
             true,
             3,
-            listOf("0"),
+            listOf(),
             Pair(null, null),
             CriterionGender.ALL
         )
@@ -250,7 +250,7 @@ class NotificationTest {
         uiDevice.openNotification()
         notificationService.action()
         uiDevice.wait(Until.hasObject(By.textStartsWith("Clear all")), timeout)
-        val chatNotif: UiObject2? = uiDevice.findObject(By.text("hello world"))
+        val chatNotif: UiObject2? = uiDevice.findObject(By.text("Michel"))
         assertTrue(chatNotif != null)
 
         uiDevice.findObject(By.textStartsWith("Clear all")).click()
