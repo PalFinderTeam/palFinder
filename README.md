@@ -47,8 +47,13 @@ class at EPFL.
 You can find a small promotional video other [here](https://www.youtube.com/watch?v=bKBTz7Wq6eg).
 
 ## Key Features
+1. Find ongoing and future meetups througth an intuitive interface and simple filter system.
+2. Meet new people and follow your pals.
+3. Organize your dream meetups, with all the customization you need.
 
 ## How To Use
+First install the latest version of [Android Studio](https://developer.android.com/studio/), then clone and open the project.
+From there you will have to use your own [firebase](https://firebase.google.com/) and follow the [firebase setup](https://github.com/PalFinderTeam/palFinder/wiki/Firebase-setup).
 
 
 ## The team
