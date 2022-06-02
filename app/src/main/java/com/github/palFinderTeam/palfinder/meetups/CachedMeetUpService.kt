@@ -88,6 +88,11 @@ class CachedMeetUpService @Inject constructor(
         }
     }
 
+    override suspend fun updateRankingScore(meetUp: MeetUp): Double {
+        cache.evict(meetUp.uuid)
+        return db.updateRankingScore(meetUp)
+    }
+
     override fun getMeetUpsAroundLocation(
         location: Location,
         radiusInKm: Double,

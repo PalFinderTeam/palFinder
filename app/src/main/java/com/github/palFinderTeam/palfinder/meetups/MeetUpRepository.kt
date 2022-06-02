@@ -82,4 +82,11 @@ interface MeetUpRepository : Repository<MeetUp> {
      * Get all meetups that the user has Join.
      */
     suspend fun getAllJoinedMeetupID(): List<String>
+
+    /**
+     * Update the ranking score of the meetup (Use in the case it was not set before)
+     *
+     * @return the new score if successful, -1 otherwise
+     */
+    suspend fun updateRankingScore(meetUp: MeetUp): Double
 }

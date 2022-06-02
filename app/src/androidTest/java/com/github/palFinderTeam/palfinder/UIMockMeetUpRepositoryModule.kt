@@ -11,6 +11,8 @@ import com.github.palFinderTeam.palfinder.tag.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
+import com.github.palFinderTeam.palfinder.utils.time.RealTimeService
+import com.github.palFinderTeam.palfinder.utils.time.TimeService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -45,6 +47,7 @@ object UIMockMeetUpRepositoryModule {
      */
     class UIMockRepository : MeetUpRepository {
         val db: HashMap<String, MeetUp> = hashMapOf()
+        var timeService: TimeService = RealTimeService()
         private var counter = 0
 
         public var loggedUserID = "user"
@@ -75,6 +78,7 @@ object UIMockMeetUpRepositoryModule {
                     "location" -> oldVal.copy(location = value as Location)
                     "participants" -> oldVal.copy(participantsId = value as List<String>)
                     "tags" -> oldVal.copy(tags = value as Set<Category>)
+                    "rankingScore" -> oldVal.copy(rankingScore = value as Double)
 
                     else -> oldVal
                 }
@@ -139,10 +143,6 @@ object UIMockMeetUpRepositoryModule {
                 if (meetUp.isFull()) {
                     return Response.Failure("Cannot join, it is full.")
                 }
-                if (meetUp.creatorId == userId) {
-                    return Response.Failure("Cannot leave your own meetup.")
-                }
-
                 db[meetUpId] = meetUp.copy(participantsId = meetUp.participantsId.plus(userId))
                 Response.Success(Unit)
             } else {
@@ -190,7 +190,7 @@ object UIMockMeetUpRepositoryModule {
         }
 
         override suspend fun getAllJoinedMeetupID(): List<String> {
-            return fetchAll(Calendar.getInstance()).toList()[0].filter { it.isParticipating(loggedUserID) }.map { it.uuid }
+            return fetchAll(timeService.now()).toList()[0].filter { it.isParticipating(loggedUserID) }.map { it.uuid }
         }
 
         override suspend fun exists(uuid: String): Boolean {
@@ -199,6 +199,20 @@ object UIMockMeetUpRepositoryModule {
 
         override suspend fun fetch(uuids: List<String>): List<MeetUp>? {
             return uuids.mapNotNull { db[it] }
+        }
+
+        private fun getRankingScore(meetUp: MeetUp): Double {
+            return meetUp.participantsId.size.toDouble()
+        }
+
+        override suspend fun updateRankingScore(meetUp: MeetUp): Double {
+            return try {
+                val score = getRankingScore(meetUp)
+                edit(meetUp.uuid, "rankingScore", score)
+                score
+            } catch (e: Exception) {
+                -1.0
+            }
         }
 
         fun clearDB() {

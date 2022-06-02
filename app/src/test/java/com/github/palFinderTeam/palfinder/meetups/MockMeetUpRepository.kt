@@ -153,6 +153,20 @@ class MockMeetUpRepository : MeetUpRepository {
         return fetchAll(Calendar.getInstance()).toList()[0].filter { it.isParticipating("user1") }.map { it.uuid }
     }
 
+    private fun getRankingScore(meetUp: MeetUp): Double {
+        return meetUp.participantsId.size.toDouble()
+    }
+
+    override suspend fun updateRankingScore(meetUp: MeetUp): Double {
+        return try {
+            val score = getRankingScore(meetUp)
+            edit(meetUp.uuid, "rankingScore", score)
+            score
+        } catch (e: Exception) {
+            -1.0
+        }
+    }
+
     override suspend fun exists(uuid: String): Boolean {
         return db.containsKey(uuid)
     }
