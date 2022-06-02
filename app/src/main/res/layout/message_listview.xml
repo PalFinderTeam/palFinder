@@ -46,18 +46,19 @@
                 android:textSize="15sp" />
 
             <LinearLayout
+                android:id="@+id/msg_in_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/in_coming_message"
+                android:background="@drawable/out_going_message"
                 android:minHeight="30dp"
-                android:padding="10dp"
+                android:padding="12dp"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/msg_in_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="2dp"
+                    android:textColor="?attr/colorOnPrimary"
                     android:fontFamily="@font/fredoka_normal"
                     android:text="I am a placeholder message. Heloooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
                     android:textSize="16sp" />
@@ -66,11 +67,12 @@
                     android:id="@+id/msg_in_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="2dp"
+                    android:layout_marginTop="2dp"
+                    android:textColor="?attr/colorOnPrimary"
                     android:fontFamily="@font/fredoka_bold"
                     android:gravity="left"
                     android:text="5 minutes ago"
-                    android:alpha="0.3"/>
+                    android:alpha="0.4"/>
 
             </LinearLayout>
 
