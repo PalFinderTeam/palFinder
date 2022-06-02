@@ -203,7 +203,7 @@ data class MeetUp(
                 val tags = get(TAGS)!! as List<String>
                 val hasMaxCapacity = getBoolean(HAS_CAPACITY)!!
                 val participantsId = get(PARTICIPANTS)!! as List<String>
-                val rankingScore = get(RANKING_SCORE)!! as Double
+                val rankingScore = get(RANKING_SCORE) as? Double ?: -1.0
 
                 // Convert Date to calendar
                 val startDateCal = Calendar.getInstance()
