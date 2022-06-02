@@ -56,10 +56,6 @@ class ChatMessageListAdapter(
         val context = holder.messageInContent.context
         val previous = currentDataSet.getOrNull(position - 1)
 
-        // Show image only on others and avoid always showing image on chain of messages
-        val showPicture =
-            !(msg.sentBy == viewModel.profileService.getLoggedInUserID() || previous?.sentBy == msg.sentBy)
-
         val showName = previous?.sentBy != msg.sentBy
 
         val theme = context.theme
@@ -93,7 +89,8 @@ class ChatMessageListAdapter(
                 msg.sentBy,
                 holder.messageInSenderPic,
                 holder.messageInSenderName,
-                showPicture,
+                // In the end, we decided to always show the picture
+                showPicture=true,
                 showName
             )
         }
