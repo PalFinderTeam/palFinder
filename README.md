@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href="https://github.com/PalFinderTeam/palFinder"><img src="https://github.com/PalFinderTeam/palFinder/blob/beautyful-readme/icon.png" alt="PalFinder" width="200"></a>
+  <a href="https://github.com/PalFinderTeam/palFinder"><img src="https://github.com/PalFinderTeam/palFinder/blob/master/icon.png" alt="PalFinder" width="200"></a>
   <br>
   PalFinder
   <br>
