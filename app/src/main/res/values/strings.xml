@@ -291,5 +291,6 @@
     <string name="editProfile"> Edit profile</string>
     <string name="settings"> Settings</string>
     <string name="Logout">Logout</string>
+    <string name="type_to_chat">Type to chat</string>
 
 </resources>

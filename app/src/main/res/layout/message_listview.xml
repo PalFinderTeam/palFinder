@@ -4,63 +4,136 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    android:backgroundTintMode="add">
+    android:backgroundTintMode="add"
+    android:layout_margin="5dp">
 
-    <ImageView
-        android:id="@+id/msg_send_picture"
-        android:layout_width="32dp"
-        android:layout_height="28dp"
-        app:layout_constraintEnd_toStartOf="@+id/msg_in_layout"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/demo_pfp" />
+        android:orientation="horizontal">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/msg_in_layout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/in_coming_message"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/msg_send_picture"
-        app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/msg_in_sender_name"
-            android:layout_width="0dp"
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/msg_send_picture"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_marginEnd="5dp"
+
+            android:adjustViewBounds="true"
+            android:background="?attr/colorPrimary"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icon_user_male"
+
+            app:shapeAppearanceOverlay="@style/chatProfileRound" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="24dp"
-            android:fontFamily="@font/fredoka_normal"
-            android:text="Name"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/msg_in_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:fontFamily="@font/fredoka_normal"
-            android:text="Error"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@+id/msg_in_date"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/msg_in_sender_name" />
+            <TextView
+                android:id="@+id/msg_in_sender_name"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:fontFamily="@font/fredoka_bold"
+                android:layout_marginBottom="4dp"
 
-        <TextView
-            android:id="@+id/msg_in_date"
-            android:layout_width="0dp"
-            android:layout_height="19dp"
-            android:layout_marginEnd="24dp"
-            android:fontFamily="@font/fredoka_normal"
-            android:text="5min"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+                android:text="Name"
+                android:alpha="0.5"
+                android:textSize="15sp" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:id="@+id/msg_in_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/out_going_message"
+                android:minHeight="30dp"
+                android:padding="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/msg_in_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:fontFamily="@font/fredoka_normal"
+                    android:text="I am a placeholder message. Heloooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/msg_in_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:fontFamily="@font/fredoka_bold"
+                    android:gravity="left"
+                    android:text="5 minutes ago"
+                    android:alpha="0.4"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+<!--    <ImageView-->
+<!--        android:id="@+id/msg_send_picture"-->
+<!--        android:layout_width="32dp"-->
+<!--        android:layout_height="28dp"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/msg_in_layout"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:srcCompat="@drawable/demo_pfp" />-->
+
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/msg_in_layout"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@drawable/in_coming_message"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/msg_send_picture"-->
+<!--        app:layout_constraintTop_toTopOf="parent">-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/msg_in_sender_name"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="24dp"-->
+<!--            android:layout_marginTop="2dp"-->
+<!--            android:layout_marginEnd="24dp"-->
+<!--            android:fontFamily="@font/fredoka_normal"-->
+<!--            android:text="Name"-->
+<!--            android:textSize="14sp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/msg_in_text"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="24dp"-->
+<!--            android:fontFamily="@font/fredoka_normal"-->
+<!--            android:text="Error"-->
+<!--            android:textSize="14sp"-->
+<!--            app:layout_constraintEnd_toStartOf="@+id/msg_in_date"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/msg_in_sender_name" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/msg_in_date"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="19dp"-->
+<!--            android:layout_marginEnd="24dp"-->
+<!--            android:fontFamily="@font/fredoka_normal"-->
+<!--            android:text="5min"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

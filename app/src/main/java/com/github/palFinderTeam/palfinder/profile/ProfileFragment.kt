@@ -66,12 +66,12 @@ class ProfileFragment : Fragment(R.layout.activity_profile) {
         // Bind the adapter to the RecyclerView
         viewModel.meetupDataSet.observe(viewLifecycleOwner) { dataResp ->
             if (dataResp is Response.Success) {
-                val meetups = dataResp.data
+                val meetups = dataResp.data.sortedBy { it.startDate }.reversed()
                 adapter = MeetupListRootAdapter(
                     meetups,
                     meetups.toMutableList(),
                     context = requireContext()
-                ) { onListItemClick(it) }
+                ) { onListItemClick(meetups[it].uuid) }
                 meetupList.adapter = adapter
             }
         }
@@ -303,12 +303,12 @@ class ProfileFragment : Fragment(R.layout.activity_profile) {
     /**
      * When clicking on a meetup list element
      */
-    private fun onListItemClick(position: Int) {
+    private fun onListItemClick(uuid: String) {
         val intent = Intent(requireContext(), MeetUpView::class.java)
             .apply {
                 putExtra(
                     MEETUP_SHOWN,
-                    (viewModel.meetupDataSet.value as Response.Success).data[position].uuid
+                    uuid,
                 )
             }
         startActivity(intent)

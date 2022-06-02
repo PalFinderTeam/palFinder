@@ -53,7 +53,7 @@
                         android:id="@+id/badgePic1"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:layout_marginHorizontal="8dp"
+                        android:layout_marginStart="8dp"
                         android:src="@drawable/ic_badge_dev"
                         android:visibility="visible"
                         tools:ignore="ContentDescription" />
@@ -62,7 +62,7 @@
                         android:id="@+id/badgePic2"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:layout_marginHorizontal="8dp"
+                        android:layout_marginStart="8dp"
                         android:visibility="visible"
                         tools:ignore="ContentDescription" />
 
@@ -216,34 +216,35 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:gravity="center"
                             android:orientation="horizontal">
 
                             <ImageView
                                 android:id="@+id/AchFollowing1"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_marginHorizontal="8dp"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:layout_marginHorizontal="2dp"
                                 android:visibility="visible" />
 
                             <ImageView
                                 android:id="@+id/AchFollowing2"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_marginHorizontal="8dp"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:layout_marginHorizontal="2dp"
                                 android:visibility="visible" />
 
                             <ImageView
                                 android:id="@+id/AchFollowing3"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_marginHorizontal="8dp"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:layout_marginHorizontal="2dp"
                                 android:visibility="visible" />
 
                             <ImageView
                                 android:id="@+id/AchFollowing4"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_marginHorizontal="8dp"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:layout_marginHorizontal="2dp"
                                 android:visibility="visible" />
                         </LinearLayout>
 
@@ -279,37 +280,38 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:gravity="center"
                             android:orientation="horizontal">
 
                             <ImageView
                                 android:id="@+id/AchFollowed1"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_marginHorizontal="8dp"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:layout_marginHorizontal="2dp"
                                 android:visibility="visible"
                                 tools:ignore="ContentDescription" />
 
                             <ImageView
                                 android:id="@+id/AchFollowed2"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_marginHorizontal="8dp"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:layout_marginHorizontal="2dp"
                                 android:visibility="visible"
                                 tools:ignore="ContentDescription" />
 
                             <ImageView
                                 android:id="@+id/AchFollowed3"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_marginHorizontal="8dp"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:layout_marginHorizontal="2dp"
                                 android:visibility="visible"
                                 tools:ignore="ContentDescription" />
 
                             <ImageView
                                 android:id="@+id/AchFollowed4"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_marginHorizontal="8dp"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:layout_marginHorizontal="2dp"
                                 android:visibility="visible"
                                 tools:ignore="ContentDescription" />
                         </LinearLayout>
