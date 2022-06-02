@@ -115,17 +115,23 @@ class MapsFragmentTest {
                 MapsFragment.Context.MARKER
             )
         })
+
+        var mapsFragment: MapsFragment? = null
         scenario!!.use {
+
             scenario.onHiltFragment<MapsFragment> {
                 it.viewModel.setSearchParameters(location = meetup.location, showParam = ShowParam.ALL)
                 it.viewModel.fetchMeetUps()
                 it.setMapLocation(meetup.location, instantaneous = true)
                 it.viewModel.firstInit()
+                mapsFragment = it
             }
             init()
 
             val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
             device.wait(Until.hasObject(By.desc("MAP READY")), 1000)
+
+            mapsFragment?.setMapLocation(meetup.location, instantaneous = true)
             val marker = device.findObject(UiSelector().descriptionContains(id))
             marker.waitForExists(1000)
             assertThat(marker, `is`(notNullValue()))
