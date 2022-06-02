@@ -32,6 +32,7 @@
 
 <p align="center">
   <a href="#key-features">Key Features</a> •
+  <a href="https://www.youtube.com/watch?v=bKBTz7Wq6eg">Promo video</a> •
   <a href="#how-to-use">How To Use</a> •
   <a href="#the-team">The team</a>
 </p>
