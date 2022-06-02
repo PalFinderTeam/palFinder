@@ -44,7 +44,7 @@ Palfinder is the application to create, search and join meetups, all around the 
 It was created as part of the Software Development Project [CS-306](https://edu.epfl.ch/coursebook/en/software-development-project-CS-306-1)
 class at EPFL.
 
-You can find a small promotional video other [here](https://www.youtube.com/watch?v=bKBTz7Wq6eg).
+You can find our promotional video [here](https://www.youtube.com/watch?v=bKBTz7Wq6eg).
 
 ## Key Features
 1. Find ongoing and future meetups througth an intuitive interface and simple filter system.
