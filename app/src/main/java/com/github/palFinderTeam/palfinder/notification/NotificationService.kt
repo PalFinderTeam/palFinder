@@ -99,15 +99,16 @@ class NotificationService @Inject constructor(
                 }
                 if (meetup != null) {
                     if (meetup.creatorId == id) {
-                        val news = meetup.participantsId.subtract(meta.participant.toSet())
-                            .filter { it != id }
-                        meta.participant.addAll(news)
-                        meetupsMetaData.store(m, meta)
+                        val data = meetupsMetaData.get(m)
+                        val news = meetup.participantsId.subtract(data.participant.toSet()).filter { it != id }
+                        data.participant.addAll(news)
+                        meetupsMetaData.store(m, data)
+                        
                         if (news.isNotEmpty()) {
                             val names = profileService.fetch(news.toList())!!.map { it.name }
                                 .reduce { x, y -> "$x, $y" }
-                            meta.participant.addAll(news)
-                            meetupsMetaData.store(m, meta)
+                            data.participant.addAll(news)
+                            meetupsMetaData.store(m, data)
 
                             if (!loggedUser!!.isMeetupMuted(m)) {
                                 val intent = Intent(context, ProfileActivity::class.java).apply {
