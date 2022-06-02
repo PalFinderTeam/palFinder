@@ -56,6 +56,10 @@ class ChatMessageListAdapter(
         val context = holder.messageInContent.context
         val previous = currentDataSet.getOrNull(position - 1)
 
+        // Show image only when new user push
+        val showPicture =
+            previous?.sentBy != msg.sentBy
+
         val showName = previous?.sentBy != msg.sentBy
 
         val theme = context.theme
@@ -89,8 +93,7 @@ class ChatMessageListAdapter(
                 msg.sentBy,
                 holder.messageInSenderPic,
                 holder.messageInSenderName,
-                // In the end, we decided to always show the picture
-                showPicture=true,
+                showPicture,
                 showName
             )
         }
