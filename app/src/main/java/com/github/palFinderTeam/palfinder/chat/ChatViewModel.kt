@@ -91,6 +91,7 @@ class ChatViewModel @Inject constructor(
 
     private suspend fun loadCachedUser(userId: String, pictureBox: ImageView, nameBox: TextView, showPicture: Boolean, showName: Boolean) {
         if (showPicture) {
+            pictureBox.visibility = View.VISIBLE
             profilesData[userId]!!.pfp.loadImageInto(
                 pictureBox,
                 getApplication<Application>().applicationContext
