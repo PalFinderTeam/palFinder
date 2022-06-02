@@ -8,6 +8,7 @@ import androidx.annotation.RequiresApi
 import com.github.palFinderTeam.palfinder.profile.ProfileFragment
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
+import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.CachedChatService
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.chat.ChatService
@@ -74,7 +75,7 @@ class NotificationService @Inject constructor(
                         val user = profileService.fetch(p)
                         if (!profileMetaData.contains(p) && user != null){
                             profileMetaData.store(p, ProfileMetaData(p, true))
-                            val intent = Intent(context, ProfileFragment::class.java).apply {
+                            val intent = Intent(context, ProfileActivity::class.java).apply {
                                 putExtra(USER_ID, user.uuid)
                             }
                             NotificationHandler(context).post(context.getString(R.string.following_title), context.getString(R.string.following_content).format(user.username), R.drawable.icon_beer, intent)
@@ -111,10 +112,14 @@ class NotificationService @Inject constructor(
                             meetupsMetaData.store(m, data)
 
                             if (!loggedUser!!.isMeetupMuted(m)) {
+                                val intent = Intent(context, ProfileActivity::class.java).apply {
+                                    putExtra(USER_ID, news[0])
+                                }
                                 NotificationHandler(context).post(meetup.name,
                                     context.getString(R.string.meetup_new_participant)
                                         .format(names),
-                                    R.drawable.icon_beer
+                                    R.drawable.icon_beer,
+                                    intent
                                 )
                             }
                         }
@@ -141,8 +146,11 @@ class NotificationService @Inject constructor(
 
                         if (hash != meta.lastMessageNotification && last.sentBy != profileService.getLoggedInUserID() && loggedUser != null && !loggedUser.isMeetupMuted(m)) {
                             val name = profileService.fetch(last.sentBy)?.username?:""
+                            val intent = Intent(context, ChatActivity::class.java).apply {
+                                putExtra(CHAT, m)
+                            }
                             if (ChatActivity.currentlyViewChat != m) {
-                                NotificationHandler(context).post(name, last.content, R.drawable.icon_beer)
+                                NotificationHandler(context).post(name, last.content, R.drawable.icon_beer, intent)
                             }
                             meta.lastMessageNotification = hash
                             meetupsMetaData.store(m, meta)
