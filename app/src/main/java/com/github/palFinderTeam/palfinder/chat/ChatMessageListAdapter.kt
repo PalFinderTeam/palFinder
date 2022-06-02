@@ -10,7 +10,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
@@ -52,13 +51,18 @@ class ChatMessageListAdapter(
         val prettyDate = PrettyDate()
         val msg = currentDataSet[position]
         val context = holder.messageInContent.context
+        val previous = currentDataSet.getOrNull(position - 1)
+
+        // Show image only on others and avoid always showing image on chain of messages
+        val showPicture =
+            !(msg.sentBy == viewModel.profileService.getLoggedInUserID() || previous?.sentBy == msg.sentBy)
+
+        val showName = previous?.sentBy != msg.sentBy
 
         if (msg.sentBy == viewModel.profileService.getLoggedInUserID()) {
             holder.messageInLayout.background = context.getDrawable(R.drawable.out_going_message)
-            holder.messageInSenderPic.isVisible = false
         } else {
             holder.messageInLayout.background = context.getDrawable(R.drawable.in_coming_message)
-            holder.messageInSenderPic.isVisible = true
         }
         holder.messageInContent.text = msg.content
         holder.messageInDate.text = ShortDate.format(context, msg.sentAt, Calendar.getInstance())
@@ -73,7 +77,9 @@ class ChatMessageListAdapter(
             viewModel.loadProfileData(
                 msg.sentBy,
                 holder.messageInSenderPic,
-                holder.messageInSenderName
+                holder.messageInSenderName,
+                showPicture,
+                showName
             )
         }
     }

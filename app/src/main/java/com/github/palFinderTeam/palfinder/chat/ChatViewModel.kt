@@ -66,15 +66,17 @@ class ChatViewModel @Inject constructor(
      * @param userId  Id of the user to load
      * @param pictureBox ImageView where to put the profile picture
      * @param nameBox TextView where to put the user name
+     * @param showPicture If true show the picture
+     * @param showName If true show the username
      */
-    suspend fun loadProfileData(userId: String, pictureBox: ImageView, nameBox: TextView) {
+    suspend fun loadProfileData(userId: String, pictureBox: ImageView, nameBox: TextView, showPicture: Boolean = true, showName: Boolean = true) {
         if (!profilesData.containsKey(userId)) {
             viewModelScope.launch {
                 profileService.fetchFlow(userId).collect {
                     when (it) {
                         is Response.Success -> {
                             profilesData[userId] = it.data
-                            loadCachedUser(userId, pictureBox, nameBox)
+                            loadCachedUser(userId, pictureBox, nameBox, showPicture, showName)
                         }
                         else -> {
                             nameBox.text = nameBox.context.getString(R.string.placeholder_name)
@@ -83,18 +85,25 @@ class ChatViewModel @Inject constructor(
                 }
             }
         } else {
-            loadCachedUser(userId, pictureBox, nameBox)
+            loadCachedUser(userId, pictureBox, nameBox, showPicture, showName)
         }
     }
 
-    private suspend fun loadCachedUser(userId: String, pictureBox: ImageView, nameBox: TextView) {
-        nameBox.text = profilesData[userId]!!.username
-        // Don't load own picture
-        if (profileService.getLoggedInUserID() != userId) {
+    private suspend fun loadCachedUser(userId: String, pictureBox: ImageView, nameBox: TextView, showPicture: Boolean, showName: Boolean) {
+        if (showPicture) {
             profilesData[userId]!!.pfp.loadImageInto(
                 pictureBox,
                 getApplication<Application>().applicationContext
             )
+        } else {
+            pictureBox.visibility = View.INVISIBLE
+        }
+
+        if (showName) {
+            nameBox.text = profilesData[userId]!!.username
+            nameBox.visibility = View.VISIBLE
+        } else {
+            nameBox.visibility = View.GONE
         }
     }
 }
