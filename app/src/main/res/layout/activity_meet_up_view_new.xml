@@ -28,22 +28,22 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/meetup_creation_meetup_tags"
+                android:fontFamily="@font/fredoka_normal"
                 android:paddingHorizontal="16dp"
                 android:paddingTop="10dp"
-                android:fontFamily="@font/fredoka_normal"/>
+                android:text="@string/meetup_creation_meetup_tags" />
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fc_tags"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp"/>
+                android:padding="16dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="76dp">
+                android:layout_marginBottom="76dp"
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/button_join_meetup"
@@ -61,9 +61,9 @@
                     android:id="@+id/show_qr_button"
                     android:layout_width="133dp"
                     android:layout_height="match_parent"
+                    android:layout_gravity="center"
                     android:layout_marginStart="11dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_gravity="center"
                     android:layout_weight="1"
                     android:elevation="0dp"
                     android:fontFamily="@font/fredoka_bold"
@@ -124,14 +124,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
+
         android:layout_marginBottom="5dp"
-
         android:clickable="true"
-        android:focusable="true"
 
+        android:focusable="true"
         app:backgroundTint="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/bt_OpenNavigation"
         app:srcCompat="@drawable/ic_baseline_edit_24"
         app:tint="@android:color/white"
         tools:ignore="ContentDescription" />
@@ -140,14 +140,14 @@
         android:id="@+id/bt_OpenNavigation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
 
         android:clickable="true"
         android:focusable="true"
-
         app:backgroundTint="?attr/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@id/bt_EditMeetup"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_dialog_map"
         app:tint="@android:color/white"

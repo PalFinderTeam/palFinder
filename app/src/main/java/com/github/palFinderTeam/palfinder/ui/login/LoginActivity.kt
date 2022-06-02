@@ -101,7 +101,7 @@ class LoginActivity : PalFinderBaseActivity() {
         passwordTv = findViewById(R.id.password)
 
         signInOrRegister.setOnClickListener {
-            val email = emailTv.text.toString()
+            val email = emailTv.text.toString().trim()
             //no checks on password is made for now
             val password = passwordTv.text.toString()
             if (email == "" || password == "") {
@@ -196,7 +196,7 @@ class LoginActivity : PalFinderBaseActivity() {
             Toast.makeText(baseContext, "password not saved", Toast.LENGTH_SHORT).show()
         }
         // Account created, we now sign in.
-        signIn(emailTv.text.toString(), passwordTv.text.toString(), savePassword = false)
+        signIn(emailTv.text.toString().trim(), passwordTv.text.toString(), savePassword = false)
     }
 
     private fun googleSignInRequestHandler(data: Intent?) {
@@ -296,7 +296,7 @@ class LoginActivity : PalFinderBaseActivity() {
             .addOnFailureListener(this) { e ->
                 Log.d(TAG, e.localizedMessage)
                 // No saved credentials found. Connect the user.
-                signIn(emailTv.text.toString(), passwordTv.text.toString(), savePassword = false)
+                signIn(emailTv.text.toString().trim(), passwordTv.text.toString(), savePassword = false)
             }
     }
 
