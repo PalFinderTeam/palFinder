@@ -3,6 +3,7 @@ package com.github.palFinderTeam.palfinder.meetups.fragments
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,10 +27,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @AndroidEntryPoint
 class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
 
+    private val BASE_HOURS_INTERVAL = 24
     private lateinit var filterGroup: RadioGroup
     private lateinit var selectStartTime: TextView
     private lateinit var selectEndTime: TextView
-
     private var dateFormat = SimpleDateFormat()
 
     override fun onCreateView(
@@ -107,13 +108,18 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
             viewModel.startTime.value?.toSimpleTime(),
             minDate = Calendar.getInstance()
         ).thenAccept {
-            val interval = viewModel.startTime.value?.timeInMillis?.let { it1 ->
+            var interval = viewModel.startTime.value?.timeInMillis?.let { it1 ->
                 viewModel.endTime.value?.timeInMillis?.minus(
                     it1
                 )
             }
+            if(interval == null){
+                interval = (BASE_HOURS_INTERVAL*3600*1000).toLong()
+                viewModel.endTime.value = it
+            }
             viewModel.startTime.value = it
-            viewModel.endTime.value?.timeInMillis = it.timeInMillis + interval!!
+            viewModel.endTime.value?.timeInMillis = it.timeInMillis + interval
+            //refresh the time shown
             viewModel.endTime.value = viewModel.endTime.value
         }
     }

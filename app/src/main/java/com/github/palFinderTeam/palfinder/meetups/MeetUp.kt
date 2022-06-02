@@ -47,6 +47,7 @@ data class MeetUp(
     val criterionAge: Pair<Int?, Int?>? = null,
     val criterionGender: CriterionGender? = null,
     val markerId: Int? = null,
+    val rankingScore: Double = -1.0
 ) : java.io.Serializable, FirebaseObject, StringFilterable {
 
     /**
@@ -150,6 +151,7 @@ data class MeetUp(
             CRITERION_AGE_FIRST to criterionAge?.first?.toLong(),
             CRITERION_AGE_SECOND to criterionAge?.second?.toLong(),
             CRITERION_GENDER to criterionGender?.genderName,
+            RANKING_SCORE to rankingScore
         )
     }
 
@@ -179,6 +181,7 @@ data class MeetUp(
         const val CRITERION_AGE_FIRST = "criterionAgeFirst"
         const val CRITERION_AGE_SECOND = "criterionAgeSecond"
         const val CRITERION_GENDER = "criterionGender"
+        const val RANKING_SCORE = "ranking_score"
 
         /**
          * Provide a way to convert a Firestore query result, in a MeetUp
@@ -200,6 +203,8 @@ data class MeetUp(
                 val tags = get(TAGS)!! as List<String>
                 val hasMaxCapacity = getBoolean(HAS_CAPACITY)!!
                 val participantsId = get(PARTICIPANTS)!! as List<String>
+                val rankingScore = get(RANKING_SCORE)!! as Double
+
                 // Convert Date to calendar
                 val startDateCal = Calendar.getInstance()
                 val endDateCal = Calendar.getInstance()
@@ -226,7 +231,8 @@ data class MeetUp(
                     participantsId,
                     criterionAge,
                     criterionGender,
-                    markerId?.toInt()
+                    markerId?.toInt(),
+                    rankingScore
                 )
             } catch (e: Exception) {
                 Log.e("Meetup", "Error deserializing meetup", e)

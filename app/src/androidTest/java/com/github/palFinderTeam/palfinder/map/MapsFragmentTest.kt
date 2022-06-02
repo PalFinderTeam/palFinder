@@ -115,7 +115,10 @@ class MapsFragmentTest {
                 MapsFragment.Context.MARKER
             )
         })
+
+        var mapsFragment: MapsFragment? = null
         scenario!!.use {
+
             scenario.onHiltFragment<MapsFragment> {
                 it.viewModel.setSearchParameters(location = meetup.location, showParam = ShowParam.ALL)
                 it.viewModel.fetchMeetUps()

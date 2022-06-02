@@ -277,16 +277,15 @@ class MapListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun computeAverage(uuids: List<String>): Double {
-        val participants = profileService.fetch(uuids)
-        return participants!!.sumOf { it.followed.size }.toDouble() / participants.size
-    }
-
     private fun MeetUp.getTrendScore(): Double {
         val meetUp = this
         var score: Double
         runBlocking {
-            score = computeAverage(meetUp.participantsId)
+            score = if (meetUp.rankingScore >= 0) {
+                -meetUp.rankingScore
+            } else {
+                -meetUpRepository.updateRankingScore(meetUp)
+            }
         }
         return score
     }

@@ -26,7 +26,7 @@ abstract class EndlessService{
             val serviceComponent = ComponentName(context, NotificationService::class.java)
             val builder = JobInfo.Builder(0, serviceComponent)
             builder.setMinimumLatency((1 * 1000).toLong())
-            builder.setOverrideDeadline((3 * 1000).toLong())
+            builder.setOverrideDeadline((30 * 1000).toLong())
             builder.setRequiresCharging(false)
             val jobScheduler = context.getSystemService(JobScheduler::class.java)
             jobScheduler.schedule(builder.build())

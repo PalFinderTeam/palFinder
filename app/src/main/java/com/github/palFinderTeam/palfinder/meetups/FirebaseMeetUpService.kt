@@ -6,6 +6,7 @@ import com.firebase.geofire.GeoLocation
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.END_DATE
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.GEOHASH
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.PARTICIPANTS
+import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.RANKING_SCORE
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
 import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
 import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
@@ -171,6 +172,11 @@ open class FirebaseMeetUpService @Inject constructor(
                 FieldValue.arrayUnion(userId)
             )
             batch.update(
+                db.collection(MEETUP_COLL).document(meetUpId),
+                RANKING_SCORE,
+                getRankingScore(meetUp.copy(participantsId = meetUp.participantsId.plus(userId)))
+            )
+            batch.update(
                 db.collection(PROFILE_COLL).document(userId),
                 JOINED_MEETUPS_KEY, FieldValue.arrayUnion(meetUpId)
             )
@@ -198,6 +204,11 @@ open class FirebaseMeetUpService @Inject constructor(
                 FieldValue.arrayRemove(userId)
             )
             batch.update(
+                db.collection(MEETUP_COLL).document(meetUpId),
+                RANKING_SCORE,
+                getRankingScore(meetUp.copy(participantsId = meetUp.participantsId.minus(userId)))
+            )
+            batch.update(
                 db.collection(PROFILE_COLL).document(userId),
                 JOINED_MEETUPS_KEY, FieldValue.arrayRemove(meetUpId)
             )
@@ -205,6 +216,32 @@ open class FirebaseMeetUpService @Inject constructor(
             Success(Unit)
         } catch (e: Exception) {
             Failure(e.message.orEmpty())
+        }
+    }
+
+    private suspend fun getRankingScore(meetUp: MeetUp): Double {
+        val participants = profileService.fetch(meetUp.participantsId)
+        return participants!!.sumOf { it.followed.size }.toDouble() / participants.size
+    }
+
+    /**
+     * Update the ranking score of the meetup (Use in the case it was not set before)
+     *
+     * @return the new score if successful, -1 otherwise
+     */
+    override suspend fun updateRankingScore(meetUp: MeetUp): Double {
+        return try {
+            val batch = db.batch()
+            val score = getRankingScore(meetUp)
+            batch.update(
+                db.collection(MEETUP_COLL).document(meetUp.uuid),
+                RANKING_SCORE,
+                score
+            )
+            batch.commit().await()
+            score
+        } catch (e: Exception) {
+            -1.0
         }
     }
 
