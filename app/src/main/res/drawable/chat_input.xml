@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <stroke
+        android:width="0dp"
+        android:color="@color/zxing_transparent"/>
+    <!-- special shape that is not affected by the different theme-->
+
+    <corners android:radius="30dp" />
+    <solid android:color="?attr/colorOnPrimary" />
+</shape>

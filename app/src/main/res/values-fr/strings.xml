@@ -272,6 +272,7 @@
     <string name="settings"> Paramètres</string>
     <string name="Logout">Se déconnecter</string>
     <string name="nav_bar_profile">Mon Profil</string>
+    <string name="type_to_chat">Tapez pour discuter</string>
 
 
 </resources>
