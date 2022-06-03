@@ -113,9 +113,10 @@ open class FirebaseMeetUpService @Inject constructor(
                         meetups = meetups?.filter { !it.isFinished(currentDate) }
                     }
 
+                    // To avoid having twice the modified one and still have the deleted one
                     val deletedMeetups = value?.documentChanges
                         ?.filter {
-                            it.type == DocumentChange.Type.REMOVED
+                            it.type == DocumentChange.Type.REMOVED || it.type == DocumentChange.Type.MODIFIED
                         }
                         ?.mapNotNull { it.document.toMeetUp() }
                     if (meetups != null) {

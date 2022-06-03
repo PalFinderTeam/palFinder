@@ -264,7 +264,7 @@ class MapListViewModel @Inject constructor(
                 showParam,
                 if (userId == null) userId else profileService.fetch(userId)
             ).collect {
-                _listOfMeetUpResponse.postValue(it)
+                _listOfMeetUpResponse.value = it
             }
         }
     }

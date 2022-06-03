@@ -5,7 +5,6 @@ import android.app.job.JobService
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.github.palFinderTeam.palfinder.profile.ProfileFragment
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.chat.CHAT
@@ -55,7 +54,6 @@ class NotificationService @Inject constructor(
     private val profileMetaData = DictionaryCache("profile_meta", ProfileMetaData::class.java, false, contextService.get())
     private val achievementMetaData = DictionaryCache("achievement_meta", AchievementMetaData::class.java, false, contextService.get())
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun action(){
         for (notif in notifications.getAll()){
             if (notif.time.isBefore(timeService.now())){
@@ -91,7 +89,7 @@ class NotificationService @Inject constructor(
             }
             //Notification For Meetup
             for (m in meetupService.getAllJoinedMeetupID()) {
-                var meetup = meetupService.fetch(m)
+                val meetup = meetupService.fetch(m)
                 val meta = if (meetupsMetaData.contains(m)) {
                     meetupsMetaData.get(m)
                 } else {
@@ -100,11 +98,12 @@ class NotificationService @Inject constructor(
                     ret
                 }
                 if (meetup != null) {
-                    if (meetup.creatorId == id){
+                    if (meetup.creatorId == id) {
                         val data = meetupsMetaData.get(m)
-                        val news = meetup.participantsId.subtract(data.participant).filter { it != id }
+                        val news = meetup.participantsId.subtract(data.participant.toSet()).filter { it != id }
                         data.participant.addAll(news)
                         meetupsMetaData.store(m, data)
+                        
                         if (news.isNotEmpty()) {
                             val names = profileService.fetch(news.toList())!!.map { it.name }
                                 .reduce { x, y -> "$x, $y" }
@@ -115,7 +114,8 @@ class NotificationService @Inject constructor(
                                 val intent = Intent(context, ProfileActivity::class.java).apply {
                                     putExtra(USER_ID, news[0])
                                 }
-                                NotificationHandler(context).post(meetup.name,
+                                NotificationHandler(context).post(
+                                    meetup.name,
                                     context.getString(R.string.meetup_new_participant)
                                         .format(names),
                                     R.drawable.icon_beer,
@@ -161,7 +161,6 @@ class NotificationService @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartJob(params: JobParameters?): Boolean {
         action()
         EndlessService.scheduleJob(applicationContext) // reschedule the job
