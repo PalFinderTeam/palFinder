@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/list_fragment"
-        android:name="com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment"
+        android:name="com.github.palFinderTeam.palfinder.meetups.meetupList.MeetupListFragment"
         tools:layout="@layout/activity_list"
         android:label="MeetupListActivity">
         <argument

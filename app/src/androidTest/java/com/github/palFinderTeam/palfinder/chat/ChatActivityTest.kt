@@ -14,7 +14,7 @@ import androidx.test.espresso.intent.Intents.release
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.meetups.activities.RecyclerViewMatcher
+import com.github.palFinderTeam.palfinder.meetups.RecyclerViewMatcher
 import com.github.palFinderTeam.palfinder.profile.*
 import com.github.palFinderTeam.palfinder.profile.profile.ProfileActivity
 import com.github.palFinderTeam.palfinder.profile.services.ProfileService

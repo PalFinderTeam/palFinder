@@ -1,4 +1,4 @@
-package com.github.palFinderTeam.palfinder.meetups.activities
+package com.github.palFinderTeam.palfinder.meetups
 
 import android.content.res.Resources
 import android.icu.text.SimpleDateFormat
@@ -25,9 +25,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.meetupRepository.MeetUpRepository
-import com.github.palFinderTeam.palfinder.meetups.ShowParam
 import com.github.palFinderTeam.palfinder.meetups.meetupList.MeetupListFragment
 import com.github.palFinderTeam.palfinder.meetups.meetupView.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.services.ProfileService

@@ -1,4 +1,4 @@
-package com.github.palFinderTeam.palfinder.meetups.activities
+package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule

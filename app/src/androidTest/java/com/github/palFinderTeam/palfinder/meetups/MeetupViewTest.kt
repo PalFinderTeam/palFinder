@@ -1,4 +1,4 @@
-package com.github.palFinderTeam.palfinder.meetups.activities
+package com.github.palFinderTeam.palfinder.meetups
 
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
@@ -35,7 +35,6 @@ import com.github.palFinderTeam.palfinder.UIMockMeetUpRepositoryModule
 import com.github.palFinderTeam.palfinder.chat.CHAT
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.meetupCreation.MeetUpCreation
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.meetupRepository.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.meetupView.MEETUP_EDIT
 import com.github.palFinderTeam.palfinder.meetups.meetupView.MEETUP_SHOWN

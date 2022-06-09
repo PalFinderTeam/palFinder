@@ -1,9 +1,7 @@
-package com.github.palFinderTeam.palfinder.meetups.activities
+package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
-import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.meetupView.MeetUpViewViewModel
 import com.github.palFinderTeam.palfinder.profile.MockProfileService
 import com.github.palFinderTeam.palfinder.tags.Category

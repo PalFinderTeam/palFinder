@@ -15,7 +15,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.meetupRepository.MeetUpRepository
-import com.github.palFinderTeam.palfinder.meetups.activities.betterScrollTo
+import com.github.palFinderTeam.palfinder.meetups.betterScrollTo
 import com.github.palFinderTeam.palfinder.meetups.meetupView.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.JOINED_MEETUPS_KEY
 import com.github.palFinderTeam.palfinder.profile.profile.ProfileActivity
