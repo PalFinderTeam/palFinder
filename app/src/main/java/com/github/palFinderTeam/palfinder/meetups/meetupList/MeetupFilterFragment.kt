@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.meetups.meetupList
 
 import android.icu.text.DateFormat.getDateTimeInstance
+import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -32,7 +33,7 @@ class MeetupFilterFragment(val viewModel: MapListViewModel) : DialogFragment() {
     private lateinit var filterGroup: RadioGroup
     private lateinit var selectStartTime: TextView
     private lateinit var selectEndTime: TextView
-    private var dateFormat = getDateTimeInstance()
+    private var dateFormat = SimpleDateFormat()
 
     override fun onCreateView(
         inflater: LayoutInflater,
