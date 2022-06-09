@@ -16,8 +16,8 @@ import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.chat.ChatService
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.meetupRepository.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.meetupView.MeetUpView
 import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.services.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule

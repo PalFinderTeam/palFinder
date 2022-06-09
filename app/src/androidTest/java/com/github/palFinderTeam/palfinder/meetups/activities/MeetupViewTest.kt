@@ -37,7 +37,10 @@ import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.meetups.meetupCreation.MeetUpCreation
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.meetupRepository.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.meetupView.MEETUP_EDIT
+import com.github.palFinderTeam.palfinder.meetups.meetupView.MEETUP_SHOWN
 import com.github.palFinderTeam.palfinder.meetups.meetupView.MeetUpEditCompat
+import com.github.palFinderTeam.palfinder.meetups.meetupView.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.*
 import com.github.palFinderTeam.palfinder.profile.profile.ProfileActivity
 import com.github.palFinderTeam.palfinder.profile.profileList.ProfileListFragment
