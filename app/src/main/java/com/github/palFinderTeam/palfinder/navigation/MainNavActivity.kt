@@ -14,17 +14,17 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.github.palFinderTeam.palfinder.PalFinderBaseActivity
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
-import com.github.palFinderTeam.palfinder.profile.ProfileFragment
-import com.github.palFinderTeam.palfinder.profile.ProfileFragment.Companion.PROFILE_ID_ARG
-import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.meetups.meetupRepository.MeetUpRepository
+import com.github.palFinderTeam.palfinder.profile.profile.ProfileFragment
+import com.github.palFinderTeam.palfinder.profile.profile.ProfileFragment.Companion.PROFILE_ID_ARG
+import com.github.palFinderTeam.palfinder.profile.services.ProfileService
 import com.github.palFinderTeam.palfinder.profile.USER_ID
-import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
-import com.github.palFinderTeam.palfinder.ui.login.LoginActivity.Companion.HIDE_ONE_TAP
-import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity
-import com.github.palFinderTeam.palfinder.user.settings.UserSettingsActivity
+import com.github.palFinderTeam.palfinder.login.LoginActivity
+import com.github.palFinderTeam.palfinder.login.LoginActivity.Companion.HIDE_ONE_TAP
+import com.github.palFinderTeam.palfinder.meetups.meetupView.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.meetupView.MeetUpView
+import com.github.palFinderTeam.palfinder.settings.SettingsActivity
+import com.github.palFinderTeam.palfinder.user.profileSettings.UserProfileSettingsActivity
 import com.github.palFinderTeam.palfinder.utils.createNoAccountPopUp
 import com.github.palFinderTeam.palfinder.utils.createPopUp
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -261,12 +261,12 @@ class MainNavActivity : PalFinderBaseActivity() {
                     createNoAccountPopUp(this, R.string.no_account_profile)
                 } else {
                     //super.onOptionsItemSelected(item)
-                    startActivity(Intent(this, UserSettingsActivity::class.java))
+                    startActivity(Intent(this, UserProfileSettingsActivity::class.java))
                 }
             }
             R.id.miScanQR -> {
                 val options = ScanOptions()
-                options.setOrientationLocked(false);
+                options.setOrientationLocked(false)
                 barcodeLauncher.launch(options)
             }
             else -> {

@@ -2,10 +2,12 @@ package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
-import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
-import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
+import com.github.palFinderTeam.palfinder.meetups.meetupRepository.FirebaseMeetUpService
+import com.github.palFinderTeam.palfinder.profile.services.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.USERNAME_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.toProfileUser
+import com.github.palFinderTeam.palfinder.profile.services.CachedProfileService
+import com.github.palFinderTeam.palfinder.profile.services.FirebaseProfileService
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.UIMockContextServiceModule
 import com.github.palFinderTeam.palfinder.utils.UIMockTimeServiceModule

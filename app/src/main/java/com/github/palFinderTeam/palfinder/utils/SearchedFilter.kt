@@ -4,7 +4,7 @@ import android.widget.Filter
 import android.widget.SearchView
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
-import com.github.palFinderTeam.palfinder.tag.Tag
+import com.github.palFinderTeam.palfinder.tags.Tag
 import java.util.*
 
 class SearchedFilter<T>(

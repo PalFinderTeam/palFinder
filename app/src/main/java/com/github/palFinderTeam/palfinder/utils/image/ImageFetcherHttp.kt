@@ -21,8 +21,6 @@ class ImageFetcherHttp(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ImageFetcher {
 
-    private val TAG = "ImageFetcherHttps";
-
     override suspend fun fetchImage(): Bitmap? = withContext(dispatcher) {
         // NOTE: Can throw exception, deal with it in the activity
         val inputStream = getInputStream()

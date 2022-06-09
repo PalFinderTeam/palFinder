@@ -10,6 +10,9 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
+/**
+ * Inject Firestore when needed, it makes certain class more testable.
+ */
 object FirestoreModule {
 
     @Provides

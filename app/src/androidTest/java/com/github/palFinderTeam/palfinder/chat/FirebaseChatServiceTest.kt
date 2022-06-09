@@ -4,7 +4,7 @@ import android.icu.util.Calendar
 import com.github.palFinderTeam.palfinder.chat.ChatMessage.Companion.toChatMessage
 import com.github.palFinderTeam.palfinder.chat.FirebaseChatService.Companion.CONVERSATION_COLL
 import com.github.palFinderTeam.palfinder.chat.FirebaseChatService.Companion.MSG_COLL
-import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
+import com.github.palFinderTeam.palfinder.meetups.meetupRepository.FirebaseMeetUpService
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi

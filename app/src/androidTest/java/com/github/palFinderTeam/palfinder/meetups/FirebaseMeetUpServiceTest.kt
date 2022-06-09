@@ -1,14 +1,14 @@
 package com.github.palFinderTeam.palfinder.meetups
 
 import android.icu.util.Calendar
-import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService.Companion.MEETUP_COLL
+import com.github.palFinderTeam.palfinder.meetups.meetupRepository.FirebaseMeetUpService.Companion.MEETUP_COLL
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.DESCRIPTION
 import com.github.palFinderTeam.palfinder.meetups.MeetUp.Companion.toMeetUp
-import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
-import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
-import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService.Companion.PROFILE_COLL
+import com.github.palFinderTeam.palfinder.meetups.meetupRepository.FirebaseMeetUpService
+import com.github.palFinderTeam.palfinder.profile.services.FirebaseProfileService
+import com.github.palFinderTeam.palfinder.profile.services.FirebaseProfileService.Companion.PROFILE_COLL
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
-import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tags.Category
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.Location

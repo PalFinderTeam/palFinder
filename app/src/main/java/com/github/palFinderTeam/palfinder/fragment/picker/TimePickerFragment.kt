@@ -2,11 +2,9 @@ package com.github.palFinderTeam.palfinder.fragment.picker
 
 import android.app.Dialog
 import android.app.TimePickerDialog
-import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.widget.TimePicker
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import com.github.palFinderTeam.palfinder.utils.time.SimpleTime
 import java.util.*
@@ -17,7 +15,6 @@ import java.util.concurrent.CompletableFuture
  * Ask user a time (hour and minute) and return the value in the future "value"
  * @param time: Time to display by default
  */
-@RequiresApi(Build.VERSION_CODES.N)
 class TimePickerFragment(private val time: SimpleTime? = null) : DialogFragment(), TimePickerDialog.OnTimeSetListener {
     val value: CompletableFuture<SimpleTime> = CompletableFuture()
 

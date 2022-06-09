@@ -3,10 +3,8 @@ package com.github.palFinderTeam.palfinder.fragment.picker
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.icu.util.Calendar
-import android.os.Build
 import android.os.Bundle
 import android.widget.DatePicker
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import com.github.palFinderTeam.palfinder.utils.time.SimpleDate
 import java.util.concurrent.CompletableFuture
@@ -16,7 +14,6 @@ import java.util.concurrent.CompletableFuture
  * @param date: Date to display by default
  */
 // Based on Android Official Documentation
-@RequiresApi(Build.VERSION_CODES.N)
 class DatePickerFragment(
     private val date: SimpleDate? = null,
     private val minDate: Calendar? = null,

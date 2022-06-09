@@ -49,7 +49,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/list_select_tag"
-        android:name="com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment"
+        android:name="com.github.palFinderTeam.palfinder.tags.TagsDisplayFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="8dp"

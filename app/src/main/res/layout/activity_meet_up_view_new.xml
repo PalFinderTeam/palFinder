@@ -21,7 +21,7 @@
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fc_meetup"
-                android:name="com.github.palFinderTeam.palfinder.meetups.fragments.MeetupViewFragment"
+                android:name="com.github.palFinderTeam.palfinder.meetups.meetupView.MeetupViewFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

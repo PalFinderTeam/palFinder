@@ -1,23 +1,5 @@
 package com.github.palFinderTeam.palfinder.map
 
-import android.icu.util.Calendar
-import com.github.palFinderTeam.palfinder.meetups.MeetUp
-import com.github.palFinderTeam.palfinder.meetups.MockMeetUpRepository
-import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
-import com.github.palFinderTeam.palfinder.profile.MockProfileService
-import com.github.palFinderTeam.palfinder.utils.Location
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mockito
-import org.mockito.Mockito.any
-import org.mockito.Mockito.mock
-
 
 class MapsViewModelTest {
 

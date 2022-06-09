@@ -18,7 +18,7 @@ class DictionaryCache<T> (
     private val clazz: Class<T>,
     private val permanent: Boolean,
     private val context: Context,
-    private val policy: ((File) -> Boolean)? = null
+    policy: ((File) -> Boolean)? = null
 ){
     companion object{
         fun clearAllTempCaches(context: Context){
@@ -35,7 +35,7 @@ class DictionaryCache<T> (
     private var wasLoaded = false
     private var hasEvictPolicy = false
     private lateinit var evictPolicy: (File)->Boolean
-    var keylist = HashSet<String>()
+    private var keylist = HashSet<String>()
 
     private val gson = Gson()
 
@@ -137,7 +137,7 @@ class DictionaryCache<T> (
                 .map{ delete(it, true) }
         }
     }
-    fun setEvictPolicy(policy: (File)->Boolean){
+    private fun setEvictPolicy(policy: (File)->Boolean){
         evictPolicy = policy
         hasEvictPolicy = true
     }

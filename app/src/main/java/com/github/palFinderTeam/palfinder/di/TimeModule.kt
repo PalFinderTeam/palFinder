@@ -10,6 +10,9 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
+/**
+ * Inject time when needed, it makes certain class more testable.
+ */
 abstract class TimeModule {
 
     @Singleton

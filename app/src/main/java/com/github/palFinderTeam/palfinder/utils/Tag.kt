@@ -5,10 +5,10 @@ import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
-import com.github.palFinderTeam.palfinder.tag.Category
-import com.github.palFinderTeam.palfinder.tag.TagsDisplayFragment
-import com.github.palFinderTeam.palfinder.tag.TagsViewModel
-import com.github.palFinderTeam.palfinder.tag.TagsViewModelFactory
+import com.github.palFinderTeam.palfinder.tags.Category
+import com.github.palFinderTeam.palfinder.tags.TagsDisplayFragment
+import com.github.palFinderTeam.palfinder.tags.TagsViewModel
+import com.github.palFinderTeam.palfinder.tags.TagsViewModelFactory
 
 /**
  * Create a [TagsViewModel] for the given [that] and [tagsViewModelFactory].

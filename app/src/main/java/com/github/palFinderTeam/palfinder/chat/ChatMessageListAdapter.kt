@@ -10,19 +10,18 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.ColorInt
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.profile.ProfileActivity
+import com.github.palFinderTeam.palfinder.profile.profile.ProfileActivity
 import com.github.palFinderTeam.palfinder.profile.USER_ID
-import com.github.palFinderTeam.palfinder.utils.time.PrettyDate
 import com.github.palFinderTeam.palfinder.utils.time.ShortDate
 import kotlinx.coroutines.launch
 
-
+/**
+ * a class to bind chat message
+ */
 class ChatMessageListAdapter(
     private val viewModel: ChatViewModel,
     dataSet: List<ChatMessage>
@@ -49,9 +48,14 @@ class ChatMessageListAdapter(
         )
     }
 
+    /**
+     * bind the data of a message, such as the sender's information and the content
+     *
+     * @param holder ViewHolder of the message
+     * @param position position of the message in the chat
+     */
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val prettyDate = PrettyDate()
         val msg = currentDataSet[position]
         val context = holder.messageInContent.context
         val previous = currentDataSet.getOrNull(position - 1)
@@ -99,5 +103,8 @@ class ChatMessageListAdapter(
         }
     }
 
+    /**
+     * get the current number of messages
+     */
     override fun getItemCount(): Int = currentDataSet.size
 }

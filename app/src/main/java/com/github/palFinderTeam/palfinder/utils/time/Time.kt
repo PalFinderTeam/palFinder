@@ -2,7 +2,6 @@ package com.github.palFinderTeam.palfinder.utils.time
 
 import android.icu.util.Calendar
 import androidx.fragment.app.FragmentManager
-import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.fragment.picker.DatePickerFragment
 import com.github.palFinderTeam.palfinder.fragment.picker.TimePickerFragment
 import java.util.concurrent.CompletableFuture

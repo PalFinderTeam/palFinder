@@ -3,8 +3,6 @@ package com.github.palFinderTeam.palfinder.notification
 import android.app.job.JobParameters
 import android.app.job.JobService
 import android.content.Intent
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.chat.CHAT
@@ -12,24 +10,27 @@ import com.github.palFinderTeam.palfinder.chat.CachedChatService
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.chat.ChatService
 import com.github.palFinderTeam.palfinder.di.FirestoreModule
-import com.github.palFinderTeam.palfinder.meetups.CachedMeetUpService
-import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
-import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.profile.Achievement
-import com.github.palFinderTeam.palfinder.profile.CachedProfileService
-import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
-import com.github.palFinderTeam.palfinder.profile.ProfileService
-import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
+import com.github.palFinderTeam.palfinder.meetups.meetupRepository.CachedMeetUpService
+import com.github.palFinderTeam.palfinder.meetups.meetupRepository.FirebaseMeetUpService
+import com.github.palFinderTeam.palfinder.meetups.meetupRepository.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.meetupView.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.meetupView.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.*
+import com.github.palFinderTeam.palfinder.profile.profile.ProfileActivity
+import com.github.palFinderTeam.palfinder.profile.services.CachedProfileService
+import com.github.palFinderTeam.palfinder.profile.services.FirebaseProfileService
+import com.github.palFinderTeam.palfinder.profile.services.ProfileService
 import com.github.palFinderTeam.palfinder.utils.EndlessService
 import com.github.palFinderTeam.palfinder.utils.context.AppContextService
 import com.github.palFinderTeam.palfinder.utils.context.ContextService
-import com.github.palFinderTeam.palfinder.utils.time.isBefore
 import com.github.palFinderTeam.palfinder.utils.time.RealTimeService
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
-import kotlinx.coroutines.*
+import com.github.palFinderTeam.palfinder.utils.time.isBefore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 
 class NotificationService @Inject constructor(
@@ -103,7 +104,7 @@ class NotificationService @Inject constructor(
                         val news = meetup.participantsId.subtract(data.participant.toSet()).filter { it != id }
                         data.participant.addAll(news)
                         meetupsMetaData.store(m, data)
-                        
+
                         if (news.isNotEmpty()) {
                             val names = profileService.fetch(news.toList())!!.map { it.name }
                                 .reduce { x, y -> "$x, $y" }

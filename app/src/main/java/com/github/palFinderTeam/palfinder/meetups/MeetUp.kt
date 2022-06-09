@@ -4,9 +4,9 @@ import android.icu.util.Calendar
 import android.util.Log
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
-import com.github.palFinderTeam.palfinder.meetups.fragments.CriterionsFragment.Companion.MIN_AGE
+import com.github.palFinderTeam.palfinder.meetups.meetupCreation.CriterionFragment.Companion.MIN_AGE
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
-import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tags.Category
 import com.github.palFinderTeam.palfinder.utils.*
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.generics.FirebaseObject
@@ -50,13 +50,7 @@ data class MeetUp(
     val rankingScore: Double = -1.0
 ) : java.io.Serializable, FirebaseObject, StringFilterable {
 
-    /**
-     * @param currentLocation
-     * @return distance from [currentLocation] to the event in km
-     */
-    fun distanceInKm(currentLocation: Location): Double {
-        return location.distanceInKm(currentLocation)
-    }
+
 
     /**
      * @return the number of participants currently in the meetup
@@ -186,6 +180,7 @@ data class MeetUp(
         /**
          * Provide a way to convert a Firestore query result, in a MeetUp
          */
+        @Suppress("UNCHECKED_CAST")
         fun DocumentSnapshot.toMeetUp(): MeetUp? {
             try {
                 val uuid = id

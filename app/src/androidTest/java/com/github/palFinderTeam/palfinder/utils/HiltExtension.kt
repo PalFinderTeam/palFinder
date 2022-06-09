@@ -14,7 +14,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.core.internal.deps.dagger.internal.Preconditions
 import com.github.palFinderTeam.palfinder.HiltTestActivity
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment
 
 /**
  * launchFragmentInContainer from the androidx.fragment:fragment-testing library

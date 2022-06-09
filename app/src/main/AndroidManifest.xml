@@ -18,7 +18,7 @@
         android:theme="@style/palFinder.default_theme"
         android:hardwareAccelerated="true">
         <activity
-            android:name=".meetups.activities.MeetUpEditCompat"
+            android:name=".meetups.meetupView.MeetUpEditCompat"
             android:exported="false" />
         <activity
             android:name=".navigation.MainNavActivity"
@@ -41,7 +41,7 @@
         </receiver>
 
         <activity
-            android:name=".ui.settings.SettingsActivity"
+            android:name="com.github.palFinderTeam.palfinder.settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
 
@@ -49,18 +49,18 @@
             android:name=".chat.ChatActivity"
             android:exported="false" />
         <activity
-            android:name=".profile.ProfileActivity"
+            android:name=".profile.profile.ProfileActivity"
             android:exported="false" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
 
         <activity
-            android:name=".meetups.activities.MeetUpView"
+            android:name=".meetups.meetupView.MeetUpView"
             android:exported="false"
             android:parentActivityName=".navigation.MainNavActivity" />
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name="com.github.palFinderTeam.palfinder.login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -69,7 +69,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".user.settings.UserSettingsActivity"
+            android:name=".user.profileSettings.UserProfileSettingsActivity"
             android:exported="false"
             android:parentActivityName=".navigation.MainNavActivity" />
         <activity

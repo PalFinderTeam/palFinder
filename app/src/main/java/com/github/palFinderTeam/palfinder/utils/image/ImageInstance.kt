@@ -2,15 +2,10 @@ package com.github.palFinderTeam.palfinder.utils.image
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
-import androidx.lifecycle.ViewModel
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.cache.FileCache
-import com.github.palFinderTeam.palfinder.utils.EspressoIdlingResource
 import java.io.Serializable
-import java.lang.Exception
 
 /**
  * Download an image from a given URL and injects it into an

@@ -16,6 +16,7 @@ import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.PICTURE_
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.PRIVACY_SETTINGS_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.SURNAME_KEY
 import com.github.palFinderTeam.palfinder.profile.ProfileUser.Companion.USERNAME_KEY
+import com.github.palFinderTeam.palfinder.profile.services.ProfileService
 import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.PrivacySettings
 import com.github.palFinderTeam.palfinder.utils.Response

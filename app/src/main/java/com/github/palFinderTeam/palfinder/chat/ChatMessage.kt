@@ -14,7 +14,7 @@ import android.icu.util.Calendar
 data class ChatMessage(val sentAt: Calendar, val sentBy: String, val content: String, val isEdited: Boolean = false) {
     companion object {
         /**
-         *  Tries to convert a firestore result in chat message.
+         *  Tries to convert a Firestore result in chat message.
          */
         fun DocumentSnapshot.toChatMessage(): ChatMessage? {
             return try {
@@ -33,7 +33,7 @@ data class ChatMessage(val sentAt: Calendar, val sentBy: String, val content: St
     }
 
     /**
-     * Convert a message in firestore friendly format.
+     * Convert a message in Firestore friendly format.
      */
     fun toFirebaseDocument(): HashMap<String, Any> {
         return hashMapOf(

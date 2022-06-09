@@ -1,6 +1,7 @@
 package com.github.palFinderTeam.palfinder.profile
 
 import android.icu.util.Calendar
+import com.github.palFinderTeam.palfinder.profile.services.ProfileService
 import com.github.palFinderTeam.palfinder.utils.Gender
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance

@@ -3,7 +3,6 @@ package com.github.palFinderTeam.palfinder.cache
 import android.content.Context
 import android.graphics.Bitmap
 import com.github.palFinderTeam.palfinder.utils.image.BitmapJsonConverter
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import java.io.File

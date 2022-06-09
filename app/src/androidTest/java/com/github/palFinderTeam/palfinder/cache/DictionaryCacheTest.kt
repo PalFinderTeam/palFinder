@@ -3,7 +3,7 @@ package com.github.palFinderTeam.palfinder.cache
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.github.palFinderTeam.palfinder.chat.ChatService
-import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.services.ProfileService
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
