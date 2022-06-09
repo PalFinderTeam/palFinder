@@ -18,9 +18,9 @@ import com.github.palFinderTeam.palfinder.meetups.MeetUp
 import com.github.palFinderTeam.palfinder.meetups.meetupRepository.MeetUpRepository
 import com.github.palFinderTeam.palfinder.meetups.meetupView.MeetUpView
 import com.github.palFinderTeam.palfinder.navigation.MainNavActivity
-import com.github.palFinderTeam.palfinder.profile.services.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.profile.UIMockProfileServiceModule
+import com.github.palFinderTeam.palfinder.profile.services.ProfileService
 import com.github.palFinderTeam.palfinder.tags.Category
 import com.github.palFinderTeam.palfinder.utils.CriterionGender
 import com.github.palFinderTeam.palfinder.utils.Location
@@ -39,6 +39,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.*
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 @ExperimentalCoroutinesApi
 @HiltAndroidTest

@@ -32,22 +32,20 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+
 class NotificationService @Inject constructor(
     val contextService: ContextService,
     val timeService: TimeService,
-    private val meetupService: MeetUpRepository,
+    val meetupService: MeetUpRepository,
     val profileService: ProfileService,
     val chatService: ChatService
 ): JobService() {
 
     // Android want a default constructor
-    @Suppress("unused")
     constructor():this(
         AppContextService(),
         RealTimeService(),
-        CachedMeetUpService(FirebaseMeetUpService(FirestoreModule.provideFirestore(),
-            FirebaseProfileService(FirestoreModule.provideFirestore())
-        ), RealTimeService(), AppContextService()),
+        CachedMeetUpService(FirebaseMeetUpService(FirestoreModule.provideFirestore(),FirebaseProfileService(FirestoreModule.provideFirestore())), RealTimeService(), AppContextService()),
         CachedProfileService(FirebaseProfileService(FirestoreModule.provideFirestore()), RealTimeService(), AppContextService()),
         CachedChatService(FirestoreModule.provideFirestore(), AppContextService()),
     )
@@ -70,9 +68,9 @@ class NotificationService @Inject constructor(
             val id = profileService.getLoggedInUserID()
             var loggedUser: ProfileUser? = null
             if (id != null){
-                loggedUser = profileService.fetch(id)
+                loggedUser = profileService.fetch(id!!)
                 if (loggedUser != null){
-                    for(p in loggedUser.followed){
+                    for(p in loggedUser!!.followed){
                         val user = profileService.fetch(p)
                         if (!profileMetaData.contains(p) && user != null){
                             profileMetaData.store(p, ProfileMetaData(p, true))
@@ -93,7 +91,7 @@ class NotificationService @Inject constructor(
             //Notification For Meetup
             for (m in meetupService.getAllJoinedMeetupID()) {
                 val meetup = meetupService.fetch(m)
-                val metadata = if (meetupsMetaData.contains(m)) {
+                val meta = if (meetupsMetaData.contains(m)) {
                     meetupsMetaData.get(m)
                 } else {
                     val ret = MeetupMetaData(m, false, "", mutableListOf())
@@ -106,7 +104,7 @@ class NotificationService @Inject constructor(
                         val news = meetup.participantsId.subtract(data.participant.toSet()).filter { it != id }
                         data.participant.addAll(news)
                         meetupsMetaData.store(m, data)
-                        
+
                         if (news.isNotEmpty()) {
                             val names = profileService.fetch(news.toList())!!.map { it.name }
                                 .reduce { x, y -> "$x, $y" }
@@ -129,15 +127,15 @@ class NotificationService @Inject constructor(
                     }
 
                     // Check if meetup started and notification not sent
-                    if (!metadata.sendStartNotification && meetup.startDate.isBefore(timeService.now())) {
+                    if (!meta.sendStartNotification && meetup.startDate.isBefore(timeService.now())) {
                         val intent = Intent(context, MeetUpView::class.java).apply {
                             putExtra(MEETUP_SHOWN, m)
                         }
                         if (!loggedUser!!.isMeetupMuted(m)){
                             NotificationHandler(context).post(meetup.name, meetup.description, R.drawable.icon_beer, intent)
                         }
-                        metadata.sendStartNotification = true
-                        meetupsMetaData.store(m, metadata)
+                        meta.sendStartNotification = true
+                        meetupsMetaData.store(m, meta)
                     }
 
                     // Look for message of that meetup
