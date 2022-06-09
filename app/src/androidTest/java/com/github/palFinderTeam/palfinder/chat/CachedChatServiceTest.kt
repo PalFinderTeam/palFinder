@@ -5,7 +5,7 @@ import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.chat.ChatMessage.Companion.toChatMessage
 import com.github.palFinderTeam.palfinder.chat.FirebaseChatService.Companion.CONVERSATION_COLL
 import com.github.palFinderTeam.palfinder.chat.FirebaseChatService.Companion.MSG_COLL
-import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
+import com.github.palFinderTeam.palfinder.meetups.meetupRepository.FirebaseMeetUpService
 import com.github.palFinderTeam.palfinder.utils.UIMockContextServiceModule
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings

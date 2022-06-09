@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.github.palFinderTeam.palfinder.ui.settings.SettingsActivity.Companion.THEME_KEY
+import com.github.palFinderTeam.palfinder.settings.SettingsActivity.Companion.THEME_KEY
 
 /**
  * This is the activity that all of our activities extend from, in order to share the logic for the

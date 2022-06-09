@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class CachedRepository<T : FirebaseObject>(
-    private val name: String,
-    private val clazz: Class<T>,
+    name: String,
+    clazz: Class<T>,
     private val rp: Repository<T>,
-    private val time: TimeService,
-    private val contextProvider: ContextService
+    time: TimeService,
+    contextProvider: ContextService
 ) : Repository<T> {
     private var cache =
         DictionaryCache(name, clazz, false, contextProvider.get(), evictAfterXMinutes(10, time))

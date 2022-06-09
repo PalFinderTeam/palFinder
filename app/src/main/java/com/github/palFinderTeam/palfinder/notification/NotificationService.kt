@@ -3,8 +3,6 @@ package com.github.palFinderTeam.palfinder.notification
 import android.app.job.JobParameters
 import android.app.job.JobService
 import android.content.Intent
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.github.palFinderTeam.palfinder.R
 import com.github.palFinderTeam.palfinder.cache.DictionaryCache
 import com.github.palFinderTeam.palfinder.chat.CHAT
@@ -12,39 +10,44 @@ import com.github.palFinderTeam.palfinder.chat.CachedChatService
 import com.github.palFinderTeam.palfinder.chat.ChatActivity
 import com.github.palFinderTeam.palfinder.chat.ChatService
 import com.github.palFinderTeam.palfinder.di.FirestoreModule
-import com.github.palFinderTeam.palfinder.meetups.CachedMeetUpService
-import com.github.palFinderTeam.palfinder.meetups.FirebaseMeetUpService
-import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.profile.Achievement
-import com.github.palFinderTeam.palfinder.profile.CachedProfileService
-import com.github.palFinderTeam.palfinder.profile.FirebaseProfileService
-import com.github.palFinderTeam.palfinder.profile.ProfileService
-import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
+import com.github.palFinderTeam.palfinder.meetups.meetupRepository.CachedMeetUpService
+import com.github.palFinderTeam.palfinder.meetups.meetupRepository.FirebaseMeetUpService
+import com.github.palFinderTeam.palfinder.meetups.meetupRepository.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.meetupView.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.meetupView.MeetUpView
 import com.github.palFinderTeam.palfinder.profile.*
+import com.github.palFinderTeam.palfinder.profile.profile.ProfileActivity
+import com.github.palFinderTeam.palfinder.profile.services.CachedProfileService
+import com.github.palFinderTeam.palfinder.profile.services.FirebaseProfileService
+import com.github.palFinderTeam.palfinder.profile.services.ProfileService
 import com.github.palFinderTeam.palfinder.utils.EndlessService
 import com.github.palFinderTeam.palfinder.utils.context.AppContextService
 import com.github.palFinderTeam.palfinder.utils.context.ContextService
-import com.github.palFinderTeam.palfinder.utils.time.isBefore
 import com.github.palFinderTeam.palfinder.utils.time.RealTimeService
 import com.github.palFinderTeam.palfinder.utils.time.TimeService
-import kotlinx.coroutines.*
+import com.github.palFinderTeam.palfinder.utils.time.isBefore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 class NotificationService @Inject constructor(
     val contextService: ContextService,
     val timeService: TimeService,
-    val meetupService: MeetUpRepository,
+    private val meetupService: MeetUpRepository,
     val profileService: ProfileService,
     val chatService: ChatService
 ): JobService() {
 
     // Android want a default constructor
+    @Suppress("unused")
     constructor():this(
         AppContextService(),
         RealTimeService(),
-        CachedMeetUpService(FirebaseMeetUpService(FirestoreModule.provideFirestore(),FirebaseProfileService(FirestoreModule.provideFirestore())), RealTimeService(), AppContextService()),
+        CachedMeetUpService(FirebaseMeetUpService(FirestoreModule.provideFirestore(),
+            FirebaseProfileService(FirestoreModule.provideFirestore())
+        ), RealTimeService(), AppContextService()),
         CachedProfileService(FirebaseProfileService(FirestoreModule.provideFirestore()), RealTimeService(), AppContextService()),
         CachedChatService(FirestoreModule.provideFirestore(), AppContextService()),
     )
@@ -67,9 +70,9 @@ class NotificationService @Inject constructor(
             val id = profileService.getLoggedInUserID()
             var loggedUser: ProfileUser? = null
             if (id != null){
-                loggedUser = profileService.fetch(id!!)
+                loggedUser = profileService.fetch(id)
                 if (loggedUser != null){
-                    for(p in loggedUser!!.followed){
+                    for(p in loggedUser.followed){
                         val user = profileService.fetch(p)
                         if (!profileMetaData.contains(p) && user != null){
                             profileMetaData.store(p, ProfileMetaData(p, true))
@@ -90,7 +93,7 @@ class NotificationService @Inject constructor(
             //Notification For Meetup
             for (m in meetupService.getAllJoinedMeetupID()) {
                 val meetup = meetupService.fetch(m)
-                val meta = if (meetupsMetaData.contains(m)) {
+                val metadata = if (meetupsMetaData.contains(m)) {
                     meetupsMetaData.get(m)
                 } else {
                     val ret = MeetupMetaData(m, false, "", mutableListOf())
@@ -126,15 +129,15 @@ class NotificationService @Inject constructor(
                     }
 
                     // Check if meetup started and notification not sent
-                    if (!meta.sendStartNotification && meetup.startDate.isBefore(timeService.now())) {
+                    if (!metadata.sendStartNotification && meetup.startDate.isBefore(timeService.now())) {
                         val intent = Intent(context, MeetUpView::class.java).apply {
                             putExtra(MEETUP_SHOWN, m)
                         }
                         if (!loggedUser!!.isMeetupMuted(m)){
                             NotificationHandler(context).post(meetup.name, meetup.description, R.drawable.icon_beer, intent)
                         }
-                        meta.sendStartNotification = true
-                        meetupsMetaData.store(m, meta)
+                        metadata.sendStartNotification = true
+                        meetupsMetaData.store(m, metadata)
                     }
 
                     // Look for message of that meetup

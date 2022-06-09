@@ -1,6 +1,5 @@
 package com.github.palFinderTeam.palfinder.utils.transformer
 
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import com.github.palFinderTeam.palfinder.utils.Response
 

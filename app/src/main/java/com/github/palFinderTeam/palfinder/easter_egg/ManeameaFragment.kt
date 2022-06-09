@@ -20,7 +20,7 @@ class ManeameaFragment : DialogFragment(){
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val v: View = inflater.inflate(R.layout.activity_video, container, false)
         val videoView = v.findViewById<VideoView>(R.id.easter_egg_video)
         val uri = Uri.parse(
@@ -40,7 +40,7 @@ class ManeameaFragment : DialogFragment(){
     override fun onStart() {
         super.onStart()
         // Force the dialog to take whole width
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 }

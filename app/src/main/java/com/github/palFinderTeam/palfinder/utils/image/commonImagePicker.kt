@@ -2,12 +2,7 @@ package com.github.palFinderTeam.palfinder.utils.image
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
-import android.widget.Toast
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import com.github.dhaval2404.imagepicker.ImagePicker
-import androidx.activity.ComponentActivity
 
 const val IMAGE_WIDTH = 512
 

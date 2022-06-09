@@ -2,7 +2,6 @@ package com.github.palFinderTeam.palfinder.chat
 
 import android.app.Application
 import android.icu.util.Calendar
-import android.opengl.Visibility
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -10,13 +9,16 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.profile.ProfileService
+import com.github.palFinderTeam.palfinder.profile.services.ProfileService
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
 import com.github.palFinderTeam.palfinder.utils.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * a viewModel for the chatActivity
+ */
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     var chatService: ChatService,
@@ -25,7 +27,7 @@ class ChatViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     val listOfMessage: MutableLiveData<MutableList<ChatMessage>> = MutableLiveData()
-    val profilesData = HashMap<String, ProfileUser>()
+    private val profilesData = HashMap<String, ProfileUser>()
 
     private lateinit var chatID: String
 
@@ -54,7 +56,7 @@ class ChatViewModel @Inject constructor(
         this.chatID = chatID
         listOfMessage.value = mutableListOf()
         viewModelScope.launch {
-            chatService.getAllMessageFromChat(chatID).collect {
+            chatService.getAllMessageFromChat(chatID).collect { it ->
                 listOfMessage.postValue(it.sortedBy { it.sentAt.time }.toMutableList())
             }
         }
@@ -89,6 +91,15 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    /**
+     * load a user from the cache
+     *
+     * @param userId  Id of the user to load
+     * @param pictureBox ImageView where to put the profile picture
+     * @param nameBox TextView where to put the user name
+     * @param showPicture If true show the picture
+     * @param showName If true show the username
+     */
     private suspend fun loadCachedUser(userId: String, pictureBox: ImageView, nameBox: TextView, showPicture: Boolean, showName: Boolean) {
         if (showPicture) {
             pictureBox.visibility = View.VISIBLE

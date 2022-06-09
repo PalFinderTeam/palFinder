@@ -18,7 +18,6 @@ sealed class Response<out T> {
 
     /**
      * Error response.
-     * @param error the error of the response
      */
     data class Failure<out T>(
         val errorMessage: String

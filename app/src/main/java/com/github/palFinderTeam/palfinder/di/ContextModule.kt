@@ -10,6 +10,9 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
+/**
+ * Inject context when needed, it makes certain class more testable.
+ */
 abstract class ContextModule {
 
     @Singleton

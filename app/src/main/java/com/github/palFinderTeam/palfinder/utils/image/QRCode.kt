@@ -5,17 +5,13 @@ import android.app.Dialog
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Log
 import android.widget.Button
-import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.core.content.FileProvider
-import com.ceylonlabs.imageviewpopup.ImagePopup
 import com.github.palFinderTeam.palfinder.R
 import java.io.File
 import java.io.FileOutputStream
@@ -47,9 +43,8 @@ object QRCode {
 
     /**
      * Shares the PNG image from Uri.
-     * @param uri Uri of image to share.
      */
-    private fun shareImageUri(image: Bitmap, parent: Activity): Intent? {
+    private fun shareImageUri(image: Bitmap, parent: Activity): Intent {
         val intent = Intent(Intent.ACTION_SEND)
         intent.putExtra(Intent.EXTRA_STREAM, saveImageExternal(image, parent))
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -65,12 +60,12 @@ object QRCode {
         //Convert the bitmap(QR Code) into a drawable
         val d: Drawable = BitmapDrawable(parent.resources, bitmap)
 
-        val dialog= Dialog(parent);
-        dialog.setContentView(R.layout.dialog_qr_code);
+        val dialog= Dialog(parent)
+        dialog.setContentView(R.layout.dialog_qr_code)
 
         dialog.findViewById<ImageView>(R.id.qrCode).setImageDrawable(d)
         val close = dialog.findViewById<Button>(R.id.ButtonDoneQrCode)
-        val share = dialog.findViewById<ImageView>(R.id.share_qr_code);
+        val share = dialog.findViewById<ImageView>(R.id.share_qr_code)
 
         share.setOnClickListener {
             parent.startActivity(shareImageUri(bitmap, parent))

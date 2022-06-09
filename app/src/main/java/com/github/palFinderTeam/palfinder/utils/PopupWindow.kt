@@ -11,8 +11,9 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.getSystemService
 import com.github.palFinderTeam.palfinder.R
-import com.github.palFinderTeam.palfinder.ui.login.LoginActivity
+import com.github.palFinderTeam.palfinder.login.LoginActivity
 
 /**
  * create a popUp windows
@@ -32,7 +33,7 @@ fun createPopUp(
 
     val inflater: LayoutInflater =
         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    val view = inflater.inflate(R.layout.popup_window, null)
+    val view = inflater.inflate(R.layout.popup_window, context.getSystemService())
     val popUpWindow = PopupWindow(
         view,
         LinearLayout.LayoutParams.WRAP_CONTENT,

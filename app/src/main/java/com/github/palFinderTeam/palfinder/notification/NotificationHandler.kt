@@ -8,8 +8,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.github.palFinderTeam.palfinder.R
@@ -54,8 +52,7 @@ class NotificationHandler (
         return ret
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun createNotification(title: String, content: String, icon: Int, ): Notification{
+    private fun createNotification(title: String, content: String, icon: Int ): Notification{
         return Notification.Builder(context, CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(content)
@@ -64,7 +61,6 @@ class NotificationHandler (
             .build()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotification(title: String, content: String, icon: Int, intent: Intent): Notification{
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, getNotificationUUID(), intent, PendingIntent.FLAG_IMMUTABLE)
         return Notification.Builder(context, CHANNEL_ID)
@@ -90,7 +86,6 @@ class NotificationHandler (
      * @param content: Content of the notification
      * @param icon: Icon of the notification
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     fun post(title: String, content: String, icon: Int){
         post(createNotification(title,content, icon))
     }
@@ -101,7 +96,6 @@ class NotificationHandler (
      * @param content: Content of the notification
      * @param icon: Icon of the notification
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     fun post(title: Int, content: Int, icon: Int){
         post(
             context.getString(title),
@@ -116,7 +110,6 @@ class NotificationHandler (
      * @param content: Content of the notification
      * @param icon: Icon of the notification
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     fun post(title: String, content: String, icon: Int, intent: Intent){
         post(createNotification(title,content, icon, intent))
     }
@@ -127,7 +120,6 @@ class NotificationHandler (
      * @param content: Content of the notification
      * @param icon: Icon of the notification
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     fun post(title: Int, content: Int, icon: Int, intent: Intent){
         post(
             context.getString(title),
@@ -168,29 +160,6 @@ class NotificationHandler (
         )
     }
 
-    /**
-     * Schedule a Notification for the [date]
-     * @param date: Date to post the notification
-     * @param uuid: UUID of the notification (Create new notification if new uuid otherwise override previous)
-     * @param title: Title of the notification
-     * @param content: Content of the notification
-     * @param icon: Icon of the notification
-     */
-    fun schedule(date: Calendar, uuid: String,title: String, content: String, icon: Int){
-        schedule(CachedNotification(uuid, date, title,content, icon))
-    }
-
-    /**
-     * Schedule a Notification for the [date]
-     * @param date: Date to post the notification
-     * @param uuid: UUID of the notification (Create new notification if new uuid otherwise override previous)
-     * @param title: Title of the notification
-     * @param content: Content of the notification
-     * @param icon: Icon of the notification
-     */
-    fun schedule(date: Calendar, uuid: String,title: Int, content: Int, icon: Int){
-        schedule(CachedNotification(uuid, date, context.getString(title), context.getString(content), icon))
-    }
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val notification: Notification = intent!!.getParcelableExtra(NOTIFICATION)!!

@@ -25,7 +25,7 @@
             android:defaultValue="true" />
         <argument
             android:name="ShowParam"
-            app:argType="com.github.palFinderTeam.palfinder.meetups.activities.ShowParam"
+            app:argType="com.github.palFinderTeam.palfinder.meetups.ShowParam"
             android:defaultValue="ALL" />
         <argument
             android:name="StartOnUserLocation"
@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/creation_fragment"
-        android:name="com.github.palFinderTeam.palfinder.meetups.activities.MeetUpCreation"
+        android:name="com.github.palFinderTeam.palfinder.meetups.meetupCreation.MeetUpCreation"
         android:label="activity_meet_up_creation"
         tools:layout="@layout/activity_meet_up_creation_new" >
         <argument
@@ -73,7 +73,7 @@
     </fragment>
     <fragment
         android:id="@+id/profile_fragment"
-        android:name="com.github.palFinderTeam.palfinder.profile.ProfileFragment"
+        android:name="com.github.palFinderTeam.palfinder.profile.profile.ProfileFragment"
         android:label="ProfileFragment"
         tools:layout="@layout/activity_profile" >
         <argument
@@ -88,7 +88,7 @@
 
     <fragment
         android:id="@+id/list_fragment"
-        android:name="com.github.palFinderTeam.palfinder.meetups.activities.MeetupListFragment"
+        android:name="com.github.palFinderTeam.palfinder.meetups.meetupList.MeetupListFragment"
         tools:layout="@layout/activity_list"
         android:label="MeetupListActivity">
         <argument
@@ -115,6 +115,6 @@
         <argument
             android:name="ShowParam"
             android:defaultValue="ALL"
-            app:argType="com.github.palFinderTeam.palfinder.meetups.activities.ShowParam" />
+            app:argType="com.github.palFinderTeam.palfinder.meetups.ShowParam" />
     </fragment>
 </navigation>

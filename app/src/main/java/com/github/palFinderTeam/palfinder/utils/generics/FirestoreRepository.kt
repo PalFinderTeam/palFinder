@@ -54,7 +54,7 @@ class FirestoreRepository<T : FirebaseObject>(
             db.collection(column).whereIn(FieldPath.documentId(), it).get()
         }
         val result = Tasks.whenAllSuccess<QuerySnapshot>(queries).await()
-        return result.flatMap { it.documents.mapNotNull { converter(it) } }
+        return result.flatMap { it1 -> it1.documents.mapNotNull {it2 -> converter(it2) } }
     }
 
     override suspend fun edit(uuid: String, field: String, value: Any): String? {

@@ -23,11 +23,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.github.palFinderTeam.palfinder.PalFinderApplication
 import com.github.palFinderTeam.palfinder.R
+import com.github.palFinderTeam.palfinder.meetups.meetupList.MapListViewModel
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
-import com.github.palFinderTeam.palfinder.meetups.activities.LOCATION_RESULT
-import com.github.palFinderTeam.palfinder.meetups.activities.MEETUP_SHOWN
-import com.github.palFinderTeam.palfinder.meetups.activities.MapListViewModel
-import com.github.palFinderTeam.palfinder.meetups.activities.MeetUpView
+import com.github.palFinderTeam.palfinder.meetups.meetupList.LOCATION_RESULT
+import com.github.palFinderTeam.palfinder.meetups.meetupView.MEETUP_SHOWN
+import com.github.palFinderTeam.palfinder.meetups.meetupView.MeetUpView
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Location.Companion.toLocation
 import com.github.palFinderTeam.palfinder.utils.image.addBorder
@@ -50,6 +50,9 @@ import kotlin.math.log
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
+/**
+ * fragment showing a googleMap
+ */
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
     SearchView.OnQueryTextListener {
 
@@ -289,7 +292,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             return
         }
 
-        val deletedMarkers = meetUpForMarkers.minus(meetUpList)
+        val deletedMarkers = meetUpForMarkers.minus(meetUpList.toSet())
         val addedMarkers = meetUpList.minus(meetUpForMarkers)
         meetUpForMarkers = meetUpList.toSet()
         deletedMarkers.forEach { markers[it.uuid]?.remove() }

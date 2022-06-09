@@ -1,8 +1,6 @@
 package com.github.palFinderTeam.palfinder.utils.image
 
 import android.graphics.Bitmap
-import com.google.android.gms.tasks.Task
-import com.google.firebase.storage.FileDownloadTask
 import java.io.Serializable
 
 

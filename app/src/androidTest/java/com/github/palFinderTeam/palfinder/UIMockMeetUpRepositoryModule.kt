@@ -1,13 +1,12 @@
 package com.github.palFinderTeam.palfinder
 
 import android.icu.util.Calendar
-import android.util.Log
 import com.github.palFinderTeam.palfinder.di.MeetUpModule
 import com.github.palFinderTeam.palfinder.meetups.MeetUp
-import com.github.palFinderTeam.palfinder.meetups.MeetUpRepository
-import com.github.palFinderTeam.palfinder.meetups.activities.ShowParam
+import com.github.palFinderTeam.palfinder.meetups.meetupRepository.MeetUpRepository
+import com.github.palFinderTeam.palfinder.meetups.ShowParam
 import com.github.palFinderTeam.palfinder.profile.ProfileUser
-import com.github.palFinderTeam.palfinder.tag.Category
+import com.github.palFinderTeam.palfinder.tags.Category
 import com.github.palFinderTeam.palfinder.utils.Location
 import com.github.palFinderTeam.palfinder.utils.Response
 import com.github.palFinderTeam.palfinder.utils.image.ImageInstance
