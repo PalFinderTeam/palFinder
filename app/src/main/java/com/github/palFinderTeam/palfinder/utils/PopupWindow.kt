@@ -33,7 +33,7 @@ fun createPopUp(
 
     val inflater: LayoutInflater =
         context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    val view = inflater.inflate(R.layout.popup_window, context.getSystemService())
+    val view = inflater.inflate(R.layout.popup_window, null)
     val popUpWindow = PopupWindow(
         view,
         LinearLayout.LayoutParams.WRAP_CONTENT,
